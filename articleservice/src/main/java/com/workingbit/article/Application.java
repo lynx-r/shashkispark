@@ -5,37 +5,47 @@ import com.workingbit.article.article.ArticleDao;
 import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.util.Filters;
 import com.workingbit.article.util.Path;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.workingbit.article.util.SparkUtils;
+import com.workingbit.article.util.UnirestUtil;
+import org.apache.log4j.Logger;
 
+import static com.workingbit.article.config.Config4j.configurationProvider;
 import static java.lang.String.format;
 import static spark.Spark.*;
 
 public class Application {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Application.class);
+  private static final Logger LOG = Logger.getLogger(Application.class);
 
-  public static AppProperties appProperties;
   // Declare dependencies
   public static ArticleDao articleDao;
+  public static AppProperties appProperties;
 
   public static void main(String[] args) {
+    init(true);
     start();
 
-    appProperties.setTest(true);
-    appProperties.setOrigin("http://localhost:4200");
     LOG.info(format("Listening on port %d", port()));
   }
 
-  static void start() {
+  static void init(boolean local) {
+
+    UnirestUtil.configureSerialization();
+
+    appProperties = configurationProvider().bind("app", AppProperties.class);
 
     LOG.info("Init dependencies");
 
-    init();
+    articleDao = new ArticleDao(appProperties);
+  }
+
+  static void start() {
+    Logger logger = Logger.getLogger(Application.class);
+    SparkUtils.createServerWithRequestLog(logger);
 
     LOG.info("Initializing routes");
 
-    enableCORS(appProperties.getOrigin(), appProperties.getMethods(), appProperties.getHeaders());
+    enableCORS(appProperties.origin().toString(), appProperties.methods(), appProperties.headers());
 
     path("/api", () ->
         path("/v1", () -> {
@@ -47,6 +57,7 @@ public class Application {
           });
 
           get(Path.Web.ARTICLES, ArticleController.fetchAllArticles);
+          post(Path.Web.ARTICLE, ArticleController.createArticleAndBoard);
 
           notFound((req, res) -> "Not found");
           internalServerError((req, res) -> "Internal server error");
@@ -54,11 +65,6 @@ public class Application {
           after("/*", Filters.addJsonHeader);
           after("/*", Filters.addGzipHeader);
         }));
-  }
-
-  private static void init() {
-    appProperties = new AppProperties();
-    articleDao = new ArticleDao(appProperties);
   }
 
   // Enables CORS on requests. This method is an initialization method and should be called once.

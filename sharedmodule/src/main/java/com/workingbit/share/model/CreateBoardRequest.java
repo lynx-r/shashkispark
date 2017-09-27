@@ -1,11 +1,13 @@
 package com.workingbit.share.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * CreateBoardRequest
  */
 @Getter
+@Setter
 public class CreateBoardRequest {
   private String articleId;
 

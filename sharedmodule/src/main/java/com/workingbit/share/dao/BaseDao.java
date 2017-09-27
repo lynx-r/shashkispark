@@ -5,12 +5,13 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.workingbit.share.common.Utils.isBlank;
+import static java.lang.String.format;
 
 /**
  * Created by Aleksey Popryaduhin on 18:56 09/08/2017.
@@ -18,29 +19,29 @@ import static com.workingbit.share.common.Utils.isBlank;
 public class BaseDao<T> {
 
   private final Class<T> clazz;
+  private Logger logger;
   private final DynamoDBMapper dynamoDBMapper;
-  private final ObjectMapper mapper;
-  private final boolean test;
-  private String dbDir = "~/dbDir";
 
   protected BaseDao(Class<T> clazz, String region, String endpoint, boolean test) {
     this.clazz = clazz;
 
+    logger = Logger.getLogger(clazz);
+
     AmazonDynamoDB ddb;
     if (test) {
+      logger.info(format("Use test db with region %s and endpoint %s", region, endpoint));
       ddb = AmazonDynamoDBClientBuilder.standard()
           .withEndpointConfiguration(
               new AwsClientBuilder.EndpointConfiguration(endpoint, region))
           .build();
     } else {
+      logger.info("Use production db");
       ddb = AmazonDynamoDBClientBuilder
           .standard()
           .withRegion(region)
           .build();
     }
-    this.test = test;
     dynamoDBMapper = new DynamoDBMapper(ddb);
-    this.mapper = new ObjectMapper();
   }
 
   protected DynamoDBMapper getDynamoDBMapper() {
@@ -52,6 +53,7 @@ public class BaseDao<T> {
   }
 
   public void save(final T entity) {
+    logger.info("Saving entity " + entity);
     dynamoDBMapper.save(entity);
   }
 
@@ -66,18 +68,8 @@ public class BaseDao<T> {
   }
 
   public List<T> findAll(Integer limit) {
-//    try {
-//      T hashKObject = clazz.newInstance();
-//      Method setId = hashKObject.getClass().getMethod("setId", String.class);
-//      setId.invoke(hashKObject, "");
-//      DynamoDBQueryExpression<T> dynamoDBQueryExpression = new DynamoDBQueryExpression<T>()
-//          .withHashKeyValues(hashKObject)
-//          .withLimit(limit)
-//          .withScanIndexForward(true);
-//      return dynamoDBMapper.queryPage(clazz, dynamoDBQueryExpression).getResults();
-//    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-//      e.printStackTrace();
-//    }
+    logger.info(String.format("Find all with limit %s", limit));
+
     DynamoDBScanExpression dynamoDBQueryExpression = new DynamoDBScanExpression();
     List<T> result = dynamoDBMapper.scanPage(clazz, dynamoDBQueryExpression)
         .getResults();
@@ -89,6 +81,7 @@ public class BaseDao<T> {
   }
 
   public Optional<T> findById(String entityId) {
+    logger.info("Find by id: " + entityId);
     if (isBlank(entityId)) {
       return Optional.empty();
     }
@@ -100,6 +93,8 @@ public class BaseDao<T> {
   }
 
   public Optional<T> findByKey(String entityKey) {
+    logger.info("Find by key: " + entityKey);
+
     Map<String, AttributeValue> eav = new HashMap<>();
     eav.put(":entityKey", new AttributeValue().withS(entityKey));
 
@@ -123,6 +118,7 @@ public class BaseDao<T> {
   }
 
   public List<T> findByIds(List<String> ids) {
+    logger.info(String.format("Find by ids %s", ids));
     Map<Class<?>, List<KeyPair>> itemsToGet = new HashMap<>(ids.size());
     itemsToGet.put(clazz, ids.stream()
         .map(id -> new KeyPair().withHashKey(id))

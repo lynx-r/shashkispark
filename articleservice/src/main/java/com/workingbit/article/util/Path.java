@@ -12,5 +12,6 @@ public class Path {
     public static final String INDEX = "/";
     @Getter
     public static final String ARTICLES = "/articles";
+    public static final String ARTICLE = "/article";
   }
 }

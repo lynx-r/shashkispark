@@ -10,7 +10,7 @@ import com.workingbit.share.domain.impl.Article;
 public class ArticleDao extends BaseDao<Article> {
 
   public ArticleDao(AppProperties properties) {
-    super(Article.class, properties.getRegion(), properties.getEndpoint(), properties.isTest());
+    super(Article.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
   }
 
 //  @Override
