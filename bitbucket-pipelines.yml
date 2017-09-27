@@ -1,0 +1,13 @@
+pipelines:
+  default:
+    - step:
+        caches:
+          - gradle
+          - node
+        script:
+          - ./gradlew build copyRuntimeLibs batchZip -x test
+          - npm i
+          - cd articleservice
+          - ../node_modules/.bin/sls deploy
+          - cd ../boardservice
+          - ../node_modules/.bin/sls deploy

@@ -1,0 +1,142 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: articleservice
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: java8
+  timeout: 300
+  memorySize: 1536
+
+# you can overwrite defaults here
+  stage: dev
+  region: eu-west-1
+
+  apiKeys:
+    - 123ARTICLES_API_KEY
+
+# you can define service wide environment variables here
+  environment:
+    SPRING_PROFILES_ACTIVE: production
+
+# you can add packaging information here
+package:
+  artifact: build/distributions/articleservice-1.0-SNAPSHOT.zip
+
+functions:
+  article:
+    handler: com.workingbit.article.LambdaHandler::handleRequest
+
+#    The following are a few example events you can configure
+#    NOTE: Please make sure to change your handler code to work with those events
+#    Check the event documentation for details
+    events:
+      - http:
+          path: v1/articles
+          method: get
+          private: true
+      - http:
+          path: v1/articles
+          method: options
+      - http:
+          path: v1/article/{articleId}
+          method: get
+          request:
+            parameters:
+              path:
+                article: true
+      - http:
+          path: v1/article/{articleId}
+          method: options
+          request:
+            parameters:
+              path:
+                article: true
+      - http:
+          path: v1/article/{articleId}/board
+          method: get
+          request:
+            parameters:
+              path:
+                article: true
+      - http:
+          path: v1/article/{articleId}/board
+          method: options
+          request:
+            parameters:
+              path:
+                article: true
+      - http:
+          path: v1/article
+          method: post
+      - http:
+          path: v1/article
+          method: options
+
+#    Define function environment variables here
+    environment:
+      SPRING_PROFILES_ACTIVE: production
+
+resources:
+  Resources:
+    DynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Article
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    DynamoDBIamPolicy:
+      Type: AWS::IAM::Policy
+      DependsOn: DynamoDbTable
+      Properties:
+        PolicyName: lambda-dynamodb
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+              Resource: arn:aws:dynamodb:*:*:table/Article
+        Roles:
+          - Ref: IamRoleLambdaExecution
+
+plugins:
+  - serverless-dynamodb-local
+
+custom:
+  dynamodb:
+    start:
+      port: 8081
+      inMemory: true
+      migrate: true
+      seed: true
