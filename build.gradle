@@ -38,7 +38,7 @@ subprojects {
         compile 'org.projectlombok:lombok:1.16.18'
 
         compile "com.sparkjava:spark-core:2.6.0"
-        compile 'com.sparkjava:spark-debug-tools:0.5'
+//        compile 'com.sparkjava:spark-debug-tools:0.5'
 
         compile 'com.fasterxml.jackson.core:jackson-core:2.8.5'
         compile 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
