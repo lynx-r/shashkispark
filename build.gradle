@@ -72,7 +72,7 @@ project(':articleservice') {
         baseName = "articleservice"
         from compileJava
         from processResources
-        into("$buildDir/lib") {
+        into("lib") {
             from configurations.runtime
         }
     }
