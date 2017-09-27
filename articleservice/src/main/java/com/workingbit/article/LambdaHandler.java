@@ -13,7 +13,6 @@ public class LambdaHandler implements RequestHandler<AwsProxyRequest, AwsProxyRe
 
   @Override
   public AwsProxyResponse handleRequest(AwsProxyRequest input, Context context) {
-
     if (handler == null) {
       try {
         handler = SparkLambdaContainerHandler.getAwsProxyHandler();

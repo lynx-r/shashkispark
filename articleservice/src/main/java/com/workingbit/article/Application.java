@@ -1,6 +1,5 @@
 package com.workingbit.article;
 
-import com.workingbit.article.article.ArticleController;
 import com.workingbit.article.article.ArticleDao;
 import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.index.IndexController;
@@ -31,7 +30,7 @@ public class Application {
 
     LOG.info("Init dependencies");
 
-    init();
+//    init();
 
     LOG.info("Initializing routes");
 
@@ -47,7 +46,7 @@ public class Application {
         });
 
         get(Path.Web.INDEX, IndexController.serveIndexPage);
-        get(Path.Web.ARTICLES, ArticleController.fetchAllArticles);
+//        get(Path.Web.ARTICLES, ArticleController.fetchAllArticles);
 
         notFound((req, res) -> "Not found");
         internalServerError((req, res) -> "Internal server error");

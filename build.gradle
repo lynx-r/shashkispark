@@ -30,12 +30,12 @@ subprojects {
         compile 'org.apache.commons:commons-collections4:4.1'
 
         compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
-        compile 'com.amazonaws.serverless:aws-serverless-java-container-spark:0.5.1'
+        compile 'com.amazonaws.serverless:aws-serverless-java-container-spark:0.7'
         compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.150'
 
         compile 'org.projectlombok:lombok:1.16.18'
 
-        compile "com.sparkjava:spark-core:2.5.3"
+        compile "com.sparkjava:spark-core:2.6.0"
         compile 'com.sparkjava:spark-debug-tools:0.5'
 
         compile 'org.slf4j:slf4j-simple:1.7.13'
