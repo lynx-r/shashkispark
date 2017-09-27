@@ -32,17 +32,18 @@ subprojects {
         compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
         compile 'com.amazonaws.serverless:aws-serverless-java-container-spark:0.7'
         compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.150'
+        compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+        compile 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
 
         compile 'org.projectlombok:lombok:1.16.18'
 
         compile "com.sparkjava:spark-core:2.6.0"
         compile 'com.sparkjava:spark-debug-tools:0.5'
 
-        compile 'org.slf4j:slf4j-simple:1.7.13'
+        compile 'com.fasterxml.jackson.core:jackson-core:2.8.5'
+        compile 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
+        compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.5'
 
-        compile 'com.google.code.gson:gson:2.7'
-        compile 'com.google.guava:guava:19.0'
-        compile 'org.mindrot:jbcrypt:0.3m'
         compile 'uk.com.robust-it:cloning:1.9.5'
 
         compile 'io.reactivex:rxjava:1.2.2'
@@ -58,13 +59,25 @@ project(':articleservice') {
         compile project(':sharedmodule')
     }
 
-    dependencies {
-        compile project(':sharedmodule')
+// Task for building the zip file for upload
+    task buildZip(type: Zip) {
+        // Using the Zip API from gradle to build a zip file of all the dependencies
+        //
+        // The path to this zip file can be set in the serverless.yml file for the
+        // package/artifact setting for deployment to the S3 bucket
+        //
+        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
+
+        // set the base name of the zip file
+        baseName = "articleservice"
+        from compileJava
+        from processResources
+        into("$buildDir/lib") {
+            from configurations.runtime
+        }
     }
 
-    task stage {
-        dependsOn installDist
-    }
+    build.dependsOn buildZip
 }
 
 project(':boardservice') {
