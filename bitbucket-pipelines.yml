@@ -9,5 +9,5 @@ pipelines:
           - npm i
           - cd articleservice
           - ../node_modules/.bin/sls deploy
-          - cd ../boardservice
-          - ../node_modules/.bin/sls deploy
+#          - cd ../boardservice
+#          - ../node_modules/.bin/sls deploy

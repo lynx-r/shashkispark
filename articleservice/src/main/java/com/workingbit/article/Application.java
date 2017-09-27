@@ -7,9 +7,7 @@ import com.workingbit.article.index.IndexController;
 import com.workingbit.article.util.Filters;
 import com.workingbit.article.util.Path;
 
-import static spark.Spark.after;
-import static spark.Spark.get;
-import static spark.Spark.port;
+import static spark.Spark.*;
 import static spark.debug.DebugScreen.enableDebugScreen;
 
 public class Application {
@@ -29,11 +27,18 @@ public class Application {
 
     // Set up before-filters (called before each get/post)
 
+    defineRoutes();
+    defineFilters();
+  }
+
+  static void defineFilters() {
+    //Set up after-filters (called after each get/post)
+    after("*", Filters.addGzipHeader);
+  }
+
+  static void defineRoutes() {
     // Set up routes
     get(Path.Web.INDEX, IndexController.serveIndexPage);
     get(Path.Web.ARTICLES, ArticleController.fetchAllArticles);
-
-    //Set up after-filters (called after each get/post)
-    after("*", Filters.addGzipHeader);
   }
 }
