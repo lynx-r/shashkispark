@@ -21,16 +21,13 @@ public class Application {
 
   public static void main(String[] args) {
     // Instantiate your dependencies
-    int port = getPort();
-    if (port >= 0) {
-      port(port);
-    }
+    port(getHerokuAssignedPort());
 
     start();
     LOG.info(format("Listening on port %d", port()));
   }
 
-  public static void start() {
+  static void start() {
 
     LOG.info("Init dependencies");
 
@@ -65,8 +62,11 @@ public class Application {
     articleDao = new ArticleDao(appProperties);
   }
 
-  private static int getPort() {
-    String portFromEnv = System.getenv("FM_API_PORT");
-    return portFromEnv == null ? -1 : Integer.parseInt(portFromEnv);
+  private static int getHerokuAssignedPort() {
+    ProcessBuilder processBuilder = new ProcessBuilder();
+    if (processBuilder.environment().get("PORT") != null) {
+      return Integer.parseInt(processBuilder.environment().get("PORT"));
+    }
+    return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
   }
 }

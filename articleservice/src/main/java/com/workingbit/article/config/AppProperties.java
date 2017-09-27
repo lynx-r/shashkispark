@@ -12,5 +12,4 @@ public class AppProperties {
   private final String endpoint = "http://localhost:8081";
   private final boolean test = true;
   private final int articlesFetchLimit = 50;
-  private final String contextPath = "/v1";
 }
