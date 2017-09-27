@@ -14,4 +14,11 @@ public class AppProperties {
   @Setter
   private boolean test = false;
   private final int articlesFetchLimit = 50;
+
+  @Setter
+  private String origin = "https://wiki.shashki.online";
+
+  private final String methods = "GET,POST,PUT,OPTIONS,HEADER,DELETE";
+
+  private final String headers = "Content-Type,Content-Length,Connection,Date,x-amzn-RequestId,Access-Control-Allow-Origin,Content-Encoding,Vary,X-Amzn-Trace-Id,X-Cache,Via,X-Amz-Cf-Id";
 }
