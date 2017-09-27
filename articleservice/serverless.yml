@@ -47,45 +47,44 @@ functions:
 #    Check the event documentation for details
     events:
       - http:
-          path: v1/articles
+          path: /api/v1/articles
           method: get
-          private: true
       - http:
-          path: v1/articles
+          path: /api/v1/articles
           method: options
       - http:
-          path: v1/article/{articleId}
-          method: get
-          request:
-            parameters:
-              path:
-                article: true
-      - http:
-          path: v1/article/{articleId}
-          method: options
-          request:
-            parameters:
-              path:
-                article: true
-      - http:
-          path: v1/article/{articleId}/board
+          path: /api/v1/article/{articleId}
           method: get
           request:
             parameters:
               path:
                 article: true
       - http:
-          path: v1/article/{articleId}/board
+          path: /api/v1/article/{articleId}
           method: options
           request:
             parameters:
               path:
                 article: true
       - http:
-          path: v1/article
+          path: /api/v1/article/{articleId}/board
+          method: get
+          request:
+            parameters:
+              path:
+                article: true
+      - http:
+          path: /api/v1/article/{articleId}/board
+          method: options
+          request:
+            parameters:
+              path:
+                article: true
+      - http:
+          path: /api/v1/article
           method: post
       - http:
-          path: v1/article
+          path: /api/v1/article
           method: options
 
 #    Define function environment variables here

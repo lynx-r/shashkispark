@@ -7,23 +7,22 @@ import com.amazonaws.serverless.proxy.spark.SparkLambdaContainerHandler;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-import static com.workingbit.article.Application.defineFilters;
-import static com.workingbit.article.Application.defineRoutes;
-
 public class LambdaHandler implements RequestHandler<AwsProxyRequest, AwsProxyResponse> {
-    private SparkLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler =
-            SparkLambdaContainerHandler.getAwsProxyHandler();
-    private boolean initialized = false;
 
-  public LambdaHandler() throws ContainerInitializationException {
-  }
+  private SparkLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
 
-  public AwsProxyResponse handleRequest(AwsProxyRequest awsProxyRequest, Context context) {
-        if (!initialized) {
-            defineRoutes();
-            defineFilters();
-            initialized = true;
-        }
-        return handler.proxy(awsProxyRequest, context);
+  @Override
+  public AwsProxyResponse handleRequest(AwsProxyRequest input, Context context) {
+
+    if (handler == null) {
+      try {
+        handler = SparkLambdaContainerHandler.getAwsProxyHandler();
+        Application.start();
+      } catch (ContainerInitializationException e) {
+        throw new RuntimeException("Failed to initialize server container", e);
+      }
     }
+
+    return handler.proxy(input, context);
+  }
 }
