@@ -3,7 +3,6 @@ package com.workingbit.article;
 import com.workingbit.article.article.ArticleController;
 import com.workingbit.article.article.ArticleDao;
 import com.workingbit.article.config.AppProperties;
-import com.workingbit.article.index.IndexController;
 import com.workingbit.article.util.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +19,6 @@ public class Application {
   public static ArticleDao articleDao ;
 
   public static void main(String[] args) {
-    // Instantiate your dependencies
-    port(getHerokuAssignedPort());
-
     start();
     LOG.info(format("Listening on port %d", port()));
   }
@@ -31,7 +27,7 @@ public class Application {
 
     LOG.info("Init dependencies");
 
-//    init();
+    init();
 
     LOG.info("Initializing routes");
 
@@ -59,13 +55,5 @@ public class Application {
   private static void init() {
     appProperties  = new AppProperties();
     articleDao = new ArticleDao(appProperties);
-  }
-
-  private static int getHerokuAssignedPort() {
-    ProcessBuilder processBuilder = new ProcessBuilder();
-    if (processBuilder.environment().get("PORT") != null) {
-      return Integer.parseInt(processBuilder.environment().get("PORT"));
-    }
-    return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
   }
 }
