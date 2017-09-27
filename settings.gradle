@@ -1,0 +1,5 @@
+rootProject.name = 'shashkiSpark'
+include 'sharedmodule'
+include 'articleservice'
+include 'boardservice'
+

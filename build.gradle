@@ -1,0 +1,324 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+//        maven { url "http://repo.spring.io/plugins-release" }
+//        maven { url "http://repo.spring.io/milestone" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.5"
+
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.9"
+
+//        classpath "org.springframework.boot:spring-boot-gradle-plugin:${spring_boot_version}"
+//        classpath "org.springframework.build.gradle:propdeps-plugin:0.0.7"
+
+        classpath "io.spring.gradle:dependency-management-plugin:0.6.1.RELEASE"
+
+        classpath 'io.swagger:swagger-codegen:2.2.3'
+
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.12"
+    }
+}
+
+group 'com.workingbit.core'
+version '1.0-SNAPSHOT'
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+//    apply plugin: 'org.springframework.boot'
+//    apply plugin: 'propdeps'
+    apply plugin: 'io.spring.dependency-management'
+//    apply plugin: "net.ltgt.apt"
+
+    group = 'com.workingbit'
+    version = '1.0'
+}
+
+subprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+//        maven { url 'http://repo.spring.io/milestone' }
+//        maven { url 'http://repo.spring.io/snapshot' }
+        maven { url 'https://repository.jboss.org/nexus/content/repositories/releases' }
+        maven { url 'https://oss.sonatype.org/content/repositories/releases' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'http://repo.maven.apache.org/maven2' }
+        maven { url 'https://maven.atlassian.com/repository/internal' }
+    }
+
+    dependencyManagement {
+        imports {
+//            mavenBom "org.springframework.boot:spring-boot-dependencies:${spring_boot_version}"
+            mavenBom "com.amazonaws:aws-java-sdk-bom:${amazonaws_version}"
+        }
+    }
+
+    dependencies {
+//        compile 'org.springframework.boot:spring-boot-starter-web'
+//        compile 'org.springframework.boot:spring-boot-starter-web-services'
+//        compile 'org.springframework.boot:spring-boot-starter-jersey'
+//        compile 'org.springframework.boot:spring-boot-devtools'
+//        compile 'org.springframework.boot:spring-boot-starter-security'
+//        compile "org.springframework.boot:spring-boot-starter-data-rest"
+
+        compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+        compile 'com.amazonaws.serverless:aws-serverless-java-container-spark:0.7'
+        compile 'com.amazonaws:aws-java-sdk-dynamodb'
+
+        compile 'org.apache.commons:commons-lang3:3.5'
+        compile 'org.apache.commons:commons-collections4:4.1'
+
+//        compile 'org.projectlombok:lombok:1.16.16'
+
+        compile 'io.swagger:swagger-codegen:2.2.3'
+
+//        compile 'io.springfox:springfox-swagger2:2.7.0'
+//        compile 'io.springfox:springfox-swagger-ui:2.7.0'
+
+//        compile 'ch.qos.logback:logback-classic:1.1.11'
+
+        compile 'uk.com.robust-it:cloning:1.9.5'
+
+        compile 'com.yheriatovych:reductor:0.13.2'
+//        apt 'com.yheriatovych:reductor-processor:0.13.2'
+
+        testCompile 'io.github.robwin:assertj-swagger:0.6.0'
+        testCompile 'org.assertj:assertj-core:3.8.0'
+
+//        testCompile 'org.springframework.boot:spring-boot-starter-test'
+//    testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+}
+
+def swaggerTargetFolder = 'src/swagger'
+
+project(':articleservice') {
+    apply plugin: 'application'
+
+    configurations {
+        runtime.exclude group: "org.slf4j", module: "slf4j-simple"
+        compile.exclude group: "org.slf4j", module: "slf4j-simple"
+    }
+//    configurations {
+//        providedRuntime
+//        compile.exclude(group: 'ch.qos.logback')
+//    }
+
+//    bootRepackage {
+//        mainClass = 'com.workingbit.article.LocalArticleApplication'
+//    }
+
+//    springBoot {
+//        mainClass = 'com.workingbit.article.LocalArticleApplication'
+//        executable = true
+//        buildInfo()
+//    }
+
+//    bootRun {
+//        addResources = false
+//    }
+
+    dependencies {
+        compile project(':sharedmodule')
+    }
+
+//    bootRun {
+//        addResources = false
+//    }
+
+//    task stage(dependsOn: 'bootRepackage') {
+//    }
+
+    def swaggerSourceFile = "src/main/resources/articleservice-swagger.yaml"
+    task generateApi {
+        inputs.file("$projectDir/$swaggerSourceFile")
+        outputs.dir("$projectDir/$swaggerTargetFolder")
+        doLast {
+//            def config = new CodegenConfigurator()
+//            config.setInputSpec("file:///$projectDir/$swaggerSourceFile")
+//            config.setOutputDir("$projectDir/$swaggerTargetFolder")
+//            config.setLang('spring')
+//            config.setAdditionalProperties([
+//                    'interfaceOnly': 'true',
+//                    'apiPackage'   : 'com.workingbit.article.api',
+//                    'modelPackage' : 'com.workingbit.article.model',
+//                    'dateLibrary'  : 'java8'
+//            ])
+//            config.setImportMappings([
+//                    'Article'              : 'com.workingbit.share.domain.impl.Article',
+//                    'BoardBox'             : 'com.workingbit.share.domain.impl.BoardBox',
+//                    'CreateArticleRequest' : 'com.workingbit.share.model.CreateArticleRequest',
+//                    'CreateArticleResponse': 'com.workingbit.share.model.CreateArticleResponse'
+//            ])
+//            config.setIgnoreFileOverride("$projectDir/.swagger-codegen-ignore")
+//            new DefaultGenerator().opts(config.toClientOptInput()).generate()
+        }
+    }
+    clean.doFirst {
+        delete("${projectDir}/$swaggerTargetFolder")
+    }
+
+    sourceSets {
+        swagger {
+            compileClasspath = configurations.swaggerCompile
+            java {
+                srcDir file("$projectDir/$swaggerTargetFolder/src/main/java")
+            }
+        }
+        main {
+            compileClasspath += swagger.output
+            runtimeClasspath += swagger.output
+        }
+        test {
+            compileClasspath += swagger.output
+            runtimeClasspath += swagger.output
+        }
+    }
+
+    dependencies {
+        compile project(':sharedmodule')
+
+//        swaggerCompile "org.springframework.boot:spring-boot-starter-web"
+        swaggerCompile 'io.swagger:swagger-annotations:1.5.16'
+
+        swaggerCompile project(':sharedmodule')
+    }
+
+    compileSwaggerJava.dependsOn generateApi
+    classes.dependsOn swaggerClasses
+    compileJava.dependsOn compileSwaggerJava
+
+    task copyRuntimeLibs(type: Copy) {
+        into "$buildDir/libs/deps/lib"
+        from configurations.runtime
+    }
+
+    task batchZip(type: Zip) {
+        from sourceSets.main.output, sourceSets.swagger.output, "$buildDir/libs/deps"
+    }
+}
+
+project(':boardservice') {
+//    bootRepackage.enabled = false
+//    findMainClass.enabled = false
+
+//    springBoot {
+//        mainClass = 'com.workingbit.board.LocalBoardApplication'
+//        executable = true
+//        buildInfo()
+//    }
+
+//    task stage(dependsOn: 'bootRepackage') {
+//    }
+
+    def swaggerSourceFile = 'src/main/resources/boardservice-swagger.yaml'
+    task generateApi {
+        inputs.file("$projectDir/$swaggerSourceFile")
+        outputs.dir("$projectDir/$swaggerTargetFolder")
+        doLast {
+//            def config = new CodegenConfigurator()
+//            config.setInputSpec("file:///$projectDir/$swaggerSourceFile")
+//            config.setOutputDir("$projectDir/$swaggerTargetFolder")
+//            config.setLang('spring')
+//            config.setAdditionalProperties([
+//                    'interfaceOnly': 'true',
+//                    'apiPackage'   : 'com.workingbit.board.api',
+//                    'modelPackage' : 'com.workingbit.board.model',
+//                    'dateLibrary'  : 'java8'
+//            ])
+//            config.setImportMappings([
+//                    'Board'             : 'com.workingbit.share.domain.impl.Board',
+//                    'BoardBox'          : 'com.workingbit.share.domain.impl.BoardBox',
+//                    'Square'            : 'com.workingbit.share.domain.impl.Square',
+//                    'CreateBoardRequest': 'com.workingbit.share.model.CreateBoardRequest'
+//            ])
+//            config.setIgnoreFileOverride("$projectDir/.swagger-codegen-ignore")
+//            new DefaultGenerator().opts(config.toClientOptInput()).generate()
+        }
+    }
+
+    clean.doFirst {
+        delete("$projectDir/$swaggerTargetFolder")
+    }
+
+    sourceSets {
+        swagger {
+            compileClasspath = configurations.swaggerCompile
+            java {
+                srcDir file("$projectDir/$swaggerTargetFolder/src/main/java")
+            }
+        }
+        main {
+            compileClasspath += swagger.output
+            runtimeClasspath += swagger.output
+        }
+        test {
+            compileClasspath += swagger.output
+            runtimeClasspath += swagger.output
+        }
+    }
+
+    dependencies {
+        compile 'com.github.rutledgepaulv:prune:1.3'
+
+        compile project(':sharedmodule')
+
+//        swaggerCompile "org.springframework.boot:spring-boot-starter-web"
+        swaggerCompile 'io.swagger:swagger-annotations:1.5.16'
+
+        swaggerCompile project(':sharedmodule')
+    }
+
+    task copyRuntimeLibs(type: Copy) {
+        into "$buildDir/libs/deps/lib"
+        from configurations.runtime
+    }
+
+    task batchZip(type: Zip) {
+        from sourceSets.main.output, sourceSets.swagger.output, "$buildDir/libs/deps"
+    }
+
+    compileSwaggerJava.dependsOn generateApi
+    classes.dependsOn swaggerClasses
+    compileJava.dependsOn compileSwaggerJava
+}
+
+project(':sharedmodule') {
+//    bootRepackage.enabled = false
+//    findMainClass.enabled = false
+
+    jar {
+        baseName = 'sharedmdoule'
+        version = "${sharemodule_version}"
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+//defaultTasks 'bootRun'
+
+repositories {
+    mavenCentral()
+}
+
+clean {
+    delete "target"
+}
+
+task cleanResources(type: Delete) {
+    delete 'build/resources'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0'
+}
+
+//bootRepackage.enabled = false
