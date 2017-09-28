@@ -47,75 +47,75 @@ functions:
 #    Check the event documentation for details
     events:
       - http:
-          path: v1/add-draught
+          path: /api/v1/add-draught
           method: post
       - http:
-          path: v1/add-draught
+          path: /api/v1/add-draught
           method: options
       - http:
-          path: v1/board
+          path: /api/v1/board
           method: post
           private: true
       - http:
-          path: v1/board
+          path: /api/v1/board
           method: options
       - http:
-          path: v1/board/{boardId}
+          path: /api/v1/board/{boardId}
           method: delete
           request:
             parameters:
               path:
                 boardId: true
       - http:
-          path: v1/board/{boardId}
+          path: /api/v1/board/{boardId}
           method: options
           request:
             parameters:
               path:
                 boardId: true
       - http:
-          path: v1/board/{boardId}
+          path: /api/v1/board/{boardId}
           method: get
           request:
             parameters:
               path:
                 boardId: true
       - http:
-          path: v1/board/{boardId}
+          path: /api/v1/board/{boardId}
           method: options
           request:
             parameters:
               path:
                 boardId: true
       - http:
-          path: v1/board/highlight
+          path: /api/v1/board/highlight
           method: post
       - http:
-          path: v1/board/highlight
+          path: /api/v1/board/highlight
           method: options
       - http:
-          path: v1/board/move
+          path: /api/v1/board/move
           method: post
       - http:
-          path: v1/board/move
+          path: /api/v1/board/move
           method: options
       - http:
-          path: v1/board/undo
+          path: /api/v1/board/undo
           method: post
       - http:
-          path: v1/board/undo
+          path: /api/v1/board/undo
           method: options
       - http:
-          path: v1/board/redo
+          path: /api/v1/board/redo
           method: post
       - http:
-          path: v1/board/redo
+          path: /api/v1/board/redo
           method: options
       - http:
-          path: v1/boards
+          path: /api/v1/boards
           method: post
       - http:
-          path: v1/boards
+          path: /api/v1/boards
           method: options
 
 #    Define function environment variables here
@@ -205,3 +205,4 @@ custom:
       port: 8083
       inMemory: true
       migrate: true
+/api/
