@@ -12,7 +12,6 @@ import com.workingbit.share.model.CreateBoardRequest;
 import com.workingbit.share.model.EnumArticleState;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,14 +34,7 @@ class ArticleService {
     return INSTANCE;
   }
 
-  CreateArticleResponse createArticleResponse(String body) {
-    CreateArticleRequest articleAndBoard;
-    try {
-      articleAndBoard = mapper.readValue(body, CreateArticleRequest.class);
-    } catch (IOException e) {
-      logger.error(e);
-      throw new ArticleServiceException(e.getMessage());
-    }
+  CreateArticleResponse createArticleResponse(CreateArticleRequest articleAndBoard) {
     Article article = articleAndBoard.getArticle();
     Utils.setRandomIdAndCreatedAt(article);
     article.setState(EnumArticleState.newadded);

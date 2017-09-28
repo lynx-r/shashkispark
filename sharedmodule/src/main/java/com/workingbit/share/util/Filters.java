@@ -1,4 +1,4 @@
-package com.workingbit.article.util;
+package com.workingbit.share.util;
 
 import spark.Filter;
 import spark.Request;

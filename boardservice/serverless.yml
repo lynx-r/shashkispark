@@ -205,7 +205,3 @@ custom:
       port: 8083
       inMemory: true
       migrate: true
-#      seed: true
-#      migrate: true
-    # Uncomment only if you already have a DynamoDB running locally
-    # noStart: true

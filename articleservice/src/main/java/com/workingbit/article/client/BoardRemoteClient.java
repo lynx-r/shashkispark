@@ -33,7 +33,7 @@ public class BoardRemoteClient {
       logger.error("Unirest exception", e);
       return Optional.empty();
     }
-    if (boardBoxHttpResponse.getStatus() == 201) {
+    if (boardBoxHttpResponse.getStatus() == 200) {
       return Optional.of(boardBoxHttpResponse.getBody());
     }
     throw new ArticleServiceException("Invalid response " + boardBoxHttpResponse.getStatus());

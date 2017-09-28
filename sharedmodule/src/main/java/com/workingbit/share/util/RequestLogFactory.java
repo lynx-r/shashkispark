@@ -1,4 +1,4 @@
-package com.workingbit.article.util;
+package com.workingbit.share.util;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.AbstractNCSARequestLog;

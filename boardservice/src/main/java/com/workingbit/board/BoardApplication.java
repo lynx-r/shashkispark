@@ -1,7 +1,7 @@
 package com.workingbit.board;
 
-import com.workingbit.article.util.Filters;
-import com.workingbit.article.util.SparkUtils;
+import com.workingbit.share.util.Filters;
+import com.workingbit.share.util.SparkUtils;
 import com.workingbit.board.board.BoardBoxDao;
 import com.workingbit.board.board.BoardController;
 import com.workingbit.board.board.BoardDao;
@@ -49,8 +49,11 @@ public class BoardApplication {
 
           get(Path.BOARD_BY_ID, BoardController.findBoardById);
 
+          post(Path.BOARD_BY_IDS, BoardController.findBoardByIds);
+
           post(Path.BOARD_ADD_DRAUGHT, BoardController.addDraught);
           post(Path.BOARD, BoardController.createBoard);
+          post(Path.BOARD_MOVE, BoardController.move);
           post(Path.BOARD_HIGHLIGHT, BoardController.highlightBoard);
           post(Path.BOARD_REDO, BoardController.redo);
           post(Path.BOARD_UNDO, BoardController.undo);

@@ -63,6 +63,9 @@ public class Square implements ICoordinates, BaseDomain {
     return draught != null;
   }
 
+  public void setOccupied(boolean occupied) {
+  }
+
   @Override
   public int getV() {
     return v;

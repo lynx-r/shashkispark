@@ -1,4 +1,5 @@
 app:
+  port: 14567
   regionDynamoDB: dump
   endpointDynamoDB: http://example.com
   test: false

@@ -1,7 +1,7 @@
 app:
-  port: 14567
+  port: 24567
   regionDynamoDB: eu-west-1
-  endpointDynamoDB: http://localhost:8081
+  endpointDynamoDB: http://localhost:8083
   test: true
   headers: Content-Type,Content-Encoding
   methods: GET,POST,PUT,OPTIONS,HEADER,DELETE

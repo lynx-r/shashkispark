@@ -1,16 +1,20 @@
 package com.workingbit.board.board;
 
 import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.model.BoardBoxIds;
 import com.workingbit.share.model.CreateBoardRequest;
 import spark.Route;
 
-import static com.workingbit.board.util.JsonUtil.dataToJson;
-import static com.workingbit.board.util.JsonUtil.jsonToData;
+import static com.workingbit.share.util.JsonUtil.dataToJson;
+import static com.workingbit.share.util.JsonUtil.jsonToData;
 
 /**
  * Created by Aleksey Popryaduhin on 13:58 27/09/2017.
  */
 public class BoardController {
+
+  public static Route findBoardByIds = (req, res) ->
+      dataToJson(BoardBoxService.getInstance().findByIds(jsonToData(req.body(), BoardBoxIds.class)));
 
   public static Route addDraught = (req, res) ->
       dataToJson(BoardBoxService.getInstance().addDraught(jsonToData(req.body(), BoardBox.class)));

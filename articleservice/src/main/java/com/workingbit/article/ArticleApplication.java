@@ -3,10 +3,10 @@ package com.workingbit.article;
 import com.workingbit.article.article.ArticleController;
 import com.workingbit.article.article.ArticleDao;
 import com.workingbit.article.config.AppProperties;
-import com.workingbit.article.util.Filters;
 import com.workingbit.article.util.Path;
-import com.workingbit.article.util.SparkUtils;
 import com.workingbit.article.util.UnirestUtil;
+import com.workingbit.share.util.Filters;
+import com.workingbit.share.util.SparkUtils;
 import org.apache.log4j.Logger;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
@@ -28,6 +28,7 @@ public class ArticleApplication {
   }
 
   public static void main(String[] args) {
+    port(appProperties.port());
     start();
   }
 
@@ -45,9 +46,9 @@ public class ArticleApplication {
 
         path("/v1", () -> {
 
-          get(Path.Web.ARTICLES, ArticleController.findAllArticles);
-          get(Path.Web.ARTICLE_BY_ID, ArticleController.findArticleById);
-          post(Path.Web.ARTICLE, ArticleController.createArticleAndBoard);
+          get(Path.ARTICLES, ArticleController.findAllArticles);
+          get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
+          post(Path.ARTICLE, ArticleController.createArticleAndBoard);
 
           notFound((req, res) -> "Not found");
           internalServerError((req, res) -> "Internal server error");

@@ -1,9 +1,8 @@
 app:
+  port: 24567
   regionDynamoDB: dump
   endpointDynamoDB: http://example.com
   test: false
   headers: Content-Type,Content-Encoding,0,1,10,11,12,13,14,15,16,17,2,3,4,5,6,7,8,9
   methods: GET,POST,PUT,OPTIONS,HEADER,DELETE
   origin: https://wiki.shashki.online
-  boardResource: https://8vc9rklqxh.execute-api.eu-west-1.amazonaws.com/dev/api/v1
-  articlesFetchLimit: 50
