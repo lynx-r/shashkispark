@@ -1,5 +1,6 @@
 package com.workingbit.board.board;
 
+import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.Log;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
@@ -136,6 +137,9 @@ public class BoardBoxService {
         .map(updated -> {
           Board currentBoard = updated.getBoard();
           Square squareLink = BoardUtils.findSquareByLink(selectedSquare, currentBoard);
+          if (squareLink == null) {
+            throw new BoardServiceException("Unable to add a draught");
+          }
           currentBoard = BoardService.getInstance().addDraught(currentBoard, squareLink.getNotation(), draught);
           updated.setBoardId(currentBoard.getId());
           updated.setBoard(currentBoard);

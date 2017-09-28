@@ -182,7 +182,7 @@ public class BoardUtils {
    */
   static Square findSquareByLink(Square square, Board board) {
     if (square == null) {
-      throw new BoardServiceException("Invalid square link");
+      return null;
     }
     return findSquareByVH(board, square.getV(), square.getH());
   }
@@ -342,7 +342,8 @@ public class BoardUtils {
     board.setSelectedSquare(targetSquare);
     targetSquare.setHighlighted(true);
 
-    findSquareByLink(sourceSquare, board);
+    Square sourceSquareFromBoard = findSquareByNotation(sourceSquare.getNotation(), board);
+    sourceSquareFromBoard.setDraught(null);
 
     replaceDraught(board.getWhiteDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
     replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
