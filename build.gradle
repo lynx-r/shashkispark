@@ -59,7 +59,7 @@ subprojects {
 project(':articleservice') {
     apply plugin: 'application'
 
-    mainClassName = 'com.workingbit.article.Application'
+    mainClassName = 'com.workingbit.article.ArticleApplication'
 
     dependencies {
         compile project(':sharedmodule')
@@ -91,22 +91,33 @@ project(':articleservice') {
 project(':boardservice') {
     apply plugin: 'application'
 
-    mainClassName = 'com.workingbit.board.Application'
+    mainClassName = 'com.workingbit.board.BoardApplication'
 
     dependencies {
-        compile 'com.github.rutledgepaulv:prune:1.3'
-
         compile project(':sharedmodule')
+
+        compile 'com.github.rutledgepaulv:prune:1.3'
     }
 
-    task copyRuntimeLibs(type: Copy) {
-        into "$buildDir/libs/deps/lib"
-        from configurations.runtime
+    // Task for building the zip file for upload
+    task buildZip(type: Zip) {
+        // Using the Zip API from gradle to build a zip file of all the dependencies
+        //
+        // The path to this zip file can be set in the serverless.yml file for the
+        // package/artifact setting for deployment to the S3 bucket
+        //
+        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
+
+        // set the base name of the zip file
+        baseName = "boardservice"
+        from compileJava
+        from processResources
+        into("lib") {
+            from configurations.runtime
+        }
     }
 
-    task batchZip(type: Zip) {
-        from sourceSets.main.output, "$buildDir/libs/deps"
-    }
+    build.dependsOn buildZip
 }
 
 project(':sharedmodule') {

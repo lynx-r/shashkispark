@@ -1,16 +1,16 @@
-package com.workingbit.article.article;
+package com.workingbit.board.board;
 
-import com.workingbit.article.config.AppProperties;
+import com.workingbit.board.config.AppProperties;
 import com.workingbit.share.dao.BaseDao;
-import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.domain.impl.Board;
 
 /**
  * Created by Aleksey Popryaduhin on 18:16 09/08/2017.
  */
-public class ArticleDao extends BaseDao<Article> {
+public class BoardDao extends BaseDao<Board> {
 
-  public ArticleDao(AppProperties properties) {
-    super(Article.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
+  public BoardDao(AppProperties properties) {
+    super(Board.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
   }
 
 //  @Override

@@ -12,11 +12,14 @@ import static com.workingbit.article.util.JsonUtil.dataToJson;
  */
 public class ArticleController {
 
-  public static Route fetchAllArticles = (Request request, Response response) -> {
+  public static Route findAllArticles = (Request request, Response response) -> {
     String limitStr = request.queryParamOrDefault("limit", "" + appProperties.articlesFetchLimit());
     return dataToJson(ArticleService.getInstance().findAll(Integer.valueOf(limitStr)));
   };
 
   public static Route createArticleAndBoard = (req, res) ->
       dataToJson(ArticleService.getInstance().createArticleResponse(req.body()));
+
+  public static Route findArticleById = (req, res) ->
+      dataToJson(ArticleService.getInstance().findById(req.params(":id")));
 }

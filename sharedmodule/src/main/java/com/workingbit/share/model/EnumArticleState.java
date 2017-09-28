@@ -6,7 +6,7 @@ package com.workingbit.share.model;
 public enum EnumArticleState {
 
   /**
-   * New article not viewed by moderator
+   * New board not viewed by moderator
    */
   newadded,
 

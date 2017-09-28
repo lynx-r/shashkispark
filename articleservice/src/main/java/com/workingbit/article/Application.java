@@ -44,7 +44,8 @@ public class Application {
 
         path("/v1", () -> {
 
-          get(Path.Web.ARTICLES, ArticleController.fetchAllArticles);
+          get(Path.Web.ARTICLES, ArticleController.findAllArticles);
+          get(Path.Web.ARTICLE_BY_ID, ArticleController.findArticleById);
           post(Path.Web.ARTICLE, ArticleController.createArticleAndBoard);
 
           notFound((req, res) -> "Not found");

@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: articleservice
+service: boardservice
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -28,19 +28,18 @@ provider:
   region: eu-west-1
 
   apiKeys:
-    - 123ARTICLES_API_KEY
+    - 123BOARD_API_KEY
 
 # you can define service wide environment variables here
   environment:
     SPRING_PROFILES_ACTIVE: production
-    CFG4J_ENV: prod
 
 # you can add packaging information here
 package:
-  artifact: build/distributions/articleservice-1.0.zip
+  artifact: build/distributions/boardservice-1.0-SNAPSHOT.zip
 
 functions:
-  article:
+  board:
     handler: com.workingbit.board.LambdaHandler::handleRequest
 
 #    The following are a few example events you can configure
@@ -48,56 +47,88 @@ functions:
 #    Check the event documentation for details
     events:
       - http:
-          path: /api/v1/articles
-          method: get
-      - http:
-          path: /api/v1/articles
-          method: options
-      - http:
-          path: /api/v1/board/{articleId}
-          method: get
-          request:
-            parameters:
-              path:
-                article: true
-      - http:
-          path: /api/v1/board/{articleId}
-          method: options
-          request:
-            parameters:
-              path:
-                article: true
-      - http:
-          path: /api/v1/board/{articleId}/board
-          method: get
-          request:
-            parameters:
-              path:
-                article: true
-      - http:
-          path: /api/v1/board/{articleId}/board
-          method: options
-          request:
-            parameters:
-              path:
-                article: true
-      - http:
-          path: /api/v1/board
+          path: v1/add-draught
           method: post
       - http:
-          path: /api/v1/board
+          path: v1/add-draught
+          method: options
+      - http:
+          path: v1/board
+          method: post
+          private: true
+      - http:
+          path: v1/board
+          method: options
+      - http:
+          path: v1/board/{boardId}
+          method: delete
+          request:
+            parameters:
+              path:
+                boardId: true
+      - http:
+          path: v1/board/{boardId}
+          method: options
+          request:
+            parameters:
+              path:
+                boardId: true
+      - http:
+          path: v1/board/{boardId}
+          method: get
+          request:
+            parameters:
+              path:
+                boardId: true
+      - http:
+          path: v1/board/{boardId}
+          method: options
+          request:
+            parameters:
+              path:
+                boardId: true
+      - http:
+          path: v1/board/highlight
+          method: post
+      - http:
+          path: v1/board/highlight
+          method: options
+      - http:
+          path: v1/board/move
+          method: post
+      - http:
+          path: v1/board/move
+          method: options
+      - http:
+          path: v1/board/undo
+          method: post
+      - http:
+          path: v1/board/undo
+          method: options
+      - http:
+          path: v1/board/redo
+          method: post
+      - http:
+          path: v1/board/redo
+          method: options
+      - http:
+          path: v1/boards
+          method: post
+      - http:
+          path: v1/boards
           method: options
 
 #    Define function environment variables here
     environment:
       SPRING_PROFILES_ACTIVE: production
 
+# you can add CloudFormation api templates here
 resources:
   Resources:
-    DynamoDbTable:
+    DynamoDbTableBoardBox:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: Article
+        TableName: BoardBox
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -111,9 +142,26 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    DynamoDBIamPolicy:
+    DynamoDbTableBoard:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Board
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+    DynamoDBIamPolicyBoardBox:
       Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTable
+      DependsOn: DynamoDbTableBoardBox
       Properties:
         PolicyName: lambda-dynamodb
         PolicyDocument:
@@ -126,7 +174,25 @@ resources:
                 - dynamodb:PutItem
                 - dynamodb:UpdateItem
                 - dynamodb:Scan
-              Resource: arn:aws:dynamodb:*:*:table/Article
+              Resource: arn:aws:dynamodb:*:*:table/BoardBox
+        Roles:
+          - Ref: IamRoleLambdaExecution
+    DynamoDBIamPolicyBoard:
+      Type: AWS::IAM::Policy
+      DependsOn: DynamoDbTableBoard
+      Properties:
+        PolicyName: lambda-dynamodb
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+              Resource: arn:aws:dynamodb:*:*:table/Board
         Roles:
           - Ref: IamRoleLambdaExecution
 
@@ -136,7 +202,10 @@ plugins:
 custom:
   dynamodb:
     start:
-      port: 8081
+      port: 8083
       inMemory: true
       migrate: true
-      seed: true
+#      seed: true
+#      migrate: true
+    # Uncomment only if you already have a DynamoDB running locally
+    # noStart: true

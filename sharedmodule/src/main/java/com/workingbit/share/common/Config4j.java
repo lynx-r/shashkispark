@@ -1,4 +1,4 @@
-package com.workingbit.article.config;
+package com.workingbit.share.common;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

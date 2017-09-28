@@ -17,12 +17,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.workingbit.article.Application.articleDao;
+import static com.workingbit.article.util.Utils.getArticleServiceErrorSupplier;
 import static com.workingbit.share.common.Utils.getRandomUUID;
 
 /**
  * Created by Aleksey Popryaduhin on 09:05 28/09/2017.
  */
-public class ArticleService {
+class ArticleService {
 
   private static final ArticleService INSTANCE = new ArticleService();
 
@@ -30,11 +31,11 @@ public class ArticleService {
 
   private static final ObjectMapper mapper = new ObjectMapper();
 
-  public static ArticleService getInstance() {
+  static ArticleService getInstance() {
     return INSTANCE;
   }
 
-  public CreateArticleResponse createArticleResponse(String body) {
+  CreateArticleResponse createArticleResponse(String body) {
     CreateArticleRequest articleAndBoard;
     try {
       articleAndBoard = mapper.readValue(body, CreateArticleRequest.class);
@@ -62,7 +63,12 @@ public class ArticleService {
     return createArticleResponse;
   }
 
-  public List<Article> findAll(Integer limit) {
+  List<Article> findAll(Integer limit) {
     return articleDao.findAll(limit);
+  }
+
+  Article findById(String articleId) {
+    return articleDao.findByKey(articleId)
+        .orElseThrow(getArticleServiceErrorSupplier("Article not found"));
   }
 }
