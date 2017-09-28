@@ -55,7 +55,6 @@ functions:
       - http:
           path: /api/v1/board
           method: post
-          private: true
       - http:
           path: /api/v1/board
           method: options
