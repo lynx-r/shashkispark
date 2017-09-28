@@ -32,7 +32,6 @@ provider:
 
 # you can define service wide environment variables here
   environment:
-    SPRING_PROFILES_ACTIVE: production
     CFG4J_ENV: prod
 
 # you can add packaging information here
@@ -54,43 +53,39 @@ functions:
           path: /api/v1/articles
           method: options
       - http:
-          path: /api/v1/board/{articleId}
+          path: /api/v1/article/{articleId}
           method: get
           request:
             parameters:
               path:
-                article: true
+                articleId: true
       - http:
-          path: /api/v1/board/{articleId}
+          path: /api/v1/article/{articleId}
           method: options
           request:
             parameters:
               path:
-                article: true
+                articleId: true
       - http:
-          path: /api/v1/board/{articleId}/board
+          path: /api/v1/article/{articleId}/board
           method: get
           request:
             parameters:
               path:
-                article: true
+                articleId: true
       - http:
-          path: /api/v1/board/{articleId}/board
+          path: /api/v1/article/{articleId}/board
           method: options
           request:
             parameters:
               path:
-                article: true
+                articleId: true
       - http:
-          path: /api/v1/board
+          path: /api/v1/article
           method: post
       - http:
-          path: /api/v1/board
+          path: /api/v1/article
           method: options
-
-#    Define function environment variables here
-    environment:
-      SPRING_PROFILES_ACTIVE: production
 
 resources:
   Resources:
