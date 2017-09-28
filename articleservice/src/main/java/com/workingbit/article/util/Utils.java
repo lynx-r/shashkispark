@@ -1,6 +1,6 @@
 package com.workingbit.article.util;
 
-import com.workingbit.article.exception.ArticleServiceError;
+import com.workingbit.article.exception.ArticleServiceException;
 
 import java.util.function.Supplier;
 
@@ -9,8 +9,8 @@ import java.util.function.Supplier;
  */
 public class Utils {
 
-  public static Supplier<ArticleServiceError> getArticleServiceErrorSupplier(String message) {
-    return () -> new ArticleServiceError(message);
+  public static Supplier<ArticleServiceException> getArticleServiceErrorSupplier(String message) {
+    return () -> new ArticleServiceException(message);
   }
 
 }

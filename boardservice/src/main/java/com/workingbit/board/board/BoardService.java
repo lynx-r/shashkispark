@@ -1,6 +1,6 @@
 package com.workingbit.board.board;
 
-import com.workingbit.board.exception.BoardServiceError;
+import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.Utils;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
@@ -48,12 +48,12 @@ public class BoardService {
 
   /**
    * @return map of {allowed, beaten}
-   * @throws BoardServiceError
+   * @throws BoardServiceException
    */
   public Board highlight(Board boardHighlight) {
     Square selectedSquare = boardHighlight.getSelectedSquare();
     if (isValidHighlight(selectedSquare)) {
-      throw new BoardServiceError("Invalid highlight square");
+      throw new BoardServiceException("Invalid highlight square");
     }
     highlightedBoard(selectedSquare, boardHighlight);
     return boardHighlight;
@@ -71,7 +71,7 @@ public class BoardService {
    *                       {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                       h - distance for move horizontal (minus left), targetSquare is a new square with
    *                       moved draught, queen is a draught has become the queen
-   * @throws BoardServiceError
+   * @throws BoardServiceException
    */
   public Board move(Square selectedSquare, Square nextSquare, Board currentBoard) {
     currentBoard.setCursor(false);

@@ -1,7 +1,7 @@
 package com.workingbit.board.board;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.workingbit.board.exception.BoardServiceError;
+import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
@@ -182,7 +182,7 @@ public class BoardUtils {
    */
   static Square findSquareByLink(Square square, Board board) {
     if (square == null) {
-      throw new BoardServiceError("Invalid square link");
+      throw new BoardServiceException("Invalid square link");
     }
     return findSquareByVH(board, square.getV(), square.getH());
   }
@@ -193,19 +193,19 @@ public class BoardUtils {
         return square;
       }
     }
-    throw new BoardServiceError("Square not found");
+    throw new BoardServiceException("Square not found");
   }
 
   static Square findSquareByNotation(String notation, Board board) {
     if (StringUtils.isBlank(notation)) {
-      throw new BoardServiceError("Invalid notation");
+      throw new BoardServiceException("Invalid notation");
     }
     for (Square square : board.getAssignedSquares()) {
       if (square.getNotation().equals(notation)) {
         return square;
       }
     }
-    throw new BoardServiceError("Square not found");
+    throw new BoardServiceException("Square not found");
   }
 
   /**
@@ -221,8 +221,8 @@ public class BoardUtils {
     return Pair.of(vDist, hDist);
   }
 
-  static Supplier<BoardServiceError> getBoardServiceExceptionSupplier(String message) {
-    return () -> new BoardServiceError(message);
+  static Supplier<BoardServiceException> getBoardServiceExceptionSupplier(String message) {
+    return () -> new BoardServiceException(message);
   }
 
   static <T, I> List<I> mapList(List<I> squares, ObjectMapper objectMapper, Class<T> clazz, Class<I> iclazz) {
@@ -238,7 +238,7 @@ public class BoardUtils {
     return newSquares;
   }
 
-  public static void addDraught(Board board, String notation, Draught draught) throws BoardServiceError {
+  public static void addDraught(Board board, String notation, Draught draught) throws BoardServiceException {
     if (draught == null) {
       return;
     }
@@ -326,7 +326,7 @@ public class BoardUtils {
     if (!targetSquare.isHighlighted()
         || sourceSquare == null
         || !sourceSquare.isOccupied()) {
-      throw new BoardServiceError("Unable to move the draught");
+      throw new BoardServiceException("Unable to move the draught");
     }
     if (!beatenSquares.isEmpty()) {
       Square beatenSquare = findBeatenSquare(sourceSquare, targetSquare);
@@ -370,7 +370,7 @@ public class BoardUtils {
         }
       }
     }
-    throw new BoardServiceError("Unable to find beaten move");
+    throw new BoardServiceException("Unable to find beaten move");
   }
 
   private static boolean isUpDirection(Square source, Square target) {

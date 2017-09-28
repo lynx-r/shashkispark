@@ -4,7 +4,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import static com.workingbit.article.Application.appProperties;
+import static com.workingbit.article.ArticleApplication.appProperties;
 import static com.workingbit.article.util.JsonUtil.dataToJson;
 
 /**

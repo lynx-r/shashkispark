@@ -16,7 +16,7 @@ public class LambdaHandler implements RequestHandler<AwsProxyRequest, AwsProxyRe
     if (handler == null) {
       try {
         handler = SparkLambdaContainerHandler.getAwsProxyHandler();
-        Application.start();
+        ArticleApplication.start();
       } catch (ContainerInitializationException e) {
         throw new RuntimeException("Failed to initialize server container", e);
       }

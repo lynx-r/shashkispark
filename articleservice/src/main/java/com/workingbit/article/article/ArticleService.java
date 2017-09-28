@@ -2,7 +2,7 @@ package com.workingbit.article.article;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workingbit.article.client.BoardRemoteClient;
-import com.workingbit.article.exception.ArticleServiceError;
+import com.workingbit.article.exception.ArticleServiceException;
 import com.workingbit.share.common.Utils;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import static com.workingbit.article.Application.articleDao;
+import static com.workingbit.article.ArticleApplication.articleDao;
 import static com.workingbit.article.util.Utils.getArticleServiceErrorSupplier;
 import static com.workingbit.share.common.Utils.getRandomUUID;
 
@@ -41,7 +41,7 @@ class ArticleService {
       articleAndBoard = mapper.readValue(body, CreateArticleRequest.class);
     } catch (IOException e) {
       logger.error(e);
-      throw new ArticleServiceError(e.getMessage());
+      throw new ArticleServiceException(e.getMessage());
     }
     Article article = articleAndBoard.getArticle();
     Utils.setRandomIdAndCreatedAt(article);
@@ -57,7 +57,7 @@ class ArticleService {
       createArticleResponse.setArticle(article);
       createArticleResponse.setBoard(boardBoxOptional.get());
     } else {
-      throw new ArticleServiceError("Unable to create board");
+      throw new ArticleServiceException("Unable to create board");
     }
     articleDao.save(article);
     return createArticleResponse;

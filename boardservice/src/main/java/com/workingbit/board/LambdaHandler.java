@@ -1,4 +1,4 @@
-package com.workingbit.article;
+package com.workingbit.board;
 
 import com.amazonaws.serverless.exceptions.ContainerInitializationException;
 import com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest;
@@ -16,7 +16,7 @@ public class LambdaHandler implements RequestHandler<AwsProxyRequest, AwsProxyRe
     if (handler == null) {
       try {
         handler = SparkLambdaContainerHandler.getAwsProxyHandler();
-        Application.start();
+        BoardApplication.start();
       } catch (ContainerInitializationException e) {
         throw new RuntimeException("Failed to initialize server container", e);
       }

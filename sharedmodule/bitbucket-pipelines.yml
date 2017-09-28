@@ -1,8 +1,0 @@
-pipelines:
-  default:
-    - step:
-        caches:
-          - gradle
-        script:
-          - ./gradlew clean build bintrayUpload --parallel
-          - ./gradlew build bintrayUpload --info
