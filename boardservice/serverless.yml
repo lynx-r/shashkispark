@@ -164,7 +164,12 @@ resources:
           Statement:
             - Effect: Allow
               Action:
-                - dynamodb:*
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+                - dynamodb:Query
               Resource: arn:aws:dynamodb:*:*:table/BoardBox
         Roles:
           - Ref: IamRoleLambdaExecution
@@ -178,7 +183,12 @@ resources:
           Statement:
             - Effect: Allow
               Action:
-                - dynamodb:*
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+                - dynamodb:Query
               Resource: arn:aws:dynamodb:*:*:table/Board
         Roles:
           - Ref: IamRoleLambdaExecution

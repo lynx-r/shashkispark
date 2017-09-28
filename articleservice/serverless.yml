@@ -32,6 +32,7 @@ provider:
 
 # you can define service wide environment variables here
   environment:
+    SPRING_PROFILES_ACTIVE: production
     CFG4J_ENV: prod
 
 # you can add packaging information here
@@ -116,7 +117,12 @@ resources:
           Statement:
             - Effect: Allow
               Action:
-                - dynamodb:*
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+                - dynamodb:Query
               Resource: arn:aws:dynamodb:*:*:table/Article
         Roles:
           - Ref: IamRoleLambdaExecution
