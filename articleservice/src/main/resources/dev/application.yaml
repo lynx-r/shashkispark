@@ -2,7 +2,7 @@ app:
   regionDynamoDB: eu-west-1
   endpointDynamoDB: http://localhost:8081
   test: true
-  headers: Content-Type,Content-Length,Connection,Date,x-amzn-RequestId,Access-Control-Allow-Origin,Content-Encoding,Vary,X-Amzn-Trace-Id,X-Cache,Via,X-Amz-Cf-Id
+  headers: Content-Type,Content-Encoding
   methods: GET,POST,PUT,OPTIONS,HEADER,DELETE
   origin: http://localhost:4200
   boardResource: http://localhost:8002/api/v1/board

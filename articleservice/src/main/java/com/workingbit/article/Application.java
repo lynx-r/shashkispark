@@ -10,7 +10,6 @@ import com.workingbit.article.util.UnirestUtil;
 import org.apache.log4j.Logger;
 
 import static com.workingbit.article.config.Config4j.configurationProvider;
-import static java.lang.String.format;
 import static spark.Spark.*;
 
 public class Application {
@@ -42,13 +41,8 @@ public class Application {
     enableCORS(appProperties.origin().toString(), appProperties.methods(), appProperties.headers());
 
     path("/api", () ->
+
         path("/v1", () -> {
-          before("/*", (req, res) -> {
-            LOG.info(format("%s %s %s",
-                req.ip(),
-                req.requestMethod(),
-                req.url()));
-          });
 
           get(Path.Web.ARTICLES, ArticleController.fetchAllArticles);
           post(Path.Web.ARTICLE, ArticleController.createArticleAndBoard);
@@ -56,8 +50,8 @@ public class Application {
           notFound((req, res) -> "Not found");
           internalServerError((req, res) -> "Internal server error");
 
-          after("/*", Filters.addJsonHeader);
-          after("/*", Filters.addGzipHeader);
+          after(Filters.addJsonHeader);
+          after(Filters.addGzipHeader);
         }));
   }
 
