@@ -158,7 +158,7 @@ resources:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableBoardBox
       Properties:
-        PolicyName: lambda-dynamodb
+        PolicyName: lambda-dynamodb-boardbox
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -177,7 +177,7 @@ resources:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableBoard
       Properties:
-        PolicyName: lambda-dynamodb
+        PolicyName: lambda-dynamodb-board
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
