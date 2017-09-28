@@ -7,7 +7,7 @@ pipelines:
         script:
           - ./gradlew build -x test
           - npm i
-#          - cd articleservice
+          - cd articleservice
 #          - ../node_modules/.bin/sls deploy
           - cd ../boardservice
           - ../node_modules/.bin/sls deploy
