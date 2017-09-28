@@ -17,10 +17,22 @@ import static com.workingbit.article.Application.appProperties;
  */
 public class BoardRemoteClient {
 
-  private static Logger logger = Logger.getLogger(BoardRemoteClient.class);
+  private static final BoardRemoteClient INSTANCE = new BoardRemoteClient();
 
-  public static Optional<BoardBox> createBoardBox(CreateBoardRequest boardRequest) throws UnirestException {
-    HttpResponse<BoardBox> boardBoxHttpResponse = Unirest.post(appProperties.boardResource()).body(boardRequest).asObject(BoardBox.class);
+  private static final Logger logger = Logger.getLogger(BoardRemoteClient.class);
+
+  public static BoardRemoteClient getInstance() {
+    return INSTANCE;
+  }
+
+  public Optional<BoardBox> createBoardBox(CreateBoardRequest boardRequest) {
+    HttpResponse<BoardBox> boardBoxHttpResponse = null;
+    try {
+      boardBoxHttpResponse = Unirest.post(appProperties.boardResource()).body(boardRequest).asObject(BoardBox.class);
+    } catch (UnirestException e) {
+      logger.error("Unirest exception", e);
+      return Optional.empty();
+    }
     if (boardBoxHttpResponse.getStatus() == 201) {
       return Optional.of(boardBoxHttpResponse.getBody());
     }
