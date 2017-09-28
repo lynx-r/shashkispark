@@ -22,7 +22,7 @@ public class RequestLogFactory {
 
             @Override
             public void write(String s) throws IOException {
-                logger.info(s);
+              logger.info(s);
             }
         };
     }

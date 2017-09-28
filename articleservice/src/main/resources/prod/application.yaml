@@ -1,0 +1,9 @@
+app:
+  regionDynamoDB:
+  endpointDynamoDB:
+  test: false
+  headers: Content-Type,Content-Length,Connection,Date,x-amzn-RequestId,Access-Control-Allow-Origin,Content-Encoding,Vary,X-Amzn-Trace-Id,X-Cache,Via,X-Amz-Cf-Id
+  methods: GET,POST,PUT,OPTIONS,HEADER,DELETE
+  origin: https://wiki.shashki.online
+  boardResource: https://8vc9rklqxh.execute-api.eu-west-1.amazonaws.com/dev/api/v1
+  articlesFetchLimit: 50

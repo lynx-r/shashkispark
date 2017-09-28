@@ -21,27 +21,21 @@ public class Application {
   public static ArticleDao articleDao;
   public static AppProperties appProperties;
 
-  public static void main(String[] args) {
-    init(true);
-    start();
-
-    LOG.info(format("Listening on port %d", port()));
-  }
-
-  static void init(boolean local) {
-
-    UnirestUtil.configureSerialization();
-
+  static {
     appProperties = configurationProvider().bind("app", AppProperties.class);
 
-    LOG.info("Init dependencies");
-
     articleDao = new ArticleDao(appProperties);
+  }
+
+  public static void main(String[] args) {
+    start();
   }
 
   static void start() {
     Logger logger = Logger.getLogger(Application.class);
     SparkUtils.createServerWithRequestLog(logger);
+
+    UnirestUtil.configureSerialization();
 
     LOG.info("Initializing routes");
 
