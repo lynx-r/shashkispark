@@ -32,7 +32,6 @@ provider:
 
 # you can define service wide environment variables here
   environment:
-    SPRING_PROFILES_ACTIVE: production
     CFG4J_ENV: prod
 
 # you can add packaging information here
@@ -118,10 +117,6 @@ functions:
       - http:
           path: /api/v1/boards
           method: options
-
-#    Define function environment variables here
-    environment:
-      SPRING_PROFILES_ACTIVE: production
 
 # you can add CloudFormation api templates here
 resources:
