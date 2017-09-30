@@ -54,7 +54,7 @@ public class BoardApplication {
 
           get(Path.BOARD_BY_ID, BoardBoxController.findBoardById);
 
-          post(Path.BOARD_BY_IDS, BoardBoxController.findBoardByIds);
+//          post(Path.BOARD_BY_IDS, BoardBoxController.findBoardByIds);
 
           post(Path.BOARD_ADD_DRAUGHT, BoardBoxController.addDraught);
           post(Path.BOARD, BoardBoxController.createBoard);

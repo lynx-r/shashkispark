@@ -1,12 +1,9 @@
 package com.workingbit.board.board;
 
-import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.BoardBoxIds;
 import com.workingbit.share.model.CreateBoardRequest;
 import spark.Route;
 
-import static com.workingbit.board.board.util.BoardUtils.getBoardServiceExceptionSupplier;
 import static com.workingbit.share.util.JsonUtil.dataToJson;
 import static com.workingbit.share.util.JsonUtil.jsonToData;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -16,42 +13,59 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
  */
 public class BoardBoxController {
 
-  public static Route findBoardByIds = (req, res) ->
-      dataToJson(BoardBoxService.getInstance().findByIds(jsonToData(req.body(), BoardBoxIds.class)));
+  public static Route createBoard = (req, res) ->
+      dataToJson(
+          BoardBoxService.getInstance()
+              .createBoard(jsonToData(req.body(), CreateBoardRequest.class))
+              .map(Answer::okBoardBox)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to create board with request: " + req.body()))
+      );
+
+  public static Route findBoardById = (req, res) ->
+      dataToJson(
+          BoardBoxService.getInstance()
+              .findById(req.params(":id"))
+              .map(Answer::okBoardBox)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, String.format("Board with id %s not found", req.params(":id"))))
+      );
 
   public static Route addDraught = (req, res) ->
       ((BoardBoxHandlerFunc) data ->
           BoardBoxService.getInstance()
               .addDraught(data)
               .map(Answer::okBoardBox)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to add a draught: " + data))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to add a draught: " + req.body()))
       ).handleRequest(req, res);
 
-  public static Route createBoard = (req, res) ->
-      dataToJson(BoardBoxService.getInstance().createBoard(jsonToData(req.body(), CreateBoardRequest.class))
-          .map(Answer::okBoardBox)
-          .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to create board with request: " + req.body()))
-      );
-
-  public static Route findBoardById = (req, res) ->
-      dataToJson(BoardBoxService.getInstance().findById(req.params(":id"))
-          .map(Answer::okBoardBox)
-          .orElse(Answer.error(HTTP_BAD_REQUEST, String.format("Board with id %s not found", req.params(":id"))))
-      );
-
   public static Route highlightBoard = (req, res) ->
-      dataToJson(BoardBoxService.getInstance().highlight(jsonToData(req.body(), BoardBox.class))
-          .orElseThrow(getBoardServiceExceptionSupplier("Unable to highlight")));
+      ((BoardBoxHandlerFunc) data ->
+          BoardBoxService.getInstance()
+              .highlight(data)
+              .map(Answer::okBoardBox)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to highlight board: " + req.body()))
+      ).handleRequest(req, res);
 
   public static Route move = (req, res) ->
-      dataToJson(BoardBoxService.getInstance().move(jsonToData(req.body(), BoardBox.class))
-          .orElseThrow(getBoardServiceExceptionSupplier("Unable to move")));
+      ((BoardBoxHandlerFunc) data ->
+          BoardBoxService.getInstance()
+              .move(data)
+              .map(Answer::okBoardBox)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to move: " + req.body()))
+      ).handleRequest(req, res);
 
   public static Route redo = (req, res) ->
-      dataToJson(BoardBoxService.getInstance().redo(jsonToData(req.body(), BoardBox.class))
-          .orElseThrow(getBoardServiceExceptionSupplier("Unable to redo")));
+      ((BoardBoxHandlerFunc) data ->
+          BoardBoxService.getInstance()
+              .redo(data)
+              .map(Answer::okBoardBox)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to redo: " + req.body()))
+      ).handleRequest(req, res);
 
   public static Route undo = (req, res) ->
-      dataToJson(BoardBoxService.getInstance().undo(jsonToData(req.body(), BoardBox.class))
-          .orElseThrow(getBoardServiceExceptionSupplier("Unable to undo")));
+      ((BoardBoxHandlerFunc) data ->
+          BoardBoxService.getInstance()
+              .undo(data)
+              .map(Answer::okBoardBox)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to undo: " + req.body()))
+      ).handleRequest(req, res);
 }
