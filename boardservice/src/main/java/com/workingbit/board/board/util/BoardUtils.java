@@ -1,4 +1,4 @@
-package com.workingbit.board.board;
+package com.workingbit.board.board.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workingbit.board.exception.BoardServiceException;
@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.board.HighlightMoveService.highlightedAssignedMoves;
+import static com.workingbit.board.board.util.HighlightMoveUtil.highlightedAssignedMoves;
 
 /**
  * Created by Aleksey Popryaduhin on 20:56 11/08/2017.
@@ -29,12 +29,12 @@ public class BoardUtils {
    * @param rules
    * @return
    */
-  static Board initBoard(boolean fillBoard, boolean black, EnumRules rules) {
+  public static Board initBoard(boolean fillBoard, boolean black, EnumRules rules) {
     Board boardBox = new Board(black, rules);
     return updateBoard(fillBoard, false, boardBox);
   }
 
-  static Board updateBoard(Board board) {
+  public static Board updateBoard(Board board) {
     return updateBoard(false, true, board);
   }
 
@@ -83,7 +83,7 @@ public class BoardUtils {
     square.setDraught(draught);
   }
 
-  static List<Square> getSquareArray(int offset, int dim, boolean main) {
+  public static List<Square> getSquareArray(int offset, int dim, boolean main) {
     List<Square> squares = new ArrayList<>();
     for (int v = 0; v < dim; v++) {
       for (int h = 0; h < dim; h++) {
@@ -98,7 +98,7 @@ public class BoardUtils {
     return squares;
   }
 
-  static List<List<Square>> getDiagonals(int dim, boolean main) {
+  public static List<List<Square>> getDiagonals(int dim, boolean main) {
     List<List<Square>> diagonals = new ArrayList<>(dim - 2);
     for (int i = -dim; i < dim - 1; i++) {
       if ((i == 1 - dim) && main) {
@@ -180,14 +180,14 @@ public class BoardUtils {
    * @param board
    * @return
    */
-  static Square findSquareByLink(Square square, Board board) {
+  public static Square findSquareByLink(Square square, Board board) {
     if (square == null) {
       return null;
     }
     return findSquareByVH(board, square.getV(), square.getH());
   }
 
-  static Square findSquareByVH(Board board, int v, int h) {
+  public static Square findSquareByVH(Board board, int v, int h) {
     for (Square square : board.getAssignedSquares()) {
       if (square.getH() == h && square.getV() == v) {
         return square;
@@ -196,7 +196,7 @@ public class BoardUtils {
     throw new BoardServiceException("Square not found");
   }
 
-  static Square findSquareByNotation(String notation, Board board) {
+  public static Square findSquareByNotation(String notation, Board board) {
     if (StringUtils.isBlank(notation)) {
       throw new BoardServiceException("Invalid notation");
     }
@@ -221,7 +221,7 @@ public class BoardUtils {
     return Pair.of(vDist, hDist);
   }
 
-  static Supplier<BoardServiceException> getBoardServiceExceptionSupplier(String message) {
+  public static Supplier<BoardServiceException> getBoardServiceExceptionSupplier(String message) {
     return () -> new BoardServiceException(message);
   }
 
@@ -291,11 +291,12 @@ public class BoardUtils {
   public static Board moveDraught(Square selectedSquare, Board board) {
     List<Square> beatenSquares = highlightedBoard(selectedSquare, board);
     moveDraught(board, beatenSquares);
-    Board deepClone = (Board) board.deepClone();
-    beatenSquares = highlightedBoard(board.getSelectedSquare(), deepClone);
-    boolean isHighlightNext = beatenSquares.isEmpty();
-    if (isHighlightNext) {
-      return deepClone;
+    Board highlightedBoard = (Board) board.deepClone();
+    List<Square> nextBeatenSquares = highlightedBoard(highlightedBoard.getSelectedSquare(), highlightedBoard);
+    boolean previousNotBeaten = beatenSquares.isEmpty();
+    boolean nextNotBeaten = nextBeatenSquares.isEmpty();
+    if (!previousNotBeaten && !nextNotBeaten) {
+      return highlightedBoard;
     }
     return board;
   }
@@ -340,7 +341,6 @@ public class BoardUtils {
     board.setPreviousSquare(board.getSelectedSquare());
     board.getPreviousSquare().setDraught(null);
     board.setSelectedSquare(targetSquare);
-    targetSquare.setHighlighted(true);
 
     Square sourceSquareFromBoard = findSquareByNotation(sourceSquare.getNotation(), board);
     sourceSquareFromBoard.setDraught(null);

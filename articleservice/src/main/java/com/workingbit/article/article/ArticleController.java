@@ -1,5 +1,6 @@
 package com.workingbit.article.article;
 
+import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.model.CreateArticleRequest;
 import spark.Request;
 import spark.Response;
@@ -24,4 +25,7 @@ public class ArticleController {
 
   public static Route findArticleById = (req, res) ->
       dataToJson(ArticleService.getInstance().findById(req.params(":id")));
+
+  public static Route saveArticle = (req, res) ->
+      dataToJson(ArticleService.getInstance().save(jsonToData(req.body(), Article.class)));
 }

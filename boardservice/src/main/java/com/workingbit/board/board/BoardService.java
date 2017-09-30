@@ -1,5 +1,6 @@
 package com.workingbit.board.board;
 
+import com.workingbit.board.board.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.Utils;
 import com.workingbit.share.domain.impl.Board;
@@ -12,8 +13,8 @@ import org.apache.log4j.Logger;
 import java.util.Optional;
 
 import static com.workingbit.board.BoardApplication.boardDao;
-import static com.workingbit.board.board.BoardUtils.highlightedBoard;
-import static com.workingbit.board.board.BoardUtils.initBoard;
+import static com.workingbit.board.board.util.BoardUtils.highlightedBoard;
+import static com.workingbit.board.board.util.BoardUtils.initBoard;
 
 /**
  * Created by Aleksey Popryaduhin on 13:45 09/08/2017.

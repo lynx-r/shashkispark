@@ -49,6 +49,7 @@ public class ArticleApplication {
           get(Path.ARTICLES, ArticleController.findAllArticles);
           get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
           post(Path.ARTICLE, ArticleController.createArticleAndBoard);
+          put(Path.ARTICLE, ArticleController.saveArticle);
 
           notFound((req, res) -> "Not found");
           internalServerError((req, res) -> "Internal server error");

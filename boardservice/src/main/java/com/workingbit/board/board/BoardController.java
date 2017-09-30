@@ -5,7 +5,7 @@ import com.workingbit.share.model.BoardBoxIds;
 import com.workingbit.share.model.CreateBoardRequest;
 import spark.Route;
 
-import static com.workingbit.board.board.BoardUtils.getBoardServiceExceptionSupplier;
+import static com.workingbit.board.board.util.BoardUtils.getBoardServiceExceptionSupplier;
 import static com.workingbit.share.util.JsonUtil.dataToJson;
 import static com.workingbit.share.util.JsonUtil.jsonToData;
 
@@ -18,8 +18,9 @@ public class BoardController {
       dataToJson(BoardBoxService.getInstance().findByIds(jsonToData(req.body(), BoardBoxIds.class)));
 
   public static Route addDraught = (req, res) ->
-      dataToJson(BoardBoxService.getInstance().addDraught(jsonToData(req.body(), BoardBox.class))
-          .orElseThrow(getBoardServiceExceptionSupplier("Unable to add a draught")));
+      ((BoardHandlerFunc) data -> BoardBoxService.getInstance()
+          .addDraught(data).orElse(null))
+          .handleRequest(req);
 
   public static Route createBoard = (req, res) ->
       dataToJson(BoardBoxService.getInstance().createBoard(jsonToData(req.body(), CreateBoardRequest.class)));
@@ -38,9 +39,9 @@ public class BoardController {
 
   public static Route redo = (req, res) ->
       dataToJson(BoardBoxService.getInstance().redo(jsonToData(req.body(), BoardBox.class))
-      .orElseThrow(getBoardServiceExceptionSupplier("Unable to redo")));
+          .orElseThrow(getBoardServiceExceptionSupplier("Unable to redo")));
 
   public static Route undo = (req, res) ->
       dataToJson(BoardBoxService.getInstance().undo(jsonToData(req.body(), BoardBox.class))
-      .orElseThrow(getBoardServiceExceptionSupplier("Unable to undo")));
+          .orElseThrow(getBoardServiceExceptionSupplier("Unable to undo")));
 }

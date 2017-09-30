@@ -51,8 +51,13 @@ class ArticleService {
     } else {
       throw new ArticleServiceException("Unable to create board");
     }
-    articleDao.save(article);
+    save(article);
     return createArticleResponse;
+  }
+
+  public Article save(Article article) {
+    articleDao.save(article);
+    return article;
   }
 
   List<Article> findAll(Integer limit) {

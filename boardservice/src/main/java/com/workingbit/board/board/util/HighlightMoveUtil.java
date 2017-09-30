@@ -1,4 +1,4 @@
-package com.workingbit.board.board;
+package com.workingbit.board.board.util;
 
 import com.github.rutledgepaulv.prune.Tree;
 import com.workingbit.board.exception.BoardServiceException;
@@ -9,16 +9,16 @@ import com.workingbit.share.model.MovesList;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.board.BoardUtils.isSubDiagonal;
+import static com.workingbit.board.board.util.BoardUtils.isSubDiagonal;
 
 /**
  * Created by Aleksey Popryaduhin on 19:39 10/08/2017.
  */
-class HighlightMoveService {
+public class HighlightMoveUtil {
 
   private Square selectedSquare;
 
-  private HighlightMoveService(Square selectedSquare) throws BoardServiceException {
+  private HighlightMoveUtil(Square selectedSquare) throws BoardServiceException {
     if (selectedSquare == null || selectedSquare.getDraught() == null) {
       throw new BoardServiceException("Selected square without placed draught");
     }
@@ -34,12 +34,12 @@ class HighlightMoveService {
    * @return
    * @throws BoardServiceException
    */
-  static MovesList highlightedAssignedMoves(Square selectedSquare) {
+  public static MovesList highlightedAssignedMoves(Square selectedSquare) {
     if (selectedSquare == null || !selectedSquare.isOccupied()) {
       throw new BoardServiceException("Invalid selected square");
     }
-    HighlightMoveService highlightMoveService = new HighlightMoveService(selectedSquare);
-    return highlightMoveService.highlightAllAssignedMoves();
+    HighlightMoveUtil highlightMoveUtil = new HighlightMoveUtil(selectedSquare);
+    return highlightMoveUtil.highlightAllAssignedMoves();
   }
 
   /**
