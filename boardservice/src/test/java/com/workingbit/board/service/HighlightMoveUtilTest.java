@@ -48,7 +48,7 @@ public class HighlightMoveUtilTest {
   public void draught_became_queen() throws BoardServiceException, ExecutionException, InterruptedException, TimeoutException {
     Board board = getBoard();
     Board updatedBoard = getSquareByVHWithDraught(board, "c7"); // c3
-    MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard,"c3"));
+    MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard,"c7"));
     testCollection("b8,d8", highlight.getAllowed());
   }
 

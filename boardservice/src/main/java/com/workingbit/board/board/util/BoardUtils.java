@@ -255,28 +255,29 @@ public class BoardUtils {
 
   public static void addDraught(Board board, String notation, boolean black, boolean queen, boolean remove) {
     Square square = findSquareByNotation(notation, board);
-      Draught draught = null;
-      if (!remove && !isOverloadDraughts(board, black)) {
-        draught = new Draught(square.getV(), square.getH(), square.getDim(), black, queen);
-        if (black) {
-          board.addBlackDraughts(notation, draught);
-        } else {
-          board.addWhiteDraughts(notation, draught);
-        }
+    Draught draught = null;
+    if (!remove && !isOverloadDraughts(board, black)) {
+      draught = new Draught(square.getV(), square.getH(), square.getDim(), black, queen);
+      if (black) {
+        board.addBlackDraughts(notation, draught);
       } else {
-        if (black) {
-          board.getBlackDraughts().remove(notation);
-        } else {
-          board.getWhiteDraughts().remove(notation);
-        }
+        board.addWhiteDraughts(notation, draught);
       }
-      square.setDraught(draught);
-      Draught finalDraught = draught;
-      square.getDiagonals()
-          .stream()
-          .flatMap(Collection::stream)
-          .filter(square::equals)
-          .forEach(s -> s.setDraught(finalDraught));
+    } else {
+      if (black) {
+        board.getBlackDraughts().remove(notation);
+      } else {
+        board.getWhiteDraughts().remove(notation);
+      }
+    }
+    square.setDraught(draught);
+//    for (List<Square> squares : square.getDiagonals()) {
+//      for (Square s : squares) {
+//        if (square.equals(s)) {
+//          s.setDraught(draught);
+//        }
+//      }
+//    }
   }
 
   private static boolean isOverloadDraughts(Board board, boolean black) {
@@ -334,16 +335,19 @@ public class BoardUtils {
       BoardUtils.removeDraught(board, beatenSquare.getNotation(), beatenSquare.getDraught().isBlack());
     }
     Draught draught = sourceSquare.getDraught();
+    removeDraught(board, sourceSquare.getNotation(), draught.isBlack());
+
+    draught.setV(targetSquare.getV());
+    draught.setH(targetSquare.getH());
+
     BoardUtils.addDraught(board, targetSquare.getNotation(), draught);
     targetSquare = BoardUtils.findSquareByNotation(targetSquare.getNotation(), board);
     targetSquare.setDraught(draught);
+
     board.setNextSquare(null);
     board.setPreviousSquare(board.getSelectedSquare());
     board.getPreviousSquare().setDraught(null);
     board.setSelectedSquare(targetSquare);
-
-    Square sourceSquareFromBoard = findSquareByNotation(sourceSquare.getNotation(), board);
-    sourceSquareFromBoard.setDraught(null);
 
     replaceDraught(board.getWhiteDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
     replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());

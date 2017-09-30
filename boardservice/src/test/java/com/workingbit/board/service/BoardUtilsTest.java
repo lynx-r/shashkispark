@@ -89,13 +89,27 @@ public class BoardUtilsTest {
 
   @Test
   public void add_draught_to_board() throws BoardServiceException {
-    Board boardBox = getBoardFilled();
+    Board boardBox = getBoard();
     BoardUtils.addDraught(boardBox, "c3", true);
     Square c3 = BoardUtils.findSquareByNotation("c3", boardBox);
+    assertTrue(c3.isOccupied());
     c3.getDiagonals().forEach(squares -> {
       int index = squares.indexOf(c3);
       Square square1 = squares.get(index);
       assertNotNull(square1.getDraught());
+    });
+  }
+
+  @Test
+  public void add_draught_fails_on_filled() {
+    Board boardBox = getBoardFilled();
+    BoardUtils.addDraught(boardBox, "c3", true);
+    Square c3 = BoardUtils.findSquareByNotation("c3", boardBox);
+    assertFalse(c3.isOccupied());
+    c3.getDiagonals().forEach(squares -> {
+      int index = squares.indexOf(c3);
+      Square square1 = squares.get(index);
+      assertNull(square1.getDraught());
     });
   }
 
@@ -143,6 +157,7 @@ public class BoardUtilsTest {
     assertTrue(d4.isOccupied());
 
     Square e5 = BoardUtils.findSquareByNotation("e5", board);
+    board.setNextSquare(e5);
     board = BoardUtils.moveDraught(d4, board);
     d4 = BoardUtils.findSquareByNotation(d4.getNotation(), board);
     assertFalse(d4.isOccupied());
