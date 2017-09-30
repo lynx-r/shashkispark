@@ -3,7 +3,7 @@ package com.workingbit.board;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import com.workingbit.board.board.BoardBoxDao;
-import com.workingbit.board.board.BoardController;
+import com.workingbit.board.board.BoardBoxController;
 import com.workingbit.board.board.BoardDao;
 import com.workingbit.board.config.AppProperties;
 import com.workingbit.board.util.Path;
@@ -31,7 +31,12 @@ public class BoardApplication {
   }
 
   public static void main(String[] args) {
-    port(appProperties.port());
+    int port = appProperties.port();
+    if (args != null && args.length > 0) {
+      port = Integer.parseInt(args[0]);
+    }
+    System.out.println("Listening on port: " + port);
+    port(port);
     start();
   }
 
@@ -47,16 +52,16 @@ public class BoardApplication {
 
         path("/v1", () -> {
 
-          get(Path.BOARD_BY_ID, BoardController.findBoardById);
+          get(Path.BOARD_BY_ID, BoardBoxController.findBoardById);
 
-          post(Path.BOARD_BY_IDS, BoardController.findBoardByIds);
+          post(Path.BOARD_BY_IDS, BoardBoxController.findBoardByIds);
 
-          post(Path.BOARD_ADD_DRAUGHT, BoardController.addDraught);
-          post(Path.BOARD, BoardController.createBoard);
-          post(Path.BOARD_MOVE, BoardController.move);
-          post(Path.BOARD_HIGHLIGHT, BoardController.highlightBoard);
-          post(Path.BOARD_REDO, BoardController.redo);
-          post(Path.BOARD_UNDO, BoardController.undo);
+          post(Path.BOARD_ADD_DRAUGHT, BoardBoxController.addDraught);
+          post(Path.BOARD, BoardBoxController.createBoard);
+          post(Path.BOARD_MOVE, BoardBoxController.move);
+          post(Path.BOARD_HIGHLIGHT, BoardBoxController.highlightBoard);
+          post(Path.BOARD_REDO, BoardBoxController.redo);
+          post(Path.BOARD_UNDO, BoardBoxController.undo);
 
           notFound((req, res) -> "Not found");
           internalServerError((req, res) -> "Internal server error");

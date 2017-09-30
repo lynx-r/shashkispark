@@ -33,7 +33,7 @@ public class BoardBoxService {
     return INSTANCE;
   }
 
-  public BoardBox createBoard(CreateBoardRequest createBoardRequest) {
+  public Optional<BoardBox> createBoard(CreateBoardRequest createBoardRequest) {
     Board board = BoardService.getInstance().createBoard(createBoardRequest);
 
     BoardBox boardBox = new BoardBox(board);
@@ -44,7 +44,7 @@ public class BoardBoxService {
 
     board.setBoardBoxId(boardBox.getId());
     BoardService.getInstance().save(board);
-    return boardBox;
+    return Optional.of(boardBox);
   }
 
   public Optional<BoardBox> findById(String boardBoxId) {

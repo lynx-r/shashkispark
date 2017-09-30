@@ -4,7 +4,7 @@ import com.workingbit.article.article.ArticleController;
 import com.workingbit.article.article.ArticleDao;
 import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.util.Path;
-import com.workingbit.article.util.UnirestUtil;
+import com.workingbit.share.util.UnirestUtil;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import org.apache.log4j.Logger;

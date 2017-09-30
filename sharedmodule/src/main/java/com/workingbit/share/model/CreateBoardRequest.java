@@ -1,7 +1,7 @@
 package com.workingbit.share.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.workingbit.share.handler.Validable;
+import com.workingbit.share.domain.Validable;
 import lombok.Getter;
 import lombok.Setter;
 

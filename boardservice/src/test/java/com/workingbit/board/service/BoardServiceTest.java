@@ -19,7 +19,7 @@ public class BoardServiceTest extends BaseServiceTest {
 
   @Test
   public void createBoard() throws Exception {
-    BoardBox boardBox = boardBoxService().createBoard(getCreateBoardRequest());
+    BoardBox boardBox = boardBoxService().createBoard(getCreateBoardRequest()).get();
     toDelete(boardBox);
     assertNotNull(boardBox.getId());
   }
@@ -157,7 +157,7 @@ public class BoardServiceTest extends BaseServiceTest {
 
   private BoardBox getNewBoard() {
     CreateBoardRequest createBoardRequest = getCreateBoardRequest();
-    BoardBox board = boardBoxService().createBoard(createBoardRequest);
+    BoardBox board = boardBoxService().createBoard(createBoardRequest).get();
 
     // place initial draught on the desk
 //    Draught draught = getDraught(5, 2);

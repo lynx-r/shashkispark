@@ -1,4 +1,4 @@
-package com.workingbit.article.util;
+package com.workingbit.share.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.ObjectMapper;
@@ -21,7 +21,7 @@ public class UnirestUtil {
         try {
           return jacksonObjectMapper.readValue(value, valueType);
         } catch (IOException e) {
-          throw new RuntimeException(e);
+          throw new RuntimeException("Unable to read value: " + value);
         }
       }
 
@@ -29,7 +29,7 @@ public class UnirestUtil {
         try {
           return jacksonObjectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-          throw new RuntimeException(e);
+          throw new RuntimeException("Unable to write value: " + value);
         }
       }
     });

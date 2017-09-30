@@ -41,12 +41,10 @@ public class Board implements BaseDomain {
   /**
    * Black draughts associated with owner square
    */
-  @JsonIgnore
   @DynamoDBTypeConverted(converter = DraughtMapConverter.class)
   @DynamoDBAttribute(attributeName = "blackDraughts")
   private Map<String, Draught> blackDraughts = new HashMap<>();
 
-  @JsonIgnore
   @DynamoDBTypeConverted(converter = DraughtMapConverter.class)
   @DynamoDBAttribute(attributeName = "whiteDraughts")
   private Map<String, Draught> whiteDraughts = new HashMap<>();

@@ -1,4 +1,4 @@
-package com.workingbit.share.handler;
+package com.workingbit.share.domain;
 
 public interface Validable {
     boolean isValid();

@@ -12,7 +12,7 @@ import java.util.Objects;
  * Created by Aleksey Popryaduhin on 19:54 12/08/2017.
  */
 @DynamoDBTable(tableName = DBConstants.BOARD_BOX_TABLE)
-public class BoardBox implements BaseDomain {
+public class BoardBox implements BaseDomain{
 
   @DynamoDBHashKey(attributeName = "id")
   private String id;
