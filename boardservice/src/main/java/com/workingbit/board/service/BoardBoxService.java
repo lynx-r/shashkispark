@@ -1,6 +1,6 @@
 package com.workingbit.board.service;
 
-import com.workingbit.board.board.util.BoardUtils;
+import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.Log;
 import com.workingbit.share.domain.impl.Board;

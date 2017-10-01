@@ -3,8 +3,8 @@ package com.workingbit.article.client;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.workingbit.article.exception.ArticleServiceException;
 import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.CreateBoardPayload;
 import org.apache.log4j.Logger;
 
@@ -26,16 +26,15 @@ public class BoardRemoteClient {
   }
 
   public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest) {
-    HttpResponse<BoardBox> boardBoxHttpResponse = null;
     try {
-      boardBoxHttpResponse = Unirest.post(appProperties.boardResource()).body(boardRequest).asObject(BoardBox.class);
+      HttpResponse<Answer> response = Unirest.post(appProperties.boardResource()).body(boardRequest).asObject(Answer.class);
+      if (response.getStatus() == 201) {
+        Answer body = response.getBody();
+        return Optional.of((BoardBox) body.getBody());
+      }
     } catch (UnirestException e) {
       logger.error("Unirest exception", e);
-      return Optional.empty();
     }
-    if (boardBoxHttpResponse.getStatus() == 200) {
-      return Optional.of(boardBoxHttpResponse.getBody());
-    }
-    throw new ArticleServiceException("Invalid response " + boardBoxHttpResponse.getStatus());
+    return Optional.empty();
   }
 }

@@ -7,10 +7,8 @@ import com.despegar.http.client.PostMethod;
 import com.despegar.sparkjava.test.SparkServer;
 import com.workingbit.article.ArticleApplication;
 import com.workingbit.share.domain.impl.Article;
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.CreateArticlePayload;
-import com.workingbit.share.model.CreateBoardPayload;
-import com.workingbit.share.model.EnumRules;
+import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.model.*;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -51,10 +49,12 @@ public class ArticleControllerTest {
     createBoardPayload.setFillBoard(false);
     createArticlePayload.setBoardRequest(createBoardPayload);
 
-    article = (Article) post("", createArticlePayload).getBody();
-    System.out.println(article);
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload).getBody();
+    article = articleResponse.getArticle();
+    BoardBox board = articleResponse.getBoard();
     assertNotNull(article.getId());
     assertNotNull(article.getBoardBoxId());
+    assertNotNull(board.getId());
   }
 
   private Answer post(String path, Object payload) throws HttpClientException {

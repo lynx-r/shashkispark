@@ -31,6 +31,10 @@ public class Answer {
     this.classType = classType;
   }
 
+  public static Answer ok(int code, Object body, Type classType) {
+    return new Answer(code, body, classType);
+  }
+
   public static Answer error(int code, String message) {
     return new Answer(code, message);
   }

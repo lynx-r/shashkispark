@@ -11,6 +11,7 @@ import spark.Route;
 
 import static com.workingbit.board.BoardApplication.boardBoxService;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_CREATED;
 
 /**
  * Created by Aleksey Popryaduhin on 13:58 27/09/2017.
@@ -21,7 +22,7 @@ public class BoardBoxController {
       ((ModelHandlerFunc<CreateBoardPayload>) boardRequest ->
           boardBoxService
               .createBoard(boardRequest)
-              .map(Answer::okBoardBox)
+              .map((boardBox) -> Answer.ok(HTTP_CREATED, boardBox, Answer.Type.BOARD_BOX))
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD + req.body()))
       ).handleRequest(req, res, CreateBoardPayload.class);
 
