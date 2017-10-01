@@ -40,7 +40,7 @@ public class BoardBoxControllerTest {
   private static String boardUrl = "/api/v1/board";
   private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
 
-  public static class TestControllerTestSparkApplication implements SparkApplication {
+  public static class BoardBoxControllerTestSparkApplication implements SparkApplication {
 
     @Override
     public void init() {
@@ -49,7 +49,7 @@ public class BoardBoxControllerTest {
   }
 
   @ClassRule
-  public static SparkServer<TestControllerTestSparkApplication> testServer = new SparkServer<>(TestControllerTestSparkApplication.class, randomPort);
+  public static SparkServer<BoardBoxControllerTestSparkApplication> testServer = new SparkServer<>(BoardBoxControllerTestSparkApplication.class, randomPort);
 
   @Test
   public void add_draught() throws HttpClientException {
@@ -58,7 +58,7 @@ public class BoardBoxControllerTest {
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId);
 
-    boardBox = (BoardBox) post("add-draught", boardBox).getBody();
+    boardBox = (BoardBox) post("/add-draught", boardBox).getBody();
     Board board = boardBox.getBoard();
     Draught draught = board.getWhiteDraughts().get("c3");
     assertTrue(draught != null);
@@ -78,7 +78,7 @@ public class BoardBoxControllerTest {
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId);
 
-    boardBox = (BoardBox) post("highlight", boardBox).getBody();
+    boardBox = (BoardBox) post("/highlight", boardBox).getBody();
     Board board = boardBox.getBoard();
     List<Square> highlighted = board.getSquares()
         .stream()
@@ -108,7 +108,7 @@ public class BoardBoxControllerTest {
     nextSquare.setHighlighted(true);
     boardBox.getBoard().setNextSquare(nextSquare);
 
-    boardBox = (BoardBox) post("move", boardBox).getBody();
+    boardBox = (BoardBox) post("/move", boardBox).getBody();
     Board board = boardBox.getBoard();
     Square moved = board.getSquares()
         .stream()
@@ -139,7 +139,7 @@ public class BoardBoxControllerTest {
   }
 
   private Answer post(String path, Object payload) throws HttpClientException {
-    PostMethod resp = testServer.post(boardUrl + "/" + path, dataToJson(payload), false);
+    PostMethod resp = testServer.post(boardUrl + path, dataToJson(payload), false);
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);
   }
