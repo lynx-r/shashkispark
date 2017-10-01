@@ -1,4 +1,4 @@
-package com.workingbit.board.board.util;
+package com.workingbit.board.controller.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workingbit.board.exception.BoardServiceException;
@@ -14,7 +14,8 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.board.util.HighlightMoveUtil.highlightedAssignedMoves;
+import static com.workingbit.board.controller.util.HighlightMoveUtil.highlightedAssignedMoves;
+
 
 /**
  * Created by Aleksey Popryaduhin on 20:56 11/08/2017.

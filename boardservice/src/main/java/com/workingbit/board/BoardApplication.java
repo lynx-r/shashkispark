@@ -1,13 +1,13 @@
 package com.workingbit.board;
 
+import com.workingbit.board.config.AppProperties;
+import com.workingbit.board.controller.BoardBoxController;
+import com.workingbit.board.dao.BoardBoxDao;
+import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.service.BoardBoxService;
+import com.workingbit.board.util.Path;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
-import com.workingbit.board.dao.BoardBoxDao;
-import com.workingbit.board.board.BoardBoxController;
-import com.workingbit.board.dao.BoardDao;
-import com.workingbit.board.config.AppProperties;
-import com.workingbit.board.util.Path;
 import org.apache.log4j.Logger;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
@@ -23,7 +23,7 @@ public class BoardApplication {
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
 
-  public static AppProperties appProperties;
+  private static AppProperties appProperties;
 
   static {
     appProperties = configurationProvider().bind("app", AppProperties.class);
@@ -43,7 +43,7 @@ public class BoardApplication {
     start();
   }
 
-  static void start() {
+  public static void start() {
     Logger logger = Logger.getLogger(BoardApplication.class);
     SparkUtils.createServerWithRequestLog(logger);
 
@@ -52,7 +52,7 @@ public class BoardApplication {
     establishRoutes();
   }
 
-  public static void establishRoutes() {
+  private static void establishRoutes() {
     path("/api", () ->
         path("/v1", () -> {
           get(Path.BOARD_BY_ID, BoardBoxController.findBoardById);

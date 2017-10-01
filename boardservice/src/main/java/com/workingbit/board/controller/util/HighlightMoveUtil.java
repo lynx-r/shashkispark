@@ -1,4 +1,4 @@
-package com.workingbit.board.board.util;
+package com.workingbit.board.controller.util;
 
 import com.github.rutledgepaulv.prune.Tree;
 import com.workingbit.board.exception.BoardServiceException;
@@ -9,7 +9,7 @@ import com.workingbit.share.model.MovesList;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.board.util.BoardUtils.isSubDiagonal;
+import static com.workingbit.board.controller.util.BoardUtils.isSubDiagonal;
 
 /**
  * Created by Aleksey Popryaduhin on 19:39 10/08/2017.

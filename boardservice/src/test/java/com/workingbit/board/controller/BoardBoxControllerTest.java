@@ -1,4 +1,4 @@
-package com.workingbit.board.board;
+package com.workingbit.board.controller;
 
 import com.despegar.http.client.GetMethod;
 import com.despegar.http.client.HttpClientException;
@@ -14,7 +14,7 @@ import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.CreateBoardRequest;
+import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.util.UnirestUtil;
 import org.apache.commons.lang3.RandomUtils;
@@ -44,7 +44,7 @@ public class BoardBoxControllerTest {
 
     @Override
     public void init() {
-      BoardApplication.establishRoutes();
+      BoardApplication.start();
     }
   }
 
@@ -121,14 +121,14 @@ public class BoardBoxControllerTest {
   }
 
   private BoardBox getBoardBox(String boardBoxId, String articleId) throws HttpClientException {
-    CreateBoardRequest createBoardRequest = new CreateBoardRequest();
-    createBoardRequest.setArticleId(articleId);
-    createBoardRequest.setBoardBoxId(boardBoxId);
-    createBoardRequest.setRules(EnumRules.RUSSIAN);
-    createBoardRequest.setFillBoard(false);
-    createBoardRequest.setBlack(false);
+    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
+    createBoardPayload.setArticleId(articleId);
+    createBoardPayload.setBoardBoxId(boardBoxId);
+    createBoardPayload.setRules(EnumRules.RUSSIAN);
+    createBoardPayload.setFillBoard(false);
+    createBoardPayload.setBlack(false);
     UnirestUtil.configureSerialization();
-    BoardBox body = (BoardBox) post("", createBoardRequest).getBody();
+    BoardBox body = (BoardBox) post("", createBoardPayload).getBody();
     assertNotNull(body);
 
     BoardBox boardBox = (BoardBox) get(body.getId()).getBody();

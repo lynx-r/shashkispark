@@ -6,7 +6,7 @@ import com.workingbit.share.common.Utils;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.model.CreateBoardRequest;
+import com.workingbit.share.model.CreateBoardPayload;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -29,7 +29,7 @@ public class BoardService {
     return INSTANCE;
   }
 
-  public Board createBoard(CreateBoardRequest newBoardRequest) {
+  public Board createBoard(CreateBoardPayload newBoardRequest) {
     Board board = initBoard(newBoardRequest.getFillBoard(), newBoardRequest.getBlack(),
         newBoardRequest.getRules());
     Utils.setRandomIdAndCreatedAt(board);

@@ -1,9 +1,9 @@
 package com.workingbit.article;
 
-import com.workingbit.article.article.ArticleController;
+import com.workingbit.article.config.AppProperties;
+import com.workingbit.article.controller.ArticleController;
 import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.service.ArticleService;
-import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.util.Path;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
@@ -35,7 +35,7 @@ public class ArticleApplication {
     start();
   }
 
-  static void start() {
+  public static void start() {
     Logger logger = Logger.getLogger(ArticleApplication.class);
     SparkUtils.createServerWithRequestLog(logger);
 
@@ -44,11 +44,12 @@ public class ArticleApplication {
     LOG.info("Initializing routes");
 
     enableCors(appProperties.origin().toString(), appProperties.methods(), appProperties.headers());
+    establishRoutes();
+  }
 
+  private static void establishRoutes() {
     path("/api", () ->
-
         path("/v1", () -> {
-
           get(Path.ARTICLES, ArticleController.findAllArticles);
           get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
           post(Path.ARTICLE, ArticleController.createArticleAndBoard);

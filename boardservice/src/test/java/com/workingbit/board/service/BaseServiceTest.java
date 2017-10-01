@@ -1,16 +1,17 @@
 package com.workingbit.board.service;
 
+import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.dao.BoardDao;
-import com.workingbit.board.board.util.BoardUtils;
 import com.workingbit.share.common.Utils;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.model.CreateBoardRequest;
+import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.EnumRules;
 
-import static com.workingbit.board.board.util.BoardUtils.findSquareByVH;
+import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
+
 
 /**
  * Created by Aleksey Popryaduhin on 21:15 11/08/2017.
@@ -63,12 +64,12 @@ public class BaseServiceTest {
 //    return new BoardService(boardDao, objectMapper, boardHistoryService);
 //  }
 
-  protected CreateBoardRequest getCreateBoardRequest() {
-    CreateBoardRequest createBoardRequest = new CreateBoardRequest();
-    createBoardRequest.setBlack(false);
-    createBoardRequest.setFillBoard(false);
-    createBoardRequest.setRules(EnumRules.RUSSIAN);
-    createBoardRequest.setBoardBoxId(Utils.getRandomUUID());
-    return createBoardRequest;
+  protected CreateBoardPayload getCreateBoardRequest() {
+    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
+    createBoardPayload.setBlack(false);
+    createBoardPayload.setFillBoard(false);
+    createBoardPayload.setRules(EnumRules.RUSSIAN);
+    createBoardPayload.setBoardBoxId(Utils.getRandomUUID());
+    return createBoardPayload;
   }
 }

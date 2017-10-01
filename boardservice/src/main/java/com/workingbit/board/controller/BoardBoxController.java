@@ -1,4 +1,4 @@
-package com.workingbit.board.board;
+package com.workingbit.board.controller;
 
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;
@@ -6,7 +6,7 @@ import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.func.ModelHandlerFunc;
 import com.workingbit.share.func.ParamsHandlerFunc;
 import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.CreateBoardRequest;
+import com.workingbit.share.model.CreateBoardPayload;
 import spark.Route;
 
 import static com.workingbit.board.BoardApplication.boardBoxService;
@@ -18,12 +18,12 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 public class BoardBoxController {
 
   public static Route createBoard = (req, res) ->
-      ((ModelHandlerFunc<CreateBoardRequest>) boardRequest ->
+      ((ModelHandlerFunc<CreateBoardPayload>) boardRequest ->
           boardBoxService
               .createBoard(boardRequest)
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD + req.body()))
-      ).handleRequest(req, res, CreateBoardRequest.class);
+      ).handleRequest(req, res, CreateBoardPayload.class);
 
   public static Route findBoardById = (req, res) ->
       ((ParamsHandlerFunc) params ->

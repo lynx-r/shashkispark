@@ -8,7 +8,7 @@ import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.CreateArticlePayload;
 import com.workingbit.share.model.CreateArticleResponse;
-import com.workingbit.share.model.CreateBoardRequest;
+import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.EnumArticleState;
 import org.apache.log4j.Logger;
 
@@ -38,7 +38,7 @@ public class ArticleService {
     Utils.setRandomIdAndCreatedAt(article);
     article.setState(EnumArticleState.newadded);
     article.setBoardBoxId(getRandomUUID());
-    CreateBoardRequest boardRequest = articleAndBoard.getBoardRequest();
+    CreateBoardPayload boardRequest = articleAndBoard.getBoardRequest();
     boardRequest.setBoardBoxId(article.getBoardBoxId());
     CreateArticleResponse createArticleResponse = new CreateArticleResponse();
     boardRequest.setArticleId(article.getId());

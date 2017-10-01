@@ -9,7 +9,7 @@ import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.BoardBoxIds;
 import com.workingbit.share.model.BoardBoxes;
-import com.workingbit.share.model.CreateBoardRequest;
+import com.workingbit.share.model.CreateBoardPayload;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -33,12 +33,12 @@ public class BoardBoxService {
     return INSTANCE;
   }
 
-  public Optional<BoardBox> createBoard(CreateBoardRequest createBoardRequest) {
-    Board board = BoardService.getInstance().createBoard(createBoardRequest);
+  public Optional<BoardBox> createBoard(CreateBoardPayload createBoardPayload) {
+    Board board = BoardService.getInstance().createBoard(createBoardPayload);
 
     BoardBox boardBox = new BoardBox(board);
-    boardBox.setArticleId(createBoardRequest.getArticleId());
-    boardBox.setId(createBoardRequest.getBoardBoxId());
+    boardBox.setArticleId(createBoardPayload.getArticleId());
+    boardBox.setId(createBoardPayload.getBoardBoxId());
     boardBox.setCreatedAt(new Date());
     save(boardBox);
 

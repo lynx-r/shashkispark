@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * CreateBoardRequest
+ * CreateBoardPayload
  */
 @Getter
 @Setter
-public class CreateBoardRequest implements Payload {
+public class CreateBoardPayload implements Payload {
   private String articleId;
 
   private Boolean fillBoard;

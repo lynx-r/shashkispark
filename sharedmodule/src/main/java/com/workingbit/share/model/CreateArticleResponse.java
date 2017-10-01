@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * CreateBoardRequest
+ * CreateBoardPayload
  */
 @Getter
 @Setter

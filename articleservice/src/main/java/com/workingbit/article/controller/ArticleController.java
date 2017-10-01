@@ -1,4 +1,4 @@
-package com.workingbit.article.article;
+package com.workingbit.article.controller;
 
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;

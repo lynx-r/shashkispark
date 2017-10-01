@@ -1,7 +1,7 @@
 package com.workingbit.board.service;
 
 import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.model.CreateBoardRequest;
+import com.workingbit.share.model.CreateBoardPayload;
 import org.junit.After;
 import org.junit.Test;
 
@@ -156,8 +156,8 @@ public class BoardServiceTest extends BaseServiceTest {
   }
 
   private BoardBox getNewBoard() {
-    CreateBoardRequest createBoardRequest = getCreateBoardRequest();
-    BoardBox board = boardBoxService().createBoard(createBoardRequest).get();
+    CreateBoardPayload createBoardPayload = getCreateBoardRequest();
+    BoardBox board = boardBoxService().createBoard(createBoardPayload).get();
 
     // place initial draught on the desk
 //    Draught draught = getDraught(5, 2);

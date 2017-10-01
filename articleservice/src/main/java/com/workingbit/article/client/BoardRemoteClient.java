@@ -5,7 +5,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.workingbit.article.exception.ArticleServiceException;
 import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.model.CreateBoardRequest;
+import com.workingbit.share.model.CreateBoardPayload;
 import org.apache.log4j.Logger;
 
 import java.util.Optional;
@@ -25,7 +25,7 @@ public class BoardRemoteClient {
     return INSTANCE;
   }
 
-  public Optional<BoardBox> createBoardBox(CreateBoardRequest boardRequest) {
+  public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest) {
     HttpResponse<BoardBox> boardBoxHttpResponse = null;
     try {
       boardBoxHttpResponse = Unirest.post(appProperties.boardResource()).body(boardRequest).asObject(BoardBox.class);

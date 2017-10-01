@@ -5,11 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * CreateBoardRequest
+ * CreateBoardPayload
  */
 @Getter
 @Setter
 public class CreateArticlePayload implements Payload {
   private Article article ;
-  private CreateBoardRequest boardRequest ;
+  private CreateBoardPayload boardRequest ;
 }
