@@ -4,12 +4,9 @@ import com.workingbit.article.client.BoardRemoteClient;
 import com.workingbit.share.common.Utils;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.model.CreateArticlePayload;
-import com.workingbit.share.model.CreateArticleResponse;
-import com.workingbit.share.model.CreateBoardPayload;
-import com.workingbit.share.model.EnumArticleState;
+import com.workingbit.share.model.*;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.workingbit.article.ArticleApplication.articleDao;
@@ -46,8 +43,14 @@ public class ArticleService {
     return Optional.of(article);
   }
 
-  public Optional<List<Article>> findAll(Integer limit) {
-    return Optional.of(articleDao.findAll(limit));
+  public Optional<Articles> findAll(String limitStr) {
+    Integer limit = null;
+    if (!StringUtils.isBlank(limitStr)) {
+      limit = Integer.valueOf(limitStr);
+    }
+    Articles articles = new Articles();
+    articles.addAll(articleDao.findAll(limit));
+    return Optional.of(articles);
   }
 
   public Optional<Article> findById(String articleId) {

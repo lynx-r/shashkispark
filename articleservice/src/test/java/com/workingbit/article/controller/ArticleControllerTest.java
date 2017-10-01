@@ -1,9 +1,6 @@
 package com.workingbit.article.controller;
 
-import com.despegar.http.client.GetMethod;
-import com.despegar.http.client.HttpClientException;
-import com.despegar.http.client.HttpResponse;
-import com.despegar.http.client.PostMethod;
+import com.despegar.http.client.*;
 import com.despegar.sparkjava.test.SparkServer;
 import com.workingbit.article.ArticleApplication;
 import com.workingbit.share.domain.impl.Article;
@@ -17,6 +14,7 @@ import spark.servlet.SparkApplication;
 import static com.workingbit.share.common.Utils.randomString;
 import static com.workingbit.share.util.JsonUtil.dataToJson;
 import static com.workingbit.share.util.JsonUtil.jsonToData;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -40,6 +38,66 @@ public class ArticleControllerTest {
 
   @Test
   public void create_article() throws HttpClientException {
+    CreateArticlePayload createArticlePayload = getCreateArticlePayload();
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload).getBody();
+
+    Article article = articleResponse.getArticle();
+    BoardBox board = articleResponse.getBoard();
+    assertNotNull(article.getId());
+    assertNotNull(article.getBoardBoxId());
+    assertNotNull(board.getId());
+  }
+
+  @Test
+  public void save_article() throws HttpClientException {
+    CreateArticlePayload createArticlePayload = getCreateArticlePayload();
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload).getBody();
+
+    Article article = articleResponse.getArticle();
+    String title = randomString();
+    article.setTitle(title);
+    String content = randomString();
+    article.setContent(content);
+    article = (Article) put("", article).getBody();
+
+    article = (Article) get("/" + article.getId()).getBody();
+    assertEquals(article.getTitle(), title);
+    assertNotNull(article.getContent(), content);
+  }
+
+  @Test
+  public void find_article_by_id() throws HttpClientException {
+    CreateArticlePayload createArticlePayload = getCreateArticlePayload();
+
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload).getBody();
+    Article article = articleResponse.getArticle();
+    BoardBox board = articleResponse.getBoard();
+    assertNotNull(article.getId());
+    assertNotNull(article.getBoardBoxId());
+    assertNotNull(board.getId());
+
+    article = (Article) get("/" + article.getId()).getBody();
+    assertNotNull(article);
+  }
+
+  @Test
+  public void find_all() throws HttpClientException {
+    CreateArticlePayload createArticlePayload = getCreateArticlePayload();
+
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload).getBody();
+    Article article = articleResponse.getArticle();
+    BoardBox board = articleResponse.getBoard();
+    assertNotNull(article.getId());
+    assertNotNull(article.getBoardBoxId());
+    assertNotNull(board.getId());
+
+    Articles articles = (Articles) get("s").getBody();
+    Article finalArticle = article;
+    article = articles.stream().filter((article1 -> article1.getId().equals(finalArticle.getId()))).findFirst().get();
+    assertNotNull(article);
+  }
+
+  private CreateArticlePayload getCreateArticlePayload() {
     CreateArticlePayload createArticlePayload = new CreateArticlePayload();
     Article article = new Article(randomString(), randomString(), randomString());
     createArticlePayload.setArticle(article);
@@ -48,13 +106,7 @@ public class ArticleControllerTest {
     createBoardPayload.setRules(EnumRules.RUSSIAN);
     createBoardPayload.setFillBoard(false);
     createArticlePayload.setBoardRequest(createBoardPayload);
-
-    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload).getBody();
-    article = articleResponse.getArticle();
-    BoardBox board = articleResponse.getBoard();
-    assertNotNull(article.getId());
-    assertNotNull(article.getBoardBoxId());
-    assertNotNull(board.getId());
+    return createArticlePayload;
   }
 
   private Answer post(String path, Object payload) throws HttpClientException {
@@ -63,8 +115,14 @@ public class ArticleControllerTest {
     return jsonToData(new String(execute.body()), Answer.class);
   }
 
+  private Answer put(String path, Object payload) throws HttpClientException {
+    PutMethod resp = testServer.put(boardUrl + path, dataToJson(payload), false);
+    HttpResponse execute = testServer.execute(resp);
+    return jsonToData(new String(execute.body()), Answer.class);
+  }
+
   private Answer get(String params) throws HttpClientException {
-    GetMethod resp = testServer.get(boardUrl + "/" + params, false);
+    GetMethod resp = testServer.get(boardUrl + params, false);
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);
   }
