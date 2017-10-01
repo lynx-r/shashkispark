@@ -1,8 +1,6 @@
 package com.workingbit.board.service;
 
-import com.workingbit.board.board.BoardBoxService;
-import com.workingbit.board.board.BoardDao;
-import com.workingbit.board.board.BoardService;
+import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.board.util.BoardUtils;
 import com.workingbit.share.common.Utils;
 import com.workingbit.share.domain.impl.Board;

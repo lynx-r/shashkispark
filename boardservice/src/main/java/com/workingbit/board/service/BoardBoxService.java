@@ -1,4 +1,4 @@
-package com.workingbit.board.board;
+package com.workingbit.board.service;
 
 import com.workingbit.board.board.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;

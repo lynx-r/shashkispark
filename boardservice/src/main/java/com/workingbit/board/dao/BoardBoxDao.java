@@ -1,4 +1,4 @@
-package com.workingbit.board.board;
+package com.workingbit.board.dao;
 
 import com.workingbit.board.config.AppProperties;
 import com.workingbit.share.dao.BaseDao;

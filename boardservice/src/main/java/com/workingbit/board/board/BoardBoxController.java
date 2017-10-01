@@ -1,5 +1,6 @@
 package com.workingbit.board.board;
 
+import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.CreateBoardRequest;
 import spark.Route;

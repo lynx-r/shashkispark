@@ -2,9 +2,9 @@ package com.workingbit.board;
 
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
-import com.workingbit.board.board.BoardBoxDao;
+import com.workingbit.board.dao.BoardBoxDao;
 import com.workingbit.board.board.BoardBoxController;
-import com.workingbit.board.board.BoardDao;
+import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.config.AppProperties;
 import com.workingbit.board.util.Path;
 import org.apache.log4j.Logger;
