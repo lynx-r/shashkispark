@@ -1,4 +1,4 @@
-package com.workingbit.article.article;
+package com.workingbit.article.dao;
 
 import com.workingbit.article.config.AppProperties;
 import com.workingbit.share.dao.BaseDao;

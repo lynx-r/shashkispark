@@ -1,8 +1,8 @@
 package com.workingbit.article;
 
 import com.workingbit.article.article.ArticleController;
-import com.workingbit.article.article.ArticleDao;
-import com.workingbit.article.article.ArticleService;
+import com.workingbit.article.dao.ArticleDao;
+import com.workingbit.article.service.ArticleService;
 import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.util.Path;
 import com.workingbit.share.util.Filters;

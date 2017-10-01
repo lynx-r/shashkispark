@@ -1,4 +1,4 @@
-package com.workingbit.article.article;
+package com.workingbit.article.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workingbit.article.client.BoardRemoteClient;
