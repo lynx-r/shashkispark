@@ -9,7 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class CreateArticleRequest {
+public class CreateArticlePayload implements Payload {
   private Article article ;
   private CreateBoardRequest boardRequest ;
 }

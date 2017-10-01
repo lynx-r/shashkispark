@@ -2,11 +2,12 @@ package com.workingbit.article;
 
 import com.workingbit.article.article.ArticleController;
 import com.workingbit.article.article.ArticleDao;
+import com.workingbit.article.article.ArticleService;
 import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.util.Path;
-import com.workingbit.share.util.UnirestUtil;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
+import com.workingbit.share.util.UnirestUtil;
 import org.apache.log4j.Logger;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
@@ -20,11 +21,13 @@ public class ArticleApplication {
   // Declare dependencies
   public static ArticleDao articleDao;
   public static AppProperties appProperties;
+  public static ArticleService articleService;
 
   static {
     appProperties = configurationProvider().bind("app", AppProperties.class);
 
     articleDao = new ArticleDao(appProperties);
+    articleService = new ArticleService();
   }
 
   public static void main(String[] args) {

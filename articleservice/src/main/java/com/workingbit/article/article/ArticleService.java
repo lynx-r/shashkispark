@@ -6,7 +6,7 @@ import com.workingbit.article.exception.ArticleServiceException;
 import com.workingbit.share.common.Utils;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.model.CreateArticleRequest;
+import com.workingbit.share.model.CreateArticlePayload;
 import com.workingbit.share.model.CreateArticleResponse;
 import com.workingbit.share.model.CreateBoardRequest;
 import com.workingbit.share.model.EnumArticleState;
@@ -16,13 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.workingbit.article.ArticleApplication.articleDao;
-import static com.workingbit.article.util.Utils.getArticleServiceErrorSupplier;
 import static com.workingbit.share.common.Utils.getRandomUUID;
 
 /**
  * Created by Aleksey Popryaduhin on 09:05 28/09/2017.
  */
-class ArticleService {
+public class ArticleService {
 
   private static final ArticleService INSTANCE = new ArticleService();
 
@@ -30,11 +29,11 @@ class ArticleService {
 
   private static final ObjectMapper mapper = new ObjectMapper();
 
-  static ArticleService getInstance() {
+  public static ArticleService getInstance() {
     return INSTANCE;
   }
 
-  CreateArticleResponse createArticleResponse(CreateArticleRequest articleAndBoard) {
+  public Optional<CreateArticleResponse> createArticleResponse(CreateArticlePayload articleAndBoard) {
     Article article = articleAndBoard.getArticle();
     Utils.setRandomIdAndCreatedAt(article);
     article.setState(EnumArticleState.newadded);
@@ -52,20 +51,19 @@ class ArticleService {
       throw new ArticleServiceException("Unable to create board");
     }
     save(article);
-    return createArticleResponse;
+    return Optional.of(createArticleResponse);
   }
 
-  public Article save(Article article) {
+  public Optional<Article> save(Article article) {
     articleDao.save(article);
-    return article;
+    return Optional.of(article);
   }
 
-  List<Article> findAll(Integer limit) {
-    return articleDao.findAll(limit);
+  public Optional<List<Article>> findAll(Integer limit) {
+    return Optional.of(articleDao.findAll(limit));
   }
 
-  Article findById(String articleId) {
-    return articleDao.findByKey(articleId)
-        .orElseThrow(getArticleServiceErrorSupplier("Article not found"));
+  public Optional<Article> findById(String articleId) {
+    return articleDao.findByKey(articleId);
   }
 }

@@ -43,7 +43,15 @@ public class Answer {
     return new Answer(200, body, Type.ARTICLE);
   }
 
+  public static Answer okArticleList(Object body) {
+    return new Answer(200, body, Type.ARTICLE_LIST);
+  }
+
+  public static Answer okArticleCreate(CreateArticleResponse createArticleResponse) {
+    return new Answer(201, createArticleResponse, Type.ARTICLE_CREATE);
+  }
+
   public enum Type {
-    ERROR, ARTICLE, BOARD_BOX
+    ARTICLE, ARTICLE_LIST, BOARD_BOX, BOARD_BOX_LIST, ARTICLE_CREATE, ERROR
   }
 }
