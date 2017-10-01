@@ -1,5 +1,6 @@
 package com.workingbit.board;
 
+import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import com.workingbit.board.dao.BoardBoxDao;
@@ -18,6 +19,7 @@ public class BoardApplication {
   private static final Logger LOG = Logger.getLogger(BoardApplication.class);
 
   // Declare dependencies
+  public static BoardBoxService boardBoxService;
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
 
@@ -26,6 +28,7 @@ public class BoardApplication {
   static {
     appProperties = configurationProvider().bind("app", AppProperties.class);
 
+    boardBoxService = new BoardBoxService();
     boardBoxDao = new BoardBoxDao(appProperties);
     boardDao = new BoardDao(appProperties);
   }

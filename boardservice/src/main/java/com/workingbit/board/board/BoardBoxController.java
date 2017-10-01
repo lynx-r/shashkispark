@@ -1,10 +1,10 @@
 package com.workingbit.board.board;
 
-import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.CreateBoardRequest;
 import spark.Route;
 
+import static com.workingbit.board.BoardApplication.boardBoxService;
 import static com.workingbit.share.util.JsonUtil.dataToJson;
 import static com.workingbit.share.util.JsonUtil.jsonToData;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -16,7 +16,7 @@ public class BoardBoxController {
 
   public static Route createBoard = (req, res) ->
       dataToJson(
-          BoardBoxService.getInstance()
+          boardBoxService
               .createBoard(jsonToData(req.body(), CreateBoardRequest.class))
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to create board with request: " + req.body()))
@@ -24,7 +24,7 @@ public class BoardBoxController {
 
   public static Route findBoardById = (req, res) ->
       dataToJson(
-          BoardBoxService.getInstance()
+          boardBoxService
               .findById(req.params(":id"))
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_BAD_REQUEST, String.format("Board with id %s not found", req.params(":id"))))
@@ -32,7 +32,7 @@ public class BoardBoxController {
 
   public static Route addDraught = (req, res) ->
       ((BoardBoxHandlerFunc) data ->
-          BoardBoxService.getInstance()
+          boardBoxService
               .addDraught(data)
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to add a draught: " + req.body()))
@@ -40,7 +40,7 @@ public class BoardBoxController {
 
   public static Route highlightBoard = (req, res) ->
       ((BoardBoxHandlerFunc) data ->
-          BoardBoxService.getInstance()
+          boardBoxService
               .highlight(data)
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to highlight board: " + req.body()))
@@ -48,7 +48,7 @@ public class BoardBoxController {
 
   public static Route move = (req, res) ->
       ((BoardBoxHandlerFunc) data ->
-          BoardBoxService.getInstance()
+          boardBoxService
               .move(data)
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to move: " + req.body()))
@@ -56,7 +56,7 @@ public class BoardBoxController {
 
   public static Route redo = (req, res) ->
       ((BoardBoxHandlerFunc) data ->
-          BoardBoxService.getInstance()
+          boardBoxService
               .redo(data)
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to redo: " + req.body()))
@@ -64,7 +64,7 @@ public class BoardBoxController {
 
   public static Route undo = (req, res) ->
       ((BoardBoxHandlerFunc) data ->
-          BoardBoxService.getInstance()
+          boardBoxService
               .undo(data)
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_BAD_REQUEST, "Unable to undo: " + req.body()))
