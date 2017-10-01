@@ -1,7 +1,10 @@
 package com.workingbit.board.board;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
+import com.despegar.http.client.GetMethod;
+import com.despegar.http.client.HttpClientException;
+import com.despegar.http.client.HttpResponse;
+import com.despegar.http.client.PostMethod;
+import com.despegar.sparkjava.test.SparkServer;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.workingbit.board.BoardApplication;
 import com.workingbit.share.common.Utils;
@@ -15,50 +18,47 @@ import com.workingbit.share.model.CreateBoardRequest;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.util.UnirestUtil;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
-import spark.Spark;
+import spark.servlet.SparkApplication;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static com.workingbit.share.util.JsonUtil.dataToJson;
+import static com.workingbit.share.util.JsonUtil.jsonToData;
+import static junit.framework.TestCase.*;
 
 /**
  * Created by Aleksey Popryaduhin on 17:56 30/09/2017.
  */
 public class BoardBoxControllerTest {
 
-  private String boardUrl;
+  private static String boardUrl = "/api/v1/board";
+  private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
 
-  @Before
-  public void setUp() throws Exception {
-    String randomPort = String.valueOf(RandomUtils.nextInt(1000, 65000));
-    BoardApplication.main(new String[]{randomPort});
+  public static class TestControllerTestSparkApplication implements SparkApplication {
 
-    boardUrl = "http://localhost:" + randomPort + "/api/v1/board";
+    @Override
+    public void init() {
+      BoardApplication.establishRoutes();
+    }
   }
 
-  @After
-  public void tearDown() throws Exception {
-    Spark.stop();
-  }
+  @ClassRule
+  public static SparkServer<TestControllerTestSparkApplication> testServer = new SparkServer<>(TestControllerTestSparkApplication.class, randomPort);
 
   @Test
-  public void add_draught() throws UnirestException {
+  public void add_draught() throws HttpClientException {
     String boardBoxId = Utils.getRandomUUID();
     String articleId = Utils.getRandomUUID();
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId);
 
-    HttpResponse<Answer> resp = Unirest.post(boardUrl + "/add-draught").body(boardBox).asObject(Answer.class);
-    boardBox = (BoardBox) resp.getBody().getBody();
+    boardBox = (BoardBox) post("add-draught", boardBox).getBody();
     Board board = boardBox.getBoard();
     Draught draught = board.getWhiteDraughts().get("c3");
     assertTrue(draught != null);
@@ -72,14 +72,13 @@ public class BoardBoxControllerTest {
   }
 
   @Test
-  public void highlight() throws UnirestException {
+  public void highlight() throws UnirestException, HttpClientException {
     String boardBoxId = Utils.getRandomUUID();
     String articleId = Utils.getRandomUUID();
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId);
 
-    HttpResponse<Answer> resp = Unirest.post(boardUrl + "/highlight").body(boardBox).asObject(Answer.class);
-    boardBox = (BoardBox) resp.getBody().getBody();
+    boardBox = (BoardBox) post("highlight", boardBox).getBody();
     Board board = boardBox.getBoard();
     List<Square> highlighted = board.getSquares()
         .stream()
@@ -94,7 +93,7 @@ public class BoardBoxControllerTest {
   }
 
   @Test
-  public void move() throws UnirestException {
+  public void move() throws UnirestException, HttpClientException {
     String boardBoxId = Utils.getRandomUUID();
     String articleId = Utils.getRandomUUID();
 
@@ -109,8 +108,7 @@ public class BoardBoxControllerTest {
     nextSquare.setHighlighted(true);
     boardBox.getBoard().setNextSquare(nextSquare);
 
-    HttpResponse<Answer> resp = Unirest.post(boardUrl + "/move").body(boardBox).asObject(Answer.class);
-    boardBox = (BoardBox) resp.getBody().getBody();
+    boardBox = (BoardBox) post("move", boardBox).getBody();
     Board board = boardBox.getBoard();
     Square moved = board.getSquares()
         .stream()
@@ -122,7 +120,7 @@ public class BoardBoxControllerTest {
     assertTrue(moved.isOccupied());
   }
 
-  private BoardBox getBoardBox(String boardBoxId, String articleId) throws UnirestException {
+  private BoardBox getBoardBox(String boardBoxId, String articleId) throws HttpClientException {
     CreateBoardRequest createBoardRequest = new CreateBoardRequest();
     createBoardRequest.setArticleId(articleId);
     createBoardRequest.setBoardBoxId(boardBoxId);
@@ -130,16 +128,26 @@ public class BoardBoxControllerTest {
     createBoardRequest.setFillBoard(false);
     createBoardRequest.setBlack(false);
     UnirestUtil.configureSerialization();
-    HttpResponse<Answer> resp = Unirest.post(boardUrl).body(createBoardRequest).asObject(Answer.class);
-    BoardBox body = (BoardBox) resp.getBody().getBody();
+    BoardBox body = (BoardBox) post("", createBoardRequest).getBody();
     assertNotNull(body);
 
-    resp = Unirest.get(boardUrl + "/" + body.getId()).asObject(Answer.class);
-    BoardBox boardBox = (BoardBox) resp.getBody().getBody();
+    BoardBox boardBox = (BoardBox) get(body.getId()).getBody();
     Board board = boardBox.getBoard();
     Square square = new Square(5, 2, 8, true, new Draught(5, 2, 8));
     board.setSelectedSquare(square);
     return boardBox;
+  }
+
+  private Answer post(String path, Object payload) throws HttpClientException {
+    PostMethod resp = testServer.post(boardUrl + "/" + path, dataToJson(payload), false);
+    HttpResponse execute = testServer.execute(resp);
+    return jsonToData(new String(execute.body()), Answer.class);
+  }
+
+  private Answer get(String params) throws HttpClientException {
+    GetMethod resp = testServer.get(boardUrl + "/" + params, false);
+    HttpResponse execute = testServer.execute(resp);
+    return jsonToData(new String(execute.body()), Answer.class);
   }
 
   private void testCollection(String notations, List<Square> items) {

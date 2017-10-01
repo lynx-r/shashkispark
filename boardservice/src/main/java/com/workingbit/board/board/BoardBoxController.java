@@ -1,6 +1,7 @@
 package com.workingbit.board.board;
 
 import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.func.ModelHandlerFunc;
 import com.workingbit.share.func.ParamsHandlerFunc;
@@ -26,10 +27,11 @@ public class BoardBoxController {
 
   public static Route findBoardById = (req, res) ->
       ((ParamsHandlerFunc) params ->
-          boardBoxService.findById(params.get(":id"))
+          boardBoxService.findById(params.get(RequestConstants.ID))
               .map(Answer::okBoardBox)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, String.format(ErrorMessages.BOARD_WITH_ID_NOT_FOUND, req.params(":id"))))
-      );
+              .orElse(Answer.error(HTTP_BAD_REQUEST,
+                  String.format(ErrorMessages.BOARD_WITH_ID_NOT_FOUND, req.params(RequestConstants.ID))))
+      ).handleRequest(req, res);
 
   public static Route addDraught = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) data ->

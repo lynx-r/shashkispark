@@ -48,13 +48,13 @@ public class BoardApplication {
     SparkUtils.createServerWithRequestLog(logger);
 
     LOG.info("Initializing routes");
-
     enableCors(appProperties.origin().toString(), appProperties.methods(), appProperties.headers());
+    establishRoutes();
+  }
 
+  public static void establishRoutes() {
     path("/api", () ->
-
         path("/v1", () -> {
-
           get(Path.BOARD_BY_ID, BoardBoxController.findBoardById);
 
           post(Path.BOARD_ADD_DRAUGHT, BoardBoxController.addDraught);
