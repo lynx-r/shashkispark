@@ -312,8 +312,20 @@ public class BoardUtils {
   public static List<Square> highlightedBoard(Square selectedSquare, Board board) {
     resetBoardHighlight(board);
     MovesList movesList = highlightedAssignedMoves(selectedSquare);
+    List<Square> allowed = movesList.getAllowed();
+    List<Square> beaten = movesList.getBeaten();
+    if (!beaten.isEmpty()) {
+      board.getAssignedSquares()
+          .stream()
+          .filter(allowed::contains)
+          .forEach(square -> square.setHighlighted(true));
+      board.getAssignedSquares()
+          .stream()
+          .filter(beaten::contains)
+          .forEach(square -> square.getDraught().setBeaten(true));
+    }
     updateBoard(board);
-    return movesList.getBeaten();
+    return allowed;
   }
 
   private static void resetBoardHighlight(Board board) {

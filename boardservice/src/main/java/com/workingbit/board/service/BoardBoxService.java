@@ -71,7 +71,7 @@ public class BoardBoxService {
             return updated;
           }
           BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
-          currentBoard = boardService.highlight(currentBoard);
+          currentBoard = boardService.highlight(currentBoard, boardBox.isBlackTurn());
           updated.setBoard(currentBoard);
           return updated;
         });

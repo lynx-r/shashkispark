@@ -14,7 +14,7 @@ import static com.workingbit.board.controller.util.BoardUtils.isSubDiagonal;
 /**
  * Created by Aleksey Popryaduhin on 19:39 10/08/2017.
  */
-public class HighlightMoveUtil {
+class HighlightMoveUtil {
 
   private Square selectedSquare;
 
@@ -29,12 +29,8 @@ public class HighlightMoveUtil {
 
   /**
    * highlightedAssignedMoves moves for the selected square
-   *
-   * @param selectedSquare
-   * @return
-   * @throws BoardServiceException
    */
-  public static MovesList highlightedAssignedMoves(Square selectedSquare) {
+  static MovesList highlightedAssignedMoves(Square selectedSquare) {
     if (selectedSquare == null || !selectedSquare.isOccupied()) {
       throw new BoardServiceException("Invalid selected square");
     }
@@ -274,13 +270,15 @@ public class HighlightMoveUtil {
   }
 
   private void addBeatenMove(Tree.Node<Square> beatenMoves, Square previous) {
-    previous.getDraught().setBeaten(true);
-    beatenMoves.addChild(previous);
+    Square beaten = (Square) previous.deepClone();
+    beaten.getDraught().setBeaten(true);
+    beatenMoves.addChild(beaten);
   }
 
-  private boolean addAllowedMove(List<Square> allowedMoves, Square next) {
-    next.setHighlighted(true);
-    return allowedMoves.add(next);
+  private void addAllowedMove(List<Square> allowedMoves, Square next) {
+    Square allowed = (Square) next.deepClone();
+    allowed.setHighlighted(true);
+    allowedMoves.add(allowed);
   }
 
   private boolean hasBeatenOnCrossDiagonal(Square next, Square previous) {

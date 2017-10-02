@@ -41,7 +41,7 @@ public class BoardService {
   /**
    * @return map of {allowed, beaten}
    */
-  Board highlight(Board boardHighlight) {
+  Board highlight(Board boardHighlight, boolean blackTurn) {
     Square selectedSquare = boardHighlight.getSelectedSquare();
     if (isValidHighlight(selectedSquare)) {
       throw new BoardServiceException("Invalid highlight square");
@@ -57,9 +57,9 @@ public class BoardService {
 
   /**
    * @param currentBoard         map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, beaten: List<Square>}  @return Move info:
-   *                       {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
-   *                       h - distance for move horizontal (minus left), targetSquare is a new square with
-   *                       moved draught, queen is a draught has become the queen
+ *                       {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
+ *                       h - distance for move horizontal (minus left), targetSquare is a new square with
+ *                       moved draught, queen is a draught has become the queen
    */
   public Board move(Square selectedSquare, Square nextSquare, Board currentBoard) {
     currentBoard.setCursor(false);
