@@ -71,7 +71,7 @@ public class BoardBoxService {
             return updated;
           }
           BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
-          currentBoard = boardService.highlight(currentBoard, boardBox.isBlackTurn());
+          currentBoard = boardService.highlight(boardBox.isBlackTurn(), currentBoard);
           updated.setBoard(currentBoard);
           return updated;
         });
@@ -88,10 +88,9 @@ public class BoardBoxService {
             Log.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
             return null;
           }
-          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated);
+          boardUpdated = boardService.move(updatedBox.isBlackTurn(), selectedSquare, nextSquare, boardUpdated, updatedBox);
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
-          updatedBox.setBlackTurn(!updatedBox.isBlackTurn());
           boardBoxDao.save(updatedBox);
           return updatedBox;
         });

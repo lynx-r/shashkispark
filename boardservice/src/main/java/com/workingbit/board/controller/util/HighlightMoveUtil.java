@@ -22,8 +22,8 @@ class HighlightMoveUtil {
     if (selectedSquare == null || selectedSquare.getDraught() == null) {
       throw new BoardServiceException("Selected square without placed draught");
     }
-    this.selectedSquare = selectedSquare;
-    selectedSquare.getDraught().setHighlighted(true);
+    this.selectedSquare = (Square) selectedSquare.deepClone();
+    this.selectedSquare.getDraught().setHighlighted(true);
 //    board.setSelectedSquare(selectedSquare);
   }
 
@@ -190,7 +190,7 @@ class HighlightMoveUtil {
       } else if (isDraughtWithSameColor(next)) {
         return;
       }
-      if (moveCounter > 0 && !down || moveCounter > 1) {
+      if (moveCounter > 0 && !down || moveCounter > 0) {
         return;
       }
       moveCounter++;

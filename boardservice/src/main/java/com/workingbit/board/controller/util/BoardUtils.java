@@ -1,17 +1,15 @@
 package com.workingbit.board.controller.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.domain.impl.Board;
+import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.MovesList;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.HighlightMoveUtil.highlightedAssignedMoves;
@@ -25,10 +23,7 @@ public class BoardUtils {
   /**
    * Fill board with draughts
    *
-   * @param fillBoard
    * @param black     is player plays black?
-   * @param rules
-   * @return
    */
   public static Board initBoard(boolean fillBoard, boolean black, EnumRules rules) {
     Board boardBox = new Board(black, rules);
@@ -84,7 +79,7 @@ public class BoardUtils {
     square.setDraught(draught);
   }
 
-  public static List<Square> getSquareArray(int offset, int dim, boolean main) {
+  private static List<Square> getSquareArray(int offset, int dim, boolean main) {
     List<Square> squares = new ArrayList<>();
     for (int v = 0; v < dim; v++) {
       for (int h = 0; h < dim; h++) {
@@ -99,7 +94,7 @@ public class BoardUtils {
     return squares;
   }
 
-  public static List<List<Square>> getDiagonals(int dim, boolean main) {
+  private static List<List<Square>> getDiagonals(int dim, boolean main) {
     List<List<Square>> diagonals = new ArrayList<>(dim - 2);
     for (int i = -dim; i < dim - 1; i++) {
       if ((i == 1 - dim) && main) {
@@ -113,15 +108,12 @@ public class BoardUtils {
     return diagonals;
   }
 
-  public static boolean isSubDiagonal(List<Square> subDiagonal, List<Square> diagonal) {
+  static boolean isSubDiagonal(List<Square> subDiagonal, List<Square> diagonal) {
     return subDiagonal.stream().allMatch(diagonal::contains);
   }
 
   /**
    * Assign square subdiagonal and main diagonal. Assign diagonal's squares link to squares
-   *
-   * @param dim
-   * @return
    */
   private static List<Square> getAssignedSquares(int dim) {
     List<List<Square>> mainDiagonals = getDiagonals(dim, true);
@@ -176,10 +168,6 @@ public class BoardUtils {
 
   /**
    * Find variable link to square from board
-   *
-   * @param square
-   * @param board
-   * @return
    */
   public static Square findSquareByLink(Square square, Board board) {
     if (square == null) {
@@ -197,7 +185,7 @@ public class BoardUtils {
     throw new BoardServiceException("Square not found");
   }
 
-  public static Square findSquareByNotation(String notation, Board board) {
+  private static Square findSquareByNotation(String notation, Board board) {
     if (StringUtils.isBlank(notation)) {
       throw new BoardServiceException("Invalid notation");
     }
@@ -209,35 +197,6 @@ public class BoardUtils {
     throw new BoardServiceException("Square not found");
   }
 
-  /**
-   * Get diff between source and target if h == -1 then we go left if h == 1 go right if v == -1 go up if v == 1 go up
-   *
-   * @param source
-   * @param target
-   * @return
-   */
-  static Pair<Integer, Integer> getDistanceVH(Square source, Square target) {
-    int vDist = target.getV() - source.getV();
-    int hDist = target.getH() - source.getH();
-    return Pair.of(vDist, hDist);
-  }
-
-  public static Supplier<BoardServiceException> getBoardServiceExceptionSupplier(String message) {
-    return () -> new BoardServiceException(message);
-  }
-
-  static <T, I> List<I> mapList(List<I> squares, ObjectMapper objectMapper, Class<T> clazz, Class<I> iclazz) {
-    if (squares == null || squares.isEmpty()) {
-      return Collections.emptyList();
-    }
-    List<I> newSquares = new ArrayList<>(squares.size());
-    // leave as is. Find by Id returns HashMap of getSquares() convert so we need to convert it to Square
-    for (int i = 0; i < squares.size(); i++) {
-      I square = iclazz.cast(objectMapper.convertValue(squares.get(i), clazz));
-      newSquares.add(square);
-    }
-    return newSquares;
-  }
 
   public static void addDraught(Board board, String notation, Draught draught) throws BoardServiceException {
     if (draught == null) {
@@ -246,15 +205,7 @@ public class BoardUtils {
     addDraught(board, notation, draught.isBlack(), draught.isQueen(), draught.isBeaten());
   }
 
-  public static void addDraught(Board board, String notation, boolean black) {
-    addDraught(board, notation, black, false, false);
-  }
-
-  public static void addDraught(Board board, String notation, boolean black, boolean queen) {
-    addDraught(board, notation, black, queen, false);
-  }
-
-  public static void addDraught(Board board, String notation, boolean black, boolean queen, boolean remove) {
+  private static void addDraught(Board board, String notation, boolean black, boolean queen, boolean remove) {
     Square square = findSquareByNotation(notation, board);
     Draught draught = null;
     if (!remove && !isOverloadDraughts(board, black)) {
@@ -285,53 +236,85 @@ public class BoardUtils {
         : board.getWhiteDraughts().size() >= board.getRules().getDraughtsCount();
   }
 
-  public static void removeDraught(Board board, String notation, boolean black) {
+  private static void removeDraught(Board board, String notation, boolean black) {
     addDraught(board, notation, black, false, true);
   }
 
-  public static Board moveDraught(Square selectedSquare, Board board) {
-    List<Square> beatenSquares = highlightedBoard(selectedSquare, board);
+  public static Board moveDraught(boolean blackTurn, Square selectedSquare, Board board, BoardBox boardBox) {
+    List<Square> beatenSquares = highlightedBoard(blackTurn, selectedSquare, board);
     moveDraught(board, beatenSquares);
     Board highlightedBoard = (Board) board.deepClone();
-    List<Square> nextBeatenSquares = highlightedBoard(highlightedBoard.getSelectedSquare(), highlightedBoard);
+    List<Square> nextBeatenSquares = highlightedBoard(blackTurn, highlightedBoard.getSelectedSquare(), highlightedBoard);
     boolean previousNotBeaten = beatenSquares.isEmpty();
     boolean nextNotBeaten = nextBeatenSquares.isEmpty();
     if (!previousNotBeaten && !nextNotBeaten) {
       return highlightedBoard;
     }
+    boardBox.setBlackTurn(!boardBox.isBlackTurn());
+    board.getAssignedSquares()
+        .forEach(square -> {
+          square.setHighlighted(false);
+          if (square.isOccupied()) {
+            square.getDraught().setBeaten(false);
+          }
+        });
     return board;
   }
 
   /**
    * Highlight board and returns is next move allowed
    *
-   * @param selectedSquare
-   * @param board
    * @return is next move allowed
    */
-  public static List<Square> highlightedBoard(Square selectedSquare, Board board) {
-    resetBoardHighlight(board);
+  public static List<Square> highlightedBoard(boolean blackTurn, Square selectedSquare, Board board) {
     MovesList movesList = highlightedAssignedMoves(selectedSquare);
     List<Square> allowed = movesList.getAllowed();
     List<Square> beaten = movesList.getBeaten();
     if (!beaten.isEmpty()) {
       board.getAssignedSquares()
           .stream()
+          .peek(square -> square.setHighlighted(false))
           .filter(allowed::contains)
           .forEach(square -> square.setHighlighted(true));
       board.getAssignedSquares()
           .stream()
+          .peek(square -> {
+            if (square.isOccupied()) {
+              square.getDraught().setBeaten(false);
+            }
+          })
           .filter(beaten::contains)
           .forEach(square -> square.getDraught().setBeaten(true));
+      return allowed;
+    } else {
+      Set<String> draughtsNotations;
+      if (blackTurn) {
+        draughtsNotations = board.getBlackDraughts().keySet();
+      } else {
+        draughtsNotations = board.getWhiteDraughts().keySet();
+      }
+      List<Square> draughtsSquares = board.getAssignedSquares()
+          .stream()
+          .filter(square -> !square.equals(selectedSquare))
+          .filter(square -> draughtsNotations.contains(square.getNotation()))
+          .collect(Collectors.toList());
+      List<Square> allBeaten = draughtsSquares
+          .stream()
+          .flatMap(square -> highlightedAssignedMoves(square).getBeaten().stream())
+          .collect(Collectors.toList());
+      if (allBeaten.isEmpty()) {
+        board.getAssignedSquares()
+            .stream()
+            .peek(square -> square.setHighlighted(false))
+            .filter(allowed::contains)
+            .forEach(square -> square.setHighlighted(true));
+      }
+      return beaten;
     }
-    updateBoard(board);
-    return allowed;
   }
 
   private static void resetBoardHighlight(Board board) {
-    board.getAssignedSquares().forEach(square -> {
-      square.setHighlighted(false);
-    });
+    board.getAssignedSquares().forEach(square -> square.setHighlighted(false));
   }
 
   private static void moveDraught(Board board, List<Square> beatenSquares) {
@@ -396,10 +379,6 @@ public class BoardUtils {
 
   /**
    * Move draught on whiteDraughts and blackDraughts lists
-   *
-   * @param draughts
-   * @param targetSquareNotation
-   * @param sourceSquareNotation
    */
   private static void replaceDraught(Map<String, Draught> draughts, String targetSquareNotation, String sourceSquareNotation) {
     Draught draughtFromSource = draughts.remove(sourceSquareNotation);
@@ -436,7 +415,7 @@ public class BoardUtils {
     }
   }
 
-  public static void updateMoveSquaresDimensionAndDiagonals(Board currentBoard) {
+  private static void updateMoveSquaresDimensionAndDiagonals(Board currentBoard) {
     currentBoard.setSelectedSquare(updateSquareDimension(currentBoard.getSelectedSquare(), currentBoard));
     currentBoard.setNextSquare(updateSquareDimension(currentBoard.getNextSquare(), currentBoard));
     currentBoard.setPreviousSquare(updateSquareDimension(currentBoard.getPreviousSquare(), currentBoard));
@@ -444,10 +423,7 @@ public class BoardUtils {
 
   private static Square updateSquareDimension(Square square, Board board) {
     if (square != null) {
-      Square updated = findSquareByLink(square, board);
-//      updated.setDraught(square.getDraught());
-//      updateMoveDraughtsNotation(updated);
-      return updated;
+      return findSquareByLink(square, board);
     }
     return null;
   }
