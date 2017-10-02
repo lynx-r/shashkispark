@@ -260,16 +260,15 @@ public class BoardUtils {
     if (!remove && !isOverloadDraughts(board, black)) {
       draught = new Draught(square.getV(), square.getH(), square.getDim(), black, queen);
       if (black) {
+        board.getWhiteDraughts().remove(notation);
         board.addBlackDraughts(notation, draught);
       } else {
+        board.getBlackDraughts().remove(notation);
         board.addWhiteDraughts(notation, draught);
       }
     } else {
-      if (black) {
-        board.getBlackDraughts().remove(notation);
-      } else {
-        board.getWhiteDraughts().remove(notation);
-      }
+      board.getBlackDraughts().remove(notation);
+      board.getWhiteDraughts().remove(notation);
     }
     square.setDraught(draught);
 //    for (List<Square> squares : square.getDiagonals()) {

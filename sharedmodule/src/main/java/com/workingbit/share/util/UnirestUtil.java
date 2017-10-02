@@ -21,7 +21,7 @@ public class UnirestUtil {
         try {
           return jacksonObjectMapper.readValue(value, valueType);
         } catch (IOException e) {
-          throw new RuntimeException("Unable to read value: " + value);
+          throw new RuntimeException("Unable to read value: " + value + ". Message: " + e.getMessage());
         }
       }
 
@@ -29,7 +29,7 @@ public class UnirestUtil {
         try {
           return jacksonObjectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-          throw new RuntimeException("Unable to write value: " + value);
+          throw new RuntimeException("Unable to write value: " + value + ". Message: " + e.getMessage());
         }
       }
     });
