@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.workingbit.share.common.Utils.isBlank;
+import static com.workingbit.share.util.Utils.isBlank;
 import static java.lang.String.format;
 
 /**

@@ -127,6 +127,10 @@ project(':sharedmodule') {
         baseName = 'sharedmdoule'
         version = "${sharemodule_version}"
     }
+
+    dependencies {
+        compile 'commons-codec:commons-codec:1.9'
+    }
 }
 
 sourceCompatibility = 1.8

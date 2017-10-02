@@ -1,7 +1,7 @@
 package com.workingbit.share.domain;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
-import com.workingbit.share.common.Utils;
+import com.workingbit.share.util.Utils;
 
 /**
  * Created by Aleksey Popryaduhin on 15:10 11/08/2017.

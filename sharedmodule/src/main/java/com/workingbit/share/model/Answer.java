@@ -1,7 +1,7 @@
 package com.workingbit.share.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.workingbit.share.deserializer.AnswerDeserializer;
+import com.workingbit.share.common.AnswerDeserializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +13,7 @@ public class Answer {
   private int code;
   private Object body;
   private String error;
-  private Type classType;
+  private Type type;
 
   public Answer(int code) {
     this.code = code;
@@ -22,13 +22,13 @@ public class Answer {
   public Answer(int code, String error) {
     this.code = code;
     this.error = error;
-    this.classType = Type.ERROR;
+    this.type = Type.ERROR;
   }
 
-  public Answer(int code, Object body, Type classType) {
+  public Answer(int code, Object body, Type type) {
     this.code = code;
     this.body = body;
-    this.classType = classType;
+    this.type = type;
   }
 
   public static Answer ok(int code, Object body, Type classType) {

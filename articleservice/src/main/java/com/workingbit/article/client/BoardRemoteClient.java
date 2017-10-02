@@ -17,13 +17,7 @@ import static com.workingbit.article.ArticleApplication.appProperties;
  */
 public class BoardRemoteClient {
 
-  private static final BoardRemoteClient INSTANCE = new BoardRemoteClient();
-
   private static final Logger logger = Logger.getLogger(BoardRemoteClient.class);
-
-  public static BoardRemoteClient getInstance() {
-    return INSTANCE;
-  }
 
   public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest) {
     try {

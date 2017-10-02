@@ -2,7 +2,7 @@ package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.dao.BoardDao;
-import com.workingbit.share.common.Utils;
+import com.workingbit.share.util.Utils;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;

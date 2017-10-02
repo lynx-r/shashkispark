@@ -7,7 +7,7 @@ import com.despegar.http.client.PostMethod;
 import com.despegar.sparkjava.test.SparkServer;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.workingbit.board.BoardApplication;
-import com.workingbit.share.common.Utils;
+import com.workingbit.share.util.Utils;
 import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;

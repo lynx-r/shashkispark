@@ -11,7 +11,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import spark.servlet.SparkApplication;
 
-import static com.workingbit.share.common.Utils.randomString;
+import static com.workingbit.share.util.Utils.randomString;
 import static com.workingbit.share.util.JsonUtil.dataToJson;
 import static com.workingbit.share.util.JsonUtil.jsonToData;
 import static org.junit.Assert.assertEquals;

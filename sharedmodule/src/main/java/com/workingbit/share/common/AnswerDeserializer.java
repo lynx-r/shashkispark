@@ -1,4 +1,4 @@
-package com.workingbit.share.deserializer;
+package com.workingbit.share.common;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,7 +27,7 @@ public class AnswerDeserializer extends JsonDeserializer<Answer> {
   @Override
   public Answer deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
     JsonNode jsonNode = p.getCodec().readTree(p);
-    String classType = jsonNode.get("classType").asText();
+    String classType = jsonNode.get("type").asText();
     JsonNode body = jsonNode.get("body");
     int code = jsonNode.get("code").asInt();
     Answer.Type type = Answer.Type.valueOf(classType);
@@ -54,7 +54,7 @@ public class AnswerDeserializer extends JsonDeserializer<Answer> {
         Answer answer = new Answer();
         answer.setCode(HTTP_BAD_REQUEST);
         answer.setError("Unable to deserialize " + p);
-        answer.setClassType(Answer.Type.ERROR);
+        answer.setType(Answer.Type.ERROR);
         return answer;
       }
     }
