@@ -98,6 +98,9 @@ public class Board implements BaseDomain {
   @DynamoDBAttribute(attributeName = "cursor")
   private boolean cursor;
 
+  @DynamoDBAttribute(attributeName = "blackTurn")
+  private boolean blackTurn;
+
   public Board() {
   }
 
@@ -248,5 +251,14 @@ public class Board implements BaseDomain {
 
   public Square getPreviousSquare() {
     return previousSquare;
+  }
+
+  public boolean isBlackTurn() {
+    return blackTurn;
+  }
+
+  public Board setBlackTurn(boolean blackTurn) {
+    this.blackTurn = blackTurn;
+    return this;
   }
 }

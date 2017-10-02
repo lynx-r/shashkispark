@@ -30,9 +30,6 @@ public class BoardBox implements BaseDomain{
   @DynamoDBIgnore
   private Board board;
 
-  @DynamoDBAttribute(attributeName = "blackTurn")
-  private boolean blackTurn;
-
   public BoardBox() {
   }
 
@@ -82,14 +79,6 @@ public class BoardBox implements BaseDomain{
 
   public void setBoard(Board board) {
     this.board = board;
-  }
-
-  public boolean isBlackTurn() {
-    return blackTurn;
-  }
-
-  public void setBlackTurn(boolean blackTurn) {
-    this.blackTurn = blackTurn;
   }
 
   /**

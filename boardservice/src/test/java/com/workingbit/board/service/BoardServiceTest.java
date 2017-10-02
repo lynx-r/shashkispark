@@ -1,5 +1,6 @@
 package com.workingbit.board.service;
 
+import com.workingbit.board.controller.util.BaseServiceTest;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.CreateBoardPayload;
 import org.junit.After;

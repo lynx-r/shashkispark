@@ -1,19 +1,17 @@
-package com.workingbit.board.service;
+package com.workingbit.board.controller.util;
 
-import com.workingbit.board.board.util.BoardUtils;
-import com.workingbit.board.board.util.HighlightMoveUtil;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.Board;
+import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.EnumRules;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.board.util.BoardUtils.isSubDiagonal;
+import static com.workingbit.board.controller.util.BoardUtils.isSubDiagonal;
 import static org.junit.Assert.*;
 
 /**
@@ -90,7 +88,7 @@ public class BoardUtilsTest {
   @Test
   public void add_draught_to_board() throws BoardServiceException {
     Board boardBox = getBoard();
-    BoardUtils.addDraught(boardBox, "c3", true);
+    BoardUtils.addDraught(boardBox, "c3", getDraught(false));
     Square c3 = BoardUtils.findSquareByNotation("c3", boardBox);
     assertTrue(c3.isOccupied());
     c3.getDiagonals().forEach(squares -> {
@@ -103,7 +101,7 @@ public class BoardUtilsTest {
   @Test
   public void add_draught_fails_on_filled() {
     Board boardBox = getBoardFilled();
-    BoardUtils.addDraught(boardBox, "c3", true);
+    BoardUtils.addDraught(boardBox, "c3", getDraught(true));
     Square c3 = BoardUtils.findSquareByNotation("c3", boardBox);
     assertFalse(c3.isOccupied());
     c3.getDiagonals().forEach(squares -> {
@@ -130,14 +128,8 @@ public class BoardUtilsTest {
     return BoardUtils.initBoard(true, false, EnumRules.RUSSIAN);
   }
 
-  @Test
-  public void test_highlight() throws BoardServiceException, ExecutionException, InterruptedException {
-    Board boardBox = getBoard();
-    BoardUtils.addDraught(boardBox, "d4", false);
-    Square d4 = BoardUtils.findSquareByNotation("d4", boardBox);
-    HighlightMoveUtil.highlightedAssignedMoves(d4);
-    Square e5 = BoardUtils.findSquareByNotation("e5", boardBox);
-    assertTrue(e5.isHighlighted());
+  private Draught getDraught(boolean black) {
+    return new Draught(0, 0, 0, black);
   }
 
   @Test
@@ -150,7 +142,7 @@ public class BoardUtilsTest {
     Square d4 = BoardUtils.findSquareByNotation("d4", board);
     board.setNextSquare(d4);
 
-    board = BoardUtils.moveDraught(c3, board);
+    board = BoardUtils.moveDraught(false, c3, board);
     c3 = BoardUtils.findSquareByNotation(c3.getNotation(), board);
     assertFalse(c3.isOccupied());
     d4 = BoardUtils.findSquareByNotation(d4.getNotation(), board);
@@ -158,7 +150,7 @@ public class BoardUtilsTest {
 
     Square e5 = BoardUtils.findSquareByNotation("e5", board);
     board.setNextSquare(e5);
-    board = BoardUtils.moveDraught(d4, board);
+    board = BoardUtils.moveDraught(true, d4, board);
     d4 = BoardUtils.findSquareByNotation(d4.getNotation(), board);
     assertFalse(d4.isOccupied());
     e5 = BoardUtils.findSquareByNotation(e5.getNotation(), board);

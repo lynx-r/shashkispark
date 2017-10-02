@@ -1,6 +1,6 @@
 //package com.workingbit.board.api.impl;
 //
-//import com.workingbit.board.service.BaseServiceTest;
+//import com.workingbit.board.controller.util.BaseServiceTest;
 //import com.workingbit.board.service.BoardBoxService;
 //import com.workingbit.share.domain.impl.BoardBox;
 //import org.junit.Before;

@@ -18,4 +18,5 @@ public class ErrorMessages {
   public static final String MALFORMED_REQUEST = "Malformed request params";
   public static final String IGNORE_VK_API_SIGN = "Ignore VK API Sign";
   public static final String UNABLE_TO_MAKE_WHITE_STROKE = "Unable to make white stroke";
+  public static final String BEATEN_DRAUGHT_NOT_FOUND = "Beaten draught not found";
 }

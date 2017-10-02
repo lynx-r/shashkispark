@@ -1,14 +1,15 @@
-package com.workingbit.board.service;
+package com.workingbit.board.controller.util;
 
-import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.dao.BoardDao;
-import com.workingbit.share.util.Utils;
+import com.workingbit.board.service.BoardBoxService;
+import com.workingbit.board.service.BoardService;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.EnumRules;
+import com.workingbit.share.util.Utils;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
 
@@ -18,26 +19,27 @@ import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
  */
 public class BaseServiceTest {
 
-//  @Autowired
-//  BoardHistoryService boardHistoryService;
+
+  private BoardService boardService = new BoardService();
+  private BoardBoxService boardBoxService = new BoardBoxService();
 
   BoardDao boardDao;
 
-  BoardBox getBoard(boolean fillBoard) {
+  protected BoardBox getBoard(boolean fillBoard) {
     Board board = BoardUtils.initBoard(fillBoard, false, EnumRules.RUSSIAN);
     Utils.setRandomIdAndCreatedAt(board);
     return new BoardBox(board);
   }
 
-  BoardService boardService() {
-    return BoardService.getInstance();
+  protected BoardService boardService() {
+    return boardService;
   }
 
-  BoardBoxService boardBoxService() {
-    return BoardBoxService.getInstance();
+  protected BoardBoxService boardBoxService() {
+    return boardBoxService;
   }
 
-  Draught getDraught(int v, int h) {
+  protected Draught getDraught(int v, int h) {
     return new Draught(v, h, getRules().getDimension());
   }
 

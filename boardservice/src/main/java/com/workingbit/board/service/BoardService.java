@@ -3,7 +3,6 @@ package com.workingbit.board.service;
 import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.domain.impl.Board;
-import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.CreateBoardPayload;
@@ -42,12 +41,12 @@ public class BoardService {
   /**
    * @return map of {allowed, beaten}
    */
-  Board highlight(boolean blackTurn, Board boardHighlight) {
+  Board highlight(Board boardHighlight) {
     Square selectedSquare = boardHighlight.getSelectedSquare();
     if (isValidHighlight(selectedSquare)) {
       throw new BoardServiceException("Invalid highlight square");
     }
-    highlightedBoard(blackTurn, selectedSquare, boardHighlight);
+    highlightedBoard(boardHighlight.isBlackTurn(), selectedSquare, boardHighlight);
     return boardHighlight;
   }
 
@@ -57,13 +56,11 @@ public class BoardService {
   }
 
   /**
-   * @param blackTurn
-   * @param currentBoard         map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, beaten: List<Square>}  @return Move info:
-*                       {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
-*                       h - distance for move horizontal (minus left), targetSquare is a new square with
-   * @param boardBox
+   * @param currentBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, beaten: List<Square>}  @return Move info:
+   *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
+   *                     h - distance for move horizontal (minus left), targetSquare is a new square with
    */
-  public Board move(boolean blackTurn, Square selectedSquare, Square nextSquare, Board currentBoard, BoardBox boardBox) {
+  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard) {
     currentBoard.setCursor(false);
     boardDao.save(currentBoard);
 
@@ -71,7 +68,7 @@ public class BoardService {
     nextBoard.setSelectedSquare(selectedSquare);
     nextBoard.setNextSquare(nextSquare);
 
-    nextBoard = BoardUtils.moveDraught(blackTurn, selectedSquare, nextBoard, boardBox);
+    nextBoard = BoardUtils.moveDraught(currentBoard.isBlackTurn(), selectedSquare, nextBoard);
     nextBoard.pushPreviousBoard(currentBoard.getId(), selectedSquare.getNotation());
 
     Utils.setRandomIdAndCreatedAt(nextBoard);

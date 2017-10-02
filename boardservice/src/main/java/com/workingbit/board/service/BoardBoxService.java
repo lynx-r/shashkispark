@@ -10,6 +10,7 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.BoardBoxIds;
 import com.workingbit.share.model.BoardBoxes;
 import com.workingbit.share.model.CreateBoardPayload;
+import com.workingbit.share.util.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,12 +67,11 @@ public class BoardBoxService {
         .map(updated -> {
           Board currentBoard = updated.getBoard();
           Square selectedSquare = boardBox.getBoard().getSelectedSquare();
-          if (!selectedSquare.isOccupied()
-              || boardBox.isBlackTurn() != selectedSquare.getDraught().isBlack()) {
+          if (!selectedSquare.isOccupied()) {
             return updated;
           }
           BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
-          currentBoard = boardService.highlight(boardBox.isBlackTurn(), currentBoard);
+          currentBoard = boardService.highlight(currentBoard);
           updated.setBoard(currentBoard);
           return updated;
         });
@@ -88,7 +88,7 @@ public class BoardBoxService {
             Log.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
             return null;
           }
-          boardUpdated = boardService.move(updatedBox.isBlackTurn(), selectedSquare, nextSquare, boardUpdated, updatedBox);
+          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated);
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
           boardBoxDao.save(updatedBox);
@@ -99,7 +99,10 @@ public class BoardBoxService {
   public Optional<BoardBox> makeWhiteStroke(BoardBox boardBox) {
     return findById(boardBox.getId())
         .map(updatedBox -> {
-          updatedBox.setBlackTurn(!updatedBox.isBlackTurn());
+          Board inverted = boardBox.getBoard();
+          Utils.setRandomIdAndCreatedAt(inverted);
+          inverted.setBlackTurn(!inverted.isBlackTurn());
+          boardService.save(inverted);
           boardBoxDao.save(updatedBox);
           return updatedBox;
         });
@@ -181,7 +184,6 @@ public class BoardBoxService {
   private void undoRedoBoardAction(BoardBox updated, Board redone) {
     updated.setBoard(redone);
     updated.setBoardId(redone.getId());
-    updated.setBlackTurn(!updated.isBlackTurn());
     boardBoxDao.save(updated);
   }
 }

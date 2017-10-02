@@ -1,6 +1,5 @@
-package com.workingbit.board.service;
+package com.workingbit.board.controller.util;
 
-import com.workingbit.board.board.util.BoardUtils;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Square;
@@ -19,7 +18,7 @@ public class MoveUtilTest extends BaseServiceTest {
     BoardBox boardBox = getBoard(false);
     Board board = boardBox.getBoard();
     String c3 = "c3";
-    BoardUtils.addDraught(board, c3, false);
+    BoardUtils.addDraught(board, c3, getDraught(0, 0));
     Square squareC3 = BoardUtils.findSquareByNotation(c3, board);
     String d4 = "d4";
     Square squareD4 = BoardUtils.findSquareByNotation(d4, board);
@@ -27,7 +26,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    BoardUtils.moveDraught(squareC3, board);
+    BoardUtils.moveDraught(false, squareC3, board);
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
@@ -37,7 +36,7 @@ public class MoveUtilTest extends BaseServiceTest {
     BoardBox boardBox = getBoard(false);
     Board board = boardBox.getBoard();
     String c7 = "c7";
-    BoardUtils.addDraught(board, c7, false);
+    BoardUtils.addDraught(board, c7, getDraught(0, 0));
     Square squareC3 = BoardUtils.findSquareByNotation(c7, board);
     String d8 = "d8";
     Square squareD4 = BoardUtils.findSquareByNotation(d8, board);
@@ -45,7 +44,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    BoardUtils.moveDraught(squareC3, board);
+    BoardUtils.moveDraught(false, squareC3, board);
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
@@ -55,16 +54,18 @@ public class MoveUtilTest extends BaseServiceTest {
     BoardBox boardBox = getBoard(false);
     Board board = boardBox.getBoard();
     String c7 = "c7";
-    BoardUtils.addDraught(board, c7, true);
+    BoardUtils.addDraught(board, c7, getDraught(0, 0));
     Square squareC7 = BoardUtils.findSquareByNotation(c7, board);
     String d6 = "d6";
-    Square squareD6 = BoardUtils.findSquareByNotation(d6, board);
+    Square squareD6 = (Square) BoardUtils.findSquareByNotation(d6, board).deepClone();
     squareD6.setHighlighted(true);
     board.setSelectedSquare(squareC7);
     board.setNextSquare(squareD6);
 
-    BoardUtils.moveDraught(squareC7, board);
+    board = BoardUtils.moveDraught(true, squareC7, board);
+    squareC7 = BoardUtils.findSquareByNotation(c7, board);
     assertFalse(squareC7.isOccupied());
+    squareD6 = BoardUtils.findSquareByNotation(d6, board);
     assertTrue(squareD6.isOccupied());
   }
 }
