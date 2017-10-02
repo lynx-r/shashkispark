@@ -259,8 +259,8 @@ public class BoardUtils {
     board.getAssignedSquares()
         .forEach(square -> {
           square.setHighlighted(false);
-          if (square.isOccupied()) {
-            square.getDraught().setCaptured(false);
+          if (square.isOccupied() && square.getDraught().isCaptured()) {
+            removeDraught(board, square.getNotation(), square.getDraught().isBlack());
           }
         });
   }
@@ -284,11 +284,11 @@ public class BoardUtils {
           .stream()
           .peek(square -> {
             if (square.isOccupied()) {
-              square.getDraught().setCaptured(false);
+              square.getDraught().setMarkCaptured(false);
             }
           })
           .filter(captured::contains)
-          .forEach(square -> square.getDraught().setCaptured(true));
+          .forEach(square -> square.getDraught().setMarkCaptured(true));
       return captured;
     } else {
       Set<String> draughtsNotations;
@@ -330,9 +330,7 @@ public class BoardUtils {
       if (toBeatSquares.isEmpty()) {
         throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
       }
-      toBeatSquares.forEach(square -> square.getDraught().setCaptured(true));
-//      toBeatSquares.forEach(square ->
-//          BoardUtils.removeDraught(board, square.getNotation(), square.getDraught().isBlack()));
+      toBeatSquares.forEach(square -> findSquareByLink(square, board).getDraught().setCaptured(true));
     }
     Draught draught = sourceSquare.getDraught();
     removeDraught(board, sourceSquare.getNotation(), draught.isBlack());

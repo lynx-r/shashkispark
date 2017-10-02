@@ -99,7 +99,7 @@ class HighlightMoveUtil {
         break;
       }
       next = getNextSquare(down, first, squareListIterator);
-      if (next == null) {
+      if (next == null || next.isOccupied() && next.getDraught().isCaptured()) {
         break;
       }
       mustBeat = mustBeat(next, previous);
@@ -264,7 +264,8 @@ class HighlightMoveUtil {
   private boolean hasCapturedOnCrossDiagonal(Square next, Square previous) {
     for (List<Square> diagonal : next.getDiagonals()) {
       if (!isSubDiagonal(Arrays.asList(previous, next), diagonal)) {
-        return diagonal.stream().anyMatch(square -> square.isOccupied() && square.getDraught().isMarkCaptured());
+        return diagonal.stream().anyMatch(square -> square.isOccupied()
+            && (square.getDraught().isMarkCaptured() || square.getDraught().isCaptured()));
       }
     }
     return false;
