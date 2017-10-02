@@ -14,6 +14,6 @@ import java.util.List;
 @Setter
 public class MovesList {
   private List<Square> allowed = new ArrayList<>();
-  private List<Square> beaten = new ArrayList<>();
+  private List<Square> captured = new ArrayList<>();
 }
 

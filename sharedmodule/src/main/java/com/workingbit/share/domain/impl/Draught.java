@@ -25,7 +25,8 @@ public class Draught implements ICoordinates, BaseDomain {
 
   private boolean black;
   private boolean queen;
-  private boolean beaten;
+  private boolean captured;
+  private boolean markCaptured;
   private boolean highlighted;
 
   public Draught() {
@@ -93,12 +94,21 @@ public class Draught implements ICoordinates, BaseDomain {
     this.queen = queen;
   }
 
-  public boolean isBeaten() {
-    return beaten;
+  public boolean isCaptured() {
+    return captured;
   }
 
-  public void setBeaten(boolean beaten) {
-    this.beaten = beaten;
+  public void setCaptured(boolean captured) {
+    this.captured = captured;
+  }
+
+  public boolean isMarkCaptured() {
+    return markCaptured;
+  }
+
+  public Draught setMarkCaptured(boolean markCaptured) {
+    this.markCaptured = markCaptured;
+    return this;
   }
 
   public boolean isHighlighted() {
@@ -118,12 +128,12 @@ public class Draught implements ICoordinates, BaseDomain {
         h == draught.h &&
         black == draught.black &&
         queen == draught.queen &&
-        beaten == draught.beaten;
+        captured == draught.captured;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(v, h, black, queen, beaten);
+    return Objects.hash(v, h, black, queen, captured);
   }
 
   @Override
@@ -134,7 +144,7 @@ public class Draught implements ICoordinates, BaseDomain {
         ", h=" + h +
         ", black=" + black +
         ", queen=" + queen +
-        ", beaten=" + beaten +
+        ", captured=" + captured +
         ", highlight=" + highlighted +
         '}';
   }

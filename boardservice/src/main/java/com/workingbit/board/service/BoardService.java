@@ -39,7 +39,7 @@ public class BoardService {
   }
 
   /**
-   * @return map of {allowed, beaten}
+   * @return map of {allowed, captured}
    */
   Board highlight(Board boardHighlight) {
     Square selectedSquare = boardHighlight.getSelectedSquare();
@@ -56,7 +56,7 @@ public class BoardService {
   }
 
   /**
-   * @param currentBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, beaten: List<Square>}  @return Move info:
+   * @param currentBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
    */

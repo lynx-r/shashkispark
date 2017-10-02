@@ -57,7 +57,7 @@ public class HighlightMoveUtilTest {
     Board updatedBoard = getSquareByVHWithDraught(board, "c3"); // c3
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "d4"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("d4", highlight.getBeaten());
+    testCollection("d4", highlight.getCaptured());
     testCollection("e5", highlight.getAllowed());
   }
 
@@ -67,7 +67,7 @@ public class HighlightMoveUtilTest {
     Board updatedBoard = getSquareByVHWithDraught(board, "c3"); // c3
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "d2"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("d2", highlight.getBeaten());
+    testCollection("d2", highlight.getCaptured());
     testCollection("e1", highlight.getAllowed());
   }
 
@@ -79,7 +79,7 @@ public class HighlightMoveUtilTest {
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "d6"); // c3
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "b6"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("d4,d6,b6", highlight.getBeaten());
+    testCollection("d4,d6,b6", highlight.getCaptured());
     testCollection("c7,e5,a5", highlight.getAllowed());
   }
 
@@ -92,7 +92,7 @@ public class HighlightMoveUtilTest {
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "e7"); // c3
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "e5"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "e1"));
-    testCollection("c3,b6,e7,e5", highlight.getBeaten());
+    testCollection("c3,b6,e7,e5", highlight.getCaptured());
     testCollection("b4,f8,a5,c7,d8,d4,f4,g3,h2,f6", highlight.getAllowed());
   }
 
@@ -107,7 +107,7 @@ public class HighlightMoveUtilTest {
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "f6"); // c3
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "f4"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c1"));
-    testCollection("b2,b4,d4,d6,f6,f4", highlight.getBeaten());
+    testCollection("b2,b4,d4,d6,f6,f4", highlight.getCaptured());
     testCollection("a3,c5,e3,g5,e7", highlight.getAllowed());
   }
 
@@ -120,7 +120,7 @@ public class HighlightMoveUtilTest {
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "e5"); // c3
     Square e1 = getSquare(updatedBoard, "e1");
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(e1);
-    testCollection("c3,b6,e5", highlight.getBeaten());
+    testCollection("c3,b6,e5", highlight.getCaptured());
     testCollection("h2,g3,c7,f4,a5", highlight.getAllowed());
   }
 
@@ -133,18 +133,18 @@ public class HighlightMoveUtilTest {
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "b6"); // c3
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "e7"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "e1"));
-    testCollection("d2,b6,e7", highlight.getBeaten());
+    testCollection("d2,b6,e7", highlight.getCaptured());
     testCollection("b4,a5,d8,f8,f6,g5,h4", highlight.getAllowed());
   }
 
   @Test
-  public void draught_two_beaten() throws BoardServiceException, ExecutionException, InterruptedException {
+  public void draught_two_captured() throws BoardServiceException, ExecutionException, InterruptedException {
     Board board = getBoard();
     Board updatedBoard = getSquareByVHWithDraught(board, "c3"); // c3
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "d4"); // c3
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "d6"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("d4,d6", highlight.getBeaten());
+    testCollection("d4,d6", highlight.getCaptured());
     testCollection("c7,e5", highlight.getAllowed());
   }
 
@@ -163,7 +163,7 @@ public class HighlightMoveUtilTest {
     Board updatedBoard = getSquareByVHWithDraughtQueen(board, "c3", false);
     updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "e5");
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("e5", highlight.getBeaten());
+    testCollection("e5", highlight.getCaptured());
     testCollection("f6,g7,h8", highlight.getAllowed());
   }
 

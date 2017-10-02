@@ -1,8 +1,6 @@
 package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BoardUtils;
-import com.workingbit.board.exception.BoardServiceException;
-import com.workingbit.share.common.Log;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
@@ -11,6 +9,7 @@ import com.workingbit.share.model.BoardBoxIds;
 import com.workingbit.share.model.BoardBoxes;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.util.Utils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +24,7 @@ import static com.workingbit.board.BoardApplication.boardBoxDao;
  */
 public class BoardBoxService {
 
+  private final Logger logger = Logger.getLogger(BoardBoxService.class);
   private final static BoardService boardService = new BoardService();
 
   public Optional<BoardBox> createBoard(CreateBoardPayload createBoardPayload) {
@@ -71,7 +71,12 @@ public class BoardBoxService {
             return updated;
           }
           BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
-          currentBoard = boardService.highlight(currentBoard);
+          try {
+            currentBoard = boardService.highlight(currentBoard);
+          } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return null;
+          }
           updated.setBoard(currentBoard);
           return updated;
         });
@@ -85,10 +90,15 @@ public class BoardBoxService {
           Square nextSquare = boardUpdated.getNextSquare();
           Square selectedSquare = boardUpdated.getSelectedSquare();
           if (isValidMove(nextSquare, selectedSquare)) {
-            Log.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
+            logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
             return null;
           }
-          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated);
+          try {
+            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated);
+          } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return null;
+          }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
           boardBoxDao.save(updatedBox);
@@ -100,7 +110,6 @@ public class BoardBoxService {
     return findById(boardBox.getId())
         .map(updatedBox -> {
           Board inverted = boardBox.getBoard();
-          Utils.setRandomIdAndCreatedAt(inverted);
           inverted.setBlackTurn(!inverted.isBlackTurn());
           boardService.save(inverted);
           boardBoxDao.save(updatedBox);
@@ -143,9 +152,15 @@ public class BoardBoxService {
           Board currentBoard = updated.getBoard();
           Square squareLink = BoardUtils.findSquareByLink(selectedSquare, currentBoard);
           if (squareLink == null) {
-            throw new BoardServiceException("Unable to add a draught");
+            logger.error("Unable to add a draught");
+            return null;
           }
-          currentBoard = boardService.addDraught(currentBoard, squareLink.getNotation(), draught);
+          try {
+            currentBoard = boardService.addDraught(currentBoard, squareLink.getNotation(), draught);
+          } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return null;
+          }
           updated.setBoardId(currentBoard.getId());
           updated.setBoard(currentBoard);
           save(updated);
@@ -158,7 +173,13 @@ public class BoardBoxService {
         .map(updated -> {
           Board currentBoard = updated.getBoard();
           BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
-          Optional<Board> undone = boardService.undo(currentBoard);
+          Optional<Board> undone = null;
+          try {
+            undone = boardService.undo(currentBoard);
+          } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return null;
+          }
           if (undone.isPresent()) {
             undoRedoBoardAction(updated, undone.get());
             return updated;
@@ -172,7 +193,13 @@ public class BoardBoxService {
         .map(updated -> {
           Board currentBoard = updated.getBoard();
           BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
-          Optional<Board> redone = boardService.redo(currentBoard);
+          Optional<Board> redone = null;
+          try {
+            redone = boardService.redo(currentBoard);
+          } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return null;
+          }
           if (redone.isPresent()) {
             undoRedoBoardAction(updated, redone.get());
             return updated;

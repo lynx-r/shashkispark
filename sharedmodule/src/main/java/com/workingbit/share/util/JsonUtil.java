@@ -14,7 +14,7 @@ public class JsonUtil {
     try {
       return mapper.writeValueAsString(data);
     } catch (IOException e) {
-      throw new RuntimeException("IOEXception while mapping object (" + data + ") to JSON");
+      throw new RuntimeException("IOEXception while mapping object (" + data + ") to JSON. " + e.getMessage());
     }
   }
 
@@ -23,7 +23,7 @@ public class JsonUtil {
       System.out.println("got json "+json);
       return mapper.readValue(json, clazz);
     } catch (IOException e) {
-      throw new RuntimeException("IOException while mapping json " + json);
+      throw new RuntimeException("IOException while mapping json " + json + ". " + e.getMessage());
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.workingbit.board.controller.util;
 
 import com.workingbit.board.exception.BoardServiceException;
+import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
@@ -201,7 +202,7 @@ public class BoardUtils {
     if (draught == null) {
       return;
     }
-    addDraught(board, notation, draught.isBlack(), draught.isQueen(), draught.isBeaten());
+    addDraught(board, notation, draught.isBlack(), draught.isQueen(), draught.isCaptured());
   }
 
   private static void addDraught(Board board, String notation, boolean black, boolean queen, boolean remove) {
@@ -240,24 +241,28 @@ public class BoardUtils {
   }
 
   public static Board moveDraught(boolean blackTurn, Square selectedSquare, Board board) {
-    List<Square> beatenSquares = highlightedBoard(blackTurn, selectedSquare, board);
-    moveDraught(beatenSquares, board);
+    List<Square> capturedSquares = highlightedBoard(blackTurn, selectedSquare, board);
+    moveDraught(capturedSquares, board);
     Board highlightedBoard = (Board) board.deepClone();
-    List<Square> nextBeatenSquares = highlightedBoard(blackTurn, highlightedBoard.getSelectedSquare(), highlightedBoard);
-    boolean previousNotBeaten = beatenSquares.isEmpty();
-    boolean nextNotBeaten = nextBeatenSquares.isEmpty();
-    if (!previousNotBeaten && !nextNotBeaten) {
+    List<Square> nextCapturedSquares = highlightedBoard(blackTurn, highlightedBoard.getSelectedSquare(), highlightedBoard);
+    boolean previousNotCaptured = capturedSquares.isEmpty();
+    boolean nextNotCaptured = nextCapturedSquares.isEmpty();
+    if (!previousNotCaptured && !nextNotCaptured) {
       return highlightedBoard;
     }
     board.setBlackTurn(!board.isBlackTurn());
+    resetBoardHighlight(board);
+    return board;
+  }
+
+  private static void resetBoardHighlight(Board board) {
     board.getAssignedSquares()
         .forEach(square -> {
           square.setHighlighted(false);
           if (square.isOccupied()) {
-            square.getDraught().setBeaten(false);
+            square.getDraught().setCaptured(false);
           }
         });
-    return board;
   }
 
   /**
@@ -268,8 +273,8 @@ public class BoardUtils {
   public static List<Square> highlightedBoard(boolean blackTurn, Square selectedSquare, Board board) {
     MovesList movesList = highlightedAssignedMoves(selectedSquare);
     List<Square> allowed = movesList.getAllowed();
-    List<Square> beaten = movesList.getBeaten();
-    if (!beaten.isEmpty()) {
+    List<Square> captured = movesList.getCaptured();
+    if (!captured.isEmpty()) {
       board.getAssignedSquares()
           .stream()
           .peek(square -> square.setHighlighted(false))
@@ -279,12 +284,12 @@ public class BoardUtils {
           .stream()
           .peek(square -> {
             if (square.isOccupied()) {
-              square.getDraught().setBeaten(false);
+              square.getDraught().setCaptured(false);
             }
           })
-          .filter(beaten::contains)
-          .forEach(square -> square.getDraught().setBeaten(true));
-      return beaten;
+          .filter(captured::contains)
+          .forEach(square -> square.getDraught().setCaptured(true));
+      return captured;
     } else {
       Set<String> draughtsNotations;
       if (blackTurn) {
@@ -297,33 +302,37 @@ public class BoardUtils {
           .filter(square -> !square.equals(selectedSquare))
           .filter(square -> draughtsNotations.contains(square.getNotation()))
           .collect(Collectors.toList());
-      List<Square> allBeaten = draughtsSquares
+      List<Square> allCaptured = draughtsSquares
           .stream()
-          .flatMap(square -> highlightedAssignedMoves(square).getBeaten().stream())
+          .flatMap(square -> highlightedAssignedMoves(square).getCaptured().stream())
           .collect(Collectors.toList());
-      if (allBeaten.isEmpty()) {
+      if (allCaptured.isEmpty()) {
         board.getAssignedSquares()
             .stream()
             .peek(square -> square.setHighlighted(false))
             .filter(allowed::contains)
             .forEach(square -> square.setHighlighted(true));
       }
-      return beaten;
+      return captured;
     }
   }
 
-  private static void moveDraught(List<Square> beatenSquares, Board board) {
+  private static void moveDraught(List<Square> capturedSquares, Board board) {
     Square sourceSquare = board.getSelectedSquare();
     Square targetSquare = board.getNextSquare();
     if (!targetSquare.isHighlighted()
         || sourceSquare == null
         || !sourceSquare.isOccupied()) {
-      throw new BoardServiceException("Unable to move the draught");
+      throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
-    if (!beatenSquares.isEmpty()) {
-      List<Square> toBeatSquares = findBeatenSquare(sourceSquare, targetSquare);
-      toBeatSquares.forEach(square ->
-          BoardUtils.removeDraught(board, square.getNotation(), square.getDraught().isBlack()));
+    if (!capturedSquares.isEmpty()) {
+      List<Square> toBeatSquares = findCapturedSquare(sourceSquare, targetSquare);
+      if (toBeatSquares.isEmpty()) {
+        throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
+      }
+      toBeatSquares.forEach(square -> square.getDraught().setCaptured(true));
+//      toBeatSquares.forEach(square ->
+//          BoardUtils.removeDraught(board, square.getNotation(), square.getDraught().isBlack()));
     }
     Draught draught = sourceSquare.getDraught();
     removeDraught(board, sourceSquare.getNotation(), draught.isBlack());
@@ -344,9 +353,9 @@ public class BoardUtils {
     replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
   }
 
-  private static List<Square> findBeatenSquare(Square sourceSquare, Square targetSquare) {
+  private static List<Square> findCapturedSquare(Square sourceSquare, Square targetSquare) {
     boolean upDirection = isUpDirection(sourceSquare, targetSquare);
-    List<Square> beaten = new ArrayList<>();
+    List<Square> captured = new ArrayList<>();
     for (List<Square> diagonal : sourceSquare.getDiagonals()) {
       if (isSubDiagonal(Arrays.asList(sourceSquare, targetSquare), diagonal)) {
         ListIterator<Square> squareListIterator = diagonal.listIterator(diagonal.indexOf(sourceSquare));
@@ -357,7 +366,7 @@ public class BoardUtils {
               break;
             }
             if (isValidToBeat(sourceSquare, next)) {
-              beaten.add(next);
+              captured.add(next);
             }
           }
         } else {
@@ -367,13 +376,13 @@ public class BoardUtils {
               break;
             }
             if (isValidToBeat(sourceSquare, next)) {
-              beaten.add(next);
+              captured.add(next);
             }
           }
         }
       }
     }
-    return beaten;
+    return captured;
   }
 
   private static boolean isValidToBeat(Square sourceSquare, Square next) {
