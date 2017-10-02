@@ -73,4 +73,12 @@ public class BoardBoxController {
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_UNDO + req.body()))
       ).handleRequest(req, res, BoardBox.class);
+
+  public static Route makeWhiteStroke = (req, res) ->
+      ((ModelHandlerFunc<BoardBox>) data ->
+          boardBoxService
+              .makeWhiteStroke((BoardBox) data)
+              .map(Answer::okBoardBox)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_MAKE_WHITE_STROKE + req.body()))
+      ).handleRequest(req, res, BoardBox.class);
 }

@@ -17,4 +17,5 @@ public class ErrorMessages {
   public static final String UNABLE_TO_UNDO = "Unable to undo: ";
   public static final String MALFORMED_REQUEST = "Malformed request params";
   public static final String IGNORE_VK_API_SIGN = "Ignore VK API Sign";
+  public static final String UNABLE_TO_MAKE_WHITE_STROKE = "Unable to make white stroke";
 }

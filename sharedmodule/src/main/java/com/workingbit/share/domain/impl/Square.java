@@ -170,6 +170,7 @@ public class Square implements ICoordinates, BaseDomain {
     return this;
   }
 
+  @JsonIgnore
   @Override
   public String getId() {
     return null;
@@ -180,6 +181,7 @@ public class Square implements ICoordinates, BaseDomain {
 
   }
 
+  @JsonIgnore
   @Override
   public Date getCreatedAt() {
     return null;

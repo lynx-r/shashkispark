@@ -63,6 +63,7 @@ public class BoardApplication {
           post(Path.BOARD_HIGHLIGHT, BoardBoxController.highlightBoard);
           post(Path.BOARD_REDO, BoardBoxController.redo);
           post(Path.BOARD_UNDO, BoardBoxController.undo);
+          post(Path.MAKE_WHITE_STROKE, BoardBoxController.makeWhiteStroke);
 
           notFound((req, res) -> "Not found");
           internalServerError((req, res) -> "Internal server error");

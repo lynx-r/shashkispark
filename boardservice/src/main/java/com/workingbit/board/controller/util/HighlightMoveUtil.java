@@ -254,6 +254,9 @@ public class HighlightMoveUtil {
   private void findAllowedUsingIterator(boolean down, List<Square> allowedMoves, ListIterator<Square> squareListIterator) {
     Square next;
     if (down) {
+      if (hasNotNextMove(true, squareListIterator)) {
+        return;
+      }
       next = squareListIterator.next();
     } else {
       if (hasNotNextMove(false, squareListIterator)) {

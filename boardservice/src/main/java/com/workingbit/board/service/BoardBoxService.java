@@ -97,6 +97,15 @@ public class BoardBoxService {
         });
   }
 
+  public Optional<BoardBox> makeWhiteStroke(BoardBox boardBox) {
+    return findById(boardBox.getId())
+        .map(updatedBox -> {
+          updatedBox.setBlackTurn(!updatedBox.isBlackTurn());
+          boardBoxDao.save(updatedBox);
+          return updatedBox;
+        });
+  }
+
   private boolean isValidMove(Square nextSquare, Square selectedSquare) {
     return nextSquare == null
         || selectedSquare == null
