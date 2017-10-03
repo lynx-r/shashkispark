@@ -176,7 +176,7 @@ public class BoardUtils {
     return findSquareByVH(board, square.getV(), square.getH());
   }
 
-  public static Square findSquareByVH(Board board, int v, int h) {
+  static Square findSquareByVH(Board board, int v, int h) {
     for (Square square : board.getAssignedSquares()) {
       if (square.getH() == h && square.getV() == v) {
         return square;
@@ -240,19 +240,47 @@ public class BoardUtils {
     addDraught(board, notation, black, false, true);
   }
 
-  public static Board moveDraught(boolean blackTurn, Square selectedSquare, Board board) {
+  public static Board moveDraught(Square selectedSquare, Board board) {
+    boolean blackTurn = board.isBlackTurn();
     List<Square> capturedSquares = highlightedBoard(blackTurn, selectedSquare, board);
     moveDraught(capturedSquares, board);
     Board highlightedBoard = (Board) board.deepClone();
     List<Square> nextCapturedSquares = highlightedBoard(blackTurn, highlightedBoard.getSelectedSquare(), highlightedBoard);
-    boolean previousNotCaptured = capturedSquares.isEmpty();
-    boolean nextNotCaptured = nextCapturedSquares.isEmpty();
-    if (!previousNotCaptured && !nextNotCaptured) {
+    boolean previousCaptured = !capturedSquares.isEmpty();
+    boolean nextCaptured = !nextCapturedSquares.isEmpty();
+    if (previousCaptured && nextCaptured) {
+      updateNotationMiddle(highlightedBoard);
       return highlightedBoard;
     }
-    board.setBlackTurn(!board.isBlackTurn());
+    updateNotationEnd(previousCaptured, board);
     resetBoardHighlight(board);
     return board;
+  }
+
+  private static void updateNotationMiddle(Board board) {
+    String notationAppend = board.getNotation() + " " + board.getPreviousSquare().getNotation() + ":" + board.getSelectedSquare().getNotation();
+    board.setNotation(notationAppend);
+  }
+
+  private static void updateNotationEnd(boolean previousCaptured, Board board) {
+    boolean blackTurn = board.isBlackTurn();
+    int strokeNumber = blackTurn ? board.getStrokeNumber() : board.getStrokeNumber() + 1;
+    board.setStrokeNumber(strokeNumber);
+    board.setBlackTurn(!blackTurn);
+    boolean firstStroke = board.getNotation() == null;
+    String numberForWhite = blackTurn ? " " : ((firstStroke ? "" : " ") + board.getStrokeNumber() + ". ");
+    String notationAppend;
+    String notation = firstStroke ? "" : board.getNotation();
+    if (previousCaptured) {
+      if (notation.substring(notation.length() - 2).equals(board.getPreviousSquare().getNotation())) {
+        notationAppend = ":" + board.getSelectedSquare().getNotation();
+      } else {
+        notationAppend = numberForWhite + board.getPreviousSquare().getNotation() + ":" + board.getSelectedSquare().getNotation();
+      }
+    } else {
+      notationAppend = numberForWhite + board.getPreviousSquare().getNotation() + "-" + board.getSelectedSquare().getNotation();
+    }
+    board.setNotation(notation + notationAppend);
   }
 
   private static void resetBoardHighlight(Board board) {

@@ -5,6 +5,7 @@ import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Square;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
@@ -26,9 +27,56 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    BoardUtils.moveDraught(false, squareC3, board);
+    board = BoardUtils.moveDraught(squareC3, board);
+    System.out.println(board.getNotation());
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
+  }
+
+  @Test
+  public void should_move_2() {
+    BoardBox boardBox = getBoard(true);
+    Board board = boardBox.getBoard();
+    board = move(board, "c3", "d4", false);
+    board = move(board, "d6", "e5", true);
+  }
+
+  @Test
+  public void should_move_4() {
+    BoardBox boardBox = getBoard(true);
+    Board board = boardBox.getBoard();
+    board = move(board, "c3", "d4", false);
+    board = move(board, "h6", "g5", true);
+    board = move(board, "a3", "b4", false);
+    board = move(board, "b6", "a5", true);
+    assertEquals("1. c3-d4 h6-g5 2. a3-b4 b6-a5", board.getNotation());
+  }
+
+  @Test
+  public void should_capture() {
+    BoardBox boardBox = getBoard(true);
+    Board board = boardBox.getBoard();
+    board = move(board, "c3", "d4", false);
+    board = move(board, "f6", "e5", true);
+    board = move(board, "d4", "f6", false);
+    board = move(board, "g7", "e5", true);
+    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
+  }
+
+  @Test
+  public void should_capture_2() {
+    BoardBox boardBox = getBoard(true);
+    Board board = boardBox.getBoard();
+    board = move(board, "c3", "d4", false);
+    board = move(board, "f6", "e5", true);
+    board = move(board, "d4", "f6", false);
+    board = move(board, "g7", "e5", true);
+    board = move(board, "a3", "b4", false);
+    board = move(board, "h6", "g5", true);
+    board = move(board, "e3", "d4", false);
+    board = move(board, "e5", "c3", true);
+    board = move(board, "c3", "a5", true);
+//    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
   }
 
   @Test
@@ -44,7 +92,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    BoardUtils.moveDraught(false, squareC3, board);
+    BoardUtils.moveDraught(squareC3, board);
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
@@ -62,10 +110,25 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC7);
     board.setNextSquare(squareD6);
 
-    board = BoardUtils.moveDraught(true, squareC7, board);
+    board = BoardUtils.moveDraught(squareC7, board);
     squareC7 = BoardUtils.findSquareByNotation(c7, board);
     assertFalse(squareC7.isOccupied());
     squareD6 = BoardUtils.findSquareByNotation(d6, board);
     assertTrue(squareD6.isOccupied());
+  }
+
+  private Board move(Board board, String fromNotation, String toNotation, boolean blackTurn) {
+    Square from = BoardUtils.findSquareByNotation(fromNotation, board);
+    Square to = BoardUtils.findSquareByNotation(toNotation, board);
+    to.setHighlighted(true);
+    board.setSelectedSquare(from);
+    board.setNextSquare(to);
+    board.setBlackTurn(blackTurn);
+
+    board = BoardUtils.moveDraught(from, board);
+    System.out.println(board.getNotation());
+    assertFalse(from.isOccupied());
+    assertTrue(to.isOccupied());
+    return board;
   }
 }

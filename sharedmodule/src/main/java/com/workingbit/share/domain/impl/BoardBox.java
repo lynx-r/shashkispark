@@ -1,7 +1,6 @@
 package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.LocalDateConverter;
 import com.workingbit.share.domain.BaseDomain;
@@ -29,7 +28,6 @@ public class BoardBox implements BaseDomain{
   @DynamoDBAttribute(attributeName = "articleId")
   private String articleId;
 
-  @JsonIgnore
   @DynamoDBAttribute(attributeName = "boardId")
   private String boardId;
 

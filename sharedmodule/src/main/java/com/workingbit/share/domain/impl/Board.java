@@ -8,6 +8,7 @@ import com.workingbit.share.converter.DraughtMapConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.BoardIdNotation;
 import com.workingbit.share.model.EnumRules;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.util.*;
 /**
  * Created by Aleksey Popryaduhin on 23:21 21/09/2017.
  */
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 @DynamoDBTable(tableName = DBConstants.BOARD_TABLE)
@@ -27,7 +29,6 @@ public class Board implements BaseDomain {
   @DynamoDBRangeKey(attributeName = "createdAt")
   private Date createdAt;
 
-  @JsonIgnore
   @DynamoDBAttribute(attributeName = "boardBoxId")
   private String boardBoxId;
 
@@ -108,9 +109,6 @@ public class Board implements BaseDomain {
   private int strokeNumber;
 
   @DynamoDBAttribute(attributeName = "stroke")
-  private String stroke;
-
-  @DynamoDBAttribute(attributeName = "notation")
   private String notation;
 
   public Board(boolean black, EnumRules rules) {
@@ -144,8 +142,14 @@ public class Board implements BaseDomain {
 
   public void setSelectedSquare(Square square) {
     this.selectedSquare = square;
-    if (square != null) {
-      this.notation = square.getNotation();
+  }
+
+  @DynamoDBIgnore
+  @JsonIgnore
+  public String getStrokeNotation() {
+    if (selectedSquare != null) {
+      return selectedSquare.getNotation();
     }
+    return "";
   }
 }

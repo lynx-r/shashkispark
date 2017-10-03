@@ -68,7 +68,7 @@ public class BoardService {
     nextBoard.setSelectedSquare(selectedSquare);
     nextBoard.setNextSquare(nextSquare);
 
-    nextBoard = BoardUtils.moveDraught(currentBoard.isBlackTurn(), selectedSquare, nextBoard);
+    nextBoard = BoardUtils.moveDraught(selectedSquare, nextBoard);
     nextBoard.pushPreviousBoard(currentBoard.getId(), selectedSquare.getNotation());
 
     Utils.setRandomIdAndCreatedAt(nextBoard);
