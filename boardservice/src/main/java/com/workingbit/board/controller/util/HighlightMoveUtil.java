@@ -16,25 +16,27 @@ import static com.workingbit.board.controller.util.BoardUtils.isSubDiagonal;
  */
 class HighlightMoveUtil {
 
-  private Square selectedSquare;
+  //  private final Square previousSquare;
+  private final Square selectedSquare;
 
-  private HighlightMoveUtil(Square selectedSquare) throws BoardServiceException {
+  private HighlightMoveUtil(Square previousSquare, Square selectedSquare) throws BoardServiceException {
     if (selectedSquare == null || selectedSquare.getDraught() == null) {
       throw new BoardServiceException("Selected square without placed draught");
     }
     this.selectedSquare = (Square) selectedSquare.deepClone();
     this.selectedSquare.getDraught().setHighlighted(true);
+//      this.previousSquare = (Square) previousSquare.deepClone();
 //    board.setSelectedSquare(selectedSquare);
   }
 
   /**
    * highlightedAssignedMoves moves for the selected square
    */
-  static MovesList highlightedAssignedMoves(Square selectedSquare) {
+  static MovesList highlightedAssignedMoves(Square previousSquare, Square selectedSquare) {
     if (selectedSquare == null || !selectedSquare.isOccupied()) {
       throw new BoardServiceException("Invalid selected square");
     }
-    HighlightMoveUtil highlightMoveUtil = new HighlightMoveUtil(selectedSquare);
+    HighlightMoveUtil highlightMoveUtil = new HighlightMoveUtil(previousSquare, selectedSquare);
     return highlightMoveUtil.highlightAllAssignedMoves();
   }
 
@@ -99,7 +101,11 @@ class HighlightMoveUtil {
         break;
       }
       next = getNextSquare(down, first, squareListIterator);
-      if (next == null || next.isOccupied() && next.getDraught().isCaptured()) {
+      if (next == null
+          || (next.isOccupied() && next.getDraught().isCaptured())
+          || (previous != null && previous.isOccupied() && previous.getDraught().isBlack() != this.selectedSquare.getDraught().isBlack()
+          && next.isOccupied())
+          ) {
         break;
       }
       mustBeat = mustBeat(next, previous);

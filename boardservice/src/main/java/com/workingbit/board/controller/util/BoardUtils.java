@@ -271,7 +271,7 @@ public class BoardUtils {
    * @return is next move allowed
    */
   public static List<Square> highlightedBoard(boolean blackTurn, Square selectedSquare, Board board) {
-    MovesList movesList = highlightedAssignedMoves(selectedSquare);
+    MovesList movesList = highlightedAssignedMoves(board.getPreviousSquare(), selectedSquare);
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();
     if (!captured.isEmpty()) {
@@ -304,7 +304,7 @@ public class BoardUtils {
           .collect(Collectors.toList());
       List<Square> allCaptured = draughtsSquares
           .stream()
-          .flatMap(square -> highlightedAssignedMoves(square).getCaptured().stream())
+          .flatMap(square -> highlightedAssignedMoves(board.getPreviousSquare(), square).getCaptured().stream())
           .collect(Collectors.toList());
       if (allCaptured.isEmpty()) {
         board.getAssignedSquares()
@@ -325,13 +325,8 @@ public class BoardUtils {
         || !sourceSquare.isOccupied()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
-    if (!capturedSquares.isEmpty()) {
-      List<Square> toBeatSquares = findCapturedSquare(sourceSquare, targetSquare);
-      if (toBeatSquares.isEmpty()) {
-        throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
-      }
-      toBeatSquares.forEach(square -> findSquareByLink(square, board).getDraught().setCaptured(true));
-    }
+    markCapturedDraught(capturedSquares, board, sourceSquare, targetSquare);
+
     Draught draught = sourceSquare.getDraught();
     removeDraught(board, sourceSquare.getNotation(), draught.isBlack());
 
@@ -351,6 +346,16 @@ public class BoardUtils {
 
     replaceDraught(board.getWhiteDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
     replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
+  }
+
+  private static void markCapturedDraught(List<Square> capturedSquares, Board board, Square sourceSquare, Square targetSquare) {
+    if (!capturedSquares.isEmpty()) {
+      List<Square> toBeatSquares = findCapturedSquare(sourceSquare, targetSquare);
+      if (toBeatSquares.isEmpty()) {
+        throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
+      }
+      toBeatSquares.forEach(square -> findSquareByLink(square, board).getDraught().setCaptured(true));
+    }
   }
 
   private static void checkQueen(Board board, Draught draught) {
