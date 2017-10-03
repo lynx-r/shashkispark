@@ -260,11 +260,14 @@ public class BoardUtils {
 
   private static void updateNotationMiddle(Board board) {
     Notation notation = board.getNotation();
-    NotationStroke notationStroke = notation.getNotationStrokes().getFirst();
-    if (notationStroke.getFirst() == null && notationStroke.getSecond() == null) {
-      notation.getNotationStrokes().removeFirst();
-    }
-    notationStroke = notation.getNotationStrokes().getFirst();
+    boolean blackTurn = board.isBlackTurn();
+    int strokeCount = blackTurn ? board.getStrokeCount() : board.getStrokeCount() + 1;
+    board.setStrokeCount(strokeCount);
+    NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation);
+//    if (notationStroke.getFirst() == null && notationStroke.getSecond() == null) {
+//      notation.getNotationStrokes().removeFirst();
+//    }
+//    notationStroke = notation.getNotationStrokes().getFirst();
     if (board.isBlackTurn()) {
       notationStroke.setSecond(getNotationAtomCaptureStroke(notationStroke.getSecond(), board));
     } else {
@@ -274,11 +277,11 @@ public class BoardUtils {
 
   private static void updateNotationEnd(boolean previousCaptured, Board board) {
     boolean blackTurn = board.isBlackTurn();
-    int strokeNumber = blackTurn ? board.getStrokeNumber() : board.getStrokeNumber() + 1;
-    board.setStrokeNumber(strokeNumber);
+    int strokeCount = blackTurn ? board.getStrokeCount() : board.getStrokeCount() + 1;
+    board.setStrokeCount(strokeCount);
     Notation notation = board.getNotation();
     if (previousCaptured) {
-      NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation);
+      NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation);
       if (board.isBlackTurn()) {
         NotationAtomStroke second = getNotationAtomCaptureStroke(notationStroke.getSecond(), board);
         notationStroke.setSecond(second);
@@ -287,7 +290,7 @@ public class BoardUtils {
         notationStroke.setFirst(first);
       }
     } else {
-      pushSimpleStrokeToNotation(board, strokeNumber, notation);
+      pushSimpleStrokeToNotation(board, strokeCount, notation);
     }
     board.setBlackTurn(!blackTurn);
   }
@@ -297,10 +300,10 @@ public class BoardUtils {
       boolean continueStroke = notationAtomStroke.getStrokes().get(notationAtomStroke.getStrokes().size() - 1)
           .equals(board.getPreviousSquare().getNotation());
       if (continueStroke) {
-        notationAtomStroke.getStrokes().add(board.getPreviousSquare().getNotation());
+        notationAtomStroke.getStrokes().add(board.getSelectedSquare().getNotation());
         return notationAtomStroke;
       }
-      return null;
+      return notationAtomStroke;
     } else {
       List<String> strokes = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
       return new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.CAPTURE, strokes, board.getId());
@@ -318,13 +321,14 @@ public class BoardUtils {
     }
   }
 
-  private static NotationStroke getFirstNotationStroke(int strokeNumber, Notation notation) {
+  private static NotationStroke getFirstNotationStroke(int strokeCount, Notation notation) {
     if (notation.getNotationStrokes().isEmpty()) {
       notation.getNotationStrokes().push(new NotationStroke(1, null, null));
     } else {
       NotationStroke notationStroke = notation.getNotationStrokes().getFirst();
-      if (notationStroke.getFirst() != null && notationStroke.getSecond() != null) {
-        notation.getNotationStrokes().push(new NotationStroke(strokeNumber, null, null));
+      if (notationStroke.getCount() != strokeCount
+          && notationStroke.getFirst() != null && notationStroke.getSecond() != null) {
+        notation.getNotationStrokes().push(new NotationStroke(strokeCount, null, null));
       }
     }
     return notation.getNotationStrokes().getFirst();

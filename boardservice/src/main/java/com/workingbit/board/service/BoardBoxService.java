@@ -8,12 +8,10 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.BoardBoxIds;
 import com.workingbit.share.model.BoardBoxes;
 import com.workingbit.share.model.CreateBoardPayload;
+import com.workingbit.share.model.Notation;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardApplication.boardBoxDao;
@@ -219,12 +217,13 @@ public class BoardBoxService {
   }
 
   private BoardBox updateBoardNotation(BoardBox boardBox) {
-    BoardBox updated = updateBoardBox(boardBox);
-    int bbNotationSize = updated.getNotation().getNotationStrokes().size();
-    int currentBoardNotationSize = updated.getBoard().getNotation().getNotationStrokes().size();
-    if (currentBoardNotationSize > bbNotationSize) {
-      updated.setNotation(updated.getBoard().getNotation());
+    int bbNotationSize = boardBox.getNotation().getNotationStrokes().size();
+    int currentBoardNotationSize = boardBox.getBoard().getNotation().getNotationStrokes().size();
+    if (currentBoardNotationSize >= bbNotationSize) {
+      Notation notation = boardBox.getBoard().getNotation();
+      Collections.reverse(notation.getNotationStrokes());
+      boardBox.setNotation(notation);
     }
-    return updated;
+    return boardBox;
   }
 }

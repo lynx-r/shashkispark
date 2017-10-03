@@ -106,8 +106,8 @@ public class Board implements BaseDomain {
   @DynamoDBAttribute(attributeName = "blackTurn")
   private boolean blackTurn;
 
-  @DynamoDBAttribute(attributeName = "strokeNumber")
-  private int strokeNumber;
+  @DynamoDBAttribute(attributeName = "strokeCount")
+  private int strokeCount;
 
   @JsonIgnore
   @DynamoDBTypeConvertedJson(targetType = Notation.class)
