@@ -2,6 +2,7 @@ package com.workingbit.board.controller.util;
 
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.common.NotationConstants;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
@@ -268,17 +269,17 @@ public class BoardUtils {
     board.setStrokeNumber(strokeNumber);
     board.setBlackTurn(!blackTurn);
     boolean firstStroke = board.getNotation() == null;
-    String numberForWhite = blackTurn ? " " : ((firstStroke ? "" : " ") + board.getStrokeNumber() + ". ");
+    String numberForWhite = blackTurn ? NotationConstants.SPACE : ((firstStroke ? "" : NotationConstants.NEW_LINE) + board.getStrokeNumber() + NotationConstants.NOTATION_DOT_NUMBER);
     String notationAppend;
     String notation = firstStroke ? "" : board.getNotation();
     if (previousCaptured) {
       if (notation.substring(notation.length() - 2).equals(board.getPreviousSquare().getNotation())) {
-        notationAppend = ":" + board.getSelectedSquare().getNotation();
+        notationAppend = NotationConstants.CAPTURE + board.getSelectedSquare().getNotation();
       } else {
-        notationAppend = numberForWhite + board.getPreviousSquare().getNotation() + ":" + board.getSelectedSquare().getNotation();
+        notationAppend = numberForWhite + board.getPreviousSquare().getNotation() + NotationConstants.CAPTURE + board.getSelectedSquare().getNotation();
       }
     } else {
-      notationAppend = numberForWhite + board.getPreviousSquare().getNotation() + "-" + board.getSelectedSquare().getNotation();
+      notationAppend = numberForWhite + board.getPreviousSquare().getNotation() + NotationConstants.STROKE + board.getSelectedSquare().getNotation();
     }
     board.setNotation(notation + notationAppend);
   }
