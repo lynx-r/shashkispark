@@ -1,4 +1,4 @@
-package com.workingbit.share.common;
+package com.workingbit.share.converter;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

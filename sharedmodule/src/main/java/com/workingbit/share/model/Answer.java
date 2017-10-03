@@ -1,7 +1,7 @@
 package com.workingbit.share.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.workingbit.share.common.AnswerDeserializer;
+import com.workingbit.share.converter.AnswerDeserializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

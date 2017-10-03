@@ -26,6 +26,14 @@ public class BoardBoxController {
               .orElse(Answer.error(HTTP_GONE, ErrorMessages.UNABLE_TO_CREATE_BOARD + req.body()))
       ).handleRequest(req, res, CreateBoardPayload.class);
 
+  public static Route saveBoard = (req, res) ->
+      ((ModelHandlerFunc<BoardBox>) boardRequest ->
+          boardBoxService
+              .save(boardRequest)
+              .map(Answer::okBoardBox)
+              .orElse(Answer.error(HTTP_GONE, ErrorMessages.UNABLE_TO_CREATE_BOARD + req.body()))
+      ).handleRequest(req, res, BoardBox.class);
+
   public static Route findBoardById = (req, res) ->
       ((ParamsHandlerFunc) params ->
           boardBoxService.findById(params.get(RequestConstants.ID))

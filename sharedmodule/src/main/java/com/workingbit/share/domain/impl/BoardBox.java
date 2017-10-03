@@ -3,14 +3,20 @@ package com.workingbit.share.domain.impl;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.common.DBConstants;
+import com.workingbit.share.converter.LocalDateConverter;
 import com.workingbit.share.domain.BaseDomain;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
 /**
  * Created by Aleksey Popryaduhin on 19:54 12/08/2017.
  */
+@NoArgsConstructor
+@Data
 @DynamoDBTable(tableName = DBConstants.BOARD_BOX_TABLE)
 public class BoardBox implements BaseDomain{
 
@@ -30,60 +36,35 @@ public class BoardBox implements BaseDomain{
   @DynamoDBIgnore
   private Board board;
 
-  public BoardBox() {
-  }
+  @DynamoDBAttribute(attributeName = "whitePlayer")
+  private String whitePlayer;
+
+  @DynamoDBAttribute(attributeName = "blackPlayer")
+  private String blackPlayer;
+
+  @DynamoDBAttribute(attributeName = "event")
+  private String event;
+
+  @DynamoDBAttribute(attributeName = "site")
+  private String site;
+
+  @DynamoDBAttribute(attributeName = "round")
+  private String round;
+
+  @DynamoDBTypeConverted(converter = LocalDateConverter.class)
+  @DynamoDBAttribute(attributeName = "date")
+  private LocalDate date;
+
+  @DynamoDBAttribute(attributeName = "result")
+  private String result;
+
+  @DynamoDBAttribute(attributeName = "gameType")
+  private String gameType;
 
   public BoardBox(Board board) {
     this.board = board;
     this.boardId = board.getId();
   }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Date getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(Date createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public String getArticleId() {
-    return articleId;
-  }
-
-  public void setArticleId(String articleId) {
-    this.articleId = articleId;
-  }
-
-  public String getBoardId() {
-    return boardId;
-  }
-
-  public void setBoardId(String boardId) {
-    this.boardId = boardId;
-  }
-
-  /**
-   * For backward compatibility
-   */
-  public Board getBoard() {
-    return board;
-  }
-
-  public void setBoard(Board board) {
-    this.board = board;
-  }
-
-  /**
-   * END For backward compatibility
-   */
 
   @Override
   public boolean equals(Object o) {

@@ -126,8 +126,9 @@ public class BoardBoxService {
         || !nextSquare.isHighlighted();
   }
 
-  private void save(BoardBox boardBox) {
+  public Optional<BoardBox> save(BoardBox boardBox) {
     boardBoxDao.save(boardBox);
+    return Optional.of(boardBox);
   }
 
   public BoardBoxes findByIds(BoardBoxIds boardIds) {
