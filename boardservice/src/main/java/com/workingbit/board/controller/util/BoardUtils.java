@@ -1,13 +1,13 @@
 package com.workingbit.board.controller.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.ErrorMessages;
-import com.workingbit.share.common.NotationConstants;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.model.EnumRules;
-import com.workingbit.share.model.MovesList;
+import com.workingbit.share.model.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -259,29 +259,83 @@ public class BoardUtils {
   }
 
   private static void updateNotationMiddle(Board board) {
-    String notationAppend = board.getNotation() + " " + board.getPreviousSquare().getNotation() + ":" + board.getSelectedSquare().getNotation();
-    board.setNotation(notationAppend);
+    Notation notation = board.getNotation();
+    NotationStroke notationStroke = notation.getNotationStrokes().getFirst();
+    if (notationStroke.getFirst() == null && notationStroke.getSecond() == null) {
+      notation.getNotationStrokes().removeFirst();
+    }
+    notationStroke = notation.getNotationStrokes().getFirst();
+    if (board.isBlackTurn()) {
+      notationStroke.setSecond(getNotationAtomCaptureStroke(notationStroke.getSecond(), board));
+    } else {
+      notationStroke.setFirst(getNotationAtomCaptureStroke(notationStroke.getFirst(), board));
+    }
   }
 
   private static void updateNotationEnd(boolean previousCaptured, Board board) {
     boolean blackTurn = board.isBlackTurn();
     int strokeNumber = blackTurn ? board.getStrokeNumber() : board.getStrokeNumber() + 1;
     board.setStrokeNumber(strokeNumber);
-    board.setBlackTurn(!blackTurn);
-    boolean firstStroke = board.getNotation() == null;
-    String numberForWhite = blackTurn ? NotationConstants.SPACE : ((firstStroke ? "" : NotationConstants.NEW_LINE) + board.getStrokeNumber() + NotationConstants.NOTATION_DOT_NUMBER);
-    String notationAppend;
-    String notation = firstStroke ? "" : board.getNotation();
+    Notation notation = board.getNotation();
     if (previousCaptured) {
-      if (notation.substring(notation.length() - 2).equals(board.getPreviousSquare().getNotation())) {
-        notationAppend = NotationConstants.CAPTURE + board.getSelectedSquare().getNotation();
+      NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation);
+      if (board.isBlackTurn()) {
+        NotationAtomStroke second = getNotationAtomCaptureStroke(notationStroke.getSecond(), board);
+        notationStroke.setSecond(second);
       } else {
-        notationAppend = numberForWhite + board.getPreviousSquare().getNotation() + NotationConstants.CAPTURE + board.getSelectedSquare().getNotation();
+        NotationAtomStroke first = getNotationAtomCaptureStroke(notationStroke.getFirst(), board);
+        notationStroke.setFirst(first);
       }
     } else {
-      notationAppend = numberForWhite + board.getPreviousSquare().getNotation() + NotationConstants.STROKE + board.getSelectedSquare().getNotation();
+      pushSimpleStrokeToNotation(board, strokeNumber, notation);
     }
-    board.setNotation(notation + notationAppend);
+    board.setBlackTurn(!blackTurn);
+  }
+
+  private static NotationAtomStroke getNotationAtomCaptureStroke(NotationAtomStroke notationAtomStroke, Board board) {
+    if (notationAtomStroke != null) {
+      boolean continueStroke = notationAtomStroke.getStrokes().get(notationAtomStroke.getStrokes().size() - 1)
+          .equals(board.getPreviousSquare().getNotation());
+      if (continueStroke) {
+        notationAtomStroke.getStrokes().add(board.getPreviousSquare().getNotation());
+        return notationAtomStroke;
+      }
+      return null;
+    } else {
+      List<String> strokes = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
+      return new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.CAPTURE, strokes, board.getId());
+    }
+  }
+
+  private static void pushSimpleStrokeToNotation(Board board, int strokeNumber, Notation notation) {
+    List<String> stroke = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
+    NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId());
+    NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation);
+    if (board.isBlackTurn()) {
+      notationStroke.setSecond(notationAtomStroke);
+    } else {
+      notationStroke.setFirst(notationAtomStroke);
+    }
+  }
+
+  private static NotationStroke getFirstNotationStroke(int strokeNumber, Notation notation) {
+    if (notation.getNotationStrokes().isEmpty()) {
+      notation.getNotationStrokes().push(new NotationStroke(1, null, null));
+    } else {
+      NotationStroke notationStroke = notation.getNotationStrokes().getFirst();
+      if (notationStroke.getFirst() != null && notationStroke.getSecond() != null) {
+        notation.getNotationStrokes().push(new NotationStroke(strokeNumber, null, null));
+      }
+    }
+    return notation.getNotationStrokes().getFirst();
+  }
+
+  private static String getPreviousStrokeNotation(Board board) {
+    return board.getPreviousSquare().getNotation() + "{" + board.getPreviousBoard().getBoardId() + "}";
+  }
+
+  private static String getSelectedStrokeNotation(Board board) {
+    return board.getSelectedSquare().getNotation() + "{" + board.getSelectedBoard().getBoardId() + "}";
   }
 
   private static void resetBoardHighlight(Board board) {
@@ -487,5 +541,14 @@ public class BoardUtils {
       return findSquareByLink(square, board);
     }
     return null;
+  }
+
+  public static String printBoardNotation(Board board) {
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(board.getNotation());
+    } catch (JsonProcessingException e) {
+      return "";
+    }
   }
 }

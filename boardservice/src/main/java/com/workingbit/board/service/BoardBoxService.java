@@ -100,7 +100,7 @@ public class BoardBoxService {
           }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
-          boardBoxDao.save(updatedBox);
+          save(updatedBox);
           return updatedBox;
         });
   }
@@ -127,8 +127,9 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> save(BoardBox boardBox) {
-    boardBoxDao.save(boardBox);
-    return Optional.of(boardBox);
+    BoardBox updated = updateBoardNotation(boardBox);
+    boardBoxDao.save(updated);
+    return Optional.of(updated);
   }
 
   public BoardBoxes findByIds(BoardBoxIds boardIds) {
@@ -176,7 +177,7 @@ public class BoardBoxService {
         .map(updated -> {
           Board currentBoard = updated.getBoard();
           BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
-          Optional<Board> undone = null;
+          Optional<Board> undone;
           try {
             undone = boardService.undo(currentBoard);
           } catch (Exception e) {
@@ -196,7 +197,7 @@ public class BoardBoxService {
         .map(updated -> {
           Board currentBoard = updated.getBoard();
           BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
-          Optional<Board> redone = null;
+          Optional<Board> redone;
           try {
             redone = boardService.redo(currentBoard);
           } catch (Exception e) {
@@ -215,5 +216,15 @@ public class BoardBoxService {
     updated.setBoard(redone);
     updated.setBoardId(redone.getId());
     boardBoxDao.save(updated);
+  }
+
+  private BoardBox updateBoardNotation(BoardBox boardBox) {
+    BoardBox updated = updateBoardBox(boardBox);
+    int bbNotationSize = updated.getNotation().getNotationStrokes().size();
+    int currentBoardNotationSize = updated.getBoard().getNotation().getNotationStrokes().size();
+    if (currentBoardNotationSize > bbNotationSize) {
+      updated.setNotation(updated.getBoard().getNotation());
+    }
+    return updated;
   }
 }

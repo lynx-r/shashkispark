@@ -8,6 +8,7 @@ import com.workingbit.share.converter.DraughtMapConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.BoardIdNotation;
 import com.workingbit.share.model.EnumRules;
+import com.workingbit.share.model.Notation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -108,8 +109,10 @@ public class Board implements BaseDomain {
   @DynamoDBAttribute(attributeName = "strokeNumber")
   private int strokeNumber;
 
-  @DynamoDBAttribute(attributeName = "stroke")
-  private String notation;
+  @JsonIgnore
+  @DynamoDBTypeConvertedJson(targetType = Notation.class)
+  @DynamoDBAttribute(attributeName = "notation")
+  private Notation notation = new Notation();
 
   public Board(boolean black, EnumRules rules) {
     this.black = black;
@@ -151,5 +154,31 @@ public class Board implements BaseDomain {
       return selectedSquare.getNotation();
     }
     return "";
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  public BoardIdNotation getPreviousBoard() {
+    if (previousSquare == null) {
+      return null;
+    }
+    return previousBoards
+        .stream()
+        .filter(boardIdNotation -> boardIdNotation.getNotation().equals(previousSquare.getNotation()))
+        .findFirst()
+        .orElse(null);
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  public BoardIdNotation getSelectedBoard() {
+    if (previousSquare == null) {
+      return null;
+    }
+    return previousBoards
+        .stream()
+        .filter(boardIdNotation -> boardIdNotation.getNotation().equals(selectedSquare.getNotation()))
+        .findFirst()
+        .orElse(null);
   }
 }
