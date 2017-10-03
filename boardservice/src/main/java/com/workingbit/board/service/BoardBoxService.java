@@ -8,7 +8,6 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.BoardBoxIds;
 import com.workingbit.share.model.BoardBoxes;
 import com.workingbit.share.model.CreateBoardPayload;
-import com.workingbit.share.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -112,6 +111,9 @@ public class BoardBoxService {
           Board inverted = boardBox.getBoard();
           inverted.setBlackTurn(!inverted.isBlackTurn());
           boardService.save(inverted);
+
+          Board board = boardService.updateBoard(inverted);
+          updatedBox.setBoard(board);
           boardBoxDao.save(updatedBox);
           return updatedBox;
         });

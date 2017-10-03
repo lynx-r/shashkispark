@@ -23,7 +23,7 @@ public class BoardUtils {
   /**
    * Fill board with draughts
    *
-   * @param black     is player plays black?
+   * @param black is player plays black?
    */
   public static Board initBoard(boolean fillBoard, boolean black, EnumRules rules) {
     Board boardBox = new Board(black, rules);
@@ -338,6 +338,8 @@ public class BoardUtils {
     draught.setV(targetSquare.getV());
     draught.setH(targetSquare.getH());
 
+    checkQueen(board, draught);
+
     BoardUtils.addDraught(board, targetSquare.getNotation(), draught);
     targetSquare = BoardUtils.findSquareByNotation(targetSquare.getNotation(), board);
     targetSquare.setDraught(draught);
@@ -349,6 +351,16 @@ public class BoardUtils {
 
     replaceDraught(board.getWhiteDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
     replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
+  }
+
+  private static void checkQueen(Board board, Draught draught) {
+    if (!draught.isQueen()) {
+      if (draught.isBlack() && board.getRules().getDimension() == draught.getV() + 1) {
+        draught.setQueen(true);
+      } else if (!draught.isBlack() && draught.getV() == 0) {
+        draught.setQueen(true);
+      }
+    }
   }
 
   private static List<Square> findCapturedSquare(Square sourceSquare, Square targetSquare) {

@@ -31,7 +31,7 @@ public class BoardService {
 
   Optional<Board> findById(String boardId) {
     Optional<Board> boardOptional = boardDao.findByKey(boardId);
-    return boardOptional.map(BoardUtils::updateBoard);
+    return boardOptional.map(this::updateBoard);
   }
 
   void delete(String boardId) {
@@ -114,5 +114,9 @@ public class BoardService {
       boardDao.save(nextBoard);
       return nextBoard;
     });
+  }
+
+  public Board updateBoard(Board board) {
+    return BoardUtils.updateBoard(board);
   }
 }
