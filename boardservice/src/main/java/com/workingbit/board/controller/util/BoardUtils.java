@@ -271,7 +271,7 @@ public class BoardUtils {
    * @return is next move allowed
    */
   public static List<Square> highlightedBoard(boolean blackTurn, Square selectedSquare, Board board) {
-    MovesList movesList = highlightedAssignedMoves(board.getPreviousSquare(), selectedSquare);
+    MovesList movesList = highlightedAssignedMoves(selectedSquare);
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();
     if (!captured.isEmpty()) {
@@ -304,7 +304,7 @@ public class BoardUtils {
           .collect(Collectors.toList());
       List<Square> allCaptured = draughtsSquares
           .stream()
-          .flatMap(square -> highlightedAssignedMoves(board.getPreviousSquare(), square).getCaptured().stream())
+          .flatMap(square -> highlightedAssignedMoves(square).getCaptured().stream())
           .collect(Collectors.toList());
       if (allCaptured.isEmpty()) {
         board.getAssignedSquares()

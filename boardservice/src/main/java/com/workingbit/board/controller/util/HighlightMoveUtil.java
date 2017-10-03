@@ -16,27 +16,24 @@ import static com.workingbit.board.controller.util.BoardUtils.isSubDiagonal;
  */
 class HighlightMoveUtil {
 
-  //  private final Square previousSquare;
   private final Square selectedSquare;
 
-  private HighlightMoveUtil(Square previousSquare, Square selectedSquare) throws BoardServiceException {
+  private HighlightMoveUtil(Square selectedSquare) throws BoardServiceException {
     if (selectedSquare == null || selectedSquare.getDraught() == null) {
       throw new BoardServiceException("Selected square without placed draught");
     }
     this.selectedSquare = (Square) selectedSquare.deepClone();
     this.selectedSquare.getDraught().setHighlighted(true);
-//      this.previousSquare = (Square) previousSquare.deepClone();
-//    board.setSelectedSquare(selectedSquare);
   }
 
   /**
    * highlightedAssignedMoves moves for the selected square
    */
-  static MovesList highlightedAssignedMoves(Square previousSquare, Square selectedSquare) {
+  static MovesList highlightedAssignedMoves(Square selectedSquare) {
     if (selectedSquare == null || !selectedSquare.isOccupied()) {
       throw new BoardServiceException("Invalid selected square");
     }
-    HighlightMoveUtil highlightMoveUtil = new HighlightMoveUtil(previousSquare, selectedSquare);
+    HighlightMoveUtil highlightMoveUtil = new HighlightMoveUtil(selectedSquare);
     return highlightMoveUtil.highlightAllAssignedMoves();
   }
 
@@ -162,7 +159,7 @@ class HighlightMoveUtil {
         break;
       }
       next = getNextSquare(down, first, squareListIterator);
-      if (next == null) {
+      if (next == null || next.isOccupied() && next.getDraught().isCaptured()) {
         break;
       }
       mustBeat = mustBeat(next, previous);
@@ -178,7 +175,7 @@ class HighlightMoveUtil {
       } else if (isDraughtWithSameColor(next)) {
         return;
       }
-      if (moveCounter > 0 && !down || moveCounter > 0) {
+      if ((moveCounter > 0 && !down || moveCounter > 0) && capturedMoves.getChildren().isEmpty()) {
         return;
       }
       moveCounter++;
