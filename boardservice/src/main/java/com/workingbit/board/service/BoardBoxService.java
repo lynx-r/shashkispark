@@ -64,7 +64,7 @@ public class BoardBoxService {
           if (!selectedSquare.isOccupied()) {
             return updated;
           }
-          BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
+          BoardUtils.updateMoveSquaresHighlightAndDraught(currentBoard, boardBox.getBoard());
           try {
             currentBoard = boardService.highlight(currentBoard);
           } catch (Exception e) {
@@ -80,7 +80,7 @@ public class BoardBoxService {
     return findById(boardBox.getId())
         .map(updatedBox -> {
           Board boardUpdated = updatedBox.getBoard();
-          BoardUtils.updateMoveSquaresHighlight(boardUpdated, boardBox.getBoard());
+          BoardUtils.updateMoveSquaresHighlightAndDraught(boardUpdated, boardBox.getBoard());
           Square nextSquare = boardUpdated.getNextSquare();
           Square selectedSquare = boardUpdated.getSelectedSquare();
           if (isValidMove(nextSquare, selectedSquare)) {
@@ -95,7 +95,9 @@ public class BoardBoxService {
           }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
-          loadBoard(updatedBox);
+          NotationStrokes notationStrokes = BoardUtils.reverseBoardNotation(boardUpdated);
+          updatedBox.getNotation().setNotationStrokes(notationStrokes);
+          save(updatedBox);
           return updatedBox;
         });
   }
@@ -176,7 +178,7 @@ public class BoardBoxService {
     return findById(boardBox.getId())
         .map(updated -> {
           Board currentBoard = updated.getBoard();
-          BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
+          BoardUtils.updateMoveSquaresHighlightAndDraught(currentBoard, boardBox.getBoard());
           Optional<Board> undone;
           try {
             undone = boardService.undo(currentBoard);
@@ -196,7 +198,7 @@ public class BoardBoxService {
     return findById(boardBox.getId())
         .map(updated -> {
           Board currentBoard = updated.getBoard();
-          BoardUtils.updateMoveSquaresHighlight(currentBoard, boardBox.getBoard());
+          BoardUtils.updateMoveSquaresHighlightAndDraught(currentBoard, boardBox.getBoard());
           Optional<Board> redone;
           try {
             redone = boardService.redo(currentBoard);

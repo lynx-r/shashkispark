@@ -276,7 +276,7 @@ public class BoardUtils {
     boolean blackTurn = board.isBlackTurn();
     int strokeCount = blackTurn ? board.getStrokeCount() : board.getStrokeCount() + 1;
     board.setStrokeCount(strokeCount);
-    LinkedList<NotationStroke> notation = board.getNotationStrokes();
+    NotationStrokes notation = board.getNotationStrokes();
     if (previousCaptured) {
       NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation);
       if (board.isBlackTurn()) {
@@ -319,11 +319,12 @@ public class BoardUtils {
     });
   }
 
-  private static void pushSimpleStrokeToNotation(int strokeNumber, LinkedList<NotationStroke> notation, Board board) {
+  private static void pushSimpleStrokeToNotation(int strokeNumber, NotationStrokes notation, Board board) {
     List<String> stroke = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
     resetBoardNotationCursor(board.getNotationStrokes());
-    NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId(), true);
     NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation);
+    NotationAtomStroke notationAtomStroke = null;
+    notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId(), true);
     if (board.isBlackTurn()) {
       notationStroke.setSecond(notationAtomStroke);
     } else {
@@ -508,7 +509,7 @@ public class BoardUtils {
     }
   }
 
-  public static void updateMoveSquaresHighlight(Board currentBoard, Board origBoard) {
+  public static void updateMoveSquaresHighlightAndDraught(Board currentBoard, Board origBoard) {
     Square selectedSquare = findSquareByLink(origBoard.getSelectedSquare(), currentBoard);
     if (selectedSquare != null) {
       currentBoard.setSelectedSquare(updateSquare(selectedSquare, origBoard.getSelectedSquare()));

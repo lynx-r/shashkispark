@@ -114,6 +114,14 @@ public class Board implements BaseDomain {
   @DynamoDBAttribute(attributeName = "notationStrokes")
   private NotationStrokes notationStrokes = new NotationStrokes();
 
+  @JsonIgnore
+  @DynamoDBAttribute(attributeName = "undo")
+  private boolean undo;
+
+  @JsonIgnore
+  @DynamoDBAttribute(attributeName = "redo")
+  private boolean redo;
+
   public Board(boolean black, EnumRules rules) {
     this.black = black;
     this.rules = rules;

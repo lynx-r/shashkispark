@@ -98,6 +98,7 @@ public class BoardService {
     boardDao.save(currentBoard);
     return findById(previousId).map(previousBoard -> {
       previousBoard.pushNextBoard(currentBoard.getId(), currentBoard.getSelectedSquare().getNotation());
+      previousBoard.setUndo(true);
       boardDao.save(previousBoard);
       return previousBoard;
     });
@@ -111,6 +112,7 @@ public class BoardService {
     boardDao.save(currentBoard);
     return findById(nextId).map(nextBoard -> {
       nextBoard.pushPreviousBoard(currentBoard.getId(), currentBoard.getSelectedSquare().getNotation());
+      nextBoard.setRedo(true);
       boardDao.save(nextBoard);
       return nextBoard;
     });
