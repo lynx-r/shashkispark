@@ -11,6 +11,7 @@ import com.workingbit.share.model.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.HighlightMoveUtil.highlightedAssignedMoves;
@@ -264,10 +265,6 @@ public class BoardUtils {
     int strokeCount = blackTurn ? board.getStrokeCount() : board.getStrokeCount() + 1;
     board.setStrokeCount(strokeCount);
     NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation);
-//    if (notationStroke.getFirst() == null && notationStroke.getSecond() == null) {
-//      notation.getNotationStrokes().removeFirst();
-//    }
-//    notationStroke = notation.getNotationStrokes().getFirst();
     if (board.isBlackTurn()) {
       notationStroke.setSecond(getNotationAtomCaptureStroke(notationStroke.getSecond(), board));
     } else {
@@ -290,7 +287,7 @@ public class BoardUtils {
         notationStroke.setFirst(first);
       }
     } else {
-      pushSimpleStrokeToNotation(board, strokeCount, notation);
+      pushSimpleStrokeToNotation(strokeCount, notation, board);
     }
     board.setBlackTurn(!blackTurn);
   }
@@ -305,14 +302,27 @@ public class BoardUtils {
       }
       return notationAtomStroke;
     } else {
+      resetBoardNotationCursor(board.getNotationStrokes());
       List<String> strokes = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
-      return new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.CAPTURE, strokes, board.getId());
+      return new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.CAPTURE, strokes, board.getId(), true);
     }
   }
 
-  private static void pushSimpleStrokeToNotation(Board board, int strokeNumber, LinkedList<NotationStroke> notation) {
+  public static void resetBoardNotationCursor(NotationStrokes notationStrokes) {
+    notationStrokes.forEach(notationStroke -> {
+      if (notationStroke.getFirst() != null) {
+        notationStroke.getFirst().setCursor(false);
+      }
+      if (notationStroke.getSecond() != null) {
+        notationStroke.getSecond().setCursor(false);
+      }
+    });
+  }
+
+  private static void pushSimpleStrokeToNotation(int strokeNumber, LinkedList<NotationStroke> notation, Board board) {
     List<String> stroke = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
-    NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId());
+    resetBoardNotationCursor(board.getNotationStrokes());
+    NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId(), true);
     NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation);
     if (board.isBlackTurn()) {
       notationStroke.setSecond(notationAtomStroke);
@@ -548,9 +558,28 @@ public class BoardUtils {
     }
   }
 
-  public static LinkedList<NotationStroke> reverseBoardNotation(Board board) {
-    LinkedList<NotationStroke> notationStrokes = board.getNotationStrokes();
+  public static NotationStrokes reverseBoardNotation(Board board) {
+    NotationStrokes notationStrokes = board.getNotationStrokes();
     Collections.reverse(notationStrokes);
     return notationStrokes;
+  }
+
+  public static void assignBoardNotationCursor(NotationStrokes notationStrokes, String boardId) {
+    resetBoardNotationCursor(notationStrokes);
+    setCursorForAtomStroke(notationStrokes, boardId, NotationStroke::getFirst);
+    setCursorForAtomStroke(notationStrokes, boardId, NotationStroke::getSecond);
+  }
+
+  private static void setCursorForAtomStroke(NotationStrokes notationStrokes, String boardId, Function<NotationStroke, NotationAtomStroke> predicate) {
+    NotationAtomStroke notationAtomStroke = notationStrokes
+        .stream()
+        .map(predicate)
+        .filter(Objects::nonNull)
+        .filter(atomStroke -> atomStroke.getBoardId().equals(boardId))
+        .findFirst()
+        .orElse(null);
+    if (notationAtomStroke != null) {
+      notationAtomStroke.setCursor(true);
+    }
   }
 }

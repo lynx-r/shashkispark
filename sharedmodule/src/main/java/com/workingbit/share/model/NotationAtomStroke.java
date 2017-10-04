@@ -18,6 +18,7 @@ public class NotationAtomStroke {
   private EnumStrokeType type;
   private List<String> strokes = new ArrayList<>();
   private String boardId;
+  private boolean cursor;
 
   public enum EnumStrokeType {
     SIMPLE,

@@ -37,7 +37,7 @@ public class BoardBoxController {
   public static Route updateBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) boardRequest ->
           boardBoxService
-              .update(boardRequest)
+              .loadBoard(boardRequest)
               .map(Answer::okBoardBox)
               .orElse(Answer.error(HTTP_GONE, ErrorMessages.UNABLE_TO_CREATE_BOARD + req.body()))
       ).handleRequest(req, res, BoardBox.class);

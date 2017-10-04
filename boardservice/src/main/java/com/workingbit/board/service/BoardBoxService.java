@@ -95,7 +95,7 @@ public class BoardBoxService {
           }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
-          update(updatedBox);
+          loadBoard(updatedBox);
           return updatedBox;
         });
   }
@@ -126,10 +126,9 @@ public class BoardBoxService {
     return Optional.of(boardBox);
   }
 
-  public Optional<BoardBox> update(BoardBox boardBox) {
+  public Optional<BoardBox> loadBoard(BoardBox boardBox) {
     BoardBox updated = updateBoardNotation(boardBox);
     updated = updateBoardBox(updated);
-    boardBoxDao.save(updated);
     return Optional.of(updated);
   }
 
@@ -221,11 +220,13 @@ public class BoardBoxService {
 
   private BoardBox updateBoardNotation(BoardBox boardBox) {
     int bbNotationSize = boardBox.getNotation().getNotationStrokes().size();
-    int currentBoardNotationSize = boardBox.getBoard().getNotationStrokes().size();
+    Board board = boardBox.getBoard();
+    int currentBoardNotationSize = board.getNotationStrokes().size();
     if (currentBoardNotationSize >= bbNotationSize) {
-      LinkedList<NotationStroke> notationStrokes = BoardUtils.reverseBoardNotation(boardBox.getBoard());
+      NotationStrokes notationStrokes = BoardUtils.reverseBoardNotation(board);
       boardBox.getNotation().setNotationStrokes(notationStrokes);
     }
+    BoardUtils.assignBoardNotationCursor(boardBox.getNotation().getNotationStrokes(), boardBox.getBoardId());
     return boardBox;
   }
 }

@@ -16,5 +16,5 @@ public class Path {
   /**
    * save changes and return updated Board in BoardBox
    */
-  public static final String BOARD_UPDATE = "/board/update";
+  public static final String BOARD_UPDATE = "/board/load-board";
 }
