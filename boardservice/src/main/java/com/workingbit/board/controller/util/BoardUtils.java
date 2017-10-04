@@ -550,17 +550,16 @@ public class BoardUtils {
     return null;
   }
 
-  public static String printBoardNotation(Board board) {
+  public static String printBoardNotation(NotationStrokes notationStrokes) {
     ObjectMapper mapper = new ObjectMapper();
     try {
-      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(board.getNotationStrokes());
+      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(notationStrokes);
     } catch (JsonProcessingException e) {
       return "";
     }
   }
 
-  public static NotationStrokes reverseBoardNotation(Board board) {
-    NotationStrokes notationStrokes = board.getNotationStrokes();
+  public static NotationStrokes reverseBoardNotation(NotationStrokes notationStrokes) {
     Collections.reverse(notationStrokes);
     return notationStrokes;
   }

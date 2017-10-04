@@ -1,17 +1,26 @@
 [ {
+  "count" : 2,
+  "first" : {
+    "type" : "CAPTURE",
+    "strokes" : [ "h4", "f6" ],
+    "boardId" : "7a850b2e-0c05-4d8f-acf1-c8fcf90f848e",
+    "cursor" : true
+  },
+  "second" : null,
+  "alternative" : [ ]
+}, {
   "count" : 1,
   "first" : {
     "type" : "SIMPLE",
-    "strokes" : [ "e3", "f4" ],
-    "boardId" : "acfb4a42-97f3-49c2-be0b-5a52296c740a",
-    "cursor" : false,
-    "alternative" : [ ]
+    "strokes" : [ "g3", "h4" ],
+    "boardId" : "74dcb03a-b078-4b76-a3da-2c0345b7f3cd",
+    "cursor" : false
   },
   "second" : {
     "type" : "SIMPLE",
-    "strokes" : [ "d6", "e5" ],
-    "boardId" : "e7b1ecd2-85a8-48a9-a5d8-54c88f5bd81c",
-    "cursor" : true,
-    "alternative" : [ ]
-  }
+    "strokes" : [ "f6", "g5" ],
+    "boardId" : "27ac8224-29b5-4c8d-9683-204ff3d35e9f",
+    "cursor" : false
+  },
+  "alternative" : [ ]
 } ]

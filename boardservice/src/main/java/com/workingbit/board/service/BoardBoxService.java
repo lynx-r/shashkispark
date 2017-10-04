@@ -95,11 +95,56 @@ public class BoardBoxService {
           }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
-          NotationStrokes notationStrokes = BoardUtils.reverseBoardNotation(boardUpdated);
-          updatedBox.getNotation().setNotationStrokes(notationStrokes);
+          NotationStrokes notationStrokes = branchNotation(boardUpdated.getNotationStrokes(),
+              updatedBox.getNotation().getNotationStrokes(),
+              boardUpdated);
+          NotationStrokes reversed = BoardUtils.reverseBoardNotation(notationStrokes);
+          System.out.println(BoardUtils.printBoardNotation(reversed));
+          updatedBox.getNotation().setNotationStrokes(reversed);
           save(updatedBox);
           return updatedBox;
         });
+  }
+
+  private NotationStrokes branchNotation(NotationStrokes boardNotation, NotationStrokes boardBoxNotation, Board board) {
+    if (board.isUndo()) {
+      NotationStroke firstBoard = boardNotation.getFirst();
+      System.out.println("CURRENT COUNT " + firstBoard.getCount());
+      NotationStrokes notationStrokes = boardBoxNotation
+          .stream()
+          .filter(ns -> ns.getCount() >= firstBoard.getCount())
+          .collect(Collectors.toCollection(NotationStrokes::new));
+      if (notationStrokes.isEmpty()) {
+        return boardNotation;
+      }
+      NotationStroke first = notationStrokes.getFirst();
+      System.out.println(BoardUtils.printBoardNotation(boardBoxNotation));
+      if (board.isBlackTurn()) {
+        Set<NotationStrokes> alternative = first.getFirst().getAlternative();
+        if (alternative.isEmpty()) {
+          firstBoard.getFirst().getAlternative().add(notationStrokes);
+        } else {
+          List<NotationStrokes> alternativeOfAlternative = notationStrokes.stream().flatMap(ns -> ns.getFirst().getAlternative().stream()).collect(Collectors.toList());
+          NotationStrokes strokesWithoutAlternatives = notationStrokes.stream().peek(ns -> ns.getFirst().setAlternative(new HashSet<>())).collect(Collectors.toCollection(NotationStrokes::new));
+          alternative.addAll(alternativeOfAlternative);
+          alternative.add(strokesWithoutAlternatives);
+          firstBoard.getFirst().setAlternative(alternative);
+        }
+      } else {
+        Set<NotationStrokes> alternative = first.getSecond().getAlternative();
+        if (alternative.isEmpty()) {
+          firstBoard.getSecond().getAlternative().add(notationStrokes);
+        } else {
+          alternative.add(notationStrokes);
+          firstBoard.getSecond().setAlternative(alternative);
+        }
+      }
+      System.out.println(BoardUtils.printBoardNotation(boardNotation));
+      board.setUndo(false);
+      boardService.save(board);
+      return boardNotation;
+    }
+    return boardNotation;
   }
 
   public Optional<BoardBox> makeWhiteStroke(BoardBox boardBox) {
@@ -225,7 +270,7 @@ public class BoardBoxService {
     Board board = boardBox.getBoard();
     int currentBoardNotationSize = board.getNotationStrokes().size();
     if (currentBoardNotationSize >= bbNotationSize) {
-      NotationStrokes notationStrokes = BoardUtils.reverseBoardNotation(board);
+      NotationStrokes notationStrokes = BoardUtils.reverseBoardNotation(board.getNotationStrokes());
       boardBox.getNotation().setNotationStrokes(notationStrokes);
     }
     BoardUtils.assignBoardNotationCursor(boardBox.getNotation().getNotationStrokes(), boardBox.getBoardId());
