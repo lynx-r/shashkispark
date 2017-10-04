@@ -259,7 +259,7 @@ public class BoardUtils {
   }
 
   private static void updateNotationMiddle(Board board) {
-    Notation notation = board.getNotation();
+    LinkedList<NotationStroke> notation = board.getNotationStrokes();
     boolean blackTurn = board.isBlackTurn();
     int strokeCount = blackTurn ? board.getStrokeCount() : board.getStrokeCount() + 1;
     board.setStrokeCount(strokeCount);
@@ -279,7 +279,7 @@ public class BoardUtils {
     boolean blackTurn = board.isBlackTurn();
     int strokeCount = blackTurn ? board.getStrokeCount() : board.getStrokeCount() + 1;
     board.setStrokeCount(strokeCount);
-    Notation notation = board.getNotation();
+    LinkedList<NotationStroke> notation = board.getNotationStrokes();
     if (previousCaptured) {
       NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation);
       if (board.isBlackTurn()) {
@@ -310,7 +310,7 @@ public class BoardUtils {
     }
   }
 
-  private static void pushSimpleStrokeToNotation(Board board, int strokeNumber, Notation notation) {
+  private static void pushSimpleStrokeToNotation(Board board, int strokeNumber, LinkedList<NotationStroke> notation) {
     List<String> stroke = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
     NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId());
     NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation);
@@ -321,25 +321,17 @@ public class BoardUtils {
     }
   }
 
-  private static NotationStroke getFirstNotationStroke(int strokeCount, Notation notation) {
-    if (notation.getNotationStrokes().isEmpty()) {
-      notation.getNotationStrokes().push(new NotationStroke(1, null, null));
+  private static NotationStroke getFirstNotationStroke(int strokeCount, LinkedList<NotationStroke> notationStrokes) {
+    if (notationStrokes.isEmpty()) {
+      notationStrokes.push(new NotationStroke(1, null, null));
     } else {
-      NotationStroke notationStroke = notation.getNotationStrokes().getFirst();
+      NotationStroke notationStroke = notationStrokes.getFirst();
       if (notationStroke.getCount() != strokeCount
           && notationStroke.getFirst() != null && notationStroke.getSecond() != null) {
-        notation.getNotationStrokes().push(new NotationStroke(strokeCount, null, null));
+        notationStrokes.push(new NotationStroke(strokeCount, null, null));
       }
     }
-    return notation.getNotationStrokes().getFirst();
-  }
-
-  private static String getPreviousStrokeNotation(Board board) {
-    return board.getPreviousSquare().getNotation() + "{" + board.getPreviousBoard().getBoardId() + "}";
-  }
-
-  private static String getSelectedStrokeNotation(Board board) {
-    return board.getSelectedSquare().getNotation() + "{" + board.getSelectedBoard().getBoardId() + "}";
+    return notationStrokes.getFirst();
   }
 
   private static void resetBoardHighlight(Board board) {
@@ -550,9 +542,15 @@ public class BoardUtils {
   public static String printBoardNotation(Board board) {
     ObjectMapper mapper = new ObjectMapper();
     try {
-      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(board.getNotation());
+      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(board.getNotationStrokes());
     } catch (JsonProcessingException e) {
       return "";
     }
+  }
+
+  public static LinkedList<NotationStroke> reverseBoardNotation(Board board) {
+    LinkedList<NotationStroke> notationStrokes = board.getNotationStrokes();
+    Collections.reverse(notationStrokes);
+    return notationStrokes;
   }
 }

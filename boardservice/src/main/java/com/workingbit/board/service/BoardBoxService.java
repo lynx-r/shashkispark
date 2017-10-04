@@ -5,10 +5,7 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.model.BoardBoxIds;
-import com.workingbit.share.model.BoardBoxes;
-import com.workingbit.share.model.CreateBoardPayload;
-import com.workingbit.share.model.Notation;
+import com.workingbit.share.model.*;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -98,7 +95,7 @@ public class BoardBoxService {
           }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
-          save(updatedBox);
+          update(updatedBox);
           return updatedBox;
         });
   }
@@ -125,7 +122,13 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> save(BoardBox boardBox) {
+    boardBoxDao.save(boardBox);
+    return Optional.of(boardBox);
+  }
+
+  public Optional<BoardBox> update(BoardBox boardBox) {
     BoardBox updated = updateBoardNotation(boardBox);
+    updated = updateBoardBox(updated);
     boardBoxDao.save(updated);
     return Optional.of(updated);
   }
@@ -218,11 +221,10 @@ public class BoardBoxService {
 
   private BoardBox updateBoardNotation(BoardBox boardBox) {
     int bbNotationSize = boardBox.getNotation().getNotationStrokes().size();
-    int currentBoardNotationSize = boardBox.getBoard().getNotation().getNotationStrokes().size();
+    int currentBoardNotationSize = boardBox.getBoard().getNotationStrokes().size();
     if (currentBoardNotationSize >= bbNotationSize) {
-      Notation notation = boardBox.getBoard().getNotation();
-      Collections.reverse(notation.getNotationStrokes());
-      boardBox.setNotation(notation);
+      LinkedList<NotationStroke> notationStrokes = BoardUtils.reverseBoardNotation(boardBox.getBoard());
+      boardBox.getNotation().setNotationStrokes(notationStrokes);
     }
     return boardBox;
   }

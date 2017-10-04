@@ -113,7 +113,7 @@ class HighlightMoveUtil {
         addCapturedMove(previous, capturedMoves);
         cross = true;
       } else if (isDraughtWithSameColor(next)) {
-        return;
+        break;
       }
       if (!capturedMoves.getChildren().isEmpty() && canMove(next)) {
         if (cross) {
@@ -175,7 +175,8 @@ class HighlightMoveUtil {
       } else if (isDraughtWithSameColor(next)) {
         return;
       }
-      if ((moveCounter > 0 && !down || moveCounter > 0) && capturedMoves.getChildren().isEmpty()) {
+      boolean draughtCanMoveOnOne = moveCounter > 0;
+      if (draughtCanMoveOnOne && (!down || capturedMoves.getChildren().isEmpty())) {
         return;
       }
       moveCounter++;

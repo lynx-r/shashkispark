@@ -148,6 +148,17 @@ public class HighlightMoveUtilTest {
     testCollection("c7,e5", highlight.getAllowed());
   }
 
+  @Test
+  public void draught_captured_over_many_squares() throws BoardServiceException, ExecutionException, InterruptedException {
+    Board board = getBoard();
+    Board updatedBoard = getSquareByVHWithDraught(board, "h2"); // c3
+    updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "g3"); // c3
+    updatedBoard = getSquareByVHWithBlackDraught(updatedBoard, "c7"); // c3
+    MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "h2"));
+    testCollection("g3", highlight.getCaptured());
+    testCollection("f4", highlight.getAllowed());
+  }
+
 
   @Test
   public void queen_moves_on_empty_desk() throws BoardServiceException, ExecutionException, InterruptedException {

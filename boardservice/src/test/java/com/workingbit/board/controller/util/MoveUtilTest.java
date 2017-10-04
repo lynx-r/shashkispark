@@ -28,7 +28,6 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setNextSquare(squareD4);
 
     board = BoardUtils.moveDraught(squareC3, board);
-    System.out.println(board.getNotation());
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
@@ -131,7 +130,6 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setBlackTurn(blackTurn);
 
     board = BoardUtils.moveDraught(from, board);
-    System.out.println(board.getNotation());
     assertFalse(from.isOccupied());
     assertTrue(to.isOccupied());
     return board;

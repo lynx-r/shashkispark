@@ -2,13 +2,13 @@ package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.workingbit.share.converter.BoardIdNotationConverter;
 import com.workingbit.share.common.DBConstants;
+import com.workingbit.share.converter.BoardIdNotationConverter;
 import com.workingbit.share.converter.DraughtMapConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.BoardIdNotation;
 import com.workingbit.share.model.EnumRules;
-import com.workingbit.share.model.Notation;
+import com.workingbit.share.model.NotationStrokes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -110,9 +110,9 @@ public class Board implements BaseDomain {
   private int strokeCount;
 
   @JsonIgnore
-  @DynamoDBTypeConvertedJson(targetType = Notation.class)
-  @DynamoDBAttribute(attributeName = "notation")
-  private Notation notation = new Notation();
+  @DynamoDBTypeConvertedJson(targetType = NotationStrokes.class)
+  @DynamoDBAttribute(attributeName = "notationStrokes")
+  private NotationStrokes notationStrokes = new NotationStrokes();
 
   public Board(boolean black, EnumRules rules) {
     this.black = black;
@@ -145,40 +145,5 @@ public class Board implements BaseDomain {
 
   public void setSelectedSquare(Square square) {
     this.selectedSquare = square;
-  }
-
-  @DynamoDBIgnore
-  @JsonIgnore
-  public String getStrokeNotation() {
-    if (selectedSquare != null) {
-      return selectedSquare.getNotation();
-    }
-    return "";
-  }
-
-  @JsonIgnore
-  @DynamoDBIgnore
-  public BoardIdNotation getPreviousBoard() {
-    if (previousSquare == null) {
-      return null;
-    }
-    return previousBoards
-        .stream()
-        .filter(boardIdNotation -> boardIdNotation.getNotation().equals(previousSquare.getNotation()))
-        .findFirst()
-        .orElse(null);
-  }
-
-  @JsonIgnore
-  @DynamoDBIgnore
-  public BoardIdNotation getSelectedBoard() {
-    if (previousSquare == null) {
-      return null;
-    }
-    return previousBoards
-        .stream()
-        .filter(boardIdNotation -> boardIdNotation.getNotation().equals(selectedSquare.getNotation()))
-        .findFirst()
-        .orElse(null);
   }
 }
