@@ -95,10 +95,10 @@ public class BoardBoxService {
           }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
-          NotationStrokes notationStrokes = branchNotation(boardUpdated.getNotationStrokes(),
-              updatedBox.getNotation().getNotationStrokes(),
-              boardUpdated);
-          NotationStrokes reversed = BoardUtils.reverseBoardNotation(notationStrokes);
+//          NotationStrokes notationStrokes = branchNotation(boardUpdated.getNotationStrokes(),
+//              updatedBox.getNotation().getNotationStrokes(),
+//              boardUpdated);
+          NotationStrokes reversed = BoardUtils.reverseBoardNotation(boardUpdated.getNotationStrokes());
           System.out.println(BoardUtils.printBoardNotation(reversed));
           updatedBox.getNotation().setNotationStrokes(reversed);
           save(updatedBox);
