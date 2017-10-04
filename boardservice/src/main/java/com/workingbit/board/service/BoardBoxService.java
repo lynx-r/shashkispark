@@ -117,27 +117,12 @@ public class BoardBoxService {
       if (notationStrokes.isEmpty()) {
         return boardNotation;
       }
-      NotationStroke first = notationStrokes.getFirst();
       System.out.println(BoardUtils.printBoardNotation(boardBoxNotation));
+      NotationStroke firstStroke = notationStrokes.getFirst();
       if (board.isBlackTurn()) {
-        Set<NotationStrokes> alternative = first.getFirst().getAlternative();
-        if (alternative.isEmpty()) {
-          firstBoard.getFirst().getAlternative().add(notationStrokes);
-        } else {
-          List<NotationStrokes> alternativeOfAlternative = notationStrokes.stream().flatMap(ns -> ns.getFirst().getAlternative().stream()).collect(Collectors.toList());
-          NotationStrokes strokesWithoutAlternatives = notationStrokes.stream().peek(ns -> ns.getFirst().setAlternative(new HashSet<>())).collect(Collectors.toCollection(NotationStrokes::new));
-          alternative.addAll(alternativeOfAlternative);
-          alternative.add(strokesWithoutAlternatives);
-          firstBoard.getFirst().setAlternative(alternative);
-        }
+        addAlternatives(firstBoard.getFirst(), firstStroke, notationStrokes);
       } else {
-        Set<NotationStrokes> alternative = first.getSecond().getAlternative();
-        if (alternative.isEmpty()) {
-          firstBoard.getSecond().getAlternative().add(notationStrokes);
-        } else {
-          alternative.add(notationStrokes);
-          firstBoard.getSecond().setAlternative(alternative);
-        }
+        addAlternatives(firstBoard.getSecond(), firstStroke, notationStrokes);
       }
       System.out.println(BoardUtils.printBoardNotation(boardNotation));
       board.setUndo(false);
@@ -145,6 +130,25 @@ public class BoardBoxService {
       return boardNotation;
     }
     return boardNotation;
+  }
+
+  private void addAlternatives(NotationAtomStroke stroke, NotationStroke firstStroke, NotationStrokes notationStrokes) {
+    NotationStrokes alternative = firstStroke.getFirst().getAlternative();
+    if (alternative.isEmpty()) {
+      stroke.getAlternative().addAll(notationStrokes);
+    } else {
+      NotationStrokes alternativeOfAlternative = notationStrokes
+          .stream()
+          .flatMap(ns -> ns.getFirst().getAlternative().stream())
+          .collect(Collectors.toCollection(NotationStrokes::new));
+      NotationStrokes strokesWithoutAlternatives = notationStrokes
+          .stream()
+          .peek(ns -> ns.getFirst().setAlternative(new NotationStrokes()))
+          .collect(Collectors.toCollection(NotationStrokes::new));
+      alternative.addAll(alternativeOfAlternative);
+      alternative.addAll(strokesWithoutAlternatives);
+      stroke.setAlternative(alternative);
+    }
   }
 
   public Optional<BoardBox> makeWhiteStroke(BoardBox boardBox) {
