@@ -86,6 +86,9 @@ functions:
           method: post
       - http:
           path: /api/v1/article
+          method: put
+      - http:
+          path: /api/v1/article
           method: options
 
 resources:
