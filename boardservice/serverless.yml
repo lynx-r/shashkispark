@@ -57,6 +57,9 @@ functions:
           method: post
       - http:
           path: /api/v1/board
+          method: put
+      - http:
+          path: /api/v1/board
           method: options
       - http:
           path: /api/v1/board/{boardId}
