@@ -34,7 +34,7 @@ public class BoardBoxController {
               .orElse(Answer.error(HTTP_GONE, ErrorMessages.UNABLE_TO_CREATE_BOARD + req.body()))
       ).handleRequest(req, res, BoardBox.class);
 
-  public static Route updateBoard = (req, res) ->
+  public static Route loadBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) boardRequest ->
           boardBoxService
               .loadBoard(boardRequest)

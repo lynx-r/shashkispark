@@ -62,12 +62,12 @@ public class BoardApplication {
           post(Path.BOARD_ADD_DRAUGHT, BoardBoxController.addDraught);
           post(Path.BOARD, BoardBoxController.createBoard);
           put(Path.BOARD, BoardBoxController.saveBoard);
-          put(Path.BOARD_UPDATE, BoardBoxController.updateBoard);
+          get(Path.BOARD_LOAD, BoardBoxController.loadBoard);
           post(Path.BOARD_MOVE, BoardBoxController.move);
           post(Path.BOARD_HIGHLIGHT, BoardBoxController.highlightBoard);
           post(Path.BOARD_REDO, BoardBoxController.redo);
           post(Path.BOARD_UNDO, BoardBoxController.undo);
-          post(Path.MAKE_WHITE_STROKE, BoardBoxController.makeWhiteStroke);
+          put(Path.MAKE_WHITE_STROKE, BoardBoxController.makeWhiteStroke);
 
           notFound((req, res) -> "Not found");
           internalServerError((req, res) -> "Internal server error");
