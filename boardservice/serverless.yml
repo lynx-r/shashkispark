@@ -112,7 +112,7 @@ functions:
           method: options
       - http:
           path: /api/v1/board/load-board
-          method: get
+          method: post
       - http:
           path: /api/v1/board/load-board
           method: options
