@@ -100,7 +100,9 @@ class HighlightMoveUtil {
       next = getNextSquare(down, first, squareListIterator);
       if (next == null
           || (next.isOccupied() && next.getDraught().isCaptured())
-          || (previous != null && previous.isOccupied() && previous.getDraught().isBlack() != this.selectedSquare.getDraught().isBlack()
+          || (previous != null && previous.isOccupied()
+          && previous.getDraught().isBlack() != this.selectedSquare.getDraught().isBlack()
+          && !previous.equals(this.selectedSquare)
           && next.isOccupied())
           ) {
         break;
@@ -124,7 +126,9 @@ class HighlightMoveUtil {
     }
     while (hasNext(down, squareListIterator));
 
-    if (!walkAllowedMoves.isEmpty() && walkAllowedMoves.contains(previous)) {
+    if (!walkAllowedMoves.isEmpty() && walkAllowedMoves.contains(previous)
+        // test case `queen_moves_with_beat_and_in_one_square`
+        || previous != null && previous.isOccupied()) {
       allowedMoves.addAll(walkAllowedMoves);
     }
   }
