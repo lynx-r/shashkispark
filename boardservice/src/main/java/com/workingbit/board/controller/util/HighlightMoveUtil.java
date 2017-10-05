@@ -219,8 +219,16 @@ class HighlightMoveUtil {
 
   private void findAllowedForQueen(List<Square> diagonal, Square selectedSquare, boolean down, List<Square> allowedMoves) {
     ListIterator<Square> squareListIterator = diagonal.listIterator(diagonal.indexOf(selectedSquare));
+    Square previous = new Square();
+    boolean[] first = new boolean[]{down};
     while (hasNext(down, squareListIterator)) {
-      findAllowedUsingIterator(down, allowedMoves, squareListIterator);
+      Square next = getNextSquare(down, first, squareListIterator);
+      if (next != null && canMove(next) && (previous.equals(this.selectedSquare) || canMove(previous))) {
+        addAllowedMove(next, allowedMoves);
+      } else {
+        break;
+      }
+      previous = next;
     }
   }
 
