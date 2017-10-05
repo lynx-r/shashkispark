@@ -1,26 +1,35 @@
-[ {
-  "count" : 2,
-  "first" : {
-    "type" : "CAPTURE",
-    "strokes" : [ "h4", "f6" ],
-    "boardId" : "7a850b2e-0c05-4d8f-acf1-c8fcf90f848e",
-    "cursor" : true
+{
+  "id": "8af2f089-f62f-492f-9e00-3460abb46e78",
+  "createdAt": 1507186638322,
+  "articleId": "92f46347-8165-426e-a112-cc7c05b5ed34",
+  "boardId": "0861f6a2-7f36-453b-ab77-a6dbf77f89c3",
+  "board": {
+    "id": "0861f6a2-7f36-453b-ab77-a6dbf77f89c3",
+    "createdAt": 1507186637065,
+    "boardBoxId": "8af2f089-f62f-492f-9e00-3460abb46e78",
+    "previousBoards": [],
+    "nextBoards": [],
+    "blackDraughts": {},
+    "whiteDraughts": {},
+    "selectedSquare": null,
+    "nextSquare": null,
+    "previousSquare": null,
+    "squares": null,
+    "black": false,
+    "rules": "RUSSIAN",
+    "blackTurn": false,
+    "strokeCount": 0
   },
-  "second" : null,
-  "alternative" : [ ]
-}, {
-  "count" : 1,
-  "first" : {
-    "type" : "SIMPLE",
-    "strokes" : [ "g3", "h4" ],
-    "boardId" : "74dcb03a-b078-4b76-a3da-2c0345b7f3cd",
-    "cursor" : false
-  },
-  "second" : {
-    "type" : "SIMPLE",
-    "strokes" : [ "f6", "g5" ],
-    "boardId" : "27ac8224-29b5-4c8d-9683-204ff3d35e9f",
-    "cursor" : false
-  },
-  "alternative" : [ ]
-} ]
+  "notation": {
+    "whitePlayer": null,
+    "blackPlayer": null,
+    "event": null,
+    "site": null,
+    "round": null,
+    "date": null,
+    "result": null,
+    "gameType": null,
+    "notationStrokes": [],
+    "data": "2017-10-17T21:00:00.000Z"
+  }
+}

@@ -1,5 +1,9 @@
 package com.workingbit.share.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.workingbit.share.converter.CustomLocalDateDeserializer;
+import com.workingbit.share.converter.CustomLocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +23,8 @@ public class Notation {
   private String event;
   private String site;
   private String round;
+  @JsonSerialize(using = CustomLocalDateSerializer.class)
+  @JsonDeserialize(using = CustomLocalDateDeserializer.class)
   private LocalDate date;
   private String result;
   private String gameType;

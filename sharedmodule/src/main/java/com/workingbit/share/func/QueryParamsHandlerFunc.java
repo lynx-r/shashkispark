@@ -6,7 +6,7 @@ import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 
-import static com.workingbit.share.util.JsonUtil.dataToJson;
+import static com.workingbit.share.util.JsonUtils.dataToJson;
 
 /**
  * Created by Aleksey Popryaduhin on 16:27 01/10/2017.

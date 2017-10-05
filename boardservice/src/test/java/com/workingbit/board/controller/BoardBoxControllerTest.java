@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.workingbit.share.util.JsonUtil.dataToJson;
-import static com.workingbit.share.util.JsonUtil.jsonToData;
+import static com.workingbit.share.util.JsonUtils.dataToJson;
+import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static junit.framework.TestCase.*;
 
 /**

@@ -12,8 +12,8 @@ import org.junit.Test;
 import spark.servlet.SparkApplication;
 
 import static com.workingbit.share.util.Utils.randomString;
-import static com.workingbit.share.util.JsonUtil.dataToJson;
-import static com.workingbit.share.util.JsonUtil.jsonToData;
+import static com.workingbit.share.util.JsonUtils.dataToJson;
+import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

@@ -5,10 +5,14 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class JsonUtil {
-  private static Logger logger = Logger.getLogger(JsonUtil.class);
+public class JsonUtils {
+  private static Logger logger = Logger.getLogger(JsonUtils.class);
 
   private static final ObjectMapper mapper = new ObjectMapper();
+
+  public static void registerModules() {
+    mapper.findAndRegisterModules();
+  }
 
   public static String dataToJson(Object data) {
     try {

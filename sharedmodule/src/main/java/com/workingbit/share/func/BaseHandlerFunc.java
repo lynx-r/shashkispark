@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 
 import static com.workingbit.share.common.ApiConstants.VK_API_KEY_ENV;
-import static com.workingbit.share.util.JsonUtil.dataToJson;
+import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.Utils.encode;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 
