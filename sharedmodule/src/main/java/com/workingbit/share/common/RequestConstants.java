@@ -7,5 +7,5 @@ public class RequestConstants {
   public static final String LIMIT = "limit";
   public static final String ID = ":id";
   public static final String SIGN = "sign";
-  public static final String SIGN_REQUEST = "signRequest";
+  public static final String SIGN_REQUEST = "sign-request";
 }
