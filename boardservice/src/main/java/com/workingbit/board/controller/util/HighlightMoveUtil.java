@@ -49,6 +49,11 @@ class HighlightMoveUtil {
     findCapturedMovesOnDiagonalsOfSelectedSquare(selectedSquare, down, queen, capturedMoves, allowedMoves);
     if (capturedMoves.isEmpty()) {
       findAllowedMoves(selectedSquare, allowedMoves, down, queen);
+    } else {
+      capturedMoves = capturedMoves
+          .stream()
+          .distinct()
+          .collect(Collectors.toList());
     }
     MovesList movesList = new MovesList();
     movesList.setCaptured(capturedMoves);
@@ -281,7 +286,7 @@ class HighlightMoveUtil {
     for (List<Square> diagonal : next.getDiagonals()) {
       if (!isSubDiagonal(Arrays.asList(previous, next), diagonal)) {
         return diagonal.stream().anyMatch(square -> square.isOccupied()
-            && (square.getDraught().isMarkCaptured() || square.getDraught().isCaptured()));
+            && square.getDraught().isMarkCaptured());
       }
     }
     return false;

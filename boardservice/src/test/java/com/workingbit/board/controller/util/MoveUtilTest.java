@@ -3,8 +3,10 @@ package com.workingbit.board.controller.util;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.model.MovesList;
 import org.junit.Test;
 
+import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.board.controller.util.BoardUtils.printBoardNotation;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
@@ -81,6 +83,34 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "c3", "a5", true);
     System.out.println(printBoardNotation(board.getNotationStrokes()));
 //    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
+  }
+
+  @Test
+  public void should_capture_on_cross_diagonal() {
+    BoardBox boardBox = getBoard(false);
+    Board board = boardBox.getBoard();
+    board = getSquareByNotationWithDraught(board, "b2");
+    board = getSquareByNotationWithBlackDraught(board, "c3");
+    board = getSquareByNotationWithBlackDraught(board, "e5");
+    board = getSquareByNotationWithBlackDraught(board, "e7");
+    board = getSquareByNotationWithBlackDraught(board, "c7");
+    board = getSquareByNotationWithBlackDraught(board, "c5");
+    Square b2 = findSquareByNotation("b2", board);
+    board.setSelectedSquare(b2);
+    board = move(board, "b2", "d4", false);
+    MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d4"));
+    testCollection("f6,d8,b6", highlight.getAllowed());
+    testCollection("e5,e7,c7,c5", highlight.getCaptured());
+    board = move(board, "d4", "f6", false);
+    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "f6"));
+    testCollection("d8,b6,d4", highlight.getAllowed());
+    testCollection("e7,c7,c5", highlight.getCaptured());
+    board = move(board, "f6", "d8", false);
+    assertTrue(board.getSelectedSquare().getDraught().isQueen());
+    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
+    testCollection("d4,e3,f2,g1,b6", highlight.getAllowed());
+    testCollection("c5,c7", highlight.getCaptured());
+    System.out.println(printBoardNotation(board.getNotationStrokes()));
   }
 
   @Test

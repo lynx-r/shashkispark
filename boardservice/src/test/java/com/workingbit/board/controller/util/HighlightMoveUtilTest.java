@@ -1,28 +1,20 @@
 package com.workingbit.board.controller.util;
 
 import com.workingbit.board.exception.BoardServiceException;
-import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.Board;
-import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.MovesList;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Aleksey Popryaduhin on 20:01 10/08/2017.
  */
-public class HighlightMoveUtilTest {
+public class HighlightMoveUtilTest extends BaseServiceTest {
   @Before
   public void setUp() throws Exception {
   }
@@ -30,7 +22,7 @@ public class HighlightMoveUtilTest {
   @Test
   public void draught_simple_moves() throws BoardServiceException, ExecutionException, InterruptedException, TimeoutException {
     Board board = getBoard();
-    Board updatedBoard = getSquareByVHWithDraught(board, "c3"); // c3
+    Board updatedBoard = getSquareByNotationWithDraught(board, "c3"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c3"));
     testCollection("d4,b4", highlight.getAllowed());
   }
@@ -46,7 +38,7 @@ public class HighlightMoveUtilTest {
   @Test
   public void draught_became_queen() throws BoardServiceException, ExecutionException, InterruptedException, TimeoutException {
     Board board = getBoard();
-    Board updatedBoard = getSquareByVHWithDraught(board, "c7"); // c3
+    Board updatedBoard = getSquareByNotationWithDraught(board, "c7"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c7"));
     testCollection("b8,d8", highlight.getAllowed());
   }
@@ -54,7 +46,7 @@ public class HighlightMoveUtilTest {
   @Test
   public void draught_one_beat() throws BoardServiceException, ExecutionException, InterruptedException, TimeoutException {
     Board board = getBoard();
-    Board updatedBoard = getSquareByVHWithDraught(board, "c3"); // c3
+    Board updatedBoard = getSquareByNotationWithDraught(board, "c3"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "d4"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c3"));
     testCollection("d4", highlight.getCaptured());
@@ -64,7 +56,7 @@ public class HighlightMoveUtilTest {
   @Test
   public void draught_one_beat_back() throws BoardServiceException, ExecutionException, InterruptedException, TimeoutException {
     Board board = getBoard();
-    Board updatedBoard = getSquareByVHWithDraught(board, "c3"); // c3
+    Board updatedBoard = getSquareByNotationWithDraught(board, "c3"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "d2"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c3"));
     testCollection("d2", highlight.getCaptured());
@@ -74,7 +66,7 @@ public class HighlightMoveUtilTest {
   @Test
   public void draught_beat_sequence() throws BoardServiceException, ExecutionException, InterruptedException, TimeoutException {
     Board board = getBoard();
-    Board updatedBoard = getSquareByVHWithDraught(board, "c3"); // c3
+    Board updatedBoard = getSquareByNotationWithDraught(board, "c3"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "d4"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "d6"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "b6"); // c3
@@ -99,7 +91,7 @@ public class HighlightMoveUtilTest {
   @Test
   public void draught_turk_stroke() throws BoardServiceException, ExecutionException, InterruptedException, TimeoutException {
     Board board = getBoard();
-    Board updatedBoard = getSquareByVHWithDraught(board, "c1"); // c3
+    Board updatedBoard = getSquareByNotationWithDraught(board, "c1"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "b2"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "b4"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "d4"); // c3
@@ -140,7 +132,7 @@ public class HighlightMoveUtilTest {
   @Test
   public void draught_two_captured() throws BoardServiceException, ExecutionException, InterruptedException {
     Board board = getBoard();
-    Board updatedBoard = getSquareByVHWithDraught(board, "c3"); // c3
+    Board updatedBoard = getSquareByNotationWithDraught(board, "c3"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "d4"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "d6"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "c3"));
@@ -151,7 +143,7 @@ public class HighlightMoveUtilTest {
   @Test
   public void draught_captured_over_many_squares() throws BoardServiceException, ExecutionException, InterruptedException {
     Board board = getBoard();
-    Board updatedBoard = getSquareByVHWithDraught(board, "h2"); // c3
+    Board updatedBoard = getSquareByNotationWithDraught(board, "h2"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "g3"); // c3
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "c7"); // c3
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "h2"));
@@ -187,35 +179,6 @@ public class HighlightMoveUtilTest {
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "e1"));
     testCollection("f2", highlight.getCaptured());
     testCollection("g3", highlight.getAllowed());
-  }
-
-  private Board getSquareByVHWithDraught(Board currentBoard, String notation) throws BoardServiceException {
-    BoardUtils.addDraught(currentBoard, notation, new Draught(0, 0, 0, false));
-    return currentBoard;
-  }
-
-  private Board getSquareByNotationWithBlackDraught(Board currentBoard, String notation) throws BoardServiceException {
-    BoardUtils.addDraught(currentBoard, notation, new Draught(0, 0, 0, true));
-    return currentBoard;
-  }
-
-  private Board getSquareByNotationWithDraughtQueen(Board board, String notation, boolean black) throws BoardServiceException {
-    BoardUtils.addDraught(board, notation, new Draught(0, 0, 0, black, true));
-    return board;
-  }
-
-  private void testCollection(String notations, List<Square> items) {
-    List<String> collection = items.stream().map(ICoordinates::getNotation).collect(Collectors.toList());
-    String[] notation = notations.split(",");
-    Arrays.stream(notation).forEach(n -> {
-      assertTrue(collection.toString(), collection.contains(n));
-    });
-    assertEquals(collection.toString(), notation.length, collection.size());
-  }
-
-  private Square getSquare(Board board, String notation) {
-    Square square = BoardUtils.findSquareByNotation(notation, board);
-    return square;
   }
 
   Board getBoard() {
