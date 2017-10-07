@@ -1,4 +1,4 @@
-package com.workingbit.share.func;
+package com.workingbit.share.handler;
 
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.Log;

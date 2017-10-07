@@ -1,29 +1,30 @@
-package com.workingbit.share.func;
+package com.workingbit.share.handler;
 
 import com.workingbit.share.model.Answer;
 import org.apache.commons.lang3.StringUtils;
-import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
+
+import java.util.Map;
 
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 
 /**
- * Created by Aleksey Popryaduhin on 16:27 01/10/2017.
+ * Created by Aleksey Popryaduhin on 10:52 29/09/2017.
  */
 @FunctionalInterface
-public interface QueryParamsHandlerFunc  extends BaseHandlerFunc{
+public interface ParamsHandlerFunc extends BaseHandlerFunc {
 
   default String handleRequest(Request request, Response response) {
     String check = checkSign(request);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }
-    QueryParamsMap queryParamsMap = request.queryMap();
-    Answer processed = process(queryParamsMap);
+    Map<String, String> id = request.params();
+    Answer processed = process(id);
     response.status(processed.getCode());
     return dataToJson(processed);
   }
 
-  Answer process(QueryParamsMap data);
+  Answer process(Map<String, String> data);
 }

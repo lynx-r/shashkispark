@@ -174,6 +174,7 @@ public class BoardBoxService {
 
   public Optional<BoardBox> save(BoardBox boardBox) {
     boardBoxDao.save(boardBox);
+    boardBox = updateBoardBox(boardBox);
     return Optional.of(boardBox);
   }
 

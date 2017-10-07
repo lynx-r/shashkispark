@@ -1,4 +1,4 @@
-package com.workingbit.share.func;
+package com.workingbit.share.handler;
 
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.Payload;
