@@ -28,7 +28,7 @@ provider:
   region: eu-west-1
 
   apiKeys:
-    - ARTICLES_API_KEY
+    - ARTICLE_API_KEY
 
 # you can define service wide environment variables here
   environment:
