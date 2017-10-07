@@ -50,12 +50,14 @@ functions:
       - http:
           path: /api/v1/articles
           method: get
+          private: true
       - http:
           path: /api/v1/articles
           method: options
       - http:
           path: /api/v1/article/{articleId}
           method: get
+          private: true
           request:
             parameters:
               path:
@@ -70,6 +72,7 @@ functions:
       - http:
           path: /api/v1/article/{articleId}/board
           method: get
+          private: true
           request:
             parameters:
               path:
@@ -84,9 +87,11 @@ functions:
       - http:
           path: /api/v1/article
           method: post
+          private: true
       - http:
           path: /api/v1/article
           method: put
+          private: true
       - http:
           path: /api/v1/article
           method: options

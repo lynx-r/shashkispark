@@ -49,18 +49,21 @@ functions:
       - http:
           path: /api/v1/board/add-draught
           method: post
+          private: true
       - http:
           path: /api/v1/baord/add-draught
           method: options
       - http:
           path: /api/v1/board
           method: post
+          private: true
       - http:
           path: /api/v1/board
           method: options
       - http:
           path: /api/v1/board/{boardId}
           method: delete
+          private: true
           request:
             parameters:
               path:
@@ -75,6 +78,7 @@ functions:
       - http:
           path: /api/v1/board/{boardId}
           method: get
+          private: true
           request:
             parameters:
               path:
@@ -89,42 +93,49 @@ functions:
       - http:
           path: /api/v1/board/highlight
           method: post
+          private: true
       - http:
           path: /api/v1/board/highlight
           method: options
       - http:
           path: /api/v1/board/move
           method: post
+          private: true
       - http:
           path: /api/v1/board/move
           method: options
       - http:
           path: /api/v1/board/undo
           method: post
+          private: true
       - http:
           path: /api/v1/board/undo
           method: options
       - http:
           path: /api/v1/board/redo
           method: post
+          private: true
       - http:
           path: /api/v1/board/redo
           method: options
       - http:
           path: /api/v1/board/load-board
           method: post
+          private: true
       - http:
           path: /api/v1/board/load-board
           method: options
       - http:
           path: /api/v1/board/make-white-stroke
           method: put
+          private: true
       - http:
           path: /api/v1/board/make-white-stroke
           method: options
       - http:
           path: /api/v1/boards
           method: post
+          private: true
       - http:
           path: /api/v1/boards
           method: options
