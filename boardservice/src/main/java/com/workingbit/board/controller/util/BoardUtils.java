@@ -308,7 +308,7 @@ public class BoardUtils {
     }
   }
 
-  public static void resetBoardNotationCursor(NotationStrokes notationStrokes) {
+  private static void resetBoardNotationCursor(NotationStrokes notationStrokes) {
     notationStrokes.forEach(notationStroke -> {
       if (notationStroke.getFirst() != null) {
         notationStroke.getFirst().setCursor(false);
@@ -323,7 +323,7 @@ public class BoardUtils {
     List<String> stroke = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
     resetBoardNotationCursor(board.getNotationStrokes());
     NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation);
-    NotationAtomStroke notationAtomStroke = null;
+    NotationAtomStroke notationAtomStroke;
     notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId(), true);
     if (board.isBlackTurn()) {
       notationStroke.setSecond(notationAtomStroke);

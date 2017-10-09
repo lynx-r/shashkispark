@@ -14,13 +14,13 @@ public class BoardDao extends BaseDao<Board> {
   }
 
 //  @Override
-//  public void save(Article entity) {
-//    super.save(entity);
+//  public void saveAndFillBoard(Article entity) {
+//    super.saveAndFillBoard(entity);
 //  }
 
 //  public void publishArticle(Article board) {
 //    board.setState(EnumArticleState.published);
-//    save(board);
+//    saveAndFillBoard(board);
 //  }
 
 //  public List<Article> findPublished() {

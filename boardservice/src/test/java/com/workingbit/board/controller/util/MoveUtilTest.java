@@ -6,6 +6,9 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.MovesList;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.board.controller.util.BoardUtils.printBoardNotation;
 import static junit.framework.TestCase.assertFalse;
@@ -114,6 +117,34 @@ public class MoveUtilTest extends BaseServiceTest {
   }
 
   @Test
+  public void should_capture_turk_stroke() {
+    BoardBox boardBox = getBoard(false);
+    Board board = boardBox.getBoard();
+    board = getSquareByNotationWithDraughtQueen(board, "e1", false);
+    board = getSquareByNotationWithBlackDraught(board, "c3");
+    board = getSquareByNotationWithBlackDraught(board, "b6");
+    board = getSquareByNotationWithBlackDraught(board, "e7");
+    board = getSquareByNotationWithBlackDraught(board, "e5");
+    Square e1 = findSquareByNotation("e1", board);
+    board.setSelectedSquare(e1);
+    board = move(board, "e1", "a5", false);
+    MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "a5"));
+    assertTrue(testSameHighlight(board, highlight));
+    board = move(board, "a5", "d8", false);
+    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
+    assertTrue(testSameHighlight(board, highlight));
+//    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "f6"));
+//    testCollection("d8,b6,d4", highlight.getAllowed());
+//    testCollection("e7,c7,c5", highlight.getCaptured());
+//    board = move(board, "f6", "d8", false);
+//    assertTrue(board.getSelectedSquare().getDraught().isQueen());
+//    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
+//    testCollection("d4,e3,f2,g1,b6", highlight.getAllowed());
+//    testCollection("c5,c7", highlight.getCaptured());
+    System.out.println(printBoardNotation(board.getNotationStrokes()));
+  }
+
+  @Test
   public void should_move_white_on_edge() {
     BoardBox boardBox = getBoard(false);
     Board board = boardBox.getBoard();
@@ -163,5 +194,22 @@ public class MoveUtilTest extends BaseServiceTest {
     assertFalse(from.isOccupied());
     assertTrue(to.isOccupied());
     return board;
+  }
+
+  private boolean testSameHighlight(Board board, MovesList highlight) {
+    List<Square> highlighted = board.getAssignedSquares()
+        .stream()
+        .filter(Square::isHighlighted)
+        .sorted()
+        .collect(Collectors.toList());
+    List<Square> allowed = highlight.getAllowed();
+    if (allowed.size() != highlighted.size()) {
+      return false;
+    }
+
+    List<Square> allowedSorted = allowed.stream()
+        .sorted()
+        .collect(Collectors.toList());
+    return highlighted.equals(allowedSorted);
   }
 }

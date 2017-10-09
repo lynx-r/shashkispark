@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * Created by Aleksey Popryaduhin on 09:26 10/08/2017.
  */
-public class Square implements ICoordinates, BaseDomain {
+public class Square implements ICoordinates, BaseDomain, Comparable {
 
   /**
    * row
@@ -190,5 +190,11 @@ public class Square implements ICoordinates, BaseDomain {
   @Override
   public void setCreatedAt(Date createdAt) {
 
+  }
+
+  @Override
+  public int compareTo(Object o) {
+    Square o1 = (Square) o;
+    return o1.getNotation().compareTo(getNotation());
   }
 }

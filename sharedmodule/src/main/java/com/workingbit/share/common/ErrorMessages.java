@@ -20,4 +20,5 @@ public class ErrorMessages {
   public static final String UNABLE_TO_MAKE_WHITE_STROKE = "Unable to make white stroke";
   public static final String CAPTURED_DRAUGHT_NOT_FOUND = "Captured draught not found";
   public static final String STROKE_NOT_FOUND = "Stroke not found";
+  public static final String UNABLE_TO_INIT_ASSIGNED_SQUARES = "Unable to init assigned squares";
 }

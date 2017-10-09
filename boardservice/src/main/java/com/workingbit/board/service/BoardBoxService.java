@@ -28,7 +28,7 @@ public class BoardBoxService {
     boardBox.setArticleId(createBoardPayload.getArticleId());
     boardBox.setId(createBoardPayload.getBoardBoxId());
     boardBox.setCreatedAt(new Date());
-    save(boardBox);
+    saveAndFillBoard(boardBox);
 
     board.setBoardBoxId(boardBox.getId());
     boardService.save(board);
@@ -101,7 +101,7 @@ public class BoardBoxService {
           NotationStrokes reversed = BoardUtils.reverseBoardNotation(boardUpdated.getNotationStrokes());
           System.out.println(BoardUtils.printBoardNotation(reversed));
           updatedBox.getNotation().setNotationStrokes(reversed);
-          save(updatedBox);
+          boardBoxDao.save(updatedBox);
           return updatedBox;
         });
   }
@@ -172,7 +172,7 @@ public class BoardBoxService {
         || !nextSquare.isHighlighted();
   }
 
-  public Optional<BoardBox> save(BoardBox boardBox) {
+  public Optional<BoardBox> saveAndFillBoard(BoardBox boardBox) {
     boardBoxDao.save(boardBox);
     boardBox = updateBoardBox(boardBox);
     return Optional.of(boardBox);
@@ -219,7 +219,7 @@ public class BoardBoxService {
           }
           updated.setBoardId(currentBoard.getId());
           updated.setBoard(currentBoard);
-          save(updated);
+          saveAndFillBoard(updated);
           return updated;
         });
   }
