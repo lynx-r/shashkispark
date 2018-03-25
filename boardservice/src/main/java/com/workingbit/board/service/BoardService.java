@@ -68,11 +68,12 @@ public class BoardService {
     nextBoard.setSelectedSquare(selectedSquare);
     nextBoard.setNextSquare(nextSquare);
 
-    nextBoard = BoardUtils.moveDraught(selectedSquare, nextBoard);
-    nextBoard.pushPreviousBoard(currentBoard.getId(), selectedSquare.getNotation());
-
+    // should be there because in move draught, I set boardId in notation
     Utils.setRandomIdAndCreatedAt(nextBoard);
     nextBoard.setCursor(true);
+
+    nextBoard = BoardUtils.moveDraught(selectedSquare, nextBoard);
+    nextBoard.pushPreviousBoard(currentBoard.getId(), selectedSquare.getNotation());
 
     boardDao.save(nextBoard);
     return nextBoard;

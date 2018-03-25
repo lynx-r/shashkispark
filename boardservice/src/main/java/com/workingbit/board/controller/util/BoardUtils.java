@@ -293,19 +293,20 @@ public class BoardUtils {
   }
 
   private static NotationAtomStroke getNotationAtomCaptureStroke(NotationAtomStroke notationAtomStroke, Board board) {
-    if (notationAtomStroke != null) {
-      boolean continueStroke = notationAtomStroke.getStrokes().get(notationAtomStroke.getStrokes().size() - 1)
-          .equals(board.getPreviousSquare().getNotation());
-      if (continueStroke) {
-        notationAtomStroke.getStrokes().add(board.getSelectedSquare().getNotation());
-        return notationAtomStroke;
-      }
-      return notationAtomStroke;
-    } else {
-      resetBoardNotationCursor(board.getNotationStrokes());
-      List<String> strokes = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
-      return new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.CAPTURE, strokes, board.getId(), true);
-    }
+    assert notationAtomStroke != null;
+//    if (notationAtomStroke != null) {
+//      boolean continueStroke = notationAtomStroke.getStrokes().get(notationAtomStroke.getStrokes().size() - 1)
+//          .equals(board.getPreviousSquare().getNotation());
+//      if (continueStroke) {
+//        notationAtomStroke.getStrokes().add(board.getSelectedSquare().getNotation());
+//        return notationAtomStroke;
+//      }
+//      return notationAtomStroke;
+//    } else {
+    resetBoardNotationCursor(board.getNotationStrokes());
+    List<String> strokes = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
+    return new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.CAPTURE, strokes, board.getId(), true);
+//    }
   }
 
   private static void resetBoardNotationCursor(NotationStrokes notationStrokes) {
@@ -571,15 +572,12 @@ public class BoardUtils {
   }
 
   private static void setCursorForAtomStroke(NotationStrokes notationStrokes, String boardId, Function<NotationStroke, NotationAtomStroke> predicate) {
-    NotationAtomStroke notationAtomStroke = notationStrokes
+    notationStrokes
         .stream()
         .map(predicate)
         .filter(Objects::nonNull)
         .filter(atomStroke -> atomStroke.getBoardId().equals(boardId))
         .findFirst()
-        .orElse(null);
-    if (notationAtomStroke != null) {
-      notationAtomStroke.setCursor(true);
-    }
+        .ifPresent(notationAtomStroke -> notationAtomStroke.setCursor(true));
   }
 }
