@@ -10,5 +10,6 @@ import lombok.Data;
 @Data
 public class BoardIdNotation {
   private String boardId;
-  private String notation;
+  private String anchorNotation;
+  private String possibleNotation;
 }

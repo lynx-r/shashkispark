@@ -11,7 +11,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import spark.servlet.SparkApplication;
 
-import static com.workingbit.share.util.Utils.randomString;
+import static com.workingbit.share.util.Utils.getRandomString;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static org.junit.Assert.assertEquals;
@@ -54,9 +54,9 @@ public class ArticleControllerTest {
     CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload).getBody();
 
     Article article = articleResponse.getArticle();
-    String title = randomString();
+    String title = getRandomString();
     article.setTitle(title);
-    String content = randomString();
+    String content = getRandomString();
     article.setContent(content);
     article = (Article) put("", article).getBody();
 
@@ -99,7 +99,7 @@ public class ArticleControllerTest {
 
   private CreateArticlePayload getCreateArticlePayload() {
     CreateArticlePayload createArticlePayload = new CreateArticlePayload();
-    Article article = new Article(randomString(), randomString(), randomString());
+    Article article = new Article(getRandomString(), getRandomString(), getRandomString());
     createArticlePayload.setArticle(article);
     CreateBoardPayload createBoardPayload = new CreateBoardPayload();
     createBoardPayload.setBlack(false);

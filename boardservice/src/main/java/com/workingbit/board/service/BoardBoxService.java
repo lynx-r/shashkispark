@@ -6,6 +6,7 @@ import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
+import com.workingbit.share.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -26,7 +27,7 @@ public class BoardBoxService {
 
     BoardBox boardBox = new BoardBox(board);
     boardBox.setArticleId(createBoardPayload.getArticleId());
-    boardBox.setId(createBoardPayload.getBoardBoxId());
+    Utils.setBoardBoxIdAndCreatedAt(boardBox, createBoardPayload);
     boardBox.setCreatedAt(new Date());
     saveAndFillBoard(boardBox);
 
@@ -36,7 +37,9 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> findById(String boardBoxId) {
-    return boardBoxDao.findByKey(boardBoxId).map(this::updateBoardBox);
+    return boardBoxDao.findByKey(boardBoxId)
+        .map(this::updateBoardBox)
+        .map(this::updateBoardNotation);
   }
 
   private BoardBox updateBoardBox(BoardBox boardBox) {
@@ -88,7 +91,7 @@ public class BoardBoxService {
             return null;
           }
           try {
-            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated);
+            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, boardBox.getArticleId());
           } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -212,7 +215,7 @@ public class BoardBoxService {
             return null;
           }
           try {
-            currentBoard = boardService.addDraught(currentBoard, squareLink.getNotation(), draught);
+            currentBoard = boardService.addDraught(boardBox.getArticleId(), currentBoard, squareLink.getNotation(), draught);
           } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;

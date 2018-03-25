@@ -131,16 +131,16 @@ public class Board implements BaseDomain {
     return previousBoards.isEmpty() ? null : previousBoards.pop().getBoardId();
   }
 
-  public void pushPreviousBoard(String boardId, String notation) {
-    this.previousBoards.push(new BoardIdNotation(boardId, notation));
+  public void pushPreviousBoard(String boardId, String prevP, String nextN) {
+    this.previousBoards.push(new BoardIdNotation(boardId, prevP, nextN));
   }
 
   public String popNextBoard() {
     return nextBoards.isEmpty() ? null : nextBoards.pop().getBoardId();
   }
 
-  public void pushNextBoard(String boardId, String notation) {
-    nextBoards.push(new BoardIdNotation(boardId, notation));
+  public void pushNextBoard(String boardId, String prevN, String nextN) {
+    nextBoards.push(new BoardIdNotation(boardId, prevN, nextN));
   }
 
   public void addBlackDraughts(String notation, Draught draught) {

@@ -1,8 +1,12 @@
 package com.workingbit.share.util;
 
 import com.workingbit.share.domain.BaseDomain;
+import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.domain.impl.Board;
+import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.model.CreateBoardPayload;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -28,6 +32,8 @@ public class Utils {
     add("i");
     add("j");
   }};
+  private static String RANDOM_STR_SEP = "-";
+  private static int COUNT_RANDOM_STR = 10;
 
   public static boolean isBlank(String s) {
     if (s == null) {
@@ -50,8 +56,8 @@ public class Utils {
     domain.setCreatedAt(new Date());
   }
 
-  public static String randomString() {
-    return String.valueOf(RandomUtils.nextLong());
+  public static String getRandomString() {
+    return RandomStringUtils.randomAlphanumeric(COUNT_RANDOM_STR);
   }
 
   public static String encode(String key, String data) throws Exception {
@@ -60,5 +66,22 @@ public class Utils {
     sha256_HMAC.init(secret_key);
 
     return Hex.encodeHexString(sha256_HMAC.doFinal(data.getBytes("UTF-8")));
+  }
+
+  public static void setArticleIdAndCreatedAt(boolean present, Article article) {
+    article.setId(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString() : ""));
+    article.setCreatedAt(new Date());
+  }
+
+  public static void setBoardIdAndCreatedAt(String articleId, Board board) {
+    board.setId(articleId + RANDOM_STR_SEP + board.getBoardBoxId() + RANDOM_STR_SEP + getRandomString());
+    board.setCreatedAt(new Date());
+  }
+
+  public static void setBoardBoxIdAndCreatedAt(BoardBox boardBox, CreateBoardPayload createBoardPayload) {
+    boardBox.setId(createBoardPayload.getArticleId() +
+        RANDOM_STR_SEP + createBoardPayload.getBoardBoxId() +
+        RANDOM_STR_SEP + getRandomString());
+    boardBox.setCreatedAt(new Date());
   }
 }

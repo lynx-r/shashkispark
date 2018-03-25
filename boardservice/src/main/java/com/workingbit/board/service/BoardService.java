@@ -23,7 +23,7 @@ public class BoardService {
   Board createBoard(CreateBoardPayload newBoardRequest) {
     Board board = initBoard(newBoardRequest.getFillBoard(), newBoardRequest.getBlack(),
         newBoardRequest.getRules());
-    Utils.setRandomIdAndCreatedAt(board);
+    Utils.setBoardIdAndCreatedAt(newBoardRequest.getArticleId(), board);
     board.setCursor(true);
     save(board);
     return board;
@@ -59,8 +59,9 @@ public class BoardService {
    * @param currentBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
+   * @param articleId
    */
-  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard) {
+  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId) {
     currentBoard.setCursor(false);
     boardDao.save(currentBoard);
 
@@ -69,11 +70,13 @@ public class BoardService {
     nextBoard.setNextSquare(nextSquare);
 
     // should be there because in move draught, I set boardId in notation
-    Utils.setRandomIdAndCreatedAt(nextBoard);
+    Utils.setBoardIdAndCreatedAt(articleId, nextBoard);
     nextBoard.setCursor(true);
 
     nextBoard = BoardUtils.moveDraught(selectedSquare, nextBoard);
-    nextBoard.pushPreviousBoard(currentBoard.getId(), selectedSquare.getNotation());
+    nextBoard.pushPreviousBoard(currentBoard.getId(),
+        selectedSquare.getNotation(),
+        nextSquare.getNotation());
 
     boardDao.save(nextBoard);
     return nextBoard;
@@ -83,9 +86,9 @@ public class BoardService {
     boardDao.save(board);
   }
 
-  Board addDraught(Board currentBoard, String notation, Draught draught) {
+  Board addDraught(String articleId, Board currentBoard, String notation, Draught draught) {
     Board deepClone = (Board) currentBoard.deepClone();
-    Utils.setRandomIdAndCreatedAt(deepClone);
+    Utils.setBoardIdAndCreatedAt(articleId, deepClone);
     BoardUtils.addDraught(deepClone, notation, draught);
     boardDao.save(deepClone);
     return deepClone;
@@ -98,7 +101,9 @@ public class BoardService {
     }
     boardDao.save(currentBoard);
     return findById(previousId).map(previousBoard -> {
-      previousBoard.pushNextBoard(currentBoard.getId(), currentBoard.getSelectedSquare().getNotation());
+      previousBoard.pushNextBoard(currentBoard.getId(),
+          currentBoard.getPreviousSquare().getNotation(),
+          currentBoard.getSelectedSquare().getNotation());
       previousBoard.setUndo(true);
       boardDao.save(previousBoard);
       return previousBoard;
@@ -112,7 +117,11 @@ public class BoardService {
     }
     boardDao.save(currentBoard);
     return findById(nextId).map(nextBoard -> {
-      nextBoard.pushPreviousBoard(currentBoard.getId(), currentBoard.getSelectedSquare().getNotation());
+      Square nextSquare = currentBoard.getNextSquare();
+      String notation = nextSquare != null ? nextSquare.getNotation() : null;
+      nextBoard.pushPreviousBoard(currentBoard.getId(),
+          notation,
+          currentBoard.getSelectedSquare().getNotation());
       nextBoard.setRedo(true);
       boardDao.save(nextBoard);
       return nextBoard;
