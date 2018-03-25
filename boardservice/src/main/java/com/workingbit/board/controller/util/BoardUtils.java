@@ -28,8 +28,8 @@ public class BoardUtils {
    * @param black is player plays black?
    */
   public static Board initBoard(boolean fillBoard, boolean black, EnumRules rules) {
-    Board boardBox = new Board(black, rules);
-    return updateBoard(fillBoard, false, boardBox);
+    Board board = new Board(black, rules);
+    return updateBoard(fillBoard, false, board);
   }
 
   public static Board updateBoard(Board board) {
@@ -324,8 +324,7 @@ public class BoardUtils {
     List<String> stroke = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
     resetBoardNotationCursor(board.getNotationStrokes());
     NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation);
-    NotationAtomStroke notationAtomStroke;
-    notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId(), true);
+    NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId(), true);
     if (board.isBlackTurn()) {
       notationStroke.setSecond(notationAtomStroke);
     } else {
