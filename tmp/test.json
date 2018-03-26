@@ -1,0 +1,2774 @@
+{
+  "ArrayList": [
+    {
+      "id": "1234-ef9849f6-3637-4626-9338-f4f5e166ad9f-TvN9BqnTZl",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        42,
+        53,
+        670000000
+      ],
+      "boardBoxId": "1234-ef9849f6-3637-4626-9338-f4f5e166ad9f-46I7fOClDp",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "9hi70wpUPx-7b1d3cb0-3e6d-49ae-b791-be41f0308c6a-p3lc1zJsNh",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        59,
+        39,
+        834000000
+      ],
+      "boardBoxId": "9hi70wpUPx-7b1d3cb0-3e6d-49ae-b791-be41f0308c6a-vSo2amu7EO",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {},
+      "whiteDraughts": {},
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "2TSaT7f2I2-d8fffda7-11f4-4c5f-8b92-5e2f35758816-EaoA4PNgcy",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        59,
+        40,
+        79000000
+      ],
+      "boardBoxId": "2TSaT7f2I2-d8fffda7-11f4-4c5f-8b92-5e2f35758816-WGmXW34CvD",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {},
+      "whiteDraughts": {},
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "2-null-khMuOCDRLb",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        18,
+        41,
+        14,
+        378000000
+      ],
+      "boardBoxId": null,
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "1234-237686d1-929a-4dd7-8558-b69ce8b9c75f-ZaR2qvCKO9",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        40,
+        19,
+        872000000
+      ],
+      "boardBoxId": "1234-237686d1-929a-4dd7-8558-b69ce8b9c75f-QoC4GJQgoY",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "JN8RNgMgXP-0babae5a-893b-4823-ae68-ed9b3d8be307-n2LXOoNd4R",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        59,
+        38,
+        542000000
+      ],
+      "boardBoxId": "JN8RNgMgXP-0babae5a-893b-4823-ae68-ed9b3d8be307-MKXRyYbUDR",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {},
+      "whiteDraughts": {},
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "1234-77ab0c81-ece3-40b4-97df-f4e4616d7664-RZ9pfdObh1",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        53,
+        37,
+        326000000
+      ],
+      "boardBoxId": "1234-77ab0c81-ece3-40b4-97df-f4e4616d7664-dB1l9uVC6a",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "jiGmpQ1U1L-b3d2616b-0619-42c1-bf03-ebb341fcb4ee-ubxfzfd6He",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        59,
+        39,
+        244000000
+      ],
+      "boardBoxId": "jiGmpQ1U1L-b3d2616b-0619-42c1-bf03-ebb341fcb4ee-gr0dm66e1b",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {},
+      "whiteDraughts": {},
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "1234-f007e860-e7d8-4bf8-8e26-7f512cd7cf9b-NoFNpnmzfR",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        38,
+        36,
+        287000000
+      ],
+      "boardBoxId": "1234-f007e860-e7d8-4bf8-8e26-7f512cd7cf9b-PBkRUBzMO7",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "1234-46ca5c80-6f76-4031-99f4-c37cf6100842-9XFLTYwbDv",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        42,
+        2,
+        224000000
+      ],
+      "boardBoxId": "1234-46ca5c80-6f76-4031-99f4-c37cf6100842-9JC2nOK4BU",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "1234-187ac073-8c2b-4bbb-b6dc-872ce147b174-EONqvIAiWP",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        37,
+        6,
+        773000000
+      ],
+      "boardBoxId": "1234-187ac073-8c2b-4bbb-b6dc-872ce147b174-24XpfZqbp0",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "1234-58945f12-136d-47a5-812f-2f1b7e3de7f8-QVOyKtgkvc",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        31,
+        47,
+        466000000
+      ],
+      "boardBoxId": "1234-58945f12-136d-47a5-812f-2f1b7e3de7f8-VQPNjhxaXS",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "1234-ebe6ec07-d039-4ab4-aba9-c1792b5e7815-oUy92k24XY",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        37,
+        28,
+        649000000
+      ],
+      "boardBoxId": "1234-ebe6ec07-d039-4ab4-aba9-c1792b5e7815-wnU7EvUA8o",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    },
+    {
+      "id": "1234-c32c6db6-c6b7-45f1-9b43-b96e97b73eba-FLm0yD9tWc",
+      "createdAt": [
+        2018,
+        3,
+        26,
+        16,
+        54,
+        54,
+        885000000
+      ],
+      "boardBoxId": "1234-c32c6db6-c6b7-45f1-9b43-b96e97b73eba-7OKwhtQRz1",
+      "previousBoards": [],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h0"
+        },
+        "g7": {
+          "v": 1,
+          "h": 6,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-1"
+        },
+        "f6": {
+          "v": 2,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-2"
+        },
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f0"
+        },
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-1"
+        },
+        "d6": {
+          "v": 2,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-2"
+        },
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d0"
+        },
+        "c7": {
+          "v": 1,
+          "h": 2,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-1"
+        },
+        "b6": {
+          "v": 2,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-2"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-1"
+        },
+        "h6": {
+          "v": 2,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-2"
+        }
+      },
+      "whiteDraughts": {
+        "c3": {
+          "v": 5,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-5"
+        },
+        "b2": {
+          "v": 6,
+          "h": 1,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "b-6"
+        },
+        "a1": {
+          "v": 7,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-7"
+        },
+        "a3": {
+          "v": 5,
+          "h": 0,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "a-5"
+        },
+        "h2": {
+          "v": 6,
+          "h": 7,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "h-6"
+        },
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "g-5"
+        },
+        "f2": {
+          "v": 6,
+          "h": 5,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "f-6"
+        },
+        "e1": {
+          "v": 7,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-7"
+        },
+        "e3": {
+          "v": 5,
+          "h": 4,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "e-5"
+        },
+        "d2": {
+          "v": 6,
+          "h": 3,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "d-6"
+        },
+        "c1": {
+          "v": 7,
+          "h": 2,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlighted": false,
+          "notation": "c-7"
+        }
+      },
+      "selectedSquare": null,
+      "nextSquare": null,
+      "previousSquare": null,
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "strokeCount": 0
+    }
+  ]
+}

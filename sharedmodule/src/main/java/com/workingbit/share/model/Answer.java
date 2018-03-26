@@ -1,11 +1,10 @@
 package com.workingbit.share.model;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 //@JsonDeserialize(using = AnswerDeserializer.class)
-@JsonRootName(value = "answer")
+//@JsonTypeName(value = )
 @NoArgsConstructor
 @Data
 public class Answer {
@@ -39,21 +38,21 @@ public class Answer {
     return new Answer(code, message);
   }
 
-  public static Answer okBoardBox(Object body) {
-    return new Answer(200, body, Type.BOARD_BOX);
-  }
+//  public static Answer okBoardBox(Object body) {
+//    return new Answer(200, body, Type.BOARD_BOX);
+//  }
 
-  public static Answer okArticle(Object body) {
-    return new Answer(200, body, Type.ARTICLE);
-  }
+//  public static Answer okArticle(Object body) {
+//    return new Answer(200, body, Type.ARTICLE);
+//  }
 
-  public static Answer okArticleList(Object body) {
-    return new Answer(200, body, Type.ARTICLE_LIST);
-  }
+//  public static Answer okArticleList(Object body) {
+//    return new Answer(200, body, Type.ARTICLE_LIST);
+//  }
 
-  public static Answer okArticleCreate(CreateArticleResponse createArticleResponse) {
-    return new Answer(201, createArticleResponse, Type.ARTICLE_CREATE);
-  }
+//  public static Answer okArticleCreate(CreateArticleResponse createArticleResponse) {
+//    return new Answer(201, createArticleResponse, Type.ARTICLE_CREATE);
+//  }
 
   public enum Type {
     ARTICLE, ARTICLE_LIST, BOARD_BOX, BOARD_BOX_LIST, ARTICLE_CREATE, ERROR

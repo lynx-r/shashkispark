@@ -21,7 +21,6 @@ import java.util.*;
 /**
  * Created by Aleksey Popryaduhin on 23:21 21/09/2017.
  */
-@JsonRootName(value = "board")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
