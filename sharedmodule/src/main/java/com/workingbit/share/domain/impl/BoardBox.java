@@ -1,7 +1,9 @@
 package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.workingbit.share.common.DBConstants;
+import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.Notation;
 import lombok.Data;
@@ -13,14 +15,16 @@ import java.util.Objects;
 /**
  * Created by Aleksey Popryaduhin on 19:54 12/08/2017.
  */
+@JsonRootName(value = "boardBox")
 @NoArgsConstructor
 @Data
 @DynamoDBTable(tableName = DBConstants.BOARD_BOX_TABLE)
-public class BoardBox implements BaseDomain{
+public class BoardBox implements BaseDomain {
 
   @DynamoDBHashKey(attributeName = "id")
   private String id;
 
+  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
   @DynamoDBRangeKey(attributeName = "createdAt")
   private LocalDateTime createdAt;
 

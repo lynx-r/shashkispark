@@ -1,5 +1,7 @@
 package com.workingbit.share.domain;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.model.Payload;
 
 import java.io.Serializable;

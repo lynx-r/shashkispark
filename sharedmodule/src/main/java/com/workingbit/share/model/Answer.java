@@ -1,11 +1,11 @@
 package com.workingbit.share.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.workingbit.share.converter.AnswerDeserializer;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@JsonDeserialize(using = AnswerDeserializer.class)
+//@JsonDeserialize(using = AnswerDeserializer.class)
+@JsonRootName(value = "answer")
 @NoArgsConstructor
 @Data
 public class Answer {

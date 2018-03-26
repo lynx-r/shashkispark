@@ -11,6 +11,7 @@ import java.util.Objects;
 /**
  * Created by Aleksey Popryaduhin on 09:28 10/08/2017.
  */
+//@JsonRootName(value = "draught")
 @Data
 public class Draught implements ICoordinates, BaseDomain {
   /**

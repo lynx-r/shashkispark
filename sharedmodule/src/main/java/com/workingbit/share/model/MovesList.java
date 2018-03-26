@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * MovesList
  */
+//@JsonRootName(value = "movesList")
 @Getter
 @Setter
 public class MovesList {

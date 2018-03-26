@@ -2,9 +2,11 @@ package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.BoardIdNotationConverter;
 import com.workingbit.share.converter.DraughtMapConverter;
+import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.BoardIdNotation;
 import com.workingbit.share.model.EnumRules;
@@ -19,6 +21,7 @@ import java.util.*;
 /**
  * Created by Aleksey Popryaduhin on 23:21 21/09/2017.
  */
+@JsonRootName(value = "board")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -28,6 +31,7 @@ public class Board implements BaseDomain {
   @DynamoDBHashKey(attributeName = "id")
   private String id;
 
+  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
   @DynamoDBRangeKey(attributeName = "createdAt")
   private LocalDateTime createdAt;
 

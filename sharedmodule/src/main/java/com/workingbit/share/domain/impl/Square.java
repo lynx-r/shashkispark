@@ -13,6 +13,7 @@ import java.util.Objects;
 /**
  * Created by Aleksey Popryaduhin on 09:26 10/08/2017.
  */
+//@JsonRootName(value = "square")
 @Data
 public class Square implements ICoordinates, BaseDomain, Comparable {
 

@@ -8,7 +8,11 @@ import java.io.IOException;
 public class JsonUtils {
   private static Logger logger = Logger.getLogger(JsonUtils.class);
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper;
+
+  static {
+    mapper = Utils.configureObjectMapper(new ObjectMapper());
+  }
 
   public static void registerModules() {
     mapper.findAndRegisterModules();
@@ -26,7 +30,7 @@ public class JsonUtils {
     try {
       return mapper.readValue(json, clazz);
     } catch (IOException e) {
-      throw new RuntimeException("IOException while mapping json " + json + ". " + e.getMessage());
+      throw new RuntimeException("IOException while mapping json " + json + ".\n" + e.getMessage());
     }
   }
 }

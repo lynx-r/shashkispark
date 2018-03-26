@@ -1,5 +1,8 @@
 package com.workingbit.share.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.Board;
@@ -12,7 +15,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -84,5 +86,11 @@ public class Utils {
         RANDOM_STR_SEP + createBoardPayload.getBoardBoxId() +
         RANDOM_STR_SEP + getRandomString());
     boardBox.setCreatedAt(LocalDateTime.now());
+  }
+
+  public static ObjectMapper configureObjectMapper(ObjectMapper mapper) {
+    mapper.registerModule(new JavaTimeModule());
+    mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+    return mapper.configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, false);
   }
 }
