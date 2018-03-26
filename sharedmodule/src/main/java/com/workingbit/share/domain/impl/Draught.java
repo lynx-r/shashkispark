@@ -3,6 +3,7 @@ package com.workingbit.share.domain.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.ICoordinates;
+import lombok.Data;
 
 import java.util.Date;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import java.util.Objects;
 /**
  * Created by Aleksey Popryaduhin on 09:28 10/08/2017.
  */
+@Data
 public class Draught implements ICoordinates, BaseDomain {
   /**
    * row
@@ -78,45 +80,9 @@ public class Draught implements ICoordinates, BaseDomain {
     this.dim = dim;
   }
 
-  public boolean isBlack() {
-    return black;
-  }
-
-  public void setBlack(boolean black) {
-    this.black = black;
-  }
-
-  public boolean isQueen() {
-    return queen;
-  }
-
-  public void setQueen(boolean queen) {
-    this.queen = queen;
-  }
-
-  public boolean isCaptured() {
-    return captured;
-  }
-
-  public void setCaptured(boolean captured) {
-    this.captured = captured;
-  }
-
-  public boolean isMarkCaptured() {
-    return markCaptured;
-  }
-
   public Draught setMarkCaptured(boolean markCaptured) {
     this.markCaptured = markCaptured;
     return this;
-  }
-
-  public boolean isHighlighted() {
-    return highlighted;
-  }
-
-  public void setHighlighted(boolean highlighted) {
-    this.highlighted = highlighted;
   }
 
   @Override

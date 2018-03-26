@@ -9,6 +9,7 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import org.apache.log4j.Logger;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class BoardBoxService {
     BoardBox boardBox = new BoardBox(board);
     boardBox.setArticleId(createBoardPayload.getArticleId());
     Utils.setBoardBoxIdAndCreatedAt(boardBox, createBoardPayload);
-    boardBox.setCreatedAt(new Date());
+    boardBox.setCreatedAt(LocalDateTime.now());
     saveAndFillBoard(boardBox);
 
     board.setBoardBoxId(boardBox.getId());

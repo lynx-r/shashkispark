@@ -1,0 +1,869 @@
+{
+  "tableName": "BoardBox",
+  "entries": [
+    {
+      "id": "Новая статья-6f2ab572-8f02-49c6-a145-8bb2fdb1f96e-M0PSoaIiDW",
+      "createdAt": 1522051816899,
+      "articleId": "Новая статья",
+      "boardId": "Новая статья-6f2ab572-8f02-49c6-a145-8bb2fdb1f96e-9ZTfIpQQbf",
+      "board": {
+        "id": "Новая статья-6f2ab572-8f02-49c6-a145-8bb2fdb1f96e-9ZTfIpQQbf",
+        "createdAt": 1522051816088,
+        "boardBoxId": "Новая статья-6f2ab572-8f02-49c6-a145-8bb2fdb1f96e-M0PSoaIiDW",
+        "previousBoards": [],
+        "nextBoards": [
+          {
+            "boardId": "Новая статья-Новая статья-6f2ab572-8f02-49c6-a145-8bb2fdb1f96e-M0PSoaIiDW-2oUGiHPFtP",
+            "anchorNotation": "e3",
+            "possibleNotation": "d4"
+          },
+          {
+            "boardId": "Новая статья-Новая статья-6f2ab572-8f02-49c6-a145-8bb2fdb1f96e-M0PSoaIiDW-qjY4PfEOGD",
+            "anchorNotation": "e3",
+            "possibleNotation": "f4"
+          }
+        ],
+        "blackDraughts": {
+          "h6": {
+            "v": 2,
+            "h": 7,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "h-2"
+          },
+          "h8": {
+            "v": 0,
+            "h": 7,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "h0"
+          },
+          "g7": {
+            "v": 1,
+            "h": 6,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "g-1"
+          },
+          "f6": {
+            "v": 2,
+            "h": 5,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "f-2"
+          },
+          "f8": {
+            "v": 0,
+            "h": 5,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "f0"
+          },
+          "e7": {
+            "v": 1,
+            "h": 4,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "e-1"
+          },
+          "d6": {
+            "v": 2,
+            "h": 3,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "d-2"
+          },
+          "d8": {
+            "v": 0,
+            "h": 3,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "d0"
+          },
+          "c7": {
+            "v": 1,
+            "h": 2,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "c-1"
+          },
+          "b6": {
+            "v": 2,
+            "h": 1,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "b-2"
+          },
+          "b8": {
+            "v": 0,
+            "h": 1,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "b0"
+          },
+          "a7": {
+            "v": 1,
+            "h": 0,
+            "black": true,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "a-1"
+          }
+        },
+        "whiteDraughts": {
+          "h2": {
+            "v": 6,
+            "h": 7,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "h-6"
+          },
+          "g1": {
+            "v": 7,
+            "h": 6,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "g-7"
+          },
+          "g3": {
+            "v": 5,
+            "h": 6,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "g-5"
+          },
+          "f2": {
+            "v": 6,
+            "h": 5,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "f-6"
+          },
+          "e1": {
+            "v": 7,
+            "h": 4,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "e-7"
+          },
+          "e3": {
+            "v": 5,
+            "h": 4,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "e-5"
+          },
+          "d2": {
+            "v": 6,
+            "h": 3,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "d-6"
+          },
+          "c1": {
+            "v": 7,
+            "h": 2,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "c-7"
+          },
+          "c3": {
+            "v": 5,
+            "h": 2,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "c-5"
+          },
+          "b2": {
+            "v": 6,
+            "h": 1,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "b-6"
+          },
+          "a1": {
+            "v": 7,
+            "h": 0,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "a-7"
+          },
+          "a3": {
+            "v": 5,
+            "h": 0,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "a-5"
+          }
+        },
+        "selectedSquare": {
+          "v": 5,
+          "h": 4,
+          "main": false,
+          "highlighted": false,
+          "draught": {
+            "v": 5,
+            "h": 4,
+            "black": false,
+            "queen": false,
+            "captured": false,
+            "markCaptured": false,
+            "highlighted": false,
+            "notation": "e-5"
+          },
+          "occupied": true,
+          "notation": "e3"
+        },
+        "nextSquare": {
+          "v": 4,
+          "h": 3,
+          "main": false,
+          "highlighted": false,
+          "draught": null,
+          "occupied": false,
+          "notation": "d4"
+        },
+        "previousSquare": null,
+        "squares": [
+          null,
+          {
+            "v": 0,
+            "h": 1,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 0,
+              "h": 1,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "b0"
+            },
+            "occupied": true,
+            "notation": "b8"
+          },
+          null,
+          {
+            "v": 0,
+            "h": 3,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 0,
+              "h": 3,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "d0"
+            },
+            "occupied": true,
+            "notation": "d8"
+          },
+          null,
+          {
+            "v": 0,
+            "h": 5,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 0,
+              "h": 5,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "f0"
+            },
+            "occupied": true,
+            "notation": "f8"
+          },
+          null,
+          {
+            "v": 0,
+            "h": 7,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 0,
+              "h": 7,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "h0"
+            },
+            "occupied": true,
+            "notation": "h8"
+          },
+          {
+            "v": 1,
+            "h": 0,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 1,
+              "h": 0,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "a-1"
+            },
+            "occupied": true,
+            "notation": "a7"
+          },
+          null,
+          {
+            "v": 1,
+            "h": 2,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 1,
+              "h": 2,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "c-1"
+            },
+            "occupied": true,
+            "notation": "c7"
+          },
+          null,
+          {
+            "v": 1,
+            "h": 4,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 1,
+              "h": 4,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "e-1"
+            },
+            "occupied": true,
+            "notation": "e7"
+          },
+          null,
+          {
+            "v": 1,
+            "h": 6,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 1,
+              "h": 6,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "g-1"
+            },
+            "occupied": true,
+            "notation": "g7"
+          },
+          null,
+          null,
+          {
+            "v": 2,
+            "h": 1,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 2,
+              "h": 1,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "b-2"
+            },
+            "occupied": true,
+            "notation": "b6"
+          },
+          null,
+          {
+            "v": 2,
+            "h": 3,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 2,
+              "h": 3,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "d-2"
+            },
+            "occupied": true,
+            "notation": "d6"
+          },
+          null,
+          {
+            "v": 2,
+            "h": 5,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 2,
+              "h": 5,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "f-2"
+            },
+            "occupied": true,
+            "notation": "f6"
+          },
+          null,
+          {
+            "v": 2,
+            "h": 7,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 2,
+              "h": 7,
+              "black": true,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "h-2"
+            },
+            "occupied": true,
+            "notation": "h6"
+          },
+          {
+            "v": 3,
+            "h": 0,
+            "main": false,
+            "highlighted": false,
+            "draught": null,
+            "occupied": false,
+            "notation": "a5"
+          },
+          null,
+          {
+            "v": 3,
+            "h": 2,
+            "main": false,
+            "highlighted": false,
+            "draught": null,
+            "occupied": false,
+            "notation": "c5"
+          },
+          null,
+          {
+            "v": 3,
+            "h": 4,
+            "main": false,
+            "highlighted": false,
+            "draught": null,
+            "occupied": false,
+            "notation": "e5"
+          },
+          null,
+          {
+            "v": 3,
+            "h": 6,
+            "main": false,
+            "highlighted": false,
+            "draught": null,
+            "occupied": false,
+            "notation": "g5"
+          },
+          null,
+          null,
+          {
+            "v": 4,
+            "h": 1,
+            "main": false,
+            "highlighted": false,
+            "draught": null,
+            "occupied": false,
+            "notation": "b4"
+          },
+          null,
+          {
+            "v": 4,
+            "h": 3,
+            "main": false,
+            "highlighted": false,
+            "draught": null,
+            "occupied": false,
+            "notation": "d4"
+          },
+          null,
+          {
+            "v": 4,
+            "h": 5,
+            "main": false,
+            "highlighted": false,
+            "draught": null,
+            "occupied": false,
+            "notation": "f4"
+          },
+          null,
+          {
+            "v": 4,
+            "h": 7,
+            "main": false,
+            "highlighted": false,
+            "draught": null,
+            "occupied": false,
+            "notation": "h4"
+          },
+          {
+            "v": 5,
+            "h": 0,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 5,
+              "h": 0,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "a-5"
+            },
+            "occupied": true,
+            "notation": "a3"
+          },
+          null,
+          {
+            "v": 5,
+            "h": 2,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 5,
+              "h": 2,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "c-5"
+            },
+            "occupied": true,
+            "notation": "c3"
+          },
+          null,
+          {
+            "v": 5,
+            "h": 4,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 5,
+              "h": 4,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "e-5"
+            },
+            "occupied": true,
+            "notation": "e3"
+          },
+          null,
+          {
+            "v": 5,
+            "h": 6,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 5,
+              "h": 6,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "g-5"
+            },
+            "occupied": true,
+            "notation": "g3"
+          },
+          null,
+          null,
+          {
+            "v": 6,
+            "h": 1,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 6,
+              "h": 1,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "b-6"
+            },
+            "occupied": true,
+            "notation": "b2"
+          },
+          null,
+          {
+            "v": 6,
+            "h": 3,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 6,
+              "h": 3,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "d-6"
+            },
+            "occupied": true,
+            "notation": "d2"
+          },
+          null,
+          {
+            "v": 6,
+            "h": 5,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 6,
+              "h": 5,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "f-6"
+            },
+            "occupied": true,
+            "notation": "f2"
+          },
+          null,
+          {
+            "v": 6,
+            "h": 7,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 6,
+              "h": 7,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "h-6"
+            },
+            "occupied": true,
+            "notation": "h2"
+          },
+          {
+            "v": 7,
+            "h": 0,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 7,
+              "h": 0,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "a-7"
+            },
+            "occupied": true,
+            "notation": "a1"
+          },
+          null,
+          {
+            "v": 7,
+            "h": 2,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 7,
+              "h": 2,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "c-7"
+            },
+            "occupied": true,
+            "notation": "c1"
+          },
+          null,
+          {
+            "v": 7,
+            "h": 4,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 7,
+              "h": 4,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "e-7"
+            },
+            "occupied": true,
+            "notation": "e1"
+          },
+          null,
+          {
+            "v": 7,
+            "h": 6,
+            "main": false,
+            "highlighted": false,
+            "draught": {
+              "v": 7,
+              "h": 6,
+              "black": false,
+              "queen": false,
+              "captured": false,
+              "markCaptured": false,
+              "highlighted": false,
+              "notation": "g-7"
+            },
+            "occupied": true,
+            "notation": "g1"
+          },
+          null
+        ],
+        "black": false,
+        "rules": "RUSSIAN",
+        "blackTurn": false,
+        "strokeCount": 0
+      },
+      "notation": {
+        "whitePlayer": null,
+        "blackPlayer": null,
+        "event": null,
+        "site": null,
+        "round": null,
+        "date": null,
+        "result": null,
+        "gameType": null,
+        "notationStrokes": [
+          {
+            "count": 1,
+            "first": {
+              "type": "SIMPLE",
+              "strokes": [
+                "e3",
+                "d4"
+              ],
+              "boardId": "Новая статья-Новая статья-6f2ab572-8f02-49c6-a145-8bb2fdb1f96e-M0PSoaIiDW-2oUGiHPFtP",
+              "cursor": false,
+              "alternative": []
+            },
+            "second": null
+          }
+        ]
+      }
+    }
+  ]
+}

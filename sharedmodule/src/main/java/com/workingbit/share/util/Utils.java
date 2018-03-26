@@ -10,6 +10,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,7 +54,7 @@ public class Utils {
 
   public static void setRandomIdAndCreatedAt(BaseDomain domain) {
     domain.setId(getRandomUUID());
-    domain.setCreatedAt(new Date());
+    domain.setCreatedAt(LocalDateTime.now());
   }
 
   public static String getRandomString() {
@@ -68,20 +69,20 @@ public class Utils {
     return Hex.encodeHexString(sha256_HMAC.doFinal(data.getBytes("UTF-8")));
   }
 
-  public static void setArticleIdAndCreatedAt(boolean present, Article article) {
+  public static void setArticleIdAndCreatedAt(Article article, boolean present) {
     article.setId(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString() : ""));
-    article.setCreatedAt(new Date());
+    article.setCreatedAt(LocalDateTime.now());
   }
 
-  public static void setBoardIdAndCreatedAt(String articleId, Board board) {
-    board.setId(articleId + RANDOM_STR_SEP + board.getBoardBoxId() + RANDOM_STR_SEP + getRandomString());
-    board.setCreatedAt(new Date());
+  public static void setBoardIdAndCreatedAt(Board board, String articleId, String boardBoxId) {
+    board.setId(articleId + RANDOM_STR_SEP + boardBoxId + RANDOM_STR_SEP + getRandomString());
+    board.setCreatedAt(LocalDateTime.now());
   }
 
   public static void setBoardBoxIdAndCreatedAt(BoardBox boardBox, CreateBoardPayload createBoardPayload) {
     boardBox.setId(createBoardPayload.getArticleId() +
         RANDOM_STR_SEP + createBoardPayload.getBoardBoxId() +
         RANDOM_STR_SEP + getRandomString());
-    boardBox.setCreatedAt(new Date());
+    boardBox.setCreatedAt(LocalDateTime.now());
   }
 }

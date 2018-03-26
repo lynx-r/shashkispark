@@ -3,6 +3,7 @@ package com.workingbit.share.domain.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.ICoordinates;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Objects;
 /**
  * Created by Aleksey Popryaduhin on 09:26 10/08/2017.
  */
+@Data
 public class Square implements ICoordinates, BaseDomain, Comparable {
 
   /**
@@ -101,42 +103,11 @@ public class Square implements ICoordinates, BaseDomain, Comparable {
     return this;
   }
 
-  public boolean isMain() {
-    return main;
-  }
-
-  public void setMain(boolean main) {
-    this.main = main;
-  }
-
-  public boolean isHighlighted() {
-    return highlighted;
-  }
-
-  public void setHighlighted(boolean highlighted) {
-    this.highlighted = highlighted;
-  }
-
-  public Draught getDraught() {
-    return draught;
-  }
-
-  public void setDraught(Draught draught) {
-    this.draught = draught;
-  }
-
   public Square draught(Draught draught) {
     this.draught = draught;
     return this;
   }
 
-  public List<List<Square>> getDiagonals() {
-    return diagonals;
-  }
-
-  public void setDiagonals(List<List<Square>> diagonals) {
-    this.diagonals = diagonals;
-  }
 
   @Override
   public boolean equals(Object o) {

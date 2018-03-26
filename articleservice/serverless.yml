@@ -137,6 +137,7 @@ resources:
 
 plugins:
   - serverless-dynamodb-local
+  - serverless-dynamodb-fixtures-plugin
 
 custom:
   dynamodb:
@@ -144,4 +145,3 @@ custom:
       port: 8081
       inMemory: true
       migrate: true
-      seed: true

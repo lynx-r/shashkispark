@@ -9,11 +9,13 @@ import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.workingbit.board.BoardApplication.boardDao;
 import static com.workingbit.board.controller.util.BoardUtils.highlightedBoard;
 import static com.workingbit.board.controller.util.BoardUtils.initBoard;
+import static com.workingbit.share.util.JsonUtils.dataToJson;
 
 /**
  * Created by Aleksey Popryaduhin on 13:45 09/08/2017.
@@ -23,13 +25,16 @@ public class BoardService {
   Board createBoard(CreateBoardPayload newBoardRequest) {
     Board board = initBoard(newBoardRequest.getFillBoard(), newBoardRequest.getBlack(),
         newBoardRequest.getRules());
-    Utils.setBoardIdAndCreatedAt(newBoardRequest.getArticleId(), board);
+    Utils.setBoardIdAndCreatedAt(board, newBoardRequest.getArticleId(), newBoardRequest.getBoardBoxId());
     board.setCursor(true);
     save(board);
     return board;
   }
 
   Optional<Board> findById(String boardId) {
+    List<Board> all = boardDao.findAll(100);
+    String s = dataToJson(all);
+    System.out.println(s);
     Optional<Board> boardOptional = boardDao.findByKey(boardId);
     return boardOptional.map(this::updateBoard);
   }
@@ -70,7 +75,7 @@ public class BoardService {
     nextBoard.setNextSquare(nextSquare);
 
     // should be there because in move draught, I set boardId in notation
-    Utils.setBoardIdAndCreatedAt(articleId, nextBoard);
+    Utils.setBoardIdAndCreatedAt(nextBoard, articleId, nextBoard.getBoardBoxId());
     nextBoard.setCursor(true);
 
     nextBoard = BoardUtils.moveDraught(selectedSquare, nextBoard);
@@ -88,7 +93,7 @@ public class BoardService {
 
   Board addDraught(String articleId, Board currentBoard, String notation, Draught draught) {
     Board deepClone = (Board) currentBoard.deepClone();
-    Utils.setBoardIdAndCreatedAt(articleId, deepClone);
+    Utils.setBoardIdAndCreatedAt(deepClone, articleId, currentBoard.getBoardBoxId());
     BoardUtils.addDraught(deepClone, notation, draught);
     boardDao.save(deepClone);
     return deepClone;
@@ -117,8 +122,9 @@ public class BoardService {
     }
     boardDao.save(currentBoard);
     return findById(nextId).map(nextBoard -> {
-      Square nextSquare = currentBoard.getNextSquare();
-      String notation = nextSquare != null ? nextSquare.getNotation() : null;
+      Square square = currentBoard.getNextSquare() == null
+          ? currentBoard.getPreviousSquare() : currentBoard.getNextSquare();
+      String notation = square != null ? square.getNotation() : null;
       nextBoard.pushPreviousBoard(currentBoard.getId(),
           notation,
           currentBoard.getSelectedSquare().getNotation());

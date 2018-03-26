@@ -24,7 +24,6 @@ public class JsonUtils {
 
   public static <T> T jsonToData(String json, Class<T> clazz) {
     try {
-      System.out.println("got json "+json);
       return mapper.readValue(json, clazz);
     } catch (IOException e) {
       throw new RuntimeException("IOException while mapping json " + json + ". " + e.getMessage());

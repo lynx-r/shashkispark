@@ -22,7 +22,7 @@ public class ArticleService {
   public Optional<CreateArticleResponse> createArticleResponse(CreateArticlePayload articleAndBoard) {
     Article article = articleAndBoard.getArticle();
     boolean present = findById(article.getTitle()).isPresent();
-    Utils.setArticleIdAndCreatedAt(present, article);
+    Utils.setArticleIdAndCreatedAt(article, present);
     article.setState(EnumArticleState.newadded);
     article.setBoardBoxId(getRandomUUID());
     CreateBoardPayload boardRequest = articleAndBoard.getBoardRequest();
