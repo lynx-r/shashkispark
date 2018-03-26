@@ -7,7 +7,7 @@ import com.workingbit.share.model.Notation;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -22,7 +22,7 @@ public class BoardBox implements BaseDomain{
   private String id;
 
   @DynamoDBRangeKey(attributeName = "createdAt")
-  private Date createdAt;
+  private LocalDateTime createdAt;
 
   @DynamoDBAttribute(attributeName = "articleId")
   private String articleId;

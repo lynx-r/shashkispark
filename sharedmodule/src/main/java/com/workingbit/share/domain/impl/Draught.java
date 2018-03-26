@@ -5,7 +5,7 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.ICoordinates;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -128,12 +128,12 @@ public class Draught implements ICoordinates, BaseDomain {
 
   @JsonIgnore
   @Override
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return null;
   }
 
   @Override
-  public void setCreatedAt(Date createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
 
   }
 }

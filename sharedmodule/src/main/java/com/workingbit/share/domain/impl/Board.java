@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -28,7 +29,7 @@ public class Board implements BaseDomain {
   private String id;
 
   @DynamoDBRangeKey(attributeName = "createdAt")
-  private Date createdAt;
+  private LocalDateTime createdAt;
 
   @DynamoDBAttribute(attributeName = "boardBoxId")
   private String boardBoxId;

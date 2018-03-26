@@ -5,8 +5,8 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.ICoordinates;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -154,12 +154,12 @@ public class Square implements ICoordinates, BaseDomain, Comparable {
 
   @JsonIgnore
   @Override
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return null;
   }
 
   @Override
-  public void setCreatedAt(Date createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
 
   }
 

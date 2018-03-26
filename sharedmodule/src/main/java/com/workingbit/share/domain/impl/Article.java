@@ -6,7 +6,7 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.EnumArticleState;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by Aleksey Popryaduhin on 18:31 09/08/2017.
@@ -19,7 +19,7 @@ public class Article implements BaseDomain {
   private String id;
 
   @DynamoDBRangeKey(attributeName = "createdAt")
-  private Date createdAt;
+  private LocalDateTime createdAt;
 
   @DynamoDBAttribute(attributeName = "author")
   private String author;

@@ -3,7 +3,7 @@ package com.workingbit.share.domain;
 import com.workingbit.share.model.Payload;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by Aleksey Popryaduhin on 18:06 15/08/2017.
@@ -14,7 +14,7 @@ public interface BaseDomain extends Serializable, DeepClone, Cloneable, Payload 
 
   void setId(String id);
 
-  Date getCreatedAt();
+  LocalDateTime getCreatedAt();
 
-  void setCreatedAt(Date createdAt);
+  void setCreatedAt(LocalDateTime createdAt);
 }
