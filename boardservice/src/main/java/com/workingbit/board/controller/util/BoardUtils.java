@@ -376,6 +376,9 @@ public class BoardUtils {
             if (square.isOccupied()) {
               square.getDraught().setMarkCaptured(false);
             }
+            if (square.isOccupied() && square.equals(selectedSquare)) {
+              square.getDraught().setHighlighted(true);
+            }
           })
           .filter(captured::contains)
           .forEach(square -> square.getDraught().setMarkCaptured(true));
@@ -406,6 +409,11 @@ public class BoardUtils {
       if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
         board.getAssignedSquares()
             .stream()
+            .peek((square -> {
+              if (square.isOccupied() && square.equals(selectedSquare)) {
+                square.getDraught().setHighlighted(true);
+              }
+            }))
             .filter(allowed::contains)
             .forEach(square -> square.setHighlighted(true));
       }
