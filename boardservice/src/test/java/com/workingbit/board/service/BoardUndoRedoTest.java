@@ -20,7 +20,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 
   @Test
   public void should_undo() {
-    BoardBox boardBox = getBoard(false);
+    BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
     String c3 = "c3";
     BoardUtils.addDraught(board, c3, getDraught(0,0));
@@ -46,7 +46,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 
   @Test
   public void should_undo_2() {
-    BoardBox boardBox = getBoard(false);
+    BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
     String c3 = "c3";
     BoardUtils.addDraught(board, c3, getDraught(0,0));
@@ -90,7 +90,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 
   @Test
   public void should_undo_on_field_board_2() {
-    BoardBox boardBox = getBoard(true);
+    BoardBox boardBox = getBoardBox(true);
     Board board = boardBox.getBoard();
     String c3 = "c3";
     Square squareC3 = BoardUtils.findSquareByNotation(c3, board);
@@ -133,7 +133,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 
   @Test
   public void should_redo() {
-    BoardBox boardBox = getBoard(false);
+    BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
     String c3 = "c3";
     BoardUtils.addDraught(board, c3, getDraught(0,0));
@@ -165,7 +165,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 
   @Test
   public void should_redo_on_field_board() {
-    BoardBox boardBox = getBoard(true);
+    BoardBox boardBox = getBoardBox(true);
     Board board = boardBox.getBoard();
     String c3 = "c3";
     Square squareC3 = BoardUtils.findSquareByNotation(c3, board);
@@ -196,7 +196,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 
 //  @Test
 //  public void should_save_history() throws Exception, boardService()Error {
-//    BoardBox board = getBoard();
+//    BoardBox board = getBoardBox();
 ////    boardHistoryService.addBoardAndSave(board);
 //    Optional<BoardHistory> boardHistory = boardHistoryService.getHistory(board.getId());
 //    assertTrue(boardHistory.isPresent());
@@ -205,7 +205,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 //
 //  @Test
 //  public void should_save_two_history() throws Exception, boardService()Error {
-//    BoardBox board = getBoard();
+//    BoardBox board = getBoardBox();
 ////    boardHistoryService.addBoardAndSave(board);
 //    Optional<BoardHistory> boardHistory = boardHistoryService.getHistory(board.getId());
 //    assertTrue(boardHistory.isPresent());

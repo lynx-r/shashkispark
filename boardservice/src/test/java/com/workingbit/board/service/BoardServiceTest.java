@@ -63,7 +63,7 @@ public class BoardServiceTest extends BaseServiceTest {
     Square target = getSquareByVH(board, 4, 3);
 
     // find allowed and captured
-//    HighlightMoveService highlightMoveUtil = new HighlightMoveService(board.getBoard(), square, getRules());
+//    HighlightMoveService highlightMoveUtil = new HighlightMoveService(board.getBoardBox(), square, getRules());
 //    Optional<List<Square>> allowedMovesMap = HighlightMoveService.highlightedAssignedMoves(board,square);
 //    List<Square> allowedMoves = (List<Square>) allowedMovesMap.get(allowed.name());
 //    List<Draught> capturedMoves = (List<Draught>) allowedMovesMap.get(captured.name());
@@ -92,7 +92,7 @@ public class BoardServiceTest extends BaseServiceTest {
     // undo and get new board with new board container
     Map<String, Object> undoneBoard = boardHistoryService.undo(board.getId());
 //    assertTrue(undoneBoard.isPresent());
-//    Square oldSelectedDraught = undoneBoard.get().getBoard().getSelectedSquare();
+//    Square oldSelectedDraught = undoneBoard.get().getBoardBox().getSelectedSquare();
 //    assertEquals(square, oldSelectedDraught);
   }
 
@@ -162,10 +162,10 @@ public class BoardServiceTest extends BaseServiceTest {
 
     // place initial draught on the desk
 //    Draught draught = getDraught(5, 2);
-//    Optional<Square> sel = BoardUtils.findSquareByVH(board.getBoard(), 5, 2);
+//    Optional<Square> sel = BoardUtils.findSquareByVH(board.getBoardBox(), 5, 2);
 //    Square square = sel.get();
 //    square.setDraught(draught);
-//    board.getBoard().setSelectedSquare(square);
+//    board.getBoardBox().setSelectedSquare(square);
 //    boardDao.saveAndFillBoard(board);
     return board;
   }

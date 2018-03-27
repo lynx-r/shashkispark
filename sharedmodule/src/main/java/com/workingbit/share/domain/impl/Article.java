@@ -9,16 +9,18 @@ import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.EnumArticleState;
 import com.workingbit.share.model.Payload;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Created by Aleksey Popryaduhin on 18:31 09/08/2017.
  */
 @JsonTypeName("article")
-//@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-@Data
+@Getter
+@Setter
 @DynamoDBTable(tableName = DBConstants.ARTICLE_TABLE)
 public class Article extends BaseDomain implements Payload {
 
@@ -70,5 +72,19 @@ public class Article extends BaseDomain implements Payload {
     this.content = content;
     this.boardBoxId = boardBoxId;
     this.state = state;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Article article = (Article) o;
+    return Objects.equals(id, article.id);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(id);
   }
 }

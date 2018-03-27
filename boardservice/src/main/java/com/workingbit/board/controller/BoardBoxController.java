@@ -23,7 +23,7 @@ public class BoardBoxController {
           boardBoxService
               .createBoardBox(boardRequest)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD + req.body()))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
       ).handleRequest(req, res, CreateBoardPayload.class);
 
   public static Route saveBoard = (req, res) ->
@@ -31,7 +31,7 @@ public class BoardBoxController {
           boardBoxService
               .saveAndFillBoard(boardRequest)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD + req.body()))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route loadBoard = (req, res) ->
@@ -39,7 +39,7 @@ public class BoardBoxController {
           boardBoxService
               .loadBoard(boardRequest)
               .map(Answer::ok)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD + req.body()))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route findBoardById = (req, res) ->
@@ -55,7 +55,7 @@ public class BoardBoxController {
           boardBoxService
               .addDraught((BoardBox) data)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_ADD_DRAUGHT + req.body()))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_ADD_DRAUGHT))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route highlightBoard = (req, res) ->
@@ -63,7 +63,7 @@ public class BoardBoxController {
           boardBoxService
               .highlight((BoardBox) data)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_HIGHLIGHT_BOARD + req.body()))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_HIGHLIGHT_BOARD))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route move = (req, res) ->
@@ -71,7 +71,7 @@ public class BoardBoxController {
           boardBoxService
               .move((BoardBox) data)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_MOVE + req.body()))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_MOVE))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route redo = (req, res) ->
@@ -79,7 +79,7 @@ public class BoardBoxController {
           boardBoxService
               .redo((BoardBox) data)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_REDO + req.body()))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_REDO))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route undo = (req, res) ->
@@ -87,7 +87,7 @@ public class BoardBoxController {
           boardBoxService
               .undo((BoardBox) data)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_UNDO + req.body()))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_UNDO))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route makeWhiteStroke = (req, res) ->
@@ -95,6 +95,6 @@ public class BoardBoxController {
           boardBoxService
               .makeWhiteStroke((BoardBox) data)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_MAKE_WHITE_STROKE + req.body()))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_MAKE_WHITE_STROKE))
       ).handleRequest(req, res, BoardBox.class);
 }

@@ -13,9 +13,9 @@ import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.NotationStrokes;
 import com.workingbit.share.model.Payload;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,11 +23,11 @@ import java.util.*;
 /**
  * Created by Aleksey Popryaduhin on 23:21 21/09/2017.
  */
-@EqualsAndHashCode(callSuper = true)
 @JsonTypeName("board")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @DynamoDBTable(tableName = DBConstants.BOARD_TABLE)
 public class Board extends BaseDomain implements Payload {
 
@@ -161,5 +161,19 @@ public class Board extends BaseDomain implements Payload {
 
   public void setSelectedSquare(Square square) {
     this.selectedSquare = square;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Board board = (Board) o;
+    return Objects.equals(id, board.id);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(id);
   }
 }

@@ -52,7 +52,7 @@ public class ArticleService {
       limit = Integer.valueOf(limitStr);
     }
     Articles articles = new Articles();
-    articles.addAll(articleDao.findAll(limit));
+    articles.setArticles(articleDao.findAll(limit));
     return Optional.of(articles);
   }
 

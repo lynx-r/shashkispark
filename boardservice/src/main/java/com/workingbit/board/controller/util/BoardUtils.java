@@ -402,7 +402,7 @@ public class BoardUtils {
             .filter(allowed::contains)
             .forEach(square -> square.setHighlighted(true));
       }
-      return captured;
+      return allowed;
     }
   }
 

@@ -7,19 +7,18 @@ import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.Payload;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Created by Aleksey Popryaduhin on 19:54 12/08/2017.
  */
-@EqualsAndHashCode(callSuper = true)
 @JsonTypeName("boardBox")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @DynamoDBTable(tableName = DBConstants.BOARD_BOX_TABLE)
 public class BoardBox extends BaseDomain implements Payload {
 
@@ -47,19 +46,19 @@ public class BoardBox extends BaseDomain implements Payload {
     this.board = board;
     this.boardId = board.getId();
   }
-//
-//  @Override
-//  public boolean equals(Object o) {
-//    if (this == o) return true;
-//    if (o == null || getClass() != o.getClass()) return false;
-//    BoardBox that = (BoardBox) o;
-//    return Objects.equals(id, that.id) &&
-//        Objects.equals(articleId, that.articleId) &&
-//        Objects.equals(boardId, that.boardId);
-//  }
-//
-//  @Override
-//  public int hashCode() {
-//    return Objects.hash(id, articleId, boardId);
-//  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    BoardBox boardBox = (BoardBox) o;
+    return Objects.equals(id, boardBox.id);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(super.hashCode(), id);
+  }
 }

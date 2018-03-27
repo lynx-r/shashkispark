@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
+import static com.workingbit.board.controller.util.BoardUtils.highlightedBoard;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -33,10 +34,14 @@ public class BaseServiceTest {
 
   BoardDao boardDao;
 
-  protected BoardBox getBoard(boolean fillBoard) {
+  protected BoardBox getBoardBox(boolean fillBoard) {
     Board board = BoardUtils.initBoard(fillBoard, false, EnumRules.RUSSIAN);
     Utils.setRandomIdAndCreatedAt(board);
     return new BoardBox(board);
+  }
+
+  protected Board getBoard() {
+    return BoardUtils.initBoard(false, false, EnumRules.RUSSIAN);
   }
 
   protected BoardService boardService() {
@@ -111,4 +116,11 @@ public class BaseServiceTest {
     Square square = BoardUtils.findSquareByNotation(notation, board);
     return square;
   }
+
+  protected Board move(Board board, Square c3) {
+    boolean blackTurn = board.isBlackTurn();
+    List<Square> capturedSquares = highlightedBoard(blackTurn, c3, board);
+    return BoardUtils.moveDraught(c3, board, capturedSquares);
+  }
+
 }

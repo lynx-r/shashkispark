@@ -21,7 +21,7 @@ public class MoveUtilTest extends BaseServiceTest {
 
   @Test
   public void should_white_move() {
-    BoardBox boardBox = getBoard(false);
+    BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
     String c3 = "c3";
     BoardUtils.addDraught(board, c3, getDraught(0, 0));
@@ -32,14 +32,14 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    board = BoardUtils.moveDraught(squareC3, board, capturedSquares);
+    board = move(board, squareC3);
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
 
   @Test
   public void should_move_2() {
-    BoardBox boardBox = getBoard(true);
+    BoardBox boardBox = getBoardBox(true);
     Board board = boardBox.getBoard();
     board = move(board, "c3", "d4", false);
     board = move(board, "d6", "e5", true);
@@ -48,7 +48,7 @@ public class MoveUtilTest extends BaseServiceTest {
 
   @Test
   public void should_move_4() {
-    BoardBox boardBox = getBoard(true);
+    BoardBox boardBox = getBoardBox(true);
     Board board = boardBox.getBoard();
     board = move(board, "c3", "d4", false);
     board = move(board, "h6", "g5", true);
@@ -61,7 +61,7 @@ public class MoveUtilTest extends BaseServiceTest {
 
   @Test
   public void should_capture() {
-    BoardBox boardBox = getBoard(true);
+    BoardBox boardBox = getBoardBox(true);
     Board board = boardBox.getBoard();
     board = move(board, "c3", "d4", false);
     board = move(board, "f6", "e5", true);
@@ -73,7 +73,7 @@ public class MoveUtilTest extends BaseServiceTest {
 
   @Test
   public void should_capture_2() {
-    BoardBox boardBox = getBoard(true);
+    BoardBox boardBox = getBoardBox(true);
     Board board = boardBox.getBoard();
     board = move(board, "c3", "d4", false);
     board = move(board, "f6", "e5", true);
@@ -90,7 +90,7 @@ public class MoveUtilTest extends BaseServiceTest {
 
   @Test
   public void should_capture_on_cross_diagonal() {
-    BoardBox boardBox = getBoard(false);
+    BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
     board = getSquareByNotationWithDraught(board, "b2");
     board = getSquareByNotationWithBlackDraught(board, "c3");
@@ -118,7 +118,7 @@ public class MoveUtilTest extends BaseServiceTest {
 
   @Test
   public void should_capture_turk_stroke() {
-    BoardBox boardBox = getBoard(false);
+    BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
     board = getSquareByNotationWithDraughtQueen(board, "e1", false);
     board = getSquareByNotationWithBlackDraught(board, "c3");
@@ -146,7 +146,7 @@ public class MoveUtilTest extends BaseServiceTest {
 
   @Test
   public void should_move_white_on_edge() {
-    BoardBox boardBox = getBoard(false);
+    BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
     String c7 = "c7";
     BoardUtils.addDraught(board, c7, getDraught(0, 0));
@@ -157,14 +157,14 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    BoardUtils.moveDraught(squareC3, board, capturedSquares);
+    board = move(board, squareC3);
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
 
   @Test
   public void should_move_black() {
-    BoardBox boardBox = getBoard(false);
+    BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
     String c7 = "c7";
     BoardUtils.addDraught(board, c7, getDraught(0, 0));
@@ -175,7 +175,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC7);
     board.setNextSquare(squareD6);
 
-    board = BoardUtils.moveDraught(squareC7, board, capturedSquares);
+    board = move(board, squareC7);
     squareC7 = BoardUtils.findSquareByNotation(c7, board);
     assertFalse(squareC7.isOccupied());
     squareD6 = BoardUtils.findSquareByNotation(d6, board);
@@ -190,7 +190,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setNextSquare(to);
     board.setBlackTurn(blackTurn);
 
-    board = BoardUtils.moveDraught(from, board, capturedSquares);
+    board = move(board, from);
     assertFalse(from.isOccupied());
     assertTrue(to.isOccupied());
     return board;

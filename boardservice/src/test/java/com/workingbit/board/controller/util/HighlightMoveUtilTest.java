@@ -3,7 +3,6 @@ package com.workingbit.board.controller.util;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.MovesList;
 import org.junit.Before;
 import org.junit.Test;
@@ -179,17 +178,5 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(updatedBoard, "e1"));
     testCollection("f2", highlight.getCaptured());
     testCollection("g3", highlight.getAllowed());
-  }
-
-  Board getBoard() {
-    Board board = BoardUtils.initBoard(false, false, EnumRules.RUSSIAN);
-//    Board board = new Board(boardBox, false, EnumRules.RUSSIAN, 60);
-//    Board currentBoard = board;
-//    Optional<Square> squareByVH = BoardUtils.findSquareByNotation(currentBoard, "c3"); // 5,2
-//    Square selectedSquare = squareByVH;
-//    Draught draught = new Draught(5, 2, getRules().getDimension());
-//    selectedSquare.setDraught(draught);
-//    currentBoard.setSelectedSquare(selectedSquare);
-    return board;
   }
 }
