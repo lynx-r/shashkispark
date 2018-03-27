@@ -22,12 +22,4 @@ import com.workingbit.share.domain.impl.BoardBox;
     @JsonSubTypes.Type(value = Board.class, name = "board")
 })
 public interface Payload {
-//  int getCode();
-//
-//  void setCode(int code);
-//
-//  default Payload code(int code) {
-//    setCode(code);
-//    return this;
-//  }
 }

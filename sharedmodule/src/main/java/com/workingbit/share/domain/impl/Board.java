@@ -2,7 +2,6 @@ package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.BoardIdNotationConverter;
 import com.workingbit.share.converter.DraughtMapConverter;
@@ -22,7 +21,6 @@ import java.util.*;
 /**
  * Created by Aleksey Popryaduhin on 23:21 21/09/2017.
  */
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
