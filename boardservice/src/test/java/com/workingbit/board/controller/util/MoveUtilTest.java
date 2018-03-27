@@ -32,7 +32,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    board = BoardUtils.moveDraught(squareC3, board);
+    board = BoardUtils.moveDraught(squareC3, board, capturedSquares);
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
@@ -157,7 +157,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    BoardUtils.moveDraught(squareC3, board);
+    BoardUtils.moveDraught(squareC3, board, capturedSquares);
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
@@ -175,7 +175,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC7);
     board.setNextSquare(squareD6);
 
-    board = BoardUtils.moveDraught(squareC7, board);
+    board = BoardUtils.moveDraught(squareC7, board, capturedSquares);
     squareC7 = BoardUtils.findSquareByNotation(c7, board);
     assertFalse(squareC7.isOccupied());
     squareD6 = BoardUtils.findSquareByNotation(d6, board);
@@ -190,7 +190,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setNextSquare(to);
     board.setBlackTurn(blackTurn);
 
-    board = BoardUtils.moveDraught(from, board);
+    board = BoardUtils.moveDraught(from, board, capturedSquares);
     assertFalse(from.isOccupied());
     assertTrue(to.isOccupied());
     return board;

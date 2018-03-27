@@ -142,7 +142,7 @@ public class BoardUtilsTest {
     Square d4 = BoardUtils.findSquareByNotation("d4", board);
     board.setNextSquare(d4);
 
-    board = BoardUtils.moveDraught(c3, board);
+    board = BoardUtils.moveDraught(c3, board, capturedSquares);
     c3 = BoardUtils.findSquareByNotation(c3.getNotation(), board);
     assertFalse(c3.isOccupied());
     d4 = BoardUtils.findSquareByNotation(d4.getNotation(), board);
@@ -150,7 +150,7 @@ public class BoardUtilsTest {
 
     Square e5 = BoardUtils.findSquareByNotation("e5", board);
     board.setNextSquare(e5);
-    board = BoardUtils.moveDraught(d4, board);
+    board = BoardUtils.moveDraught(d4, board, capturedSquares);
     d4 = BoardUtils.findSquareByNotation(d4.getNotation(), board);
     assertFalse(d4.isOccupied());
     e5 = BoardUtils.findSquareByNotation(e5.getNotation(), board);

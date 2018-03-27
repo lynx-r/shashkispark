@@ -3,15 +3,17 @@ package com.workingbit.share.domain.impl;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.ICoordinates;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Created by Aleksey Popryaduhin on 09:28 10/08/2017.
  */
-//@JsonRootName(value = "draught")
-@Data
+@Getter
+@Setter
 public class Draught extends BaseDomain implements ICoordinates{
   /**
    * row
@@ -85,22 +87,22 @@ public class Draught extends BaseDomain implements ICoordinates{
     return this;
   }
 
-//  @Override
-//  public boolean equals(Object o) {
-//    if (this == o) return true;
-//    if (o == null || getClass() != o.getClass()) return false;
-//    Draught draught = (Draught) o;
-//    return v == draught.v &&
-//        h == draught.h &&
-//        black == draught.black &&
-//        queen == draught.queen &&
-//        captured == draught.captured;
-//  }
-//
-//  @Override
-//  public int hashCode() {
-//    return Objects.hash(v, h, black, queen, captured);
-//  }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Draught draught = (Draught) o;
+    return v == draught.v &&
+        h == draught.h &&
+        black == draught.black &&
+        queen == draught.queen &&
+        captured == draught.captured;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(v, h, black, queen, captured);
+  }
 
   @Override
   public String toString() {

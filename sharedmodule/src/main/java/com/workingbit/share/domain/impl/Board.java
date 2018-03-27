@@ -2,6 +2,7 @@ package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.BoardIdNotationConverter;
 import com.workingbit.share.converter.DraughtMapConverter;
@@ -13,6 +14,7 @@ import com.workingbit.share.model.NotationStrokes;
 import com.workingbit.share.model.Payload;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -21,6 +23,8 @@ import java.util.*;
 /**
  * Created by Aleksey Popryaduhin on 23:21 21/09/2017.
  */
+@EqualsAndHashCode(callSuper = true)
+@JsonTypeName("board")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -135,16 +139,16 @@ public class Board extends BaseDomain implements Payload {
     return previousBoards.isEmpty() ? null : previousBoards.pop().getBoardId();
   }
 
-  public void pushPreviousBoard(String boardId, String prevP, String nextN) {
-    this.previousBoards.push(new BoardIdNotation(boardId, prevP, nextN));
+  public void pushPreviousBoard(String boardId, String anchorNotation, String possibleNotation) {
+    this.previousBoards.push(new BoardIdNotation(boardId, anchorNotation, possibleNotation));
   }
 
   public String popNextBoard() {
     return nextBoards.isEmpty() ? null : nextBoards.pop().getBoardId();
   }
 
-  public void pushNextBoard(String boardId, String prevN, String nextN) {
-    nextBoards.push(new BoardIdNotation(boardId, prevN, nextN));
+  public void pushNextBoard(String boardId, String anchorNotation, String possibleNotation) {
+    nextBoards.push(new BoardIdNotation(boardId, anchorNotation, possibleNotation));
   }
 
   public void addBlackDraughts(String notation, Draught draught) {

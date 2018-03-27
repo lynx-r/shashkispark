@@ -242,12 +242,11 @@ public class BoardUtils {
     addDraught(board, notation, black, false, true);
   }
 
-  public static Board moveDraught(Square selectedSquare, Board board) {
-    boolean blackTurn = board.isBlackTurn();
-    List<Square> capturedSquares = highlightedBoard(blackTurn, selectedSquare, board);
+  public static Board moveDraught(Square selectedSquare, Board board, List<Square> capturedSquares) {
     moveDraught(capturedSquares, board);
     Board highlightedBoard = (Board) board.deepClone();
-    List<Square> nextCapturedSquares = highlightedBoard(blackTurn, highlightedBoard.getSelectedSquare(), highlightedBoard);
+    boolean blackTurn = board.isBlackTurn();
+    List<Square> nextCapturedSquares = highlightedBoard(blackTurn, selectedSquare, highlightedBoard);
     boolean previousCaptured = !capturedSquares.isEmpty();
     boolean nextCaptured = !nextCapturedSquares.isEmpty();
     if (previousCaptured && nextCaptured) {

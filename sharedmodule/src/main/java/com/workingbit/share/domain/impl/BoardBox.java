@@ -1,13 +1,14 @@
 package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.Payload;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,8 @@ import java.time.LocalDateTime;
 /**
  * Created by Aleksey Popryaduhin on 19:54 12/08/2017.
  */
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
+@EqualsAndHashCode(callSuper = true)
+@JsonTypeName("boardBox")
 @NoArgsConstructor
 @Data
 @DynamoDBTable(tableName = DBConstants.BOARD_BOX_TABLE)

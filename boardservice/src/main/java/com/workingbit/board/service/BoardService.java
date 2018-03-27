@@ -2,6 +2,7 @@ package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
+import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
@@ -67,6 +68,11 @@ public class BoardService {
    * @param articleId
    */
   public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId) {
+    boolean blackTurn = currentBoard.isBlackTurn();
+    List<Square> capturedSquares = highlightedBoard(blackTurn, selectedSquare, currentBoard);
+    if (capturedSquares.isEmpty()) {
+      throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
+    }
     currentBoard.setCursor(false);
     boardDao.save(currentBoard);
 
@@ -75,13 +81,15 @@ public class BoardService {
     nextBoard.setNextSquare(nextSquare);
 
     // should be there because in move draught, I set boardId in notation
-    Utils.setBoardIdAndCreatedAt(nextBoard, articleId, nextBoard.getBoardBoxId());
+    String boardBoxId = nextBoard.getBoardBoxId();
+    Utils.setBoardIdAndCreatedAt(nextBoard, articleId, boardBoxId);
     nextBoard.setCursor(true);
 
-    nextBoard = BoardUtils.moveDraught(selectedSquare, nextBoard);
-    nextBoard.pushPreviousBoard(currentBoard.getId(),
-        selectedSquare.getNotation(),
-        nextSquare.getNotation());
+    nextBoard = BoardUtils.moveDraught(selectedSquare, nextBoard, capturedSquares);
+    String boardId = currentBoard.getId();
+    String notation = selectedSquare.getNotation();
+    String nextNotation = nextSquare.getNotation();
+    nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
 
     boardDao.save(nextBoard);
     return nextBoard;
