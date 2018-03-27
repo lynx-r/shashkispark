@@ -266,9 +266,9 @@ public class BoardUtils {
     board.setStrokeCount(strokeCount);
     NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation);
     if (board.isBlackTurn()) {
-      notationStroke.setSecond(getNotationAtomCaptureStroke(notationStroke.getSecond(), board));
+      notationStroke.setSecond(getNotationAtomCaptureStroke(board));
     } else {
-      notationStroke.setFirst(getNotationAtomCaptureStroke(notationStroke.getFirst(), board));
+      notationStroke.setFirst(getNotationAtomCaptureStroke(board));
     }
   }
 
@@ -280,10 +280,10 @@ public class BoardUtils {
     if (previousCaptured) {
       NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation);
       if (board.isBlackTurn()) {
-        NotationAtomStroke second = getNotationAtomCaptureStroke(notationStroke.getSecond(), board);
+        NotationAtomStroke second = getNotationAtomCaptureStroke(board);
         notationStroke.setSecond(second);
       } else {
-        NotationAtomStroke first = getNotationAtomCaptureStroke(notationStroke.getFirst(), board);
+        NotationAtomStroke first = getNotationAtomCaptureStroke(board);
         notationStroke.setFirst(first);
       }
     } else {
@@ -292,21 +292,10 @@ public class BoardUtils {
     board.setBlackTurn(!blackTurn);
   }
 
-  private static NotationAtomStroke getNotationAtomCaptureStroke(NotationAtomStroke notationAtomStroke, Board board) {
-    assert notationAtomStroke != null;
-//    if (notationAtomStroke != null) {
-//      boolean continueStroke = notationAtomStroke.getStrokes().get(notationAtomStroke.getStrokes().size() - 1)
-//          .equals(board.getPreviousSquare().getNotation());
-//      if (continueStroke) {
-//        notationAtomStroke.getStrokes().add(board.getSelectedSquare().getNotation());
-//        return notationAtomStroke;
-//      }
-//      return notationAtomStroke;
-//    } else {
+  private static NotationAtomStroke getNotationAtomCaptureStroke(Board board) {
     resetBoardNotationCursor(board.getNotationStrokes());
     List<String> strokes = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
     return new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.CAPTURE, strokes, board.getId(), true);
-//    }
   }
 
   private static void resetBoardNotationCursor(NotationStrokes notationStrokes) {
