@@ -387,19 +387,25 @@ public class BoardUtils {
       } else {
         draughtsNotations = board.getWhiteDraughts().keySet();
       }
+      // find squares occupied by current user
       List<Square> draughtsSquares = board.getAssignedSquares()
           .stream()
           .filter(square -> !square.equals(selectedSquare))
           .filter(square -> draughtsNotations.contains(square.getNotation()))
           .collect(Collectors.toList());
+      // find all squares captured by current user
       List<Square> allCaptured = draughtsSquares
           .stream()
           .flatMap(square -> highlightedAssignedMoves(square).getCaptured().stream())
           .collect(Collectors.toList());
-      if (allCaptured.isEmpty()) {
+      // reset highlight
+      board.getAssignedSquares()
+          .stream()
+          .filter(Square::isHighlighted)
+          .forEach(square -> square.setHighlighted(false));
+      if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
         board.getAssignedSquares()
             .stream()
-            .peek(square -> square.setHighlighted(false))
             .filter(allowed::contains)
             .forEach(square -> square.setHighlighted(true));
       }

@@ -9,8 +9,9 @@ import org.junit.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
-import static com.workingbit.board.controller.util.BoardUtils.printBoardNotation;
+import static com.workingbit.board.controller.util.BoardUtils.*;
+import static com.workingbit.share.common.ErrorMessages.UNABLE_TO_MOVE;
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
@@ -69,6 +70,29 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "g7", "e5", true);
     System.out.println(printBoardNotation(board.getNotationStrokes()));
 //    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
+  }
+
+  @Test
+  public void should_not_capture_not_allowed() {
+    BoardBox boardBox = getBoardBox(true);
+    Board board = boardBox.getBoard();
+    board = move(board, "c3", "d4", false);
+    board = move(board, "f6", "e5", true);
+    Square d4 = findSquareByNotation("d4", board);
+    MovesList movesList = highlightedBoard(board.isBlackTurn(), d4, board);
+    assertTrue(!movesList.getCaptured().isEmpty());
+    Square from = BoardUtils.findSquareByNotation("a1", board);
+    Square to = BoardUtils.findSquareByNotation("f6", board);
+    to.setHighlighted(true);
+    board.setSelectedSquare(from);
+    board.setNextSquare(to);
+    board.setBlackTurn(false);
+
+    try {
+      move(board, from);
+    } catch (Exception e) {
+      assertEquals(UNABLE_TO_MOVE, e.getMessage());
+    }
   }
 
   @Test
@@ -191,6 +215,10 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setBlackTurn(blackTurn);
 
     board = move(board, from);
+
+    from = BoardUtils.findSquareByNotation(fromNotation, board);
+    to = BoardUtils.findSquareByNotation(toNotation, board);
+
     assertFalse(from.isOccupied());
     assertTrue(to.isOccupied());
     return board;
