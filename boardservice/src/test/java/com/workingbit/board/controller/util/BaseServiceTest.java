@@ -11,6 +11,7 @@ import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.EnumRules;
+import com.workingbit.share.model.MovesList;
 import com.workingbit.share.util.Utils;
 
 import java.util.Arrays;
@@ -117,10 +118,10 @@ public class BaseServiceTest {
     return square;
   }
 
-  protected Board move(Board board, Square c3) {
+  protected Board move(Board board, Square selectedSquare) {
     boolean blackTurn = board.isBlackTurn();
-    List<Square> capturedSquares = highlightedBoard(blackTurn, c3, board);
-    return BoardUtils.moveDraught(c3, board, capturedSquares);
+    MovesList capturedSquares = highlightedBoard(blackTurn, selectedSquare, board);
+    return BoardUtils.moveDraught(board, capturedSquares.getCaptured());
   }
 
 }

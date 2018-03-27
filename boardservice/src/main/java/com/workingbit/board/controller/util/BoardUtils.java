@@ -242,16 +242,17 @@ public class BoardUtils {
     addDraught(board, notation, black, false, true);
   }
 
-  public static Board moveDraught(Square selectedSquare, Board board, List<Square> capturedSquares) {
+  public static Board moveDraught(Board board, List<Square> capturedSquares) {
     moveDraught(capturedSquares, board);
-    Board highlightedBoard = (Board) board.deepClone();
+    Board newBoard = (Board) board.deepClone();
     boolean blackTurn = board.isBlackTurn();
-    List<Square> nextCapturedSquares = highlightedBoard(blackTurn, selectedSquare, highlightedBoard);
+    Square selectedSquareNew = newBoard.getSelectedSquare();
+    MovesList nextMovesSquares = highlightedBoard(blackTurn, selectedSquareNew, newBoard);
     boolean previousCaptured = !capturedSquares.isEmpty();
-    boolean nextCaptured = !nextCapturedSquares.isEmpty();
+    boolean nextCaptured = !nextMovesSquares.getCaptured().isEmpty();
     if (previousCaptured && nextCaptured) {
-      updateNotationMiddle(highlightedBoard);
-      return highlightedBoard;
+      updateNotationMiddle(newBoard);
+      return newBoard;
     }
     updateNotationEnd(previousCaptured, board);
     resetBoardHighlight(board);
@@ -359,7 +360,7 @@ public class BoardUtils {
    *
    * @return is next move allowed
    */
-  public static List<Square> highlightedBoard(boolean blackTurn, Square selectedSquare, Board board) {
+  public static MovesList highlightedBoard(boolean blackTurn, Square selectedSquare, Board board) {
     MovesList movesList = highlightedAssignedMoves(selectedSquare);
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();
@@ -378,7 +379,7 @@ public class BoardUtils {
           })
           .filter(captured::contains)
           .forEach(square -> square.getDraught().setMarkCaptured(true));
-      return captured;
+      return movesList;
     } else {
       Set<String> draughtsNotations;
       if (blackTurn) {
@@ -402,7 +403,7 @@ public class BoardUtils {
             .filter(allowed::contains)
             .forEach(square -> square.setHighlighted(true));
       }
-      return allowed;
+      return movesList;
     }
   }
 

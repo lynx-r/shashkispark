@@ -7,6 +7,7 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.CreateBoardPayload;
+import com.workingbit.share.model.MovesList;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,8 +70,10 @@ public class BoardService {
    */
   public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId) {
     boolean blackTurn = currentBoard.isBlackTurn();
-    List<Square> capturedSquares = highlightedBoard(blackTurn, selectedSquare, currentBoard);
-    if (capturedSquares.isEmpty()) {
+    MovesList movesList = highlightedBoard(blackTurn, selectedSquare, currentBoard);
+    List<Square> allowed = movesList.getAllowed();
+    List<Square> captured = movesList.getCaptured();
+    if (allowed.isEmpty()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
     currentBoard.setCursor(false);
@@ -85,7 +88,7 @@ public class BoardService {
     Utils.setBoardIdAndCreatedAt(nextBoard, articleId, boardBoxId);
     nextBoard.setCursor(true);
 
-    nextBoard = BoardUtils.moveDraught(selectedSquare, nextBoard, capturedSquares);
+    nextBoard = BoardUtils.moveDraught(nextBoard, captured);
     String boardId = currentBoard.getId();
     String notation = selectedSquare.getNotation();
     String nextNotation = nextSquare.getNotation();

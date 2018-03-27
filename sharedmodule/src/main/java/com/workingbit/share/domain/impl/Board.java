@@ -159,10 +159,6 @@ public class Board extends BaseDomain implements Payload {
     whiteDraughts.put(notation, draught);
   }
 
-  public void setSelectedSquare(Square square) {
-    this.selectedSquare = square;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
