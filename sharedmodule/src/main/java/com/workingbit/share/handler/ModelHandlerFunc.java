@@ -23,7 +23,7 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
     String json = request.body();
     T data = jsonToData(json, clazz);
     Answer processed = process(data);
-    response.status(processed.getCode());
+    response.status(processed.getStatusCode());
     return dataToJson(processed);
   }
 

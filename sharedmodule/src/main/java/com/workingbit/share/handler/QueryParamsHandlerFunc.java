@@ -21,7 +21,7 @@ public interface QueryParamsHandlerFunc  extends BaseHandlerFunc{
     }
     QueryParamsMap queryParamsMap = request.queryMap();
     Answer processed = process(queryParamsMap);
-    response.status(processed.getCode());
+    response.status(processed.getStatusCode());
     return dataToJson(processed);
   }
 

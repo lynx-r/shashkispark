@@ -11,6 +11,10 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import spark.servlet.SparkApplication;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.workingbit.share.util.Utils.getRandomString;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
@@ -98,10 +102,10 @@ public class ArticleControllerTest {
   }
 
   private CreateArticlePayload getCreateArticlePayload() {
-    CreateArticlePayload createArticlePayload = new CreateArticlePayload();
+    CreateArticlePayload createArticlePayload = CreateArticlePayload.createArticlePayload();
     Article article = new Article(getRandomString(), getRandomString(), getRandomString());
     createArticlePayload.setArticle(article);
-    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
+    CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
     createBoardPayload.setBlack(false);
     createBoardPayload.setRules(EnumRules.RUSSIAN);
     createBoardPayload.setFillBoard(false);
@@ -126,4 +130,26 @@ public class ArticleControllerTest {
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);
   }
+
+class MyClass {
+  String field;
+
+  MyClass(String field) {
+    this.field = field;
+  }
+}
+
+@Test
+public void testTypeCast() {
+  List<Object> objectList = Arrays.asList(new MyClass("1"), new MyClass("2"));
+
+  Class<MyClass> clazz = MyClass.class;
+  List<MyClass> myClassList = objectList.stream()
+      .map(clazz::cast)
+      .collect(Collectors.toList());
+
+  assertEquals(objectList.size(), myClassList.size());
+  assertEquals(objectList, myClassList);
+}
+
 }

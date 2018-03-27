@@ -2,7 +2,7 @@ package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.BoardIdNotationConverter;
 import com.workingbit.share.converter.DraughtMapConverter;
@@ -11,6 +11,7 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.BoardIdNotation;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.NotationStrokes;
+import com.workingbit.share.model.Payload;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,11 +22,12 @@ import java.util.*;
 /**
  * Created by Aleksey Popryaduhin on 23:21 21/09/2017.
  */
+@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @DynamoDBTable(tableName = DBConstants.BOARD_TABLE)
-public class Board implements BaseDomain {
+public class Board extends BaseDomain implements Payload {
 
   @DynamoDBHashKey(attributeName = "id")
   private String id;

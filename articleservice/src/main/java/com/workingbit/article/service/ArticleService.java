@@ -27,7 +27,7 @@ public class ArticleService {
     article.setBoardBoxId(getRandomUUID());
     CreateBoardPayload boardRequest = articleAndBoard.getBoardRequest();
     boardRequest.setBoardBoxId(article.getBoardBoxId());
-    CreateArticleResponse createArticleResponse = new CreateArticleResponse();
+    CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();
     boardRequest.setArticleId(article.getId());
     Optional<BoardBox> boardBoxOptional = boardRemoteClient.createBoardBox(boardRequest);
     if (boardBoxOptional.isPresent()) {

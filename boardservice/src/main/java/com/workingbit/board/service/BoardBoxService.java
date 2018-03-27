@@ -23,7 +23,7 @@ public class BoardBoxService {
   private final Logger logger = Logger.getLogger(BoardBoxService.class);
   private final static BoardService boardService = new BoardService();
 
-  public Optional<BoardBox> createBoard(CreateBoardPayload createBoardPayload) {
+  public Optional<BoardBox> createBoardBox(CreateBoardPayload createBoardPayload) {
     Board board = boardService.createBoard(createBoardPayload);
 
     BoardBox boardBox = new BoardBox(board);

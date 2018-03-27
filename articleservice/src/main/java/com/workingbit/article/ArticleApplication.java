@@ -6,7 +6,6 @@ import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.service.ArticleService;
 import com.workingbit.article.util.Path;
 import com.workingbit.share.util.Filters;
-import com.workingbit.share.util.JsonUtils;
 import com.workingbit.share.util.SparkUtils;
 import com.workingbit.share.util.UnirestUtil;
 import org.apache.log4j.Logger;
@@ -39,7 +38,6 @@ public class ArticleApplication {
   public static void start() {
     Logger logger = Logger.getLogger(ArticleApplication.class);
     SparkUtils.createServerWithRequestLog(logger);
-    JsonUtils.registerModules();
 
     UnirestUtil.configureSerialization();
 
@@ -58,7 +56,7 @@ public class ArticleApplication {
           put(Path.ARTICLE, ArticleController.saveArticle);
 
           notFound((req, res) -> "Not found");
-          internalServerError((req, res) -> "Internal server error");
+          internalServerError((req, res) -> "Internal server message");
 
           after(Filters.addJsonHeader);
           after(Filters.addGzipHeader);

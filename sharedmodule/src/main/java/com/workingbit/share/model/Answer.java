@@ -1,60 +1,53 @@
 package com.workingbit.share.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_OK;
+
 //@JsonDeserialize(using = AnswerDeserializer.class)
-//@JsonTypeName(value = )
 @NoArgsConstructor
 @Data
 public class Answer {
 
-  private int code;
-  private Object body;
-  private String error;
-  private Type type;
+  int statusCode;
+  private Payload body;
+  private MessageResponse message;
 
-  public Answer(int code) {
-    this.code = code;
-  }
-
-  public Answer(int code, String error) {
-    this.code = code;
-    this.error = error;
-    this.type = Type.ERROR;
-  }
-
-  public Answer(int code, Object body, Type type) {
-    this.code = code;
+  @JsonCreator
+  private Answer(@JsonProperty("body") Payload body, @JsonProperty("message") MessageResponse message) {
     this.body = body;
-    this.type = type;
+    this.message = message;
   }
 
-  public static Answer ok(int code, Object body, Type classType) {
-    return new Answer(code, body, classType);
+  public static Answer ok(Payload body) {
+    return new Answer(body, MessageResponse.ok())
+        .statusCode(HTTP_OK);
   }
 
-  public static Answer error(int code, String message) {
-    return new Answer(code, message);
+  public static Answer created(Payload body) {
+    return new Answer(body, MessageResponse.created())
+        .statusCode(HTTP_CREATED);
   }
 
-//  public static Answer okBoardBox(Object body) {
-//    return new Answer(200, body, Type.BOARD_BOX);
-//  }
+  public static Answer error(int statusCode, String message) {
+    return new Answer(null, MessageResponse.error(statusCode, message))
+        .statusCode(statusCode);
+  }
 
-//  public static Answer okArticle(Object body) {
-//    return new Answer(200, body, Type.ARTICLE);
-//  }
+  public int getStatusCode() {
+    return statusCode;
+  }
 
-//  public static Answer okArticleList(Object body) {
-//    return new Answer(200, body, Type.ARTICLE_LIST);
-//  }
+  public void setStatusCode(int statusCode) {
+    this.statusCode = statusCode;
+  }
 
-//  public static Answer okArticleCreate(CreateArticleResponse createArticleResponse) {
-//    return new Answer(201, createArticleResponse, Type.ARTICLE_CREATE);
-//  }
-
-  public enum Type {
-    ARTICLE, ARTICLE_LIST, BOARD_BOX, BOARD_BOX_LIST, ARTICLE_CREATE, ERROR
+  public Answer statusCode(int statusCode) {
+    setStatusCode(statusCode);
+    return this;
   }
 }

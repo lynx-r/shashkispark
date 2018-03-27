@@ -20,7 +20,7 @@ public class BoardServiceTest extends BaseServiceTest {
 
   @Test
   public void createBoard() throws Exception {
-    BoardBox boardBox = boardBoxService().createBoard(getCreateBoardRequest()).get();
+    BoardBox boardBox = boardBoxService().createBoardBox(getCreateBoardRequest()).get();
     toDelete(boardBox);
     assertNotNull(boardBox.getId());
   }
@@ -68,7 +68,7 @@ public class BoardServiceTest extends BaseServiceTest {
 //    List<Square> allowedMoves = (List<Square>) allowedMovesMap.get(allowed.name());
 //    List<Draught> capturedMoves = (List<Draught>) allowedMovesMap.get(captured.name());
 
-    // create moveTo action
+    // createArticleResponse moveTo action
     BoardBox finalBoard = board;
     Map<String, Object> moveTo = new HashMap<String, Object>() {{
       put(boardId.name(), finalBoard.getId());
@@ -107,7 +107,7 @@ public class BoardServiceTest extends BaseServiceTest {
 //    List<Square> allowedMoves = (List<Square>) highlightedAssignedMoves.get(allowed.name());
 //    List<Draught> capturedMoves = (List<Draught>) highlightedAssignedMoves.get(captured.name());
 
-    // create moveTo action
+    // createArticleResponse moveTo action
     Map<String, Object> moveTo = getMoveTo(board, square, target, null, null);
     MapUtils.debugPrint(System.out, "PREP MOVE", moveTo);
 
@@ -123,7 +123,7 @@ public class BoardServiceTest extends BaseServiceTest {
 //    capturedMoves = (List<Draught>) highlightedAssignedMoves.get(captured.name());
 
     Square nextTarget = BoardUtils.findSquareByVH(board, 3,4).get();
-    // create moveTo action
+    // createArticleResponse moveTo action
     moveTo = getMoveTo(board, target, nextTarget, null, null);
     MapUtils.debugPrint(System.out, "PREP MOVE", moveTo);
 
@@ -158,7 +158,7 @@ public class BoardServiceTest extends BaseServiceTest {
 
   private BoardBox getNewBoard() {
     CreateBoardPayload createBoardPayload = getCreateBoardRequest();
-    BoardBox board = boardBoxService().createBoard(createBoardPayload).get();
+    BoardBox board = boardBoxService().createBoardBox(createBoardPayload).get();
 
     // place initial draught on the desk
 //    Draught draught = getDraught(5, 2);

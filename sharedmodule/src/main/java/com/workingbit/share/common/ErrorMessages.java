@@ -5,10 +5,10 @@ package com.workingbit.share.common;
  */
 public class ErrorMessages {
   public static final String UNABLE_TO_GET_ARTICLES = "Unable to get articles";
-  public static final String UNABLE_TO_CREATE_ARTICLE = "Unable to create an article";
+  public static final String UNABLE_TO_CREATE_ARTICLE = "Unable to createArticleResponse an article";
   public static final String ARTICLE_WITH_ID_NOT_FOUND = "Article with id %s not found";
   public static final String UNABLE_TO_SAVE_ARTICLE = "Unable to save article";
-  public static final String UNABLE_TO_CREATE_BOARD = "Unable to create board with request: ";
+  public static final String UNABLE_TO_CREATE_BOARD = "Unable to createArticleResponse board with request: ";
   public static final String BOARD_WITH_ID_NOT_FOUND = "Board with id %s not found";
   public static final String UNABLE_TO_ADD_DRAUGHT = "Unable to add a draught: ";
   public static final String UNABLE_TO_HIGHLIGHT_BOARD = "Unable to highlight board: ";

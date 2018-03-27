@@ -121,7 +121,7 @@ public class BoardBoxControllerTest {
   }
 
   private BoardBox getBoardBox(String boardBoxId, String articleId) throws HttpClientException {
-    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
+    CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
     createBoardPayload.setArticleId(articleId);
     createBoardPayload.setBoardBoxId(boardBoxId);
     createBoardPayload.setRules(EnumRules.RUSSIAN);

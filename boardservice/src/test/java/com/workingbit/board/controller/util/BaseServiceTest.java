@@ -75,7 +75,7 @@ public class BaseServiceTest {
 //  }
 
   protected CreateBoardPayload getCreateBoardRequest() {
-    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
+    CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
     createBoardPayload.setBlack(false);
     createBoardPayload.setFillBoard(false);
     createBoardPayload.setRules(EnumRules.RUSSIAN);

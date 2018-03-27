@@ -23,7 +23,7 @@ public class UnirestUtil {
         try {
           return mapper.readValue(value, valueType);
         } catch (IOException e) {
-          throw new RuntimeException("Unable to read value: " + value + ". Message: " + e.getMessage());
+          throw new RuntimeException("Unable to read value: " + value + ".\nMessage: " + e.getMessage());
         }
       }
 
@@ -31,7 +31,7 @@ public class UnirestUtil {
         try {
           return mapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-          throw new RuntimeException("Unable to write value: " + value + ". Message: " + e.getMessage());
+          throw new RuntimeException("Unable to write value: " + value + ".\nMessage: " + e.getMessage());
         }
       }
     });

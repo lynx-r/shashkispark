@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by Aleksey Popryaduhin on 12:01 12/08/2017.
@@ -90,7 +91,15 @@ public class Utils {
 
   public static ObjectMapper configureObjectMapper(ObjectMapper mapper) {
     mapper.registerModule(new JavaTimeModule());
-    mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-    return mapper.configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, false);
+//    mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+    mapper = mapper.configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, false);
+    mapper.findAndRegisterModules();
+    return mapper;
+  }
+
+  public static <T extends BaseDomain> List<T> listObjectsToListT(List<Object> objects, Class<T> clazz) {
+    return objects.stream()
+        .map(clazz::cast)
+        .collect(Collectors.toList());
   }
 }

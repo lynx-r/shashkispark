@@ -22,7 +22,7 @@ public interface ParamsHandlerFunc extends BaseHandlerFunc {
     }
     Map<String, String> id = request.params();
     Answer processed = process(id);
-    response.status(processed.getCode());
+    response.status(processed.getStatusCode());
     return dataToJson(processed);
   }
 

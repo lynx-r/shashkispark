@@ -26,6 +26,7 @@ public class BoardRemoteClient {
         Answer body = response.getBody();
         return Optional.of((BoardBox) body.getBody());
       }
+      logger.error("Invalid status " + response.getStatus());
     } catch (UnirestException e) {
       logger.error("Unirest exception", e);
     }

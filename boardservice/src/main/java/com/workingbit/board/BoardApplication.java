@@ -47,7 +47,6 @@ public class BoardApplication {
   public static void start() {
     Logger logger = Logger.getLogger(BoardApplication.class);
     SparkUtils.createServerWithRequestLog(logger);
-    JsonUtils.registerModules();
 
     LOG.info("Initializing routes");
     enableCors(appProperties.origin().toString(), appProperties.methods(), appProperties.headers());
@@ -70,7 +69,7 @@ public class BoardApplication {
           put(Path.MAKE_WHITE_STROKE, BoardBoxController.makeWhiteStroke);
 
           notFound((req, res) -> "Not found");
-          internalServerError((req, res) -> "Internal server error");
+          internalServerError((req, res) -> "Internal server message");
 
           after(Filters.addJsonHeader);
           after(Filters.addGzipHeader);

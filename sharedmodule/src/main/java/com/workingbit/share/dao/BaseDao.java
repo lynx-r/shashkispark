@@ -5,6 +5,8 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.workingbit.share.domain.BaseDomain;
+import com.workingbit.share.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -16,7 +18,7 @@ import static java.lang.String.format;
 /**
  * Created by Aleksey Popryaduhin on 18:56 09/08/2017.
  */
-public class BaseDao<T> {
+public class BaseDao<T extends BaseDomain> {
 
   private final Class<T> clazz;
   private Logger logger;
@@ -123,7 +125,7 @@ public class BaseDao<T> {
         .collect(Collectors.toList()));
     Map<String, List<Object>> batchLoad = dynamoDBMapper.batchLoad(itemsToGet);
     if (!batchLoad.isEmpty()) {
-      return (List<T>) batchLoad.get(clazz.getSimpleName());
+      return Utils.listObjectsToListT(batchLoad.get(clazz.getSimpleName()), clazz);
     }
     return Collections.emptyList();
   }

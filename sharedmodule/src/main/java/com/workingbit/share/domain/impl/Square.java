@@ -8,14 +8,13 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Aleksey Popryaduhin on 09:26 10/08/2017.
  */
 //@JsonRootName(value = "square")
 @Data
-public class Square implements ICoordinates, BaseDomain, Comparable {
+public class Square extends BaseDomain implements ICoordinates, Comparable {
 
   /**
    * row
@@ -110,19 +109,19 @@ public class Square implements ICoordinates, BaseDomain, Comparable {
   }
 
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Square square = (Square) o;
-    return v == square.v &&
-        h == square.h;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(v, h);
-  }
+//  @Override
+//  public boolean equals(Object o) {
+//    if (this == o) return true;
+//    if (o == null || getClass() != o.getClass()) return false;
+//    Square square = (Square) o;
+//    return v == square.v &&
+//        h == square.h;
+//  }
+//
+//  @Override
+//  public int hashCode() {
+//    return Objects.hash(v, h);
+//  }
 
   @Override
   public String toString() {

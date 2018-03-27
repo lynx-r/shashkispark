@@ -1,20 +1,35 @@
 package com.workingbit.share.model;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * CreateBoardPayload
  */
-@JsonRootName(value = "createArticleResponse")
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-@Getter
-@Setter
-public class CreateArticleResponse {
+//@JsonRootName(value = "createArticleResponse")
+//@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
+@JsonTypeName("createArticleResponse")
+@Data
+public class CreateArticleResponse implements Payload {
   private Article article ;
   private BoardBox board ;
+
+  private CreateArticleResponse() {
+  }
+
+  @JsonCreator
+  public CreateArticleResponse(@JsonProperty("article") Article article,
+                               @JsonProperty("board") BoardBox board
+  ) {
+    this.article = article;
+    this.board = board;
+  }
+
+  public static CreateArticleResponse createArticleResponse() {
+    return new CreateArticleResponse();
+  }
 }

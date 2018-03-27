@@ -35,7 +35,7 @@
 //
 //  @Before
 //  public void setUp() {
-//    this.board = boardBoxService.createBoard(getCreateBoardRequest());
+//    this.board = boardBoxService.createBoardBox(getCreateBoardRequest());
 //  }
 //
 //  public void tearDown() {

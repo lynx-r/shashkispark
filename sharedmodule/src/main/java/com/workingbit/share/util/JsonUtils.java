@@ -14,15 +14,11 @@ public class JsonUtils {
     mapper = Utils.configureObjectMapper(new ObjectMapper());
   }
 
-  public static void registerModules() {
-    mapper.findAndRegisterModules();
-  }
-
   public static String dataToJson(Object data) {
     try {
       return mapper.writeValueAsString(data);
     } catch (IOException e) {
-      throw new RuntimeException("IOEXception while mapping object (" + data + ") to JSON. " + e.getMessage());
+      throw new RuntimeException("IOEXception while mapping object (" + data + ") to JSON.\n" + e.getMessage());
     }
   }
 
