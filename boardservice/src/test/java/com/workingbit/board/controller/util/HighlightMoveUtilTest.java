@@ -170,7 +170,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
   }
 
   @Test
-  public void queen_moves_with_beat_and_in_one_square() throws BoardServiceException, ExecutionException, InterruptedException {
+  public void queen_moves_with_beat_in_one_square() throws BoardServiceException, ExecutionException, InterruptedException {
     Board board = getBoard();
     Board updatedBoard = getSquareByNotationWithDraughtQueen(board, "e1", false);
     updatedBoard = getSquareByNotationWithBlackDraught(updatedBoard, "f2");

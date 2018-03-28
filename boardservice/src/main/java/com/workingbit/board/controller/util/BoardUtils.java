@@ -150,7 +150,7 @@ public class BoardUtils {
     Iterator<Square> iterator = collect.iterator();
     for (int i = 0; i < dim; i++) {
       for (int j = 0; j < dim; j++) {
-        if ((i + j) % 2 == 0) {
+        if (isValidPlaceForSquare(i, j)) {
           squares.add(null);
         } else if (iterator.hasNext()) {
           squares.add(iterator.next());
@@ -160,13 +160,9 @@ public class BoardUtils {
     return squares;
   }
 
-//  private static boolean mainDiagonal(int v, int h, int dim) {
-//    return h - v;
-//  }
-//
-//  private static boolean isSubDiagonal(int v, int h, int dim) {
-//    return dim - h - v;
-//  }
+  private static boolean isValidPlaceForSquare(int i, int j) {
+    return (i + j) % 2 == 0;
+  }
 
   /**
    * Find variable link to square from board
@@ -224,13 +220,6 @@ public class BoardUtils {
       board.getWhiteDraughts().remove(notation);
     }
     square.setDraught(draught);
-//    for (List<Square> squares : square.getDiagonals()) {
-//      for (Square s : squares) {
-//        if (square.equals(s)) {
-//          s.setDraught(draught);
-//        }
-//      }
-//    }
   }
 
   private static boolean isOverloadDraughts(Board board, boolean black) {
