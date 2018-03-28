@@ -38,6 +38,10 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBRangeKey(attributeName = "createdAt")
   private LocalDateTime createdAt;
 
+  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
+  @DynamoDBAttribute(attributeName = "updatedAt")
+  private LocalDateTime updatedAt;
+
   @DynamoDBAttribute(attributeName = "boardBoxId")
   private String boardBoxId;
 
@@ -122,13 +126,13 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "notationStrokes")
   private NotationStrokes notationStrokes = new NotationStrokes();
 
-  @JsonIgnore
-  @DynamoDBAttribute(attributeName = "undo")
-  private boolean undo;
-
-  @JsonIgnore
-  @DynamoDBAttribute(attributeName = "redo")
-  private boolean redo;
+//  @JsonIgnore
+//  @DynamoDBAttribute(attributeName = "undo")
+//  private boolean undo;
+//
+//  @JsonIgnore
+//  @DynamoDBAttribute(attributeName = "redo")
+//  private boolean redo;
 
   public Board(boolean black, EnumRules rules) {
     this.black = black;

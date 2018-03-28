@@ -9,6 +9,7 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.util.Utils;
 import org.apache.log4j.Logger;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,11 +52,13 @@ public class BaseDao<T extends BaseDomain> {
   }
 
   public void save(final T entity, DynamoDBSaveExpression saveExpression) {
+    entity.setUpdatedAt(LocalDateTime.now());
     dynamoDBMapper.save(entity, saveExpression);
   }
 
   public void save(final T entity) {
     logger.info("Saving entity " + entity);
+    entity.setUpdatedAt(LocalDateTime.now());
     dynamoDBMapper.save(entity);
   }
 
@@ -64,6 +67,7 @@ public class BaseDao<T extends BaseDomain> {
   }
 
   public void batchSave(final Iterable<T> entities) {
+    entities.forEach(t -> t.setUpdatedAt(LocalDateTime.now()));
     dynamoDBMapper.batchSave(entities);
   }
 

@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
  */
 public abstract class BaseDomain implements Serializable, DeepClone, Cloneable {
 
+  private LocalDateTime updatedAt;
+
   public abstract String getId();
 
   public abstract void setId(String id);
@@ -15,4 +17,8 @@ public abstract class BaseDomain implements Serializable, DeepClone, Cloneable {
   public abstract LocalDateTime getCreatedAt();
 
   public abstract void setCreatedAt(LocalDateTime createdAt);
+
+  public abstract LocalDateTime getUpdatedAt();
+
+  public abstract void setUpdatedAt(LocalDateTime createdAt);
 }

@@ -31,6 +31,10 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBRangeKey(attributeName = "createdAt")
   private LocalDateTime createdAt;
 
+  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
+  @DynamoDBAttribute(attributeName = "updatedAt")
+  private LocalDateTime updatedAt;
+
   @DynamoDBAttribute(attributeName = "author")
   private String author;
 

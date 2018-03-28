@@ -29,6 +29,10 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBRangeKey(attributeName = "createdAt")
   private LocalDateTime createdAt;
 
+  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
+  @DynamoDBAttribute(attributeName = "updatedAt")
+  private LocalDateTime updatedAt;
+
   @DynamoDBAttribute(attributeName = "articleId")
   private String articleId;
 
@@ -40,11 +44,12 @@ public class BoardBox extends BaseDomain implements Payload {
 
   @DynamoDBTypeConvertedJson(targetType = Notation.class)
   @DynamoDBAttribute(attributeName = "notation")
-  private Notation notation = new Notation();
+  private Notation notation;
 
   public BoardBox(Board board) {
     this.board = board;
     this.boardId = board.getId();
+    notation = new Notation();
   }
 
   @Override

@@ -111,6 +111,11 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
   }
 
 
+  /**
+   * WARN equals without comparing with super
+   * @param o
+   * @return
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -162,6 +167,16 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
 
   @Override
   public void setCreatedAt(LocalDateTime createdAt) {
+
+  }
+
+  @Override
+  public LocalDateTime getUpdatedAt() {
+    return null;
+  }
+
+  @Override
+  public void setUpdatedAt(LocalDateTime createdAt) {
 
   }
 

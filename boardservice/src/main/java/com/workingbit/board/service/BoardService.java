@@ -120,7 +120,6 @@ public class BoardService {
       previousBoard.pushNextBoard(currentBoard.getId(),
           currentBoard.getPreviousSquare().getNotation(),
           currentBoard.getSelectedSquare().getNotation());
-      previousBoard.setUndo(true);
       boardDao.save(previousBoard);
       return previousBoard;
     });
@@ -139,7 +138,6 @@ public class BoardService {
       nextBoard.pushPreviousBoard(currentBoard.getId(),
           notation,
           currentBoard.getSelectedSquare().getNotation());
-      nextBoard.setRedo(true);
       boardDao.save(nextBoard);
       return nextBoard;
     });

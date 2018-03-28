@@ -99,60 +99,26 @@ public class BoardBoxService {
           }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
-//          NotationStrokes notationStrokes = branchNotation(boardUpdated.getNotationStrokes(),
-//              updatedBox.getNotation().getNotationStrokes(),
-//              boardUpdated);
-          NotationStrokes reversed = BoardUtils.reverseBoardNotation(boardUpdated.getNotationStrokes());
-          System.out.println(BoardUtils.printBoardNotation(reversed));
-          updatedBox.getNotation().setNotationStrokes(reversed);
+
+          updateAlternativesInBoard(updatedBox, boardUpdated);
           boardBoxDao.save(updatedBox);
           return updatedBox;
         });
   }
 
-  private NotationStrokes branchNotation(NotationStrokes boardNotation, NotationStrokes boardBoxNotation, Board board) {
-    if (board.isUndo()) {
-      NotationStroke firstBoard = boardNotation.getFirst();
-      System.out.println("CURRENT COUNT " + firstBoard.getCount());
-      NotationStrokes notationStrokes = boardBoxNotation
+  private void updateAlternativesInBoard(BoardBox updatedBox, Board boardUpdated) {
+    NotationStrokes notationStrokes = updatedBox.getNotation().getNotationStrokes();
+    NotationStrokes boardNotationStrokes = boardUpdated.getNotationStrokes();
+    if (notationStrokes.size() > 0) {
+      NotationStroke lastNotation = notationStrokes.getLast();
+      boardNotationStrokes
           .stream()
-          .filter(ns -> ns.getCount() >= firstBoard.getCount())
-          .collect(Collectors.toCollection(NotationStrokes::new));
-      if (notationStrokes.isEmpty()) {
-        return boardNotation;
-      }
-      System.out.println(BoardUtils.printBoardNotation(boardBoxNotation));
-      NotationStroke firstStroke = notationStrokes.getFirst();
-      if (board.isBlackTurn()) {
-        addAlternatives(firstBoard.getFirst(), firstStroke, notationStrokes);
-      } else {
-        addAlternatives(firstBoard.getSecond(), firstStroke, notationStrokes);
-      }
-      System.out.println(BoardUtils.printBoardNotation(boardNotation));
-      board.setUndo(false);
-      boardService.save(board);
-      return boardNotation;
+          .filter(lastNotation::equals)
+          .findFirst()
+          .ifPresent(notationStroke -> notationStroke.setAlternative(lastNotation.getAlternative()));
     }
-    return boardNotation;
-  }
-
-  private void addAlternatives(NotationAtomStroke stroke, NotationStroke firstStroke, NotationStrokes notationStrokes) {
-    NotationStrokes alternative = firstStroke.getFirst().getAlternative();
-    if (alternative.isEmpty()) {
-      stroke.getAlternative().addAll(notationStrokes);
-    } else {
-      NotationStrokes alternativeOfAlternative = notationStrokes
-          .stream()
-          .flatMap(ns -> ns.getFirst().getAlternative().stream())
-          .collect(Collectors.toCollection(NotationStrokes::new));
-      NotationStrokes strokesWithoutAlternatives = notationStrokes
-          .stream()
-          .peek(ns -> ns.getFirst().setAlternative(new NotationStrokes()))
-          .collect(Collectors.toCollection(NotationStrokes::new));
-      alternative.addAll(alternativeOfAlternative);
-      alternative.addAll(strokesWithoutAlternatives);
-      stroke.setAlternative(alternative);
-    }
+    Collections.reverse(boardNotationStrokes);
+    updatedBox.getNotation().setNotationStrokes(boardNotationStrokes);
   }
 
   public Optional<BoardBox> makeWhiteStroke(BoardBox boardBox) {
@@ -240,12 +206,30 @@ public class BoardBoxService {
             logger.error(e.getMessage(), e);
             return null;
           }
-          if (undone.isPresent()) {
-            undoRedoBoardAction(updated, undone.get());
-            return updated;
-          }
+          undone.ifPresent((board -> {
+            forkNotation(updated, board);
+            undoRedoBoardActionAndSave(updated, board);
+          }));
           return updated;
         });
+  }
+
+  private void forkNotation(BoardBox updated, Board board) {
+    Notation notation = updated.getNotation();
+    NotationStrokes notationStrokes = notation.getNotationStrokes();
+    if (notationStrokes.size() < 2) {
+      return;
+    }
+
+    addAlternative(notationStrokes);
+//    addAlternative(board.getNotationStrokes());
+  }
+
+  private void addAlternative(NotationStrokes notationStrokes) {
+    NotationStroke undoneStrokes = notationStrokes.removeLast();
+    NotationStroke lastStroke = notationStrokes.getLast();
+
+    lastStroke.getAlternative().add(undoneStrokes);
   }
 
   public Optional<BoardBox> redo(BoardBox boardBox) {
@@ -260,15 +244,12 @@ public class BoardBoxService {
             logger.error(e.getMessage(), e);
             return null;
           }
-          if (redone.isPresent()) {
-            undoRedoBoardAction(updated, redone.get());
-            return updated;
-          }
+          redone.ifPresent((board) -> undoRedoBoardActionAndSave(updated, board));
           return updated;
         });
   }
 
-  private void undoRedoBoardAction(BoardBox updated, Board redone) {
+  private void undoRedoBoardActionAndSave(BoardBox updated, Board redone) {
     updated.setBoard(redone);
     updated.setBoardId(redone.getId());
     boardBoxDao.save(updated);
@@ -278,8 +259,11 @@ public class BoardBoxService {
     int bbNotationSize = boardBox.getNotation().getNotationStrokes().size();
     Board board = boardBox.getBoard();
     int currentBoardNotationSize = board.getNotationStrokes().size();
+    // add a new notation strokes from Board to BoardBox
     if (currentBoardNotationSize >= bbNotationSize) {
-      NotationStrokes notationStrokes = BoardUtils.reverseBoardNotation(board.getNotationStrokes());
+//      NotationStrokes notationStrokes = BoardUtils.reverseBoardNotation(notationStrokes1);
+      NotationStrokes notationStrokes = board.getNotationStrokes();
+      Collections.reverse(notationStrokes);
       boardBox.getNotation().setNotationStrokes(notationStrokes);
     }
     BoardUtils.assignBoardNotationCursor(boardBox.getNotation().getNotationStrokes(), boardBox.getBoardId());

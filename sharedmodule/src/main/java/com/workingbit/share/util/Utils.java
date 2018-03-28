@@ -92,7 +92,7 @@ public class Utils {
   public static ObjectMapper configureObjectMapper(ObjectMapper mapper) {
     mapper.registerModule(new JavaTimeModule());
 //    mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-    mapper = mapper.configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, false);
+    mapper = mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     mapper.findAndRegisterModules();
     return mapper;
   }
