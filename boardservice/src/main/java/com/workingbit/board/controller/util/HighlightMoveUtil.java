@@ -134,7 +134,7 @@ class HighlightMoveUtil {
     }
     while (hasNext(down, squareListIterator));
 
-    if (hasWalkedThereOrQueenMovesWithBeatInOneSquare(walkAllowedMoves, previous)) {
+    if (hasQueenWalkedThereOrMovesWithBeatInOneSquare(walkAllowedMoves, previous)) {
       allowedMoves.addAll(walkAllowedMoves);
     }
   }
@@ -144,8 +144,7 @@ class HighlightMoveUtil {
     List<Tree.Node<Square>> children = capturedMoves.getChildren();
     Tree.Node<Square> newCapturedMoves = children.get(children.size() - 1);
     walkCrossDiagonalForCaptured(next, previous, down, deep, true, newCapturedMoves, allowedMoves);
-    boolean hasCapturedOnCrossDiagonal = hasCapturedOnCrossDiagonal(next, previous);
-    if (hasCapturedOnCrossDiagonal) {
+    if (hasCapturedOnCrossDiagonal(next, previous)) {
       addAllowedMove(next, allowedMoves);
     } else if (newCapturedMoves.getChildren().isEmpty()) {
       addAllowedMove(next, walkAllowedMoves);
@@ -167,17 +166,15 @@ class HighlightMoveUtil {
                                         Tree.Node<Square> capturedMoves) {
     Square next;
     boolean[] first = new boolean[]{down};
-    boolean mustBeat;
     do {
       if (hasNotNextMove(down, squareListIterator)) {
         break;
       }
       next = getNextSquare(down, first, squareListIterator);
-      if (next == null || next.isOccupied() && next.getDraught().isCaptured()) {
+      if (isCantMoveNextOrNextIsCaptured(next)) {
         break;
       }
-      mustBeat = mustBeat(next, previous);
-      if (mustBeat) {
+      if (mustBeat(next, previous)) {
         if (leavesContain(capturedMoves, previous)) {
           return;
         }
@@ -189,8 +186,7 @@ class HighlightMoveUtil {
       } else if (isDraughtWithSameColor(next)) {
         return;
       }
-      boolean draughtCanMoveOnOne = moveCounter > 0;
-      if (draughtCanMoveOnOne && (!down || capturedMoves.getChildren().isEmpty())) {
+      if (isDraughtStopMoveOrCapturingFinished(down, moveCounter, capturedMoves)) {
         return;
       }
       moveCounter++;
@@ -212,8 +208,7 @@ class HighlightMoveUtil {
   private void findAllowedMoves(Square selectedSquare, List<Square> allowedMoves, boolean down, boolean queen) {
     List<List<Square>> diagonals = selectedSquare.getDiagonals();
     for (List<Square> diagonal : diagonals) {
-      int indexOfSelected = diagonal.indexOf(selectedSquare);
-      if (indexOfSelected != -1) {
+      if (isDraughtOnDiagonal(selectedSquare, diagonal)) {
         if (queen) {
           findAllowedForQueen(diagonal, selectedSquare, down, allowedMoves);
           findAllowedForQueen(diagonal, selectedSquare, !down, allowedMoves);
@@ -263,7 +258,7 @@ class HighlightMoveUtil {
       }
       next = squareListIterator.previous();
     }
-    if (canMove(next)) {
+    if (isDraughtNotOccupied(next)) {
       addAllowedMove(next, allowedMoves);
     }
   }
@@ -302,6 +297,7 @@ class HighlightMoveUtil {
 
   private Square getNextSquare(boolean down, boolean[] first, ListIterator<Square> squareListIterator) {
     if (down) {
+      // Trick for the iterator. It returns next on the second call.
       if (first[0]) {
         squareListIterator.next();
         first[0] = false;
@@ -324,39 +320,24 @@ class HighlightMoveUtil {
   private boolean mustBeat(Square nextSquare, Square previousSquare) {
     return previousSquare!=null && previousSquare.isOccupied()
         && previousSquare.getDraught().isBlack() != this.selectedSquare.getDraught().isBlack()
-        && canMove(nextSquare);
+        && isDraughtNotOccupied(nextSquare);
   }
 
   /**
    * test case described in the test `HighlightMoveUtilTest::queen_moves_with_beat_in_one_square`
-   * @param walkAllowedMoves
-   * @param previous
-   * @return
+   * @param walkAllowedMoves moves where I was
+   * @param previous my previous move
+   * @return moves where is was contain my previous this mean
+   * that I have deal with a stream that breaks on previous move. E.g. I move from e1 and have two opponent draughts
+   * on f2 and f4 then allowed moves will be the moves that contains g3.
    */
-  private boolean hasWalkedThereOrQueenMovesWithBeatInOneSquare(List<Square> walkAllowedMoves, Square previous) {
+  private boolean hasQueenWalkedThereOrMovesWithBeatInOneSquare(List<Square> walkAllowedMoves, Square previous) {
     return !walkAllowedMoves.isEmpty() && walkAllowedMoves.contains(previous)
         || previous != null && previous.isOccupied();
   }
 
   private boolean hasCapturedAndCanMove(Tree.Node<Square> capturedMoves, Square next) {
-    return !capturedMoves.getChildren().isEmpty() && canMove(next);
-  }
-
-  private boolean isInvalidStep(Square next, Square previous) {
-    return next == null
-        || (next.isOccupied() && next.getDraught().isCaptured())
-        || (previous != null && previous.isOccupied()
-        && previous.getDraught().isBlack() != this.selectedSquare.getDraught().isBlack()
-        && !previous.equals(this.selectedSquare)
-        && next.isOccupied());
-  }
-
-  private boolean hasNext(boolean down, ListIterator<Square> squareListIterator) {
-    return (down && squareListIterator.hasNext()) || (!down && squareListIterator.hasPrevious());
-  }
-
-  private boolean hasNotNextMove(boolean down, ListIterator<Square> squareListIterator) {
-    return !hasNext(down, squareListIterator);
+    return !capturedMoves.getChildren().isEmpty() && isDraughtNotOccupied(next);
   }
 
   private boolean hasCapturedOnCrossDiagonal(Square next, Square previous) {
@@ -369,15 +350,44 @@ class HighlightMoveUtil {
     return false;
   }
 
+  private boolean hasNext(boolean down, ListIterator<Square> squareListIterator) {
+    return (down && squareListIterator.hasNext()) || (!down && squareListIterator.hasPrevious());
+  }
+
+  private boolean hasNotNextMove(boolean down, ListIterator<Square> squareListIterator) {
+    return !hasNext(down, squareListIterator);
+  }
+
+  private boolean isInvalidStep(Square next, Square previous) {
+    return next == null
+        || (next.isOccupied() && next.getDraught().isCaptured())
+        || (previous != null && previous.isOccupied()
+        && previous.getDraught().isBlack() != this.selectedSquare.getDraught().isBlack()
+        && !previous.equals(this.selectedSquare)
+        && next.isOccupied());
+  }
+
   private boolean isDraughtWithSameColor(Square next) {
     return next.isOccupied() && next.getDraught().isBlack() == this.selectedSquare.getDraught().isBlack();
   }
 
-  private boolean canMove(Square toSquare) {
+  private boolean isMoveAllowed(Square previous, Square next) {
+    return isDraughtNotOccupied(next) && (previous.equals(this.selectedSquare) || isDraughtNotOccupied(previous));
+  }
+
+  private boolean isDraughtStopMoveOrCapturingFinished(boolean down, int moveCounter, Tree.Node<Square> capturedMoves) {
+    return moveCounter > 0 && (!down || capturedMoves.getChildren().isEmpty());
+  }
+
+  private boolean isDraughtNotOccupied(Square toSquare) {
     return toSquare != null && !toSquare.isOccupied();
   }
 
-  private boolean isMoveAllowed(Square previous, Square next) {
-    return canMove(next) && (previous.equals(this.selectedSquare) || canMove(previous));
+  private boolean isCantMoveNextOrNextIsCaptured(Square next) {
+    return next == null || next.isOccupied() && next.getDraught().isCaptured();
+  }
+
+  private boolean isDraughtOnDiagonal(Square selectedSquare, List<Square> diagonal) {
+    return diagonal.indexOf(selectedSquare) != -1;
   }
 }
