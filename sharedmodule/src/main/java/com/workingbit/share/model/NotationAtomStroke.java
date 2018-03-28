@@ -1,6 +1,7 @@
 package com.workingbit.share.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.workingbit.share.domain.DeepClone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ import static com.workingbit.share.model.NotationAtomStroke.EnumStrokeType.SIMPL
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class NotationAtomStroke {
+public class NotationAtomStroke implements DeepClone {
 
   private EnumStrokeType type;
   private List<String> strokes = new ArrayList<>();

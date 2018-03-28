@@ -5,9 +5,10 @@ import com.rits.cloning.Cloner;
 /**
  * Created by Aleksey Popryaduhin on 10:38 20/09/2017.
  */
+@SuppressWarnings("unchecked")
 public interface DeepClone {
-  default Object deepClone() {
+  default <T> T deepClone() {
     Cloner cloner = new Cloner();
-    return cloner.deepClone(this);
+    return cloner.deepClone((T) this);
   };
 }

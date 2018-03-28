@@ -19,6 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @DynamoDBTable(tableName = DBConstants.BOARD_BOX_TABLE)
 public class BoardBox extends BaseDomain implements Payload {
 

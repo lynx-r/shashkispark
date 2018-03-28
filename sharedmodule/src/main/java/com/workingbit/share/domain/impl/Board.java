@@ -12,10 +12,7 @@ import com.workingbit.share.model.BoardIdNotation;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.NotationStrokes;
 import com.workingbit.share.model.Payload;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,6 +25,7 @@ import java.util.*;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @DynamoDBTable(tableName = DBConstants.BOARD_TABLE)
 public class Board extends BaseDomain implements Payload {
 

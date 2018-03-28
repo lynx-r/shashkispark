@@ -39,8 +39,8 @@ public class BoardBoxService {
 
   public Optional<BoardBox> findById(String boardBoxId) {
     return boardBoxDao.findByKey(boardBoxId)
-        .map(this::updateBoardBox)
-        .map(this::updateBoardNotation);
+        .map(this::updateBoardBox);
+//        .map(this::updateBoardNotation);
   }
 
   private BoardBox updateBoardBox(BoardBox boardBox) {
@@ -92,7 +92,8 @@ public class BoardBoxService {
             return null;
           }
           try {
-            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, boardBox.getArticleId());
+            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, boardBox.getArticleId(),
+                boardBox.getNotation().getNotationStrokes());
           } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -111,6 +112,10 @@ public class BoardBoxService {
     NotationStrokes boardNotationStrokes = boardUpdated.getNotationStrokes();
     if (notationStrokes.size() > 0) {
       NotationStroke lastNotation = notationStrokes.getLast();
+      lastNotation.getAlternative().forEach(notationStroke -> {
+        resetNotationAtomStrokeCursor(notationStroke.getFirst());
+        resetNotationAtomStrokeCursor(notationStroke.getSecond());
+      });
       boardNotationStrokes
           .stream()
           .filter(lastNotation::equals)
@@ -119,6 +124,12 @@ public class BoardBoxService {
     }
     Collections.reverse(boardNotationStrokes);
     updatedBox.getNotation().setNotationStrokes(boardNotationStrokes);
+  }
+
+  private void resetNotationAtomStrokeCursor(NotationAtomStroke atomStroke) {
+    if (atomStroke != null) {
+      atomStroke.setCursor(false);
+    }
   }
 
   public Optional<BoardBox> makeWhiteStroke(BoardBox boardBox) {
@@ -149,8 +160,7 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> loadBoard(BoardBox boardBox) {
-    BoardBox updated = updateBoardNotation(boardBox);
-    updated = updateBoardBox(updated);
+    BoardBox updated = updateBoardBox(boardBox);
     return Optional.of(updated);
   }
 

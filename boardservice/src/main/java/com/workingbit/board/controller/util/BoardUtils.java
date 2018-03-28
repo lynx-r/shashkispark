@@ -233,7 +233,7 @@ public class BoardUtils {
 
   public static Board moveDraught(Board board, List<Square> capturedSquares) {
     moveDraught(capturedSquares, board);
-    Board newBoard = (Board) board.deepClone();
+    Board newBoard = board.deepClone();
     boolean blackTurn = board.isBlackTurn();
     Square selectedSquareNew = newBoard.getSelectedSquare();
     MovesList nextMovesSquares = highlightedBoard(blackTurn, selectedSquareNew, newBoard);
@@ -252,8 +252,9 @@ public class BoardUtils {
     LinkedList<NotationStroke> notation = board.getNotationStrokes();
     boolean blackTurn = board.isBlackTurn();
     int strokeCount = blackTurn ? board.getStrokeCount() : board.getStrokeCount() + 1;
-    board.setStrokeCount(strokeCount);
-    NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation);
+//    board.setStrokeCount(strokeCount);
+    String boardId = board.getId();
+    NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation, boardId);
     if (board.isBlackTurn()) {
       notationStroke.setSecond(getNotationAtomWithCapturedStrokes(board));
     } else {
@@ -267,7 +268,8 @@ public class BoardUtils {
     board.setStrokeCount(strokeCount);
     NotationStrokes notation = board.getNotationStrokes();
     if (previousCaptured) {
-      NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation);
+      String boardId = board.getId();
+      NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation, boardId);
       if (board.isBlackTurn()) {
         NotationAtomStroke second = getNotationAtomWithCapturedStrokes(board);
         notationStroke.setSecond(second);
@@ -283,9 +285,23 @@ public class BoardUtils {
 
   private static NotationAtomStroke getNotationAtomWithCapturedStrokes(Board board) {
     resetBoardNotationCursor(board.getNotationStrokes());
-    List<String> strokes = Arrays.asList(board.getPreviousSquare().getNotation(),
-        board.getSelectedSquare().getNotation());
-    return new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.CAPTURE, strokes, board.getId(), true);
+    NotationStroke firstStroke = board.getNotationStrokes().getFirst();
+    NotationAtomStroke atomStroke;
+    if (!board.isBlackTurn()) {
+      atomStroke = firstStroke.getFirst().deepClone();
+    } else {
+      atomStroke = firstStroke.getSecond().deepClone();
+    }
+    List<String> strokes = atomStroke.getStrokes();
+    if (strokes.isEmpty()) {
+      strokes.addAll(Arrays.asList(board.getPreviousSquare().getNotation(),
+          board.getSelectedSquare().getNotation()));
+    } else {
+      strokes.add(board.getSelectedSquare().getNotation());
+    }
+    atomStroke.setType(NotationAtomStroke.EnumStrokeType.CAPTURE);
+    atomStroke.setCursor(true);
+    return atomStroke;
   }
 
   private static void resetBoardNotationCursor(NotationStrokes notationStrokes) {
@@ -302,8 +318,9 @@ public class BoardUtils {
   private static void pushSimpleStrokeToNotation(int strokeNumber, NotationStrokes notation, Board board) {
     List<String> stroke = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
     resetBoardNotationCursor(board.getNotationStrokes());
-    NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation);
-    NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, board.getId(), true);
+    String boardId = board.getId();
+    NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation, boardId);
+    NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, boardId, true);
     if (board.isBlackTurn()) {
       notationStroke.setSecond(notationAtomStroke);
     } else {
@@ -311,14 +328,17 @@ public class BoardUtils {
     }
   }
 
-  private static NotationStroke getFirstNotationStroke(int strokeCount, LinkedList<NotationStroke> notationStrokes) {
+  private static NotationStroke getFirstNotationStroke(int strokeCount, LinkedList<NotationStroke> notationStrokes, String boardId) {
     if (notationStrokes.isEmpty()) {
-      notationStrokes.push(new NotationStroke(1, null, null));
+      NotationAtomStroke atomStroke =
+          new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, new ArrayList<>(), boardId, true);
+      notationStrokes.push(new NotationStroke(1, atomStroke, null));
     } else {
       NotationStroke notationStroke = notationStrokes.getFirst();
-      if (notationStroke.getCount() != strokeCount
-          && notationStroke.getFirst() != null && notationStroke.getSecond() != null) {
-        notationStrokes.push(new NotationStroke(strokeCount, null, null));
+      if (notationStroke.getCount() != strokeCount && notationStroke.getSecond() != null) {
+        NotationAtomStroke atomStroke = new NotationAtomStroke();
+        atomStroke.setBoardId(boardId);
+        notationStrokes.push(new NotationStroke(strokeCount, atomStroke, null));
       }
     }
     return notationStrokes.getFirst();
@@ -361,21 +381,40 @@ public class BoardUtils {
       });
       return movesList;
     } else {
+      Set<String> draughtsNotations;
+      if (blackTurn) {
+        draughtsNotations = board.getBlackDraughts().keySet();
+      } else {
+        draughtsNotations = board.getWhiteDraughts().keySet();
+      }
+      // find squares occupied by current user
+      List<Square> draughtsSquares = board.getAssignedSquares()
+          .stream()
+          .filter(square -> !square.equals(selectedSquare))
+          .filter(square -> draughtsNotations.contains(square.getNotation()))
+          .collect(Collectors.toList());
+      // find all squares captured by current user
+      List<Square> allCaptured = draughtsSquares
+          .stream()
+          .flatMap(square -> highlightedAssignedMoves(square).getCaptured().stream())
+          .collect(Collectors.toList());
       // reset highlight
       board.getAssignedSquares()
           .stream()
           .filter(Square::isHighlighted)
           .forEach(square -> square.setHighlighted(false));
-      board.getAssignedSquares()
-          .stream()
-          .peek((square -> {
-            // highlight selected draught
-            if (square.isOccupied() && square.equals(selectedSquare)) {
-              square.getDraught().setHighlighted(true);
-            }
-          }))
-          .filter(allowed::contains)
-          .forEach(square -> square.setHighlighted(true));
+      if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
+        board.getAssignedSquares()
+            .stream()
+            .peek((square -> {
+              // highlight selected draught
+              if (square.isOccupied() && square.equals(selectedSquare)) {
+                square.getDraught().setHighlighted(true);
+              }
+            }))
+            .filter(allowed::contains)
+            .forEach(square -> square.setHighlighted(true));
+      }
       return movesList;
     }
   }

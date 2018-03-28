@@ -11,6 +11,7 @@ import com.workingbit.share.model.EnumArticleState;
 import com.workingbit.share.model.Payload;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -21,6 +22,7 @@ import java.util.Objects;
 @JsonTypeName("article")
 @Getter
 @Setter
+@ToString
 @DynamoDBTable(tableName = DBConstants.ARTICLE_TABLE)
 public class Article extends BaseDomain implements Payload {
 

@@ -8,6 +8,8 @@ import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.MovesList;
+import com.workingbit.share.model.NotationStroke;
+import com.workingbit.share.model.NotationStrokes;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,7 +19,6 @@ import java.util.Optional;
 import static com.workingbit.board.BoardApplication.boardDao;
 import static com.workingbit.board.controller.util.BoardUtils.highlightedBoard;
 import static com.workingbit.board.controller.util.BoardUtils.initBoard;
-import static com.workingbit.share.util.JsonUtils.dataToJson;
 
 /**
  * Created by Aleksey Popryaduhin on 13:45 09/08/2017.
@@ -34,9 +35,6 @@ public class BoardService {
   }
 
   Optional<Board> findById(String boardId) {
-    List<Board> all = boardDao.findAll(100);
-    String s = dataToJson(all);
-    System.out.println(s);
     Optional<Board> boardOptional = boardDao.findByKey(boardId);
     return boardOptional.map(this::updateBoard);
   }
@@ -67,8 +65,10 @@ public class BoardService {
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
    * @param articleId
+   * @param boardBoxNotationStrokes
    */
-  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId) {
+  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId,
+                    NotationStrokes boardBoxNotationStrokes) {
     boolean blackTurn = currentBoard.isBlackTurn();
     MovesList movesList = highlightedBoard(blackTurn, selectedSquare, currentBoard);
     List<Square> allowed = movesList.getAllowed();
@@ -94,8 +94,23 @@ public class BoardService {
     String nextNotation = nextSquare.getNotation();
     nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
 
+    NotationStrokes boardNotationStrokes = nextBoard.getNotationStrokes();
+    updateBoardAlternativeNotation(boardBoxNotationStrokes, boardNotationStrokes);
+
     boardDao.save(nextBoard);
     return nextBoard;
+  }
+
+  private void updateBoardAlternativeNotation(NotationStrokes boardBoxNotationStrokes,
+                                              NotationStrokes boardNotationStrokes) {
+    if (boardBoxNotationStrokes.size() > 0) {
+      NotationStroke lastNotation = boardBoxNotationStrokes.getLast();
+      boardNotationStrokes
+          .stream()
+          .filter(lastNotation::equals)
+          .findFirst()
+          .ifPresent(notationStroke -> notationStroke.setAlternative(lastNotation.getAlternative()));
+    }
   }
 
   void save(Board board) {
