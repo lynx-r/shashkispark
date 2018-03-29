@@ -38,7 +38,6 @@ public class NotationParserTest extends ParserTestCase {
     game.printTo(System.out);
     parseGame(game, notationStrokes);
     notationStrokes.forEach(System.out::println);
-//    parse(notationParser.parse(), );
   }
 
   private void parseGame(Node game, NotationStrokes notationStrokes) {
@@ -46,7 +45,6 @@ public class NotationParserTest extends ParserTestCase {
     NotationStroke notationStroke = new NotationStroke();
     for (int i = 0; i < game.getChildCount(); i++) {
       Node gameBody = game.getChildAt(i);
-      gameBody.printTo(System.out);
       switch (gameBody.getName()) {
         case "GameMove": {
           for (int j = 0; j < gameBody.getChildCount(); j++) {
@@ -66,6 +64,7 @@ public class NotationParserTest extends ParserTestCase {
                   addMove = isAddMoreWhenParent(gameBody, i);
                 } else if (!nextStrength) {
                   first = false;
+                  addMove = gameBody.getParent().getChildCount() == 1;
                 }
                 break;
               case "MoveStrength":
@@ -104,11 +103,6 @@ public class NotationParserTest extends ParserTestCase {
         addMove = false;
       }
     }
-  }
-
-  private boolean isAddMore(Node gameBody, int j) {
-    return !isNextNode("COMMENT", j, gameBody)
-        && !isNextNode("Variation", j, gameBody);
   }
 
   private boolean isAddMoreWhenParent(Node gameBody, int j) {
