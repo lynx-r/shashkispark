@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardApplication.boardBoxDao;
+import static com.workingbit.board.BoardApplication.boardDao;
 
 /**
  * Created by Aleksey Popryaduhin on 07:00 22/09/2017.
@@ -113,6 +114,7 @@ public class BoardBoxService {
   private void updateAlternativesInBoard(BoardBox updatedBox, Board boardUpdated) {
     NotationStrokes notationStrokes = updatedBox.getNotation().getNotationStrokes();
     NotationStrokes boardNotationStrokes = boardUpdated.getNotationStrokes();
+    boolean isAtStartStroke = notationStrokes.size() == 1 && !boardNotationStrokes.isEmpty();
     if (notationStrokes.size() > 1) {
       NotationStroke lastNotation = notationStrokes.getLast();
       lastNotation.getAlternative().forEach(notationStroke -> {
@@ -124,12 +126,22 @@ public class BoardBoxService {
           .filter(lastNotation::equals)
           .findFirst()
           .ifPresent(notationStroke -> notationStroke.setAlternative(lastNotation.getAlternative()));
-    } else if (notationStrokes.size() == 1 && !boardNotationStrokes.isEmpty()) {
+    } else if (isAtStartStroke) {
       NotationStroke lastNotation = notationStrokes.getLast();
-      boardNotationStrokes.getLast().setAlternative(lastNotation.getAlternative());
+      NotationStroke lastBoardStroke = boardNotationStrokes.getLast();
+      boolean isAddedStrokeInBoard = lastBoardStroke.getCount() > notationStrokes.size();
+      if (isAddedStrokeInBoard) { // update alternative on prev board stroke
+        boardNotationStrokes.get(boardNotationStrokes.size() - 2).setAlternative(lastNotation.getAlternative());
+      } else { // update alternative on last stroke in board
+        boardNotationStrokes.getLast().setAlternative(lastNotation.getAlternative());
+      }
     }
     if (!boardNotationStrokes.isEmpty()) {
-      Collections.reverse(boardNotationStrokes);
+      boolean isFirstCountMoreSecond = boardNotationStrokes.size() >= 2
+          && boardNotationStrokes.getFirst().getCount() > boardNotationStrokes.getLast().getCount();
+      if (isFirstCountMoreSecond) {
+        Collections.reverse(boardNotationStrokes);
+      }
       updatedBox.getNotation().setNotationStrokes(boardNotationStrokes);
     }
   }
@@ -237,7 +249,7 @@ public class BoardBoxService {
     NotationStrokes notationStrokes = notation.getNotationStrokes();
 
     NotationStroke undoneStrokes = null;
-    if (notationStrokes.size() >= 2) {
+    if (notationStrokes.size() >= 2) { // if strokes more then two
       undoneStrokes = notationStrokes.removeLast();
     } else if (notationStrokes.isEmpty()) {
       return;
@@ -245,22 +257,24 @@ public class BoardBoxService {
 
     NotationStroke lastStroke = notationStrokes.getLast();
     NotationStrokes boardNotationStrokes = board.getNotationStrokes();
-    if (!boardNotationStrokes.isEmpty()) {
-      NotationStroke prevStroke = boardNotationStrokes.getFirst();
-      if (prevStroke.getCount() > notationStrokes.size()) {
+    if (!boardNotationStrokes.isEmpty()) { // if user doesn't undone all strokes
+      NotationStroke prevStroke = boardNotationStrokes.get(boardNotationStrokes.size() - 1);
+      boolean isAddedStroke = prevStroke.getCount() > notationStrokes.size();
+      if (isAddedStroke) { // if user does redo
         notationStrokes.add(prevStroke);
-      } else {
+      } else { // if user does undo
         lastStroke.setFirst(prevStroke.getFirst());
         lastStroke.setSecond(prevStroke.getSecond());
       }
-    } else {
+    } else { // first stroke in notation e.g. ( 1. c3-b4 )
       lastStroke.getFirst().setCursor(false);
       lastStroke.getAlternative().add(lastStroke.deepClone());
       lastStroke.setCount(null);
       lastStroke.setFirst(null);
     }
 
-    if (undoneStrokes != null) {
+    boolean isNotFirstStroke = undoneStrokes != null && boardNotationStrokes.size() != 1;
+    if (isNotFirstStroke) { // if user is on his first stroke
       lastStroke.getAlternative().add(undoneStrokes);
     }
   }
@@ -269,7 +283,8 @@ public class BoardBoxService {
     return findById(boardBox.getId())
         .map(updated -> {
           Board currentBoard = updated.getBoard();
-          BoardUtils.updateMoveSquaresHighlightAndDraught(currentBoard, boardBox.getBoard());
+          Board board = boardBox.getBoard();
+          BoardUtils.updateMoveSquaresHighlightAndDraught(currentBoard, board);
           Optional<Board> redone;
           try {
             redone = boardService.redo(currentBoard);
@@ -277,7 +292,10 @@ public class BoardBoxService {
             logger.error(e.getMessage(), e);
             return null;
           }
-          redone.ifPresent((board) -> undoRedoBoardActionAndSave(updated, board));
+          redone.ifPresent((b) -> {
+            updateAlternativesInBoard(updated, b);
+            undoRedoBoardActionAndSave(updated, b);
+          });
           return updated;
         });
   }
@@ -285,6 +303,7 @@ public class BoardBoxService {
   private void undoRedoBoardActionAndSave(BoardBox updated, Board redone) {
     updated.setBoard(redone);
     updated.setBoardId(redone.getId());
+    boardDao.save(redone);
     boardBoxDao.save(updated);
   }
 }

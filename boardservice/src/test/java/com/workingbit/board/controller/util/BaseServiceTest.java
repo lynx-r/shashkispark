@@ -80,11 +80,11 @@ public class BaseServiceTest {
 //    return new BoardService(boardDao, objectMapper, boardHistoryService);
 //  }
 
-  protected CreateBoardPayload getCreateBoardRequest() {
+  protected CreateBoardPayload getCreateBoardRequest(boolean black, boolean fillBoard, EnumRules rules) {
     CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
-    createBoardPayload.setBlack(false);
-    createBoardPayload.setFillBoard(false);
-    createBoardPayload.setRules(EnumRules.RUSSIAN);
+    createBoardPayload.setBlack(black);
+    createBoardPayload.setFillBoard(fillBoard);
+    createBoardPayload.setRules(rules);
     createBoardPayload.setBoardBoxId(Utils.getRandomUUID());
     return createBoardPayload;
   }
