@@ -117,7 +117,7 @@ public class BoardBoxService {
     boolean isAtStartStroke = notationStrokes.size() == 1 && !boardNotationStrokes.isEmpty();
     if (notationStrokes.size() > 1) {
       NotationStroke lastNotation = notationStrokes.getLast();
-      lastNotation.getAlternative().forEach(notationStroke -> {
+      lastNotation.getVariants().forEach(notationStroke -> {
         resetNotationAtomStrokeCursor(notationStroke.getFirst());
         resetNotationAtomStrokeCursor(notationStroke.getSecond());
       });
@@ -125,15 +125,15 @@ public class BoardBoxService {
           .stream()
           .filter(lastNotation::equals)
           .findFirst()
-          .ifPresent(notationStroke -> notationStroke.setAlternative(lastNotation.getAlternative()));
+          .ifPresent(notationStroke -> notationStroke.setVariants(lastNotation.getVariants()));
     } else if (isAtStartStroke) {
       NotationStroke lastNotation = notationStrokes.getLast();
       NotationStroke lastBoardStroke = boardNotationStrokes.getLast();
       boolean isAddedStrokeInBoard = lastBoardStroke.getMoveNumberInt() > notationStrokes.size();
-      if (isAddedStrokeInBoard) { // update alternative on prev board stroke
-        boardNotationStrokes.get(boardNotationStrokes.size() - 2).setAlternative(lastNotation.getAlternative());
-      } else { // update alternative on last stroke in board
-        boardNotationStrokes.getLast().setAlternative(lastNotation.getAlternative());
+      if (isAddedStrokeInBoard) { // update variants on prev board stroke
+        boardNotationStrokes.get(boardNotationStrokes.size() - 2).setVariants(lastNotation.getVariants());
+      } else { // update variants on last stroke in board
+        boardNotationStrokes.getLast().setVariants(lastNotation.getVariants());
       }
     }
     if (!boardNotationStrokes.isEmpty()) {
@@ -268,14 +268,14 @@ public class BoardBoxService {
       }
     } else { // first stroke in notation e.g. ( 1. c3-b4 )
       lastStroke.getFirst().setCursor(false);
-      lastStroke.getAlternative().add(lastStroke.deepClone());
+      lastStroke.getVariants().add(lastStroke.deepClone());
       lastStroke.setMoveNumber(null);
       lastStroke.setFirst(null);
     }
 
     boolean isNotFirstStroke = undoneStrokes != null && boardNotationStrokes.size() != 1;
     if (isNotFirstStroke) { // if user is on his first stroke
-      lastStroke.getAlternative().add(undoneStrokes);
+      lastStroke.getVariants().add(undoneStrokes);
     }
   }
 

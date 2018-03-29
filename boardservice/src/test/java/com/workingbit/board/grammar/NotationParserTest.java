@@ -36,10 +36,17 @@ public class NotationParserTest extends ParserTestCase {
     Node game = pdnFile.getChildAt(1);
     NotationStrokes notationStrokes = new NotationStrokes();
     game.printTo(System.out);
-    boolean first = false;
+    parseGame(game, notationStrokes);
+    notationStrokes.forEach(System.out::println);
+//    parse(notationParser.parse(), );
+  }
+
+  private void parseGame(Node game, NotationStrokes notationStrokes) {
+    boolean first = false, addMove = false, nextStrength;
     NotationStroke notationStroke = new NotationStroke();
     for (int i = 0; i < game.getChildCount(); i++) {
       Node gameBody = game.getChildAt(i);
+      gameBody.printTo(System.out);
       switch (gameBody.getName()) {
         case "GameMove": {
           for (int j = 0; j < gameBody.getChildCount(); j++) {
@@ -52,24 +59,65 @@ public class NotationParserTest extends ParserTestCase {
                 break;
               case "Move":
                 Token move = (Token) gameMove.getChildAt(0);
-                switch (move.getName()) {
-                  case "NUMERICMOVE": {
-                    String stroke = move.getImage();
-                    notationStroke.parseStrokeFromPdn(stroke, first);
-                    if (!first) {
-                      notationStroke = new NotationStroke();
-                    }
-                    first = false;
-                  }
+                String stroke = move.getImage();
+                notationStroke.parseStrokeFromPdn(stroke, first, move.getName());
+                nextStrength = isNextNode("MoveStrength", j, gameBody);
+                if (!first && !nextStrength) {
+                  addMove = isAddMoreWhenParent(gameBody, i);
+                } else if (!nextStrength) {
+                  first = false;
+                }
+                break;
+              case "MoveStrength":
+                Token moveStrength = (Token) gameMove.getChildAt(0);
+                String strength = moveStrength.getImage();
+                if (first) {
+                  notationStroke.getFirst().setMoveStrength(strength);
+                  first = false;
+                } else {
+                  notationStroke.getSecond().setMoveStrength(strength);
+                  addMove = isAddMoreWhenParent(gameBody, i);
                 }
                 break;
             }
           }
+          break;
+        }
+        case "COMMENT": {
+          Token token = (Token) gameBody;
+          notationStroke.setComment(token.getImage());
+          addMove = isAddMoreWhenParent(gameBody, i);
+          break;
+        }
+        case "Variation": {
+          Node variant = gameBody.getChildAt(1);
+          NotationStrokes notationStrokesVariant = new NotationStrokes();
+          parseGame(variant, notationStrokesVariant);
+          notationStroke.setVariants(notationStrokesVariant);
+          addMove = isAddMoreWhenParent(gameBody, i);
+          break;
         }
       }
-      notationStrokes.add(notationStroke);
+      if (addMove) {
+        notationStrokes.add(notationStroke);
+        notationStroke = new NotationStroke();
+        addMove = false;
+      }
     }
-    notationStrokes.forEach(System.out::println);
-//    parse(notationParser.parse(), );
+  }
+
+  private boolean isAddMore(Node gameBody, int j) {
+    return !isNextNode("COMMENT", j, gameBody)
+        && !isNextNode("Variation", j, gameBody);
+  }
+
+  private boolean isAddMoreWhenParent(Node gameBody, int j) {
+    return !isNextNode("COMMENT", j, gameBody.getParent())
+        && !isNextNode("Variation", j, gameBody.getParent());
+  }
+
+  private boolean isNextNode(String nodeName, int j, Node gameBody) {
+    return j + 1 < gameBody.getChildCount()
+        && gameBody.getChildAt(j + 1).getName().equals(nodeName);
   }
 }

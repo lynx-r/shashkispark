@@ -109,7 +109,7 @@ public class BoardService {
           .stream()
           .filter(lastNotation::equals)
           .findFirst()
-          .ifPresent(notationStroke -> notationStroke.setAlternative(lastNotation.getAlternative()));
+          .ifPresent(notationStroke -> notationStroke.setVariants(lastNotation.getVariants()));
     }
   }
 

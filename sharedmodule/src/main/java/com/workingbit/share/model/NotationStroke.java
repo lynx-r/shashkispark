@@ -18,7 +18,10 @@ public class NotationStroke implements DeepClone {
   private String moveNumber;
   private NotationAtomStroke first;
   private NotationAtomStroke second;
-  private NotationStrokes alternative = new NotationStrokes();
+  private NotationStrokes variants = new NotationStrokes();
+  private boolean ellipses;
+  private boolean numeric;
+  private String comment;
 
   public NotationStroke(NotationAtomStroke first, NotationAtomStroke second) {
     this.first = first;
@@ -55,7 +58,18 @@ public class NotationStroke implements DeepClone {
     return Objects.hash(super.hashCode(), moveNumber, first, second);
   }
 
-  public void parseStrokeFromPdn(String stroke, boolean first) {
+  public void parseStrokeFromPdn(String stroke, boolean first, String name) {
+    switch (name) {
+      case "NUMERICMOVE":
+        numeric = true;
+        break;
+      case "ALPHANUMERICMOVE":
+        numeric = false;
+        break;
+      case "ELLIPSES":
+        ellipses = true;
+        break;
+    }
     if (first) {
       this.first = NotationAtomStroke.fromPdn(stroke);
     } else {

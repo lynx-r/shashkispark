@@ -27,6 +27,7 @@ public class NotationAtomStroke implements DeepClone {
   private List<String> strokes = new ArrayList<>();
   private String boardId;
   private boolean cursor;
+  private String moveStrength;
 
   @DynamoDBIgnore
   public String getNotation() {
@@ -75,5 +76,9 @@ public class NotationAtomStroke implements DeepClone {
     }
     notationAtomStroke.setBoardId(boardId);
     return notationAtomStroke;
+  }
+
+  public static NotationAtomStroke create(NotationStroke.EnumStrokeType type, List<String> strokes, String boardId, boolean cursor) {
+    return new NotationAtomStroke(type, strokes, boardId, cursor, null);
   }
 }
