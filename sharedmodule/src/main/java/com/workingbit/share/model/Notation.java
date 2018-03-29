@@ -24,4 +24,11 @@ public class Notation {
   private String gameType;
 
   private NotationStrokes notationStrokes = new NotationStrokes();
+
+  public void print() {
+    notationStrokes.forEach(notationStroke -> {
+      System.out.println();
+      System.out.println(notationStroke.toString(""));
+    });
+  }
 }

@@ -77,6 +77,20 @@ public class NotationStroke implements DeepClone {
     }
   }
 
+  public String toString(String prefix) {
+    return new StringBuilder()
+        .append(getClass().getSimpleName())
+        .append("\n").append(prefix).append("moveNumber: ").append(moveNumber)
+        .append("\n").append(prefix).append("first: ").append(first != null ? first.toString( "\n\t" + prefix) : "")
+        .append("\n").append(prefix).append("second: ").append(second != null ? second.toString("\n\t" + prefix) : "")
+        .append("\n").append(prefix).append("variants: \n").append(variants.toString(prefix + "\t"))
+        .append("\n").append(prefix).append("ellipses: ").append(ellipses)
+        .append("\n").append(prefix).append("numeric: ").append(numeric)
+        .append("\n").append(prefix).append("comment: ").append(comment)
+        .append("\n")
+        .toString();
+  }
+
   public enum EnumStrokeType {
     NUMBER(". ", ". "),
     SIMPLE("-", "-"),

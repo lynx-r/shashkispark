@@ -31,7 +31,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class BaseServiceTest {
 
-
   private BoardService boardService = new BoardService();
   private BoardBoxService boardBoxService = new BoardBoxService();
 
