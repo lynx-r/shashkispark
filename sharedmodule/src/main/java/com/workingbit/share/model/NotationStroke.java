@@ -1,5 +1,6 @@
 package com.workingbit.share.model;
 
+import com.workingbit.share.domain.DeepClone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class NotationStroke {
+public class NotationStroke implements DeepClone {
 
   private Integer count;
   private NotationAtomStroke first;

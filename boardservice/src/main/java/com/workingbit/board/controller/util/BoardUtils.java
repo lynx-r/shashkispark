@@ -37,7 +37,7 @@ public class BoardUtils {
   }
 
   private static Board updateBoard(boolean fillBoard, boolean update, Board board) {
-    Board boardClone = (Board) board.deepClone();
+    Board boardClone = board.deepClone();
     EnumRules rules = boardClone.getRules();
     boolean black = boardClone.isBlack();
 

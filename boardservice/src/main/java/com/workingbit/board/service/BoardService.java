@@ -79,7 +79,7 @@ public class BoardService {
     currentBoard.setCursor(false);
     boardDao.save(currentBoard);
 
-    Board nextBoard = (Board) currentBoard.deepClone();
+    Board nextBoard = currentBoard.deepClone();
     nextBoard.setSelectedSquare(selectedSquare);
     nextBoard.setNextSquare(nextSquare);
 
@@ -118,7 +118,7 @@ public class BoardService {
   }
 
   Board addDraught(String articleId, Board currentBoard, String notation, Draught draught) {
-    Board deepClone = (Board) currentBoard.deepClone();
+    Board deepClone = currentBoard.deepClone();
     Utils.setBoardIdAndCreatedAt(deepClone, articleId, currentBoard.getBoardBoxId());
     BoardUtils.addDraught(deepClone, notation, draught);
     boardDao.save(deepClone);
