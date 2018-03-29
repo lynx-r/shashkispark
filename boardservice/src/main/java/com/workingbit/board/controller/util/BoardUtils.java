@@ -47,8 +47,8 @@ public class BoardUtils {
     for (Square square : boardSquares) {
       int v = square.getV(), h = square.getH();
       if (update) {
-        Draught blackDraught = blackDraughts.get(square.getNotation());
-        Draught whiteDraught = whiteDraughts.get(square.getNotation());
+        Draught blackDraught = blackDraughts.get(square.getPdnNotation());
+        Draught whiteDraught = whiteDraughts.get(square.getPdnNotation());
         if (blackDraught != null) {
           square.setDraught(blackDraught);
         } else if (whiteDraught != null) {
@@ -77,7 +77,7 @@ public class BoardUtils {
   private static void placeDraught(boolean black, EnumRules rules, Map<String, Draught> draughts, Square square, int v, int h) {
     Draught draught = new Draught(v, h, rules.getDimension());
     draught.setBlack(black);
-    draughts.put(square.getNotation(), draught);
+    draughts.put(square.getPdnNotation(), draught);
     square.setDraught(draught);
   }
 
@@ -188,7 +188,7 @@ public class BoardUtils {
       throw new BoardServiceException("Invalid notation");
     }
     for (Square square : board.getAssignedSquares()) {
-      if (square.getNotation().equals(notation)) {
+      if (square.getPdnNotation().equals(notation)) {
         return square;
       }
     }
@@ -294,12 +294,12 @@ public class BoardUtils {
     }
     List<String> strokes = atomStroke.getStrokes();
     if (strokes.isEmpty()) {
-      strokes.addAll(Arrays.asList(board.getPreviousSquare().getNotation(),
-          board.getSelectedSquare().getNotation()));
+      strokes.addAll(Arrays.asList(board.getPreviousSquare().getPdnNotation(),
+          board.getSelectedSquare().getPdnNotation()));
     } else {
-      strokes.add(board.getSelectedSquare().getNotation());
+      strokes.add(board.getSelectedSquare().getPdnNotation());
     }
-    atomStroke.setType(NotationAtomStroke.EnumStrokeType.CAPTURE);
+    atomStroke.setType(NotationStroke.EnumStrokeType.CAPTURE);
     atomStroke.setCursor(true);
     return atomStroke;
   }
@@ -316,11 +316,11 @@ public class BoardUtils {
   }
 
   private static void pushSimpleStrokeToNotation(int strokeNumber, NotationStrokes notation, Board board) {
-    List<String> stroke = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()));
+    List<String> stroke = new ArrayList<>(Arrays.asList(board.getPreviousSquare().getPdnNotation(), board.getSelectedSquare().getPdnNotation()));
     resetBoardNotationCursor(board.getNotationStrokes());
     String boardId = board.getId();
     NotationStroke notationStroke = getFirstNotationStroke(strokeNumber, notation, boardId);
-    NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, stroke, boardId, true);
+    NotationAtomStroke notationAtomStroke = new NotationAtomStroke(NotationStroke.EnumStrokeType.SIMPLE, stroke, boardId, true);
     if (board.isBlackTurn()) {
       notationStroke.setSecond(notationAtomStroke);
     } else {
@@ -331,14 +331,18 @@ public class BoardUtils {
   private static NotationStroke getFirstNotationStroke(int strokeCount, LinkedList<NotationStroke> notationStrokes, String boardId) {
     if (notationStrokes.isEmpty()) {
       NotationAtomStroke atomStroke =
-          new NotationAtomStroke(NotationAtomStroke.EnumStrokeType.SIMPLE, new ArrayList<>(), boardId, true);
-      notationStrokes.push(new NotationStroke(1, atomStroke, null));
+          new NotationAtomStroke(NotationStroke.EnumStrokeType.SIMPLE, new ArrayList<>(), boardId, true);
+      NotationStroke notationStroke = new NotationStroke(atomStroke, null);
+      notationStroke.setMoveNumber(strokeCount);
+      notationStrokes.push(notationStroke);
     } else {
       NotationStroke notationStroke = notationStrokes.getFirst();
-      if (notationStroke.getCount() != strokeCount && notationStroke.getSecond() != null) {
+      if (notationStroke.getMoveNumberInt() != strokeCount && notationStroke.getSecond() != null) {
         NotationAtomStroke atomStroke = new NotationAtomStroke();
         atomStroke.setBoardId(boardId);
-        notationStrokes.push(new NotationStroke(strokeCount, atomStroke, null));
+        NotationStroke stroke = new NotationStroke(atomStroke, null);
+        stroke.setMoveNumber(strokeCount);
+        notationStrokes.push(stroke);
       }
     }
     return notationStrokes.getFirst();
@@ -349,7 +353,7 @@ public class BoardUtils {
         .forEach(square -> {
           square.setHighlighted(false);
           if (square.isOccupied() && square.getDraught().isCaptured()) {
-            removeDraught(board, square.getNotation(), square.getDraught().isBlack());
+            removeDraught(board, square.getPdnNotation(), square.getDraught().isBlack());
           }
         });
   }
@@ -391,7 +395,7 @@ public class BoardUtils {
       List<Square> draughtsSquares = board.getAssignedSquares()
           .stream()
           .filter(square -> !square.equals(selectedSquare))
-          .filter(square -> draughtsNotations.contains(square.getNotation()))
+          .filter(square -> draughtsNotations.contains(square.getPdnNotation()))
           .collect(Collectors.toList());
       // find all squares captured by current user
       List<Square> allCaptured = draughtsSquares
@@ -430,15 +434,15 @@ public class BoardUtils {
     markCapturedDraught(capturedSquares, board, sourceSquare, targetSquare);
 
     Draught draught = sourceSquare.getDraught();
-    removeDraught(board, sourceSquare.getNotation(), draught.isBlack());
+    removeDraught(board, sourceSquare.getPdnNotation(), draught.isBlack());
 
     draught.setV(targetSquare.getV());
     draught.setH(targetSquare.getH());
 
     checkQueen(board, draught);
 
-    BoardUtils.addDraught(board, targetSquare.getNotation(), draught);
-    targetSquare = BoardUtils.findSquareByNotation(targetSquare.getNotation(), board);
+    BoardUtils.addDraught(board, targetSquare.getPdnNotation(), draught);
+    targetSquare = BoardUtils.findSquareByNotation(targetSquare.getPdnNotation(), board);
     targetSquare.setDraught(draught);
 
     board.setNextSquare(null);
@@ -446,8 +450,8 @@ public class BoardUtils {
     board.getPreviousSquare().setDraught(null);
     board.setSelectedSquare(targetSquare);
 
-    replaceDraught(board.getWhiteDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
-    replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
+    replaceDraught(board.getWhiteDraughts(), targetSquare.getPdnNotation(), sourceSquare.getPdnNotation());
+    replaceDraught(board.getBlackDraughts(), targetSquare.getPdnNotation(), sourceSquare.getPdnNotation());
   }
 
   private static void markCapturedDraught(List<Square> capturedSquares, Board board, Square sourceSquare, Square targetSquare) {

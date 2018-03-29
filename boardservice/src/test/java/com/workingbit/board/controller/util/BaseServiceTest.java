@@ -13,6 +13,7 @@ import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.MovesList;
 import com.workingbit.share.util.Utils;
+import junit.framework.TestCase;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
 import static com.workingbit.board.controller.util.BoardUtils.highlightedBoard;
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -105,7 +107,7 @@ public class BaseServiceTest {
   }
 
   protected void testCollection(String notations, List<Square> items) {
-    List<String> collection = items.stream().map(ICoordinates::getNotation).collect(Collectors.toList());
+    List<String> collection = items.stream().map(ICoordinates::getPdnNotation).collect(Collectors.toList());
     String[] notation = notations.split(",");
     Arrays.stream(notation).forEach(n -> {
       assertTrue(collection.toString(), collection.contains(n));
@@ -124,4 +126,21 @@ public class BaseServiceTest {
     return BoardUtils.moveDraught(board, capturedSquares.getCaptured());
   }
 
+  protected Board move(Board board, String fromNotation, String toNotation, boolean blackTurn) {
+    Square from = BoardUtils.findSquareByNotation(fromNotation, board);
+    Square to = BoardUtils.findSquareByNotation(toNotation, board);
+    to.setHighlighted(true);
+    board.setSelectedSquare(from);
+    board.setNextSquare(to);
+    board.setBlackTurn(blackTurn);
+
+    board = move(board, from);
+
+    from = BoardUtils.findSquareByNotation(fromNotation, board);
+    to = BoardUtils.findSquareByNotation(toNotation, board);
+
+    assertFalse(from.isOccupied());
+    TestCase.assertTrue(to.isOccupied());
+    return board;
+  }
 }

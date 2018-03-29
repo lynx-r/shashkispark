@@ -7,12 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.workingbit.share.model.NotationAtomStroke.EnumStrokeType.CAPTURE;
-import static com.workingbit.share.model.NotationAtomStroke.EnumStrokeType.SIMPLE;
+import static com.workingbit.share.model.NotationStroke.EnumStrokeType.CAPTURE;
+import static com.workingbit.share.model.NotationStroke.EnumStrokeType.SIMPLE;
 
 /**
  * Created by Aleksey Popryaduhin on 21:33 03/10/2017.
@@ -22,7 +23,7 @@ import static com.workingbit.share.model.NotationAtomStroke.EnumStrokeType.SIMPL
 @Data
 public class NotationAtomStroke implements DeepClone {
 
-  private EnumStrokeType type;
+  private NotationStroke.EnumStrokeType type;
   private List<String> strokes = new ArrayList<>();
   private String boardId;
   private boolean cursor;
@@ -58,18 +59,21 @@ public class NotationAtomStroke implements DeepClone {
     return Objects.hash(super.hashCode(), type, strokes, boardId);
   }
 
-  public enum EnumStrokeType {
-    SIMPLE("-"),
-    CAPTURE(":");
+  public static NotationAtomStroke fromPdn(String stroke) {
+    return fromPdn(stroke, null);
+  }
 
-    private String type;
-
-    EnumStrokeType(String type) {
-      this.type = type;
+  public static NotationAtomStroke fromPdn(String stroke, String boardId) {
+    NotationAtomStroke notationAtomStroke = new NotationAtomStroke();
+    boolean capture = stroke.contains(CAPTURE.getPdnType());
+    if (capture) {
+      notationAtomStroke.setType(CAPTURE);
+      notationAtomStroke.setStrokes(Arrays.asList(stroke.split(CAPTURE.getPdnType())));
+    } else {
+      notationAtomStroke.setType(SIMPLE);
+      notationAtomStroke.setStrokes(Arrays.asList(stroke.split(SIMPLE.getPdnType())));
     }
-
-    public String getType() {
-      return type;
-    }
+    notationAtomStroke.setBoardId(boardId);
+    return notationAtomStroke;
   }
 }

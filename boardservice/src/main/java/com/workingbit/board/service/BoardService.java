@@ -90,8 +90,8 @@ public class BoardService {
 
     nextBoard = BoardUtils.moveDraught(nextBoard, captured);
     String boardId = currentBoard.getId();
-    String notation = selectedSquare.getNotation();
-    String nextNotation = nextSquare.getNotation();
+    String notation = selectedSquare.getPdnNotation();
+    String nextNotation = nextSquare.getPdnNotation();
     nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
 
     NotationStrokes boardNotationStrokes = nextBoard.getNotationStrokes();
@@ -133,8 +133,8 @@ public class BoardService {
     boardDao.save(currentBoard);
     return findById(previousId).map(previousBoard -> {
       previousBoard.pushNextBoard(currentBoard.getId(),
-          currentBoard.getPreviousSquare().getNotation(),
-          currentBoard.getSelectedSquare().getNotation());
+          currentBoard.getPreviousSquare().getPdnNotation(),
+          currentBoard.getSelectedSquare().getPdnNotation());
       boardDao.save(previousBoard);
       return previousBoard;
     });
@@ -149,10 +149,10 @@ public class BoardService {
     return findById(nextId).map(nextBoard -> {
       Square square = currentBoard.getNextSquare() == null
           ? currentBoard.getPreviousSquare() : currentBoard.getNextSquare();
-      String notation = square != null ? square.getNotation() : null;
+      String notation = square != null ? square.getPdnNotation() : null;
       nextBoard.pushPreviousBoard(currentBoard.getId(),
           notation,
-          currentBoard.getSelectedSquare().getNotation());
+          currentBoard.getSelectedSquare().getPdnNotation());
       boardDao.save(nextBoard);
       return nextBoard;
     });

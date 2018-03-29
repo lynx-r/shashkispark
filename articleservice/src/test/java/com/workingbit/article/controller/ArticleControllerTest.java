@@ -97,7 +97,7 @@ public class ArticleControllerTest {
 
     Articles articles = (Articles) get("s").getBody();
     Article finalArticle = article;
-    article = articles.stream().filter((article1 -> article1.getId().equals(finalArticle.getId()))).findFirst().get();
+    article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(finalArticle.getId()))).findFirst().get();
     assertNotNull(article);
   }
 

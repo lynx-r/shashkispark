@@ -129,7 +129,7 @@ public class BoardBoxService {
     } else if (isAtStartStroke) {
       NotationStroke lastNotation = notationStrokes.getLast();
       NotationStroke lastBoardStroke = boardNotationStrokes.getLast();
-      boolean isAddedStrokeInBoard = lastBoardStroke.getCount() > notationStrokes.size();
+      boolean isAddedStrokeInBoard = lastBoardStroke.getMoveNumberInt() > notationStrokes.size();
       if (isAddedStrokeInBoard) { // update alternative on prev board stroke
         boardNotationStrokes.get(boardNotationStrokes.size() - 2).setAlternative(lastNotation.getAlternative());
       } else { // update alternative on last stroke in board
@@ -138,7 +138,7 @@ public class BoardBoxService {
     }
     if (!boardNotationStrokes.isEmpty()) {
       boolean isFirstCountMoreSecond = boardNotationStrokes.size() >= 2
-          && boardNotationStrokes.getFirst().getCount() > boardNotationStrokes.getLast().getCount();
+          && boardNotationStrokes.getFirst().getMoveNumberInt() > boardNotationStrokes.getLast().getMoveNumberInt();
       if (isFirstCountMoreSecond) {
         Collections.reverse(boardNotationStrokes);
       }
@@ -211,7 +211,7 @@ public class BoardBoxService {
             return null;
           }
           try {
-            currentBoard = boardService.addDraught(boardBox.getArticleId(), currentBoard, squareLink.getNotation(), draught);
+            currentBoard = boardService.addDraught(boardBox.getArticleId(), currentBoard, squareLink.getPdnNotation(), draught);
           } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -259,7 +259,7 @@ public class BoardBoxService {
     NotationStrokes boardNotationStrokes = board.getNotationStrokes();
     if (!boardNotationStrokes.isEmpty()) { // if user doesn't undone all strokes
       NotationStroke prevStroke = boardNotationStrokes.get(boardNotationStrokes.size() - 1);
-      boolean isAddedStroke = prevStroke.getCount() > notationStrokes.size();
+      boolean isAddedStroke = prevStroke.getMoveNumberInt() > notationStrokes.size();
       if (isAddedStroke) { // if user does redo
         notationStrokes.add(prevStroke);
       } else { // if user does undo
@@ -269,7 +269,7 @@ public class BoardBoxService {
     } else { // first stroke in notation e.g. ( 1. c3-b4 )
       lastStroke.getFirst().setCursor(false);
       lastStroke.getAlternative().add(lastStroke.deepClone());
-      lastStroke.setCount(null);
+      lastStroke.setMoveNumber(null);
       lastStroke.setFirst(null);
     }
 

@@ -57,7 +57,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "b6", "a5", true);
 
     System.out.println(printBoardNotation(board.getNotationStrokes()));
-//    assertEquals("1. c3-d4 h6-g5 2. a3-b4 b6-a5", board.getNotation());
+//    assertEquals("1. c3-d4 h6-g5 2. a3-b4 b6-a5", board.getPdnNotation());
   }
 
   @Test
@@ -69,7 +69,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "d4", "f6", false);
     board = move(board, "g7", "e5", true);
     System.out.println(printBoardNotation(board.getNotationStrokes()));
-//    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
+//    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getPdnNotation());
   }
 
   @Test
@@ -109,7 +109,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "e5", "c3", true);
     board = move(board, "c3", "a5", true);
     System.out.println(printBoardNotation(board.getNotationStrokes()));
-//    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
+//    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getPdnNotation());
   }
 
   @Test
@@ -204,24 +204,6 @@ public class MoveUtilTest extends BaseServiceTest {
     assertFalse(squareC7.isOccupied());
     squareD6 = BoardUtils.findSquareByNotation(d6, board);
     assertTrue(squareD6.isOccupied());
-  }
-
-  private Board move(Board board, String fromNotation, String toNotation, boolean blackTurn) {
-    Square from = BoardUtils.findSquareByNotation(fromNotation, board);
-    Square to = BoardUtils.findSquareByNotation(toNotation, board);
-    to.setHighlighted(true);
-    board.setSelectedSquare(from);
-    board.setNextSquare(to);
-    board.setBlackTurn(blackTurn);
-
-    board = move(board, from);
-
-    from = BoardUtils.findSquareByNotation(fromNotation, board);
-    to = BoardUtils.findSquareByNotation(toNotation, board);
-
-    assertFalse(from.isOccupied());
-    assertTrue(to.isOccupied());
-    return board;
   }
 
   private boolean testSameHighlight(Board board, MovesList highlight) {
