@@ -7,6 +7,7 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.MovesList;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.isSubDiagonal;
@@ -105,7 +106,8 @@ class HighlightMoveUtil {
     List<Square> walkAllowedMoves = new ArrayList<>();
     Square next, previous = selectedSquare;
     deep++;
-    boolean[] first = new boolean[]{down};
+    AtomicBoolean first = new AtomicBoolean();
+    first.set(down);
     boolean mustBeat;
     do {
       if (hasNotNextMove(down, squareListIterator)) {
@@ -165,7 +167,8 @@ class HighlightMoveUtil {
                                         ListIterator<Square> squareListIterator, List<Square> allowedMoves,
                                         Tree.Node<Square> capturedMoves) {
     Square next;
-    boolean[] first = new boolean[]{down};
+    AtomicBoolean first = new AtomicBoolean();
+    first.set(down);
     do {
       if (hasNotNextMove(down, squareListIterator)) {
         break;
@@ -223,7 +226,8 @@ class HighlightMoveUtil {
                                    List<Square> allowedMoves) {
     ListIterator<Square> squareListIterator = diagonal.listIterator(diagonal.indexOf(selectedSquare));
     Square previous = new Square();
-    boolean[] first = new boolean[]{down};
+    AtomicBoolean first = new AtomicBoolean();
+    first.set(down);
     while (hasNext(down, squareListIterator)) {
       Square next = getNextSquare(down, first, squareListIterator);
       if (isMoveAllowed(previous, next)) {
@@ -295,12 +299,12 @@ class HighlightMoveUtil {
     return false;
   }
 
-  private Square getNextSquare(boolean down, boolean[] first, ListIterator<Square> squareListIterator) {
+  private Square getNextSquare(boolean down, AtomicBoolean first, ListIterator<Square> squareListIterator) {
     if (down) {
       // Trick for the iterator. It returns next on the second call.
-      if (first[0]) {
+      if (first.get()) {
         squareListIterator.next();
-        first[0] = false;
+        first.set(false);
       }
       if (hasNotNextMove(true, squareListIterator)) {
         return null;

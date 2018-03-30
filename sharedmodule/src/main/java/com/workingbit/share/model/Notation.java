@@ -18,15 +18,15 @@ import java.util.Map;
 public class Notation {
 
   /**
-   Some possible tags:
-     whitePlayer,
-     blackPlayer,
-     event,
-     site,
-     round,
-     date,
-     result,
-     gameType,
+   * Some possible tags:
+   * whitePlayer,
+   * blackPlayer,
+   * event,
+   * site,
+   * round,
+   * date,
+   * result,
+   * gameType,
    */
   private Map<String, String> tags = new HashMap<>();
 
@@ -42,6 +42,21 @@ public class Notation {
   @JsonAnyGetter
   public Map<String, String> getTags() {
     return tags;
+  }
+
+  public String toPdn() {
+    StringBuilder stringBuilder = new StringBuilder();
+    tags.forEach((key, value) -> stringBuilder.append("[")
+        .append(key)
+        .append(" ")
+        .append(value)
+        .append("]")
+        .append("\n")
+    );
+    String moves = notationStrokes.toPdn();
+    stringBuilder.append("\n")
+        .append(moves);
+    return stringBuilder.toString();
   }
 
   public void print() {

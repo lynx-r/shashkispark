@@ -22,9 +22,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.workingbit.share.model.EnumRules.*;
 import static org.junit.Assert.assertNotNull;
@@ -45,9 +43,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public static @DataPoints
   EnumRules[] ruless = {RUSSIAN, RUSSIAN_GIVEAWAY, INTERNATIONAL, INTERNATIONAL_GIVEAWAY};
 
-  public final String[] PDN_FILE_NAMES = {
-      "/pdn/test1.pdn",
-  };
+  public final Map<String, String> PDN_FILE_NAMES = new HashMap<String, String>(){{
+      put("/pdn/example.pdn", "/pdn/test1.test");
+  }};
 
 
   @Test
@@ -91,8 +89,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @Test
   public void test_pdn_notations() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
-    for (String fileName : PDN_FILE_NAMES) {
-      URL uri = getClass().getResource(fileName);
+    for (Map.Entry<String, String> fileName : PDN_FILE_NAMES.entrySet()) {
+      URL uri = getClass().getResource(fileName.getKey());
       Path path = Paths.get(uri.toURI());
       BufferedReader bufferedReader = Files.newBufferedReader(path);
 
@@ -106,6 +104,21 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       assertNotNull(boardFromNotation);
 
       System.out.println(boardFromNotation);
+    }
+  }
+
+  @Test
+  public void test_parse_from_pdn_and_to_pdn() throws Exception {
+    for (Map.Entry<String, String> fileName : PDN_FILE_NAMES.entrySet()) {
+      URL uri = getClass().getResource(fileName.getKey());
+      Path path = Paths.get(uri.toURI());
+      BufferedReader bufferedReader = Files.newBufferedReader(path);
+
+      Notation notation = notationParserService.parse(bufferedReader);
+
+      System.out.println(notation.getNotationStrokes().size());
+
+      System.out.println(notation.toPdn());
     }
   }
 

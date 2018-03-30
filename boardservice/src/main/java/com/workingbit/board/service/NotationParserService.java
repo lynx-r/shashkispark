@@ -66,10 +66,10 @@ public class NotationParserService {
                 notationStroke.parseStrokeFromPdn(stroke, first, move.getName());
                 nextStrength = isNextNode("MoveStrength", j, gameBody);
                 if (!first && !nextStrength) {
-                  addMove = isAddMoreWhenParent(gameBody, i);
+                  addMove = !hasMoreElements(gameBody, i);
                 } else if (!nextStrength) {
                   first = false;
-                  addMove = gameBody.getParent().getChildCount() == 1;
+                  addMove = gameBody.getParent().getChildCount() == i + 1;
                 }
                 break;
               case "MoveStrength":
@@ -80,7 +80,7 @@ public class NotationParserService {
                   first = false;
                 } else {
                   notationStroke.getSecond().setMoveStrength(strength);
-                  addMove = isAddMoreWhenParent(gameBody, i);
+                  addMove = !hasMoreElements(gameBody, i);
                 }
                 break;
             }
@@ -90,7 +90,7 @@ public class NotationParserService {
         case "COMMENT": {
           Token token = (Token) gameBody;
           notationStroke.setComment(token.getImage());
-          addMove = isAddMoreWhenParent(gameBody, i);
+          addMove = !hasMoreElements(gameBody, i);
           break;
         }
         case "Variation": {
@@ -98,7 +98,7 @@ public class NotationParserService {
           NotationStrokes notationStrokesVariant = new NotationStrokes();
           parseGame(variant, notationStrokesVariant);
           notationStroke.setVariants(notationStrokesVariant);
-          addMove = isAddMoreWhenParent(gameBody, i);
+          addMove = !hasMoreElements(gameBody, i);
           break;
         }
       }
@@ -110,9 +110,9 @@ public class NotationParserService {
     }
   }
 
-  private boolean isAddMoreWhenParent(Node gameBody, int j) {
-    return !isNextNode("COMMENT", j, gameBody.getParent())
-        && !isNextNode("Variation", j, gameBody.getParent());
+  private boolean hasMoreElements(Node gameBody, int j) {
+    return isNextNode("COMMENT", j, gameBody.getParent())
+        || isNextNode("Variation", j, gameBody.getParent());
   }
 
   private boolean isNextNode(String nodeName, int j, Node gameBody) {

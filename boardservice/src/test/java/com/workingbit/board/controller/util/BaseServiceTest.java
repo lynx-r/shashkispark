@@ -108,7 +108,7 @@ public class BaseServiceTest {
   }
 
   protected void testCollection(String notations, List<Square> items) {
-    List<String> collection = items.stream().map(ICoordinates::getPdnNotationNumeric64).collect(Collectors.toList());
+    List<String> collection = items.stream().map(ICoordinates::getAlphanumericNotation64).collect(Collectors.toList());
     String[] notation = notations.split(",");
     Arrays.stream(notation).forEach(n -> {
       assertTrue(collection.toString(), collection.contains(n));

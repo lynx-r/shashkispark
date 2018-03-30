@@ -81,12 +81,20 @@ public class NotationStroke implements DeepClone {
         .append("\n").append(prefix).append("moveNumber: ").append(moveNumber)
         .append("\n").append(prefix).append("first: ").append(first != null ? first.print( "\n\t" + prefix) : "")
         .append("\n").append(prefix).append("second: ").append(second != null ? second.print("\n\t" + prefix) : "")
-        .append("\n").append(prefix).append("variants: \n").append(variants.toString(prefix + "\t"))
+        .append("\n").append(prefix).append("variants: \n").append(variants.print(prefix + "\t"))
         .append("\n").append(prefix).append("ellipses: ").append(ellipses)
         .append("\n").append(prefix).append("numeric: ").append(numeric)
         .append("\n").append(prefix).append("comment: ").append(comment)
         .append("\n")
         .toString();
+  }
+
+  public String toPdn() {
+    return moveNumber + " " +
+        (first != null ? first.toPdn() + " " : "") +
+        (second != null ? second.toPdn() + " " : "") +
+        (!variants.isEmpty() ? "( " + variants.toPdn() + ") " : "") +
+        (comment != null ? comment + " " : "");
   }
 
   public enum EnumStrokeType {

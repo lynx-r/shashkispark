@@ -92,4 +92,8 @@ public class NotationAtomStroke implements DeepClone {
         .append("\n")
         .toString();
   }
+
+  public String toPdn() {
+    return getNotation() + (moveStrength != null ? " " + moveStrength : "");
+  }
 }
