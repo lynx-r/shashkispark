@@ -3,10 +3,8 @@ package com.workingbit.board.service;
 import com.workingbit.board.controller.util.BaseServiceTest;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.model.CreateBoardPayload;
-import com.workingbit.share.model.EnumRules;
-import com.workingbit.share.model.Notation;
-import com.workingbit.share.util.Utils;
+import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.model.*;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
 import org.apache.commons.lang3.StringUtils;
@@ -25,10 +23,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.share.model.EnumRules.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static com.workingbit.share.util.Utils.getRandomString;
+import static org.junit.Assert.*;
 
 /**
  * Created by Aleksey Popryaduhin on 10:08 10/08/2017.
@@ -45,17 +43,17 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public static @DataPoints
   EnumRules[] ruless = {RUSSIAN, RUSSIAN_GIVEAWAY, INTERNATIONAL, INTERNATIONAL_GIVEAWAY};
 
-  private final Map<String, String> PDN_FILE_NAMES_PARSE = new HashMap<String, String>(){{
-      put("/pdn/example.pdn", "/pdn/test1.test");
-      put("/pdn/notation_comment.pdn", "/pdn/test1.test");
-      put("/pdn/notation_simple.pdn", "/pdn/test1.test");
-      put("/pdn/notation_strength.pdn", "/pdn/test1.test");
-      put("/pdn/notation_variant.pdn", "/pdn/test1.test");
-      put("/pdn/notation_variant_nested.pdn", "/pdn/test1.test");
+  private final Map<String, String> PDN_FILE_NAMES_PARSE = new HashMap<String, String>() {{
+    put("/pdn/example.pdn", "/pdn/test1.test");
+    put("/pdn/notation_comment.pdn", "/pdn/test1.test");
+    put("/pdn/notation_simple.pdn", "/pdn/test1.test");
+    put("/pdn/notation_strength.pdn", "/pdn/test1.test");
+    put("/pdn/notation_variant.pdn", "/pdn/test1.test");
+    put("/pdn/notation_variant_nested.pdn", "/pdn/test1.test");
   }};
 
   private final List<String> PDN_FILE_NAME_BOARDS = new ArrayList<String>() {{
-    add("/pdn/notation2.pdn");
+    add("/pdn/notation_error1.pdn");
   }};
 
   @Test
@@ -98,7 +96,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   @Test
-  public void test_pdn_notations() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
+  public void test_create_board_from_pdn_notation() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
     for (String fileName : PDN_FILE_NAME_BOARDS) {
       System.out.println("LOADED PDN FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
@@ -108,15 +106,69 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomUUID();
-      String boardBoxId = Utils.getRandomUUID();
+      BoardBox boardBoxEmpty = getSavedBoardBoxEmpty();
+      String articleId = boardBoxEmpty.getArticleId();
+      String boardBoxId = boardBoxEmpty.getId();
       Board boardFromNotation = boardService.createBoardFromNotation(notation, articleId, boardBoxId);
 
       assertNotNull(boardFromNotation);
 
-      System.out.println(boardFromNotation);
+      NotationStrokes notationStrokes = boardFromNotation.getNotationStrokes();
+      Board startBoard = boardService.findById(boardFromNotation.getPreviousBoards().getLast().getBoardId()).get();
+      boardBoxEmpty.setBoard(startBoard);
+      for (NotationStroke stroke : notationStrokes) {
+        Board board = boardBoxEmpty.getBoard();
+        List<Board> firstStrokes = emulateMove(board, stroke.getFirst());
+        boardBoxEmpty = moveStrokes(boardBoxEmpty, firstStrokes);
+        board = boardBoxEmpty.getBoard();
+        List<Board> secondStrokes = emulateMove(board, stroke.getSecond());
+        boardBoxEmpty = moveStrokes(boardBoxEmpty, secondStrokes);
+      }
     }
   }
+
+  public BoardBox moveStrokes(BoardBox boardBoxEmpty, List<Board> firstStrokes) {
+    for (Board b : firstStrokes) {
+      boardBoxEmpty.setBoard(b);
+      boardBoxEmpty.setBoardId(b.getId());
+      boardBoxEmpty = boardBoxService.saveAndFillBoard(boardBoxEmpty).get();
+      boardBoxEmpty = boardBoxService.highlight(boardBoxEmpty).get();
+      boardBoxEmpty = boardBoxService.move(boardBoxEmpty).get();
+      boardBoxEmpty.getNotation().print();
+      NotationStroke lastNewNotation = boardBoxEmpty.getNotation().getNotationStrokes().getLast();
+      NotationAtomStroke atomStroke = lastNewNotation.getSecond() == null || lastNewNotation.getSecond().getType() == null
+          ? lastNewNotation.getFirst() : lastNewNotation.getSecond();
+      NotationStroke.EnumStrokeType moveType = atomStroke.getType();
+      String notationNew = atomStroke.getNotation();
+      String notationProposed = b.getSelectedSquare().getNotation() + moveType.getType() + b.getNextSquare().getNotation();
+      if (!notationProposed.equals(notationNew)) {
+        notationProposed = b.getSelectedSquare().getNotation() + moveType.getPdnType() + b.getNextSquare().getNotation();
+        if (!notationProposed.equals(notationNew)) {
+          assertFalse(notationProposed + " != " + notationNew, false);
+        }
+      }
+    }
+    return boardBoxEmpty;
+  }
+
+  private List<Board> emulateMove(Board board, NotationAtomStroke atomStroke) {
+    if (atomStroke == null) {
+      return Collections.emptyList();
+    }
+    List<Board> boards = new ArrayList<>();
+    for (int i = 0; i < atomStroke.getStrokes().size() - 1; i++) {
+      Square selected = findSquareByNotation(atomStroke.getStrokes().get(i), board);
+      board.setSelectedSquare(selected);
+      Square next = findSquareByNotation(atomStroke.getStrokes().get(i + 1), board);
+      next.setHighlighted(true);
+      board.setNextSquare(next);
+      board.setId(getRandomString());
+      boardDao.save(board);
+      boards.add(board);
+    }
+    return boards;
+  }
+
 
   @Test
   public void test_parse_from_pdn_and_to_pdn() throws Exception {

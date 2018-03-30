@@ -1,5 +1,7 @@
 package com.workingbit.board.controller.util;
 
+import com.workingbit.board.config.AppProperties;
+import com.workingbit.board.dao.BoardBoxDao;
 import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.board.service.BoardBoxService;
@@ -13,15 +15,19 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.MovesList;
+import com.workingbit.share.model.NotationAtomStroke;
 import com.workingbit.share.util.Utils;
 import junit.framework.TestCase;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
-import static com.workingbit.board.controller.util.BoardUtils.highlightedBoard;
+import static com.workingbit.board.controller.util.BoardUtils.*;
+import static com.workingbit.share.common.Config4j.configurationProvider;
+import static com.workingbit.share.util.Utils.getRandomString;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -32,16 +38,28 @@ import static org.junit.Assert.assertTrue;
  */
 public class BaseServiceTest {
 
+  private static AppProperties appProperties = configurationProvider().bind("app", AppProperties.class);
+
   protected BoardService boardService = new BoardService();
   protected BoardBoxService boardBoxService = new BoardBoxService();
-  protected NotationParserService notationParserService = new NotationParserService();
+  protected BoardBoxDao boardBoxDao = new BoardBoxDao(appProperties);
+  protected BoardDao boardDao = new BoardDao(appProperties);
 
-  BoardDao boardDao;
+  protected NotationParserService notationParserService = new NotationParserService();
 
   protected BoardBox getBoardBox(boolean fillBoard) {
     Board board = BoardUtils.initBoard(fillBoard, false, EnumRules.RUSSIAN);
     Utils.setRandomIdAndCreatedAt(board);
     return new BoardBox(board);
+  }
+
+  protected BoardBox getSavedBoardBoxEmpty() {
+    BoardBox boardBox = new BoardBox();
+    boardBox.setId(getRandomString());
+    boardBox.setCreatedAt(LocalDateTime.now());
+    boardBox.setArticleId(getRandomString());
+    boardBoxDao.save(boardBox);
+    return boardBox;
   }
 
   protected Board getBoard() {
@@ -143,5 +161,30 @@ public class BaseServiceTest {
     assertFalse(from.isOccupied());
     TestCase.assertTrue(to.isOccupied());
     return board;
+  }
+
+  protected class SetBoardSelectedAndNextSupplier implements Supplier<Board> {
+
+    private NotationAtomStroke atomStroke;
+    private Board board;
+    private int i = 0;
+
+    public SetBoardSelectedAndNextSupplier(Board board, NotationAtomStroke atomStroke) {
+      this.atomStroke = atomStroke;
+      this.board = board;
+    }
+
+    @Override
+    public Board get() {
+      Square selected = findSquareByNotation(atomStroke.getStrokes().get(i), board);
+      board.setSelectedSquare(selected);
+      Square next = findSquareByNotation(atomStroke.getStrokes().get(i + 1), board);
+      next.setHighlighted(true);
+      board.setNextSquare(next);
+      board.setId(getRandomString());
+      boardDao.save(board);
+      i++;
+      return board;
+    }
   }
 }

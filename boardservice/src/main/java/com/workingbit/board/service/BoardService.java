@@ -10,6 +10,7 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -173,6 +174,9 @@ public class BoardService {
       board = emulateMove(board, articleId, notationStroke.getFirst());
       board = emulateMove(board, articleId, notationStroke.getSecond());
     }
+    NotationStrokes syncedNotationStrokes = board.getNotationStrokes();
+    Collections.reverse(syncedNotationStrokes);
+    board.setNotationStrokes(syncedNotationStrokes);
     return board;
   }
 

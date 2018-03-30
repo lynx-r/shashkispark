@@ -45,12 +45,11 @@ public class BoardBox extends BaseDomain implements Payload {
 
   @DynamoDBTypeConvertedJson(targetType = Notation.class)
   @DynamoDBAttribute(attributeName = "notation")
-  private Notation notation;
+  private Notation notation = new Notation();
 
   public BoardBox(Board board) {
     this.board = board;
     this.boardId = board.getId();
-    notation = new Notation();
   }
 
   @Override

@@ -41,7 +41,6 @@ public class BoardBoxService {
   public Optional<BoardBox> findById(String boardBoxId) {
     return boardBoxDao.findByKey(boardBoxId)
         .map(this::updateBoardBox);
-//        .map(this::updateBoardNotation);
   }
 
   private BoardBox updateBoardBox(BoardBox boardBox) {
@@ -94,14 +93,9 @@ public class BoardBoxService {
             logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
             return null;
           }
-          try {
-            String articleId = boardBox.getArticleId();
-            NotationStrokes notationStrokes = boardBox.getNotation().getNotationStrokes();
-            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId, notationStrokes);
-          } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return null;
-          }
+          String articleId = boardBox.getArticleId();
+          NotationStrokes notationStrokes = boardBox.getNotation().getNotationStrokes();
+          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId, notationStrokes);
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
 
@@ -180,7 +174,10 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> loadBoard(BoardBox boardBox) {
-    return saveAndFillBoard(boardBox);
+    Board board = boardBox.getBoard();
+    updateAlternativesInBoard(boardBox, board);
+    boardBoxDao.save(boardBox);
+    return Optional.of(boardBox);
   }
 
   public BoardBoxes findByIds(BoardBoxIds boardIds) {

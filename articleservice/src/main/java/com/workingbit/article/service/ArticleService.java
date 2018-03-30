@@ -1,16 +1,16 @@
 package com.workingbit.article.service;
 
 import com.workingbit.article.client.BoardRemoteClient;
-import com.workingbit.share.util.Utils;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.*;
+import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
 import static com.workingbit.article.ArticleApplication.articleDao;
-import static com.workingbit.share.util.Utils.getRandomUUID;
+import static com.workingbit.share.util.Utils.getRandomString;
 
 /**
  * Created by Aleksey Popryaduhin on 09:05 28/09/2017.
@@ -24,7 +24,7 @@ public class ArticleService {
     boolean present = findById(article.getTitle()).isPresent();
     Utils.setArticleIdAndCreatedAt(article, present);
     article.setState(EnumArticleState.newadded);
-    article.setBoardBoxId(getRandomUUID());
+    article.setBoardBoxId(getRandomString());
     CreateBoardPayload boardRequest = articleAndBoard.getBoardRequest();
     boardRequest.setBoardBoxId(article.getBoardBoxId());
     CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();

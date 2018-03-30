@@ -252,7 +252,7 @@ public class BoardUtils {
     LinkedList<NotationStroke> notation = board.getNotationStrokes();
     boolean blackTurn = board.isBlackTurn();
     int strokeCount = blackTurn ? board.getStrokeCount() : board.getStrokeCount() + 1;
-//    board.setStrokeCount(strokeCount);
+    board.setStrokeCount(strokeCount);
     String boardId = board.getId();
     NotationStroke notationStroke = getFirstNotationStroke(strokeCount, notation, boardId);
     if (board.isBlackTurn()) {
@@ -337,10 +337,10 @@ public class BoardUtils {
       notationStrokes.push(notationStroke);
     } else {
       NotationStroke notationStroke = notationStrokes.getFirst();
-      if (notationStroke.getMoveNumberInt() != strokeCount && notationStroke.getSecond() != null) {
+      if (notationStroke.getMoveNumberInt() != strokeCount && notationStroke.getSecond().getType() != null) {
         NotationAtomStroke atomStroke = new NotationAtomStroke();
         atomStroke.setBoardId(boardId);
-        NotationStroke stroke = new NotationStroke(atomStroke, null);
+        NotationStroke stroke = new NotationStroke(atomStroke, atomStroke);
         stroke.setMoveNumberInt(strokeCount);
         notationStrokes.push(stroke);
       }

@@ -1,6 +1,7 @@
 package com.workingbit.share.domain;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.model.EnumRules;
 
 import java.util.Map;
@@ -41,20 +42,26 @@ public interface ICoordinates {
         : getAlphanumericNotation64();
   }
 
+  default void setNotation(String ignore) {
+
+  }
+
+  @JsonIgnore
   @DynamoDBIgnore
   default String getPdnNumericNotation100() {
     return ALPHANUMERIC64_TO_NUMERIC100.get(getAlphanumericNotation64());
   }
 
-  default void setPdnNotationNumeric100(String notation) {
+  default void setPdnNumericNotation100(String ignore) {
   }
 
+  @JsonIgnore
   @DynamoDBIgnore
   default String getAlphanumericNotation64() {
     return ALPH.get(getH()) + (getDim() - getV());
   }
 
-  default void setAlphanumericNotation64(String notation) {
+  default void setAlphanumericNotation64(String ignore) {
   }
 
   static String toAlphanumericNotation64(String notation) {

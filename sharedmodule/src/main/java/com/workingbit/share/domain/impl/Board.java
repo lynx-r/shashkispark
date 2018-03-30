@@ -21,7 +21,6 @@ import java.util.*;
  * Created by Aleksey Popryaduhin on 23:21 21/09/2017.
  */
 @JsonTypeName("board")
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -123,14 +122,6 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBTypeConvertedJson(targetType = NotationStrokes.class)
   @DynamoDBAttribute(attributeName = "notationStrokes")
   private NotationStrokes notationStrokes = new NotationStrokes();
-
-//  @JsonIgnore
-//  @DynamoDBAttribute(attributeName = "undo")
-//  private boolean undo;
-//
-//  @JsonIgnore
-//  @DynamoDBAttribute(attributeName = "redo")
-//  private boolean redo;
 
   public Board(boolean black, EnumRules rules) {
     this.black = black;
