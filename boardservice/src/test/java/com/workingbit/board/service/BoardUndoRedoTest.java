@@ -70,9 +70,9 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     board.setNextSquare(squareE5);
 
     board = boardService().move(squareD4, squareE5, board, articleId, boardBox.getNotation().getNotationStrokes());
-    squareE5 = BoardUtils.findSquareByNotation(squareE5.getPdnNotationNumeric64(), board);
+    squareE5 = BoardUtils.findSquareByNotation(squareE5.getNotation(), board);
     assertTrue(squareE5.isOccupied());
-    squareD4 = BoardUtils.findSquareByNotation(squareD4.getPdnNotationNumeric64(), board);
+    squareD4 = BoardUtils.findSquareByNotation(squareD4.getNotation(), board);
     assertFalse(squareD4.isOccupied());
 
     board = boardService().undo(board).get();

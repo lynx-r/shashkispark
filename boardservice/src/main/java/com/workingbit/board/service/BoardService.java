@@ -94,8 +94,8 @@ public class BoardService {
 
     nextBoard = BoardUtils.moveDraught(nextBoard, captured);
     String boardId = currentBoard.getId();
-    String notation = selectedSquare.getPdnNotationNumeric64();
-    String nextNotation = nextSquare.getPdnNotationNumeric64();
+    String notation = selectedSquare.getNotation();
+    String nextNotation = nextSquare.getNotation();
     nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
 
     if (boardBoxNotationStrokes != null) { // in case when I fill it from NotationParseService
@@ -139,8 +139,8 @@ public class BoardService {
     boardDao.save(currentBoard);
     return findById(previousId).map(previousBoard -> {
       previousBoard.pushNextBoard(currentBoard.getId(),
-          currentBoard.getPreviousSquare().getPdnNotationNumeric64(),
-          currentBoard.getSelectedSquare().getPdnNotationNumeric64());
+          currentBoard.getPreviousSquare().getAlphanumericNotation64(),
+          currentBoard.getSelectedSquare().getAlphanumericNotation64());
       boardDao.save(previousBoard);
       return previousBoard;
     });
@@ -155,10 +155,10 @@ public class BoardService {
     return findById(nextId).map(nextBoard -> {
       Square square = currentBoard.getNextSquare() == null
           ? currentBoard.getPreviousSquare() : currentBoard.getNextSquare();
-      String notation = square != null ? square.getPdnNotationNumeric64() : null;
+      String notation = square != null ? square.getAlphanumericNotation64() : null;
       nextBoard.pushPreviousBoard(currentBoard.getId(),
           notation,
-          currentBoard.getSelectedSquare().getPdnNotationNumeric64());
+          currentBoard.getSelectedSquare().getAlphanumericNotation64());
       boardDao.save(nextBoard);
       return nextBoard;
     });
@@ -170,14 +170,22 @@ public class BoardService {
 
   private Board syncBoardWithStrokes(Board board, NotationStrokes notationStrokes, String articleId) {
     for (NotationStroke notationStroke : notationStrokes) {
-      NotationAtomStroke first = notationStroke.getFirst();
-      for (int i = 0; i < first.getStrokes().size() - 1; i++) {
-        Square selected = findSquareByNotation(first.getStrokes().get(i), board);
-        board.setSelectedSquare(selected);
-        Square next = findSquareByNotation(first.getStrokes().get(i + 1), board);
-        board.setNextSquare(next);
-        board = move(selected, next, board, articleId, null);
-      }
+      board = emulateMove(board, articleId, notationStroke.getFirst());
+      board = emulateMove(board, articleId, notationStroke.getSecond());
+    }
+    return board;
+  }
+
+  private Board emulateMove(Board board, String articleId, NotationAtomStroke atomStroke) {
+    if (atomStroke == null) {
+      return board;
+    }
+    for (int i = 0; i < atomStroke.getStrokes().size() - 1; i++) {
+      Square selected = findSquareByNotation(atomStroke.getStrokes().get(i), board);
+      board.setSelectedSquare(selected);
+      Square next = findSquareByNotation(atomStroke.getStrokes().get(i + 1), board);
+      board.setNextSquare(next);
+      board = move(selected, next, board, articleId, null);
     }
     return board;
   }

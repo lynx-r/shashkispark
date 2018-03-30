@@ -1,8 +1,12 @@
 package com.workingbit.share.domain;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.workingbit.share.model.EnumRules;
+
 import java.util.Map;
 
 import static com.workingbit.share.util.Utils.ALPH;
+import static com.workingbit.share.util.Utils.ALPHANUMERIC64_TO_NUMERIC100;
 import static com.workingbit.share.util.Utils.ALPHANUMERIC64_TO_NUMERIC64;
 
 /**
@@ -31,17 +35,21 @@ public interface ICoordinates {
 
   void setDim(int dim);
 
-  default String getPdnNotationNumeric64() {
-    return ALPHANUMERIC64_TO_NUMERIC64.get(getAlphanumericNotation64());
+  default String getNotation() {
+    return getDim() == EnumRules.INTERNATIONAL.getDimension()
+        ? getPdnNumericNotation100()
+        : getAlphanumericNotation64();
   }
 
-  default void setPdnNotationNumeric64(String notation) {
+  @DynamoDBIgnore
+  default String getPdnNumericNotation100() {
+    return ALPHANUMERIC64_TO_NUMERIC100.get(getAlphanumericNotation64());
   }
 
-  /**
-   * faster
-   * @return
-   */
+  default void setPdnNotationNumeric100(String notation) {
+  }
+
+  @DynamoDBIgnore
   default String getAlphanumericNotation64() {
     return ALPH.get(getH()) + (getDim() - getV());
   }

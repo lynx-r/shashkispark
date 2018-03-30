@@ -102,7 +102,7 @@ public class BoardBoxControllerTest {
     Square nextSquare = boardBox.getBoard().getSquares().stream()
         .filter(Objects::nonNull)
         .peek(square -> square.setDim(8))
-        .filter(square -> square.getPdnNotationNumeric64().equals("b4"))
+        .filter(square -> square.getNotation().equals("b4"))
         .findFirst()
         .get();
     nextSquare.setHighlighted(true);
@@ -114,7 +114,7 @@ public class BoardBoxControllerTest {
         .stream()
         .filter(Objects::nonNull)
         .peek(square -> square.setDim(8))
-        .filter(square -> square.getPdnNotationNumeric64().equals("b4"))
+        .filter(square -> square.getNotation().equals("b4"))
         .findFirst()
         .get();
     assertTrue(moved.isOccupied());
@@ -151,7 +151,7 @@ public class BoardBoxControllerTest {
   }
 
   private void testCollection(String notations, List<Square> items) {
-    List<String> collection = items.stream().map(ICoordinates::getPdnNotationNumeric64).collect(Collectors.toList());
+    List<String> collection = items.stream().map(ICoordinates::getNotation).collect(Collectors.toList());
     String[] notation = notations.split(",");
     Arrays.stream(notation).forEach(n -> {
       Assert.assertTrue(collection.toString(), collection.contains(n));

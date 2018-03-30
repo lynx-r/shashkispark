@@ -45,7 +45,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public static @DataPoints
   EnumRules[] ruless = {RUSSIAN, RUSSIAN_GIVEAWAY, INTERNATIONAL, INTERNATIONAL_GIVEAWAY};
 
-  public final Map<String, String> PDN_FILE_NAMES = new HashMap<String, String>(){{
+  private final Map<String, String> PDN_FILE_NAMES_PARSE = new HashMap<String, String>(){{
+      put("/pdn/example.pdn", "/pdn/test1.test");
       put("/pdn/notation_comment.pdn", "/pdn/test1.test");
       put("/pdn/notation_simple.pdn", "/pdn/test1.test");
       put("/pdn/notation_strength.pdn", "/pdn/test1.test");
@@ -53,6 +54,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       put("/pdn/notation_variant_nested.pdn", "/pdn/test1.test");
   }};
 
+  private final List<String> PDN_FILE_NAME_BOARDS = new ArrayList<String>() {{
+    add("/pdn/notation2.pdn");
+  }};
 
   @Test
   public void createBoard() throws Exception {
@@ -95,9 +99,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @Test
   public void test_pdn_notations() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
-    for (Map.Entry<String, String> fileName : PDN_FILE_NAMES.entrySet()) {
+    for (String fileName : PDN_FILE_NAME_BOARDS) {
       System.out.println("LOADED PDN FILE: " + fileName);
-      URL uri = getClass().getResource(fileName.getKey());
+      URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       BufferedReader bufferedReader = Files.newBufferedReader(path);
 
@@ -116,7 +120,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @Test
   public void test_parse_from_pdn_and_to_pdn() throws Exception {
-    for (Map.Entry<String, String> fileName : PDN_FILE_NAMES.entrySet()) {
+    for (Map.Entry<String, String> fileName : PDN_FILE_NAMES_PARSE.entrySet()) {
+      System.out.println("LOADED PDN FILE: " + fileName);
       URL uri = getClass().getResource(fileName.getKey());
       Path path = Paths.get(uri.toURI());
       BufferedReader bufferedReader = Files.newBufferedReader(path);
