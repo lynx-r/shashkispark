@@ -48,6 +48,7 @@ public class NotationAtomStroke implements DeepClone {
 
   /**
    * WARN equals without comparing with super
+   *
    * @param o
    * @return
    */

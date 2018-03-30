@@ -19,9 +19,10 @@ public class NotationStrokes extends LinkedList<NotationStroke> {
     AtomicInteger i = new AtomicInteger();
     return stream()
         .map(s -> {
-          String pdn = s.toPdn(); /*String.format("%1$-25s", s.toPdn());*/
+          String pdn = s.toPdn();
           i.getAndIncrement();
           if (i.get() > 3) {
+            pdn = pdn.trim();
             pdn += "\n";
             i.set(0);
           }

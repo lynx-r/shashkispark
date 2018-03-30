@@ -26,7 +26,6 @@ public class NotationParserService {
     parseHeader(gameHeader, headers);
 
     Node game = pdnFile.getChildAt(1);
-    game.printTo(System.out);
     NotationStrokes notationStrokes = new NotationStrokes();
     parseGame(game, notationStrokes);
 
@@ -49,10 +48,8 @@ public class NotationParserService {
   private void parseGame(Node game, NotationStrokes notationStrokes) {
     boolean first = false, addMove = false, nextStrength;
     NotationStroke notationStroke = new NotationStroke();
-    int n = 0;
     for (int i = 0; i < game.getChildCount(); i++) {
       Node gameBody = game.getChildAt(i);
-      System.out.println(++n + " " + gameBody.getChildCount());
       switch (gameBody.getName()) {
         case "GameMove": {
           for (int j = 0; j < gameBody.getChildCount(); j++) {
@@ -62,11 +59,8 @@ public class NotationParserService {
                 if (addMove) {
                   notationStrokes.add(notationStroke);
                   notationStroke = new NotationStroke();
-                  addMove = false;
-                  n = 0;
-                } else {
-                  addMove = true;
                 }
+                addMove = true;
 
                 String moveNumber = ((Token) gameMove).getImage();
                 notationStroke.setMoveNumber(moveNumber);
@@ -109,6 +103,7 @@ public class NotationParserService {
         }
       }
     }
+    notationStrokes.add(notationStroke);
   }
 
   private boolean isNextNode(String nodeName, int j, Node gameBody) {
