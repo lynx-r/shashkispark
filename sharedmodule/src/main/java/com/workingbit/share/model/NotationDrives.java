@@ -9,7 +9,7 @@ import static com.workingbit.share.util.Utils.listToPdn;
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
  */
-public class NotationMoves extends LinkedList<NotationMove> implements ToPdn {
+public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn {
 
   public String print(String prefix) {
     return stream()
@@ -19,27 +19,5 @@ public class NotationMoves extends LinkedList<NotationMove> implements ToPdn {
 
   public String toPdn() {
     return listToPdn(new ArrayList<>(this));
-  }
-
-  public static class Builder {
-
-    private NotationMoves moves;
-
-    private Builder() {
-      moves = new NotationMoves();
-    }
-
-    public static Builder getInstance() {
-      return new Builder();
-    }
-
-    public Builder add(NotationMove move) {
-      moves.add(move);
-      return this;
-    }
-
-    public NotationMoves build() {
-      return moves;
-    }
   }
 }

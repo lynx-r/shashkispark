@@ -14,7 +14,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class NotationDrive implements DeepClone {
+public class NotationDrive implements DeepClone, ToPdn {
 
   private String notationNumber;
   private int moveNumber;
@@ -69,13 +69,13 @@ public class NotationDrive implements DeepClone {
     }
   }
 
-  public void addAtomStrokeFromPdn(String stroke, String boardId) {
-    NotationMove atom = NotationMove.fromPdn(stroke, boardId);
+  public void addMoveFromPdn(String move, String boardId) {
+    NotationMove atom = NotationMove.fromPdn(move, boardId);
     moves.add(atom);
   }
 
-  public void addAtomStrokeFromPdn(String stroke) {
-    addAtomStrokeFromPdn(stroke, null);
+  public void addMoveFromPdn(String move) {
+    addMoveFromPdn(move, null);
   }
 
   public String print(String prefix) {

@@ -27,7 +27,12 @@ public class NotationParserService {
 
     Node game = pdnFile.getChildAt(1);
     NotationDrives notationDrives = new NotationDrives();
-    parseGame(game, notationDrives);
+    try {
+      parseGame(game, notationDrives);
+      game.printTo(System.out);
+    } catch (Exception e) {
+      game.printTo(System.err);
+    }
 
     Notation notation = new Notation();
     notation.setTags(headers);
@@ -48,11 +53,11 @@ public class NotationParserService {
   private void parseGame(Node game, NotationDrives notationDrives) {
     boolean firstMove = false;
     NotationDrive notationDrive = new NotationDrive();
+    int gameMoveNumber = 0;
     for (int i = 0; i < game.getChildCount(); i++) {
       Node gameBody = game.getChildAt(i);
       switch (gameBody.getName()) {
         case "GameMove": {
-          int moveNum = 0;
           for (int j = 0; j < gameBody.getChildCount(); j++) {
             Node gameMove = gameBody.getChildAt(j);
             switch (gameMove.getName()) {
@@ -62,22 +67,23 @@ public class NotationParserService {
                   notationDrive = new NotationDrive();
                 }
                 firstMove = true;
+                gameMoveNumber = 0;
 
                 String moveNumber = ((Token) gameMove).getImage();
                 notationDrive.setNotationNumber(moveNumber);
                 break;
               case "Move":
-                moveNum++;
-                Token move = (Token) gameMove.getChildAt(0);
-                notationDrive.parseNameFromPdn(move.getName());
-                String stroke = move.getImage();
-                notationDrive.addAtomStrokeFromPdn(stroke);
-                notationDrive.setMoveNumber(moveNum);
+                gameMoveNumber++;
+                Token moveToken = (Token) gameMove.getChildAt(0);
+                notationDrive.parseNameFromPdn(moveToken.getName());
+                String move = moveToken.getImage();
+                notationDrive.addMoveFromPdn(move);
+                notationDrive.setMoveNumber(gameMoveNumber);
                 break;
               case "MoveStrength":
                 Token moveStrength = (Token) gameMove.getChildAt(0);
                 String strength = moveStrength.getImage();
-                notationDrive.getMoves().get(moveNum - 1).setMoveStrength(strength);
+                notationDrive.getMoves().get(gameMoveNumber - 1).setMoveStrength(strength);
                 break;
             }
           }

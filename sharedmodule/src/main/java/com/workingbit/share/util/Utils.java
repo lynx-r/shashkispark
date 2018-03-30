@@ -8,6 +8,7 @@ import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.CreateBoardPayload;
+import com.workingbit.share.model.ToPdn;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -15,6 +16,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -189,5 +191,20 @@ public class Utils {
     return objects.stream()
         .map(clazz::cast)
         .collect(Collectors.toList());
+  }
+
+  public static String listToPdn(List<ToPdn> list) {
+    AtomicInteger i = new AtomicInteger();
+    return list.stream()
+        .map(s -> {
+          String pdn = s.toPdn();
+          i.getAndIncrement();
+          if (i.get() > 3) {
+            pdn = pdn.trim();
+            pdn += "\n";
+            i.set(0);
+          }
+          return pdn;
+        }).collect(Collectors.joining());
   }
 }

@@ -16,7 +16,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Notation {
+public class Notation implements ToPdn {
 
   /**
    * Some possible tags:

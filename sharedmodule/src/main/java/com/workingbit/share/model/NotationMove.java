@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.workingbit.share.model.NotationDrive.EnumStrokeType.CAPTURE;
 import static com.workingbit.share.model.NotationDrive.EnumStrokeType.SIMPLE;
@@ -17,25 +19,27 @@ import static com.workingbit.share.model.NotationDrive.EnumStrokeType.SIMPLE;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class NotationMove implements DeepClone {
+public class NotationMove implements DeepClone, ToPdn {
 
   private NotationDrive.EnumStrokeType type;
   /**
-   * Moves like a1 and b2 they are always two
+   * Moves like a1 and b2
    */
-  private String[] move = new String[2];
+  private String[] move = new String[100];
   private String boardId;
   private boolean cursor;
   private String moveStrength;
 
   @DynamoDBIgnore
   public String getNotation() {
-    return move[0] + (type == SIMPLE ? SIMPLE.getType() : CAPTURE.getType()) + move[1];
+    return Stream.of(move)
+        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getType() : CAPTURE.getType()));
   }
 
   @DynamoDBIgnore
   private String getNotationPdn() {
-    return move[0] + (type == SIMPLE ? SIMPLE.getType() : CAPTURE.getPdnType()) + move[1];
+    return Stream.of(move)
+        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdnType() : CAPTURE.getPdnType()));
   }
 
   @SuppressWarnings("unused")
@@ -97,7 +101,7 @@ public class NotationMove implements DeepClone {
   }
 
   public String toPdn() {
-    String stroke = getNotationPdn() + (moveStrength != null ? " " + moveStrength : "");
+    String stroke = getNotationPdn() + (moveStrength != null ? " " + moveStrength : " ");
     return String.format("%1$-10s", stroke);
   }
 }
