@@ -10,4 +10,5 @@ public class NotationConstants {
   public static final String CAPTURE = ":";
   public static final String NOTATION_DOT_NUMBER = ". ";
   public static final String SPACE = " ";
+  public static final String END_GAME_SYMBOL = "*";
 }

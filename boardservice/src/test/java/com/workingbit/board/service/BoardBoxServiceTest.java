@@ -9,6 +9,7 @@ import com.workingbit.share.model.Notation;
 import com.workingbit.share.util.Utils;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
@@ -25,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static com.workingbit.share.model.EnumRules.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -115,10 +117,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       BufferedReader bufferedReader = Files.newBufferedReader(path);
 
       Notation notation = notationParserService.parse(bufferedReader);
-
-      System.out.println(notation.getNotationStrokes().size());
-
-      System.out.println(notation.toPdn());
+      String reparsed = notation.toPdn();
+      List<String> lines = Files.readAllLines(path);
+      String origin = StringUtils.join(lines, "\n");
+      assertEquals(origin, reparsed);
     }
   }
 

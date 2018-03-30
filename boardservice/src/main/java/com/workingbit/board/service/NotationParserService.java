@@ -26,6 +26,7 @@ public class NotationParserService {
     parseHeader(gameHeader, headers);
 
     Node game = pdnFile.getChildAt(1);
+    game.printTo(System.out);
     NotationStrokes notationStrokes = new NotationStrokes();
     parseGame(game, notationStrokes);
 
@@ -48,14 +49,25 @@ public class NotationParserService {
   private void parseGame(Node game, NotationStrokes notationStrokes) {
     boolean first = false, addMove = false, nextStrength;
     NotationStroke notationStroke = new NotationStroke();
+    int n = 0;
     for (int i = 0; i < game.getChildCount(); i++) {
       Node gameBody = game.getChildAt(i);
+      System.out.println(++n + " " + gameBody.getChildCount());
       switch (gameBody.getName()) {
         case "GameMove": {
           for (int j = 0; j < gameBody.getChildCount(); j++) {
             Node gameMove = gameBody.getChildAt(j);
             switch (gameMove.getName()) {
               case "MOVENUMBER":
+                if (addMove) {
+                  notationStrokes.add(notationStroke);
+                  notationStroke = new NotationStroke();
+                  addMove = false;
+                  n = 0;
+                } else {
+                  addMove = true;
+                }
+
                 String moveNumber = ((Token) gameMove).getImage();
                 notationStroke.setMoveNumber(moveNumber);
                 first = true;
@@ -65,11 +77,8 @@ public class NotationParserService {
                 String stroke = move.getImage();
                 notationStroke.parseStrokeFromPdn(stroke, first, move.getName());
                 nextStrength = isNextNode("MoveStrength", j, gameBody);
-                if (!first && !nextStrength) {
-                  addMove = !hasMoreElements(gameBody, i);
-                } else if (!nextStrength) {
+                if (!nextStrength) {
                   first = false;
-                  addMove = gameBody.getParent().getChildCount() == i + 1;
                 }
                 break;
               case "MoveStrength":
@@ -80,7 +89,6 @@ public class NotationParserService {
                   first = false;
                 } else {
                   notationStroke.getSecond().setMoveStrength(strength);
-                  addMove = !hasMoreElements(gameBody, i);
                 }
                 break;
             }
@@ -90,7 +98,6 @@ public class NotationParserService {
         case "COMMENT": {
           Token token = (Token) gameBody;
           notationStroke.setComment(token.getImage());
-          addMove = !hasMoreElements(gameBody, i);
           break;
         }
         case "Variation": {
@@ -98,21 +105,10 @@ public class NotationParserService {
           NotationStrokes notationStrokesVariant = new NotationStrokes();
           parseGame(variant, notationStrokesVariant);
           notationStroke.setVariants(notationStrokesVariant);
-          addMove = !hasMoreElements(gameBody, i);
           break;
         }
       }
-      if (addMove) {
-        notationStrokes.add(notationStroke);
-        notationStroke = new NotationStroke();
-        addMove = false;
-      }
     }
-  }
-
-  private boolean hasMoreElements(Node gameBody, int j) {
-    return isNextNode("COMMENT", j, gameBody.getParent())
-        || isNextNode("Variation", j, gameBody.getParent());
   }
 
   private boolean isNextNode(String nodeName, int j, Node gameBody) {

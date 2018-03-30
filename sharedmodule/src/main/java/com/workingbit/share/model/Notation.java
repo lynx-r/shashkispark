@@ -2,6 +2,7 @@ package com.workingbit.share.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.workingbit.share.common.NotationConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -55,7 +56,8 @@ public class Notation {
     );
     String moves = notationStrokes.toPdn();
     stringBuilder.append("\n")
-        .append(moves);
+        .append(moves)
+    .append(NotationConstants.END_GAME_SYMBOL);
     return stringBuilder.toString();
   }
 

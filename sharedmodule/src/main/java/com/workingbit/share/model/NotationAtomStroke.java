@@ -36,6 +36,13 @@ public class NotationAtomStroke implements DeepClone {
         .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getType() : CAPTURE.getType()));
   }
 
+  @DynamoDBIgnore
+  private String getNotationPdn() {
+    return strokes
+        .stream()
+        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdnType() : CAPTURE.getPdnType()));
+  }
+
   public void setNotation(String notation) {
   }
 
@@ -94,6 +101,7 @@ public class NotationAtomStroke implements DeepClone {
   }
 
   public String toPdn() {
-    return getNotation() + (moveStrength != null ? " " + moveStrength : "");
+    String stroke = getNotationPdn() + (moveStrength != null ? " " + moveStrength : "");
+    return String.format("%1$-10s", stroke);
   }
 }
