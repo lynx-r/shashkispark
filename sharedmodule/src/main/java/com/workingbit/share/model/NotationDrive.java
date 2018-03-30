@@ -24,7 +24,6 @@ public class NotationDrive implements DeepClone, ToPdn {
   /**
    * Number of move in `moves`
    */
-  private int moveNumber;
   private NotationMoves moves = new NotationMoves();
   private NotationDrives variants = new NotationDrives();
   private boolean ellipses;
@@ -87,10 +86,10 @@ public class NotationDrive implements DeepClone, ToPdn {
 
   public String print(String prefix) {
     return new StringBuilder()
-        .append(getClass().getSimpleName())
+        .append(prefix).append(getClass().getSimpleName())
         .append(prefix).append("\t").append("notationNumber: ").append(notationNumber)
         .append(prefix).append("\t").append("notationMoves: ").append(moves.print(prefix + "\t"))
-        .append(prefix).append("\t").append("variants: \n").append(variants.print(prefix + "\t"))
+        .append(prefix).append("\t").append("variants: ").append(variants.print(prefix + "\t"))
         .append(prefix).append("\t").append("ellipses: ").append(ellipses)
         .append(prefix).append("\t").append("numeric: ").append(numeric)
         .append(prefix).append("\t").append("comment: ").append(comment)

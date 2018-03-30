@@ -7,6 +7,7 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
@@ -28,8 +29,7 @@ import java.util.Optional;
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.share.model.EnumRules.*;
 import static com.workingbit.share.util.Utils.getRandomString;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by Aleksey Popryaduhin on 10:08 10/08/2017.
@@ -187,18 +187,22 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_reparse_from_pdn() throws Exception {
     for (String fileName : PDN_FILE_NAMES_PARSE) {
-      System.out.println("LOADED PDN FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       BufferedReader bufferedReader = Files.newBufferedReader(path);
 
       Notation notation = notationParserService.parse(bufferedReader);
+      String reparsed = notation.toPdn();
+      List<String> lines = Files.readAllLines(path);
+      String origin = StringUtils.join(lines, "\n");
+      assertEquals(origin, reparsed);
+
+
+      System.out.println("LOADED PDN FILE: " + fileName);
+      System.out.println(reparsed);
       notation.print();
-      break;
-//      String reparsed = notation.toPdn();
-//      List<String> lines = Files.readAllLines(path);
-//      String origin = StringUtils.join(lines, "\n");
-//      assertEquals(origin, reparsed);
+      System.out.println("---");
+      System.out.println();
     }
   }
 

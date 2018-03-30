@@ -13,7 +13,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn {
 
   public String print(String prefix) {
     return stream()
-        .map(notationStroke -> prefix + notationStroke.print(prefix + "\t"))
+        .map(notationStroke -> notationStroke.print(prefix + "\t"))
         .collect(Collectors.joining("\n"));
   }
 

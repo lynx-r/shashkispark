@@ -29,7 +29,6 @@ public class NotationParserService {
     NotationDrives notationDrives = new NotationDrives();
     try {
       parseGame(game, notationDrives);
-      game.printTo(System.out);
     } catch (Exception e) {
       game.printTo(System.err);
     }
@@ -78,7 +77,6 @@ public class NotationParserService {
                 notationDrive.parseNameFromPdn(moveToken.getName());
                 String move = moveToken.getImage();
                 notationDrive.addMoveFromPdn(move);
-                notationDrive.setMoveNumber(gameMoveNumber);
                 break;
               case "MoveStrength":
                 Token moveStrength = (Token) gameMove.getChildAt(0);
