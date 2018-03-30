@@ -62,10 +62,6 @@ public class BaseDao<T extends BaseDomain> {
     dynamoDBMapper.save(entity);
   }
 
-  public void batchSave(final Object... entities) {
-    dynamoDBMapper.batchSave(entities);
-  }
-
   public void batchSave(final Iterable<T> entities) {
     entities.forEach(t -> t.setUpdatedAt(LocalDateTime.now()));
     dynamoDBMapper.batchSave(entities);

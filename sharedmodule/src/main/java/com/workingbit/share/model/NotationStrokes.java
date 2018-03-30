@@ -10,7 +10,7 @@ public class NotationStrokes extends LinkedList<NotationStroke> {
 
   public String toString(String prefix) {
     return stream()
-        .map(notationStroke -> prefix + notationStroke.toString(prefix + "\t"))
+        .map(notationStroke -> prefix + notationStroke.print(prefix + "\t"))
         .collect(Collectors.joining("\n"));
   }
 }

@@ -82,12 +82,11 @@ public class NotationAtomStroke implements DeepClone {
     return new NotationAtomStroke(type, strokes, boardId, cursor, null);
   }
 
-  public String toString(String prefix) {
+  public String print(String prefix) {
     return new StringBuilder()
         .append(prefix).append(getClass().getSimpleName())
         .append(prefix).append("\t").append("type: ").append(type)
         .append(prefix).append("\t").append("strokes: ").append(strokes)
-        .append(prefix).append("\t").append("boardId: ").append(boardId)
         .append(prefix).append("\t").append("cursor: ").append(cursor)
         .append(prefix).append("\t").append("moveStrength: ").append(moveStrength)
         .append("\n")

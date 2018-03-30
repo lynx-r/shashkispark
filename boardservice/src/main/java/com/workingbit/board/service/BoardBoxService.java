@@ -211,7 +211,7 @@ public class BoardBoxService {
             return null;
           }
           try {
-            currentBoard = boardService.addDraught(boardBox.getArticleId(), currentBoard, squareLink.getPdnNotation(), draught);
+            currentBoard = boardService.addDraught(boardBox.getArticleId(), currentBoard, squareLink.getPdnNotationNumeric64(), draught);
           } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;

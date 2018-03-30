@@ -1,21 +1,29 @@
 package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BaseServiceTest;
+import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.EnumRules;
-import junit.framework.TestCase;
+import com.workingbit.share.model.Notation;
+import com.workingbit.share.util.Utils;
+import net.percederberg.grammatica.parser.ParserCreationException;
+import net.percederberg.grammatica.parser.ParserLogException;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.workingbit.share.model.EnumRules.*;
@@ -37,10 +45,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public static @DataPoints
   EnumRules[] ruless = {RUSSIAN, RUSSIAN_GIVEAWAY, INTERNATIONAL, INTERNATIONAL_GIVEAWAY};
 
-  public static @DataPoints
-  String[] notations = {
-      "1. ",
-      ""
+  public final String[] PDN_FILE_NAMES = {
+      "/pdn/test1.pdn",
   };
 
 
@@ -83,32 +89,24 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     return getBoardBox(false, false, RUSSIAN);
   }
 
-  @Theory
-  public void theory_move(String[] notation) {
-    EnumRules rules = RUSSIAN;
-    BoardBox boardBox = getBoardBox(false, true, rules);
-    BoardBoxService boardBoxService = boardBoxService();
+  @Test
+  public void test_pdn_notations() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
+    for (String fileName : PDN_FILE_NAMES) {
+      URL uri = getClass().getResource(fileName);
+      Path path = Paths.get(uri.toURI());
+      BufferedReader bufferedReader = Files.newBufferedReader(path);
 
+      Notation notation = notationParserService.parse(bufferedReader);
+      notation.setRules(RUSSIAN);
 
-    Square nextSquare = boardBox.getBoard().getSquares().stream()
-        .filter(Objects::nonNull)
-        .peek(square -> square.setDim(rules.getDimension()))
-        .filter(square -> square.getPdnNotation().equals("b4"))
-        .findFirst()
-        .get();
-    nextSquare.setHighlighted(true);
-    boardBox.getBoard().setNextSquare(nextSquare);
+      String articleId = Utils.getRandomUUID();
+      String boardBoxId = Utils.getRandomUUID();
+      Board boardFromNotation = boardService.createBoardFromNotation(notation, articleId, boardBoxId);
 
-    Optional<BoardBox> optionalBoardBox = boardBoxService.move(boardBox);
+      assertNotNull(boardFromNotation);
 
-    Square moved = optionalBoardBox.get().getBoard().getSquares()
-        .stream()
-        .filter(Objects::nonNull)
-        .peek(square -> square.setDim(rules.getDimension()))
-        .filter(square -> square.getPdnNotation().equals("b4"))
-        .findFirst()
-        .get();
-    TestCase.assertTrue(moved.isOccupied());
+      System.out.println(boardFromNotation);
+    }
   }
 
   @After

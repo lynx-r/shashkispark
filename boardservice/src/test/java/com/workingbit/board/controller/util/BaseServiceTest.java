@@ -4,6 +4,7 @@ import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.board.service.BoardService;
+import com.workingbit.board.service.NotationParserService;
 import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
@@ -31,8 +32,9 @@ import static org.junit.Assert.assertTrue;
  */
 public class BaseServiceTest {
 
-  private BoardService boardService = new BoardService();
-  private BoardBoxService boardBoxService = new BoardBoxService();
+  protected BoardService boardService = new BoardService();
+  protected BoardBoxService boardBoxService = new BoardBoxService();
+  protected NotationParserService notationParserService = new NotationParserService();
 
   BoardDao boardDao;
 
@@ -106,7 +108,7 @@ public class BaseServiceTest {
   }
 
   protected void testCollection(String notations, List<Square> items) {
-    List<String> collection = items.stream().map(ICoordinates::getPdnNotation).collect(Collectors.toList());
+    List<String> collection = items.stream().map(ICoordinates::getPdnNotationNumeric64).collect(Collectors.toList());
     String[] notation = notations.split(",");
     Arrays.stream(notation).forEach(n -> {
       assertTrue(collection.toString(), collection.contains(n));

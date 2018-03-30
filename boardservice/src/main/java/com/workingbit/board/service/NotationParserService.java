@@ -4,34 +4,45 @@ import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.NotationStroke;
 import com.workingbit.share.model.NotationStrokes;
-import net.percederberg.grammatica.parser.Node;
-import net.percederberg.grammatica.parser.ParserCreationException;
-import net.percederberg.grammatica.parser.ParserLogException;
-import net.percederberg.grammatica.parser.Token;
+import net.percederberg.grammatica.parser.*;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Aleksey Popryadukhin on 29/03/2018.
  */
 public class NotationParserService {
 
-  public Notation parse(BufferedReader bufferedReader) throws IOException, ParserCreationException, ParserLogException, URISyntaxException {
+  public Notation parse(BufferedReader bufferedReader) throws ParserCreationException, ParserLogException {
     NotationParser notationParser = new NotationParser(bufferedReader);
     notationParser.prepare();
     Node parse = notationParser.parse();
     Node pdnFile = parse.getChildAt(0);
     Node gameHeader = pdnFile.getChildAt(0);
+
+    Map<String, String> headers = new HashMap<>();
+    parseHeader(gameHeader, headers);
+
     Node game = pdnFile.getChildAt(1);
     NotationStrokes notationStrokes = new NotationStrokes();
     parseGame(game, notationStrokes);
 
     Notation notation = new Notation();
+    notation.setTags(headers);
     notation.setNotationStrokes(notationStrokes);
 
     return notation;
+  }
+
+  private void parseHeader(Node gameHeader, Map<String, String> headers) {
+    for (int i = 0; i < gameHeader.getChildCount(); i++) {
+      Node header = gameHeader.getChildAt(i);
+      String identifier = ((Token) header.getChildAt(1)).getImage();
+      String value = ((Token) header.getChildAt(2)).getImage();
+      headers.put(identifier, value);
+    }
   }
 
   private void parseGame(Node game, NotationStrokes notationStrokes) {

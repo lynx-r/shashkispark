@@ -112,7 +112,7 @@ public class Draught extends BaseDomain implements ICoordinates{
   @Override
   public String toString() {
     return "Draught{" +
-        "notation=" + getPdnNotation() +
+        "notation=" + getPdnNotationNumeric64() +
         ", v=" + v +
         ", h=" + h +
         ", black=" + black +

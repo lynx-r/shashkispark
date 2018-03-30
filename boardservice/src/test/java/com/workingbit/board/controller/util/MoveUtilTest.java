@@ -57,7 +57,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "b6", "a5", true);
 
     System.out.println(printBoardNotation(board.getNotationStrokes()));
-//    assertEquals("1. c3-d4 h6-g5 2. a3-b4 b6-a5", board.getPdnNotation());
+//    assertEquals("1. c3-d4 h6-g5 2. a3-b4 b6-a5", board.getPdnNotationNumeric64());
   }
 
   @Test
@@ -69,7 +69,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "d4", "f6", false);
     board = move(board, "g7", "e5", true);
     System.out.println(printBoardNotation(board.getNotationStrokes()));
-//    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getPdnNotation());
+//    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getPdnNotationNumeric64());
   }
 
   @Test
@@ -109,7 +109,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "e5", "c3", true);
     board = move(board, "c3", "a5", true);
     System.out.println(printBoardNotation(board.getNotationStrokes()));
-//    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getPdnNotation());
+//    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getPdnNotationNumeric64());
   }
 
   @Test

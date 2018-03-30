@@ -1,10 +1,13 @@
 package com.workingbit.share.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Aleksey Popryaduhin on 21:30 03/10/2017.
@@ -14,21 +17,37 @@ import java.time.LocalDate;
 @Data
 public class Notation {
 
-  private String whitePlayer;
-  private String blackPlayer;
-  private String event;
-  private String site;
-  private String round;
-  private LocalDate date;
-  private String result;
-  private String gameType;
+  /**
+   Some possible tags:
+     whitePlayer,
+     blackPlayer,
+     event,
+     site,
+     round,
+     date,
+     result,
+     gameType,
+   */
+  private Map<String, String> tags = new HashMap<>();
+
+  private EnumRules rules;
 
   private NotationStrokes notationStrokes = new NotationStrokes();
+
+  @JsonAnySetter
+  public void add(String key, String value) {
+    tags.put(key, value);
+  }
+
+  @JsonAnyGetter
+  public Map<String, String> getTags() {
+    return tags;
+  }
 
   public void print() {
     notationStrokes.forEach(notationStroke -> {
       System.out.println();
-      System.out.println(notationStroke.toString(""));
+      System.out.println(notationStroke.print(""));
     });
   }
 }

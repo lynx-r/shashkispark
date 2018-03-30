@@ -1,5 +1,6 @@
 package com.workingbit.share.model;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.workingbit.share.domain.DeepClone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,15 +29,12 @@ public class NotationStroke implements DeepClone {
     this.second = second;
   }
 
+  @DynamoDBIgnore
   public int getMoveNumberInt() {
-    return Integer.parseInt(moveNumber);
+    return Integer.valueOf(moveNumber.substring(0, moveNumber.indexOf(".")));
   }
 
-  public void setMoveNumber(String moveNumber) {
-    this.moveNumber = moveNumber;
-  }
-
-  public void setMoveNumber(int moveNumber) {
+  public void setMoveNumberInt(int moveNumber) {
     this.moveNumber = moveNumber + EnumStrokeType.NUMBER.getPdnType();
   }
 
@@ -77,12 +75,12 @@ public class NotationStroke implements DeepClone {
     }
   }
 
-  public String toString(String prefix) {
+  public String print(String prefix) {
     return new StringBuilder()
         .append(getClass().getSimpleName())
         .append("\n").append(prefix).append("moveNumber: ").append(moveNumber)
-        .append("\n").append(prefix).append("first: ").append(first != null ? first.toString( "\n\t" + prefix) : "")
-        .append("\n").append(prefix).append("second: ").append(second != null ? second.toString("\n\t" + prefix) : "")
+        .append("\n").append(prefix).append("first: ").append(first != null ? first.print( "\n\t" + prefix) : "")
+        .append("\n").append(prefix).append("second: ").append(second != null ? second.print("\n\t" + prefix) : "")
         .append("\n").append(prefix).append("variants: \n").append(variants.toString(prefix + "\t"))
         .append("\n").append(prefix).append("ellipses: ").append(ellipses)
         .append("\n").append(prefix).append("numeric: ").append(numeric)

@@ -16,19 +16,19 @@ package com.workingbit.share.converter;
 //    Answer.Type type = Answer.Type.valueOf(classType);
 //    switch (type) {
 //      case ARTICLE_CREATE: {
-//        return deserializeObject(code, body.toString(), CreateArticleResponse.class, Answer.Type.ARTICLE_CREATE);
+//        return deserializeObject(code, body.print(), CreateArticleResponse.class, Answer.Type.ARTICLE_CREATE);
 //      }
 //      case ARTICLE: {
-//        return deserializeObject(code, body.toString(), Article.class, Answer.Type.ARTICLE);
+//        return deserializeObject(code, body.print(), Article.class, Answer.Type.ARTICLE);
 //      }
 //      case ARTICLE_LIST: {
-//        return deserializeObject(code, body.toString(), Articles.class, Answer.Type.ARTICLE_LIST);
+//        return deserializeObject(code, body.print(), Articles.class, Answer.Type.ARTICLE_LIST);
 //      }
 //      case BOARD_BOX: {
-//        return deserializeObject(code, body.toString(), BoardBox.class, Answer.Type.BOARD_BOX);
+//        return deserializeObject(code, body.print(), BoardBox.class, Answer.Type.BOARD_BOX);
 //      }
 //      case BOARD_BOX_LIST: {
-//        return deserializeObject(code, body.toString(), BoardBoxes.class, Answer.Type.BOARD_BOX_LIST);
+//        return deserializeObject(code, body.print(), BoardBoxes.class, Answer.Type.BOARD_BOX_LIST);
 //      }
 //      case ERROR: {
 //        return new Answer(code, jsonNode.get("message").asText());

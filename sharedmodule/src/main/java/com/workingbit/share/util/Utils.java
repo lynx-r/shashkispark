@@ -14,9 +14,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class Utils {
 
-  public static List<String> alph = new ArrayList<String>() {{
+  public static List<String> ALPH = new ArrayList<String>() {{
     add("a");
     add("b");
     add("c");
@@ -36,6 +34,42 @@ public class Utils {
     add("i");
     add("j");
   }};
+
+  public static Map<String, String> ALPHANUMERIC64_TO_NUMERIC64 = new HashMap<String, String>() {{
+    put("b8", "1");
+    put("d8", "2");
+    put("f8", "3");
+    put("h8", "4");
+    put("a7", "5");
+    put("c7", "6");
+    put("e7", "7");
+    put("g7", "8");
+    put("b6", "9");
+    put("d6", "10");
+    put("f6", "11");
+    put("h6", "12");
+    put("a5", "13");
+    put("c5", "14");
+    put("e5", "15");
+    put("g5", "16");
+    put("b4", "17");
+    put("d4", "18");
+    put("f4", "19");
+    put("h4", "20");
+    put("a3", "21");
+    put("c3", "22");
+    put("e3", "23");
+    put("g3", "24");
+    put("b2", "25");
+    put("d2", "26");
+    put("f2", "27");
+    put("h2", "28");
+    put("a1", "29");
+    put("c1", "30");
+    put("e1", "31");
+    put("g1", "32");
+  }};
+
   private static String RANDOM_STR_SEP = "-";
   private static int COUNT_RANDOM_STR = 10;
 
@@ -78,6 +112,7 @@ public class Utils {
   }
 
   public static void setBoardIdAndCreatedAt(Board board, String articleId, String boardBoxId) {
+    board.setBoardBoxId(boardBoxId);
     board.setId(articleId + RANDOM_STR_SEP + boardBoxId + RANDOM_STR_SEP + getRandomString());
     board.setCreatedAt(LocalDateTime.now());
   }

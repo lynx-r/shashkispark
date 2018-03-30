@@ -1,8 +1,9 @@
 package com.workingbit.share.domain;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
-import com.workingbit.share.util.Utils;
-import org.apache.commons.lang3.NotImplementedException;
+import java.util.Map;
+
+import static com.workingbit.share.util.Utils.ALPH;
+import static com.workingbit.share.util.Utils.ALPHANUMERIC64_TO_NUMERIC64;
 
 /**
  * Created by Aleksey Popryaduhin on 15:10 11/08/2017.
@@ -30,28 +31,33 @@ public interface ICoordinates {
 
   void setDim(int dim);
 
-  @DynamoDBIgnore
-  default String getPdnNotation() {
-    return String.format("%s%s", getH(), getDim() - getV());
+  default String getPdnNotationNumeric64() {
+    return ALPHANUMERIC64_TO_NUMERIC64.get(getAlphanumericNotation64());
   }
 
-  default void setPdnNotation(String notation) {
+  default void setPdnNotationNumeric64(String notation) {
   }
 
-  default void fromPdnNotation(String pos) {
-    throw new NotImplementedException("fromPdnNotation not implemented");
+  /**
+   * faster
+   * @return
+   */
+  default String getAlphanumericNotation64() {
+    return ALPH.get(getH()) + (getDim() - getV());
   }
 
-  @DynamoDBIgnore
-  default String getHNotation() {
-    return Utils.alph.get(getH()) + (getDim() - getV());
+  default void setAlphanumericNotation64(String notation) {
   }
 
-  default void setHNotation(String notation) {
-  }
-
-  default void fromHNotation(String pos) {
-    setH(Utils.alph.indexOf(String.valueOf(pos.charAt(0))));
-    setV(getDim() - Integer.valueOf(String.valueOf(pos.charAt(1))));
+  static String toAlphanumericNotation64(String notation) {
+      // try from numeric to alphanumeric
+      return ALPHANUMERIC64_TO_NUMERIC64
+          .entrySet()
+          .stream()
+          .filter(stringStringEntry -> stringStringEntry.getValue().equals(notation))
+          .findFirst()
+          .map(Map.Entry::getKey)
+          // already alphanumeric
+          .orElse(notation);
   }
 }
