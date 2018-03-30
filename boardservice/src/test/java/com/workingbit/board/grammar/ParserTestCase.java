@@ -78,7 +78,7 @@ abstract class ParserTestCase extends TestCase {
         } catch (ParserLogException e) {
             ParseException  p = e.getError(0);
 
-            assertEquals("error moveNumber", 1, e.getErrorCount());
+            assertEquals("error notationNumber", 1, e.getErrorCount());
             assertEquals("error type", type, p.getErrorType());
             assertEquals("line number", line, p.getLine());
             assertEquals("column number", column, p.getColumn());

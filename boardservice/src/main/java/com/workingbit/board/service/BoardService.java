@@ -36,7 +36,7 @@ public class BoardService {
   public Board createBoardFromNotation(Notation notation, String articleId, String boardBoxId) {
     Board board = initBoard(true, false, notation.getRules());
     Utils.setBoardIdAndCreatedAt(board, articleId, boardBoxId);
-    return syncBoardWithStrokes(board, notation.getNotationStrokes(), articleId);
+    return syncBoardWithStrokes(board, notation.getNotationDrives(), articleId);
   }
 
   Optional<Board> findById(String boardId) {
@@ -70,10 +70,10 @@ public class BoardService {
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
    * @param articleId
-   * @param boardBoxNotationStrokes
+   * @param boardBoxNotationDrives
    */
   public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId,
-                    NotationStrokes boardBoxNotationStrokes) {
+                    NotationDrives boardBoxNotationDrives) {
     boolean blackTurn = currentBoard.isBlackTurn();
     MovesList movesList = highlightedBoard(blackTurn, selectedSquare, currentBoard);
     List<Square> allowed = movesList.getAllowed();
@@ -99,20 +99,20 @@ public class BoardService {
     String nextNotation = nextSquare.getNotation();
     nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
 
-    if (boardBoxNotationStrokes != null) { // in case when I fill it from NotationParseService
-      NotationStrokes boardNotationStrokes = nextBoard.getNotationStrokes();
-      updateBoardAlternativeNotation(boardBoxNotationStrokes, boardNotationStrokes);
+    if (boardBoxNotationDrives != null) { // in case when I fill it from NotationParseService
+      NotationDrives boardNotationDrives = nextBoard.getNotationDrives();
+      updateBoardAlternativeNotation(boardBoxNotationDrives, boardNotationDrives);
     }
 
     boardDao.save(nextBoard);
     return nextBoard;
   }
 
-  private void updateBoardAlternativeNotation(NotationStrokes boardBoxNotationStrokes,
-                                              NotationStrokes boardNotationStrokes) {
-    if (boardBoxNotationStrokes.size() > 0) {
-      NotationStroke lastNotation = boardBoxNotationStrokes.getLast();
-      boardNotationStrokes
+  private void updateBoardAlternativeNotation(NotationDrives boardBoxNotationDrives,
+                                              NotationDrives boardNotationDrives) {
+    if (boardBoxNotationDrives.size() > 0) {
+      NotationDrive lastNotation = boardBoxNotationDrives.getLast();
+      boardNotationDrives
           .stream()
           .filter(lastNotation::equals)
           .findFirst()
@@ -169,25 +169,28 @@ public class BoardService {
     return BoardUtils.updateBoard(board);
   }
 
-  private Board syncBoardWithStrokes(Board board, NotationStrokes notationStrokes, String articleId) {
-    for (NotationStroke notationStroke : notationStrokes) {
-      board = emulateMove(board, articleId, notationStroke.getFirst());
-      board = emulateMove(board, articleId, notationStroke.getSecond());
+  private Board syncBoardWithStrokes(Board board, NotationDrives notationDrives, String articleId) {
+    for (NotationDrive notationDrive : notationDrives) {
+      NotationMoves drives = notationDrive.getMoves();
+      for (NotationMove drive : drives) {
+        board = emulateMove(board, articleId, drive);
+      }
     }
-    NotationStrokes syncedNotationStrokes = board.getNotationStrokes();
-    Collections.reverse(syncedNotationStrokes);
-    board.setNotationStrokes(syncedNotationStrokes);
+    NotationDrives syncedNotationDrives = board.getNotationDrives();
+    Collections.reverse(syncedNotationDrives);
+    board.setNotationDrives(syncedNotationDrives);
     return board;
   }
 
-  private Board emulateMove(Board board, String articleId, NotationAtomStroke atomStroke) {
+  private Board emulateMove(Board board, String articleId, NotationMove atomStroke) {
     if (atomStroke == null) {
       return board;
     }
-    for (int i = 0; i < atomStroke.getStrokes().size() - 1; i++) {
-      Square selected = findSquareByNotation(atomStroke.getStrokes().get(i), board);
+    String[] moves = atomStroke.getMove();
+    for (int i = 0; i < moves.length - 1; i++) {
+      Square selected = findSquareByNotation(moves[i], board);
       board.setSelectedSquare(selected);
-      Square next = findSquareByNotation(atomStroke.getStrokes().get(i + 1), board);
+      Square next = findSquareByNotation(moves[i + 1], board);
       board.setNextSquare(next);
       board = move(selected, next, board, articleId, null);
     }

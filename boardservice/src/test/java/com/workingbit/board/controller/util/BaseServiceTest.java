@@ -15,7 +15,7 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.MovesList;
-import com.workingbit.share.model.NotationAtomStroke;
+import com.workingbit.share.model.NotationMove;
 import com.workingbit.share.util.Utils;
 import junit.framework.TestCase;
 
@@ -165,24 +165,24 @@ public class BaseServiceTest {
 
   protected class SetBoardSelectedAndNextSupplier implements Supplier<Board> {
 
-    private NotationAtomStroke atomStroke;
+    private NotationMove atomStroke;
     private Board board;
     private int i = 0;
 
-    public SetBoardSelectedAndNextSupplier(Board board, NotationAtomStroke atomStroke) {
+    public SetBoardSelectedAndNextSupplier(Board board, NotationMove atomStroke) {
       this.atomStroke = atomStroke;
       this.board = board;
     }
 
     @Override
     public Board get() {
-      Square selected = findSquareByNotation(atomStroke.getStrokes().get(i), board);
-      board.setSelectedSquare(selected);
-      Square next = findSquareByNotation(atomStroke.getStrokes().get(i + 1), board);
-      next.setHighlighted(true);
-      board.setNextSquare(next);
-      board.setId(getRandomString());
-      boardDao.save(board);
+//      Square selected = findSquareByNotation(atomStroke.getMove().get(i), board);
+//      board.setSelectedSquare(selected);
+//      Square next = findSquareByNotation(atomStroke.getMove().get(i + 1), board);
+//      next.setHighlighted(true);
+//      board.setNextSquare(next);
+//      board.setId(getRandomString());
+//      boardDao.save(board);
       i++;
       return board;
     }

@@ -33,7 +33,7 @@ public class Notation {
 
   private EnumRules rules;
 
-  private NotationStrokes notationStrokes = new NotationStrokes();
+  private NotationDrives notationDrives = new NotationDrives();
 
   @JsonAnySetter
   public void add(String key, String value) {
@@ -54,7 +54,7 @@ public class Notation {
         .append("]")
         .append("\n")
     );
-    String moves = notationStrokes.toPdn();
+    String moves = notationDrives.toPdn();
     stringBuilder.append("\n")
         .append(moves)
     .append(NotationConstants.END_GAME_SYMBOL);
@@ -62,7 +62,7 @@ public class Notation {
   }
 
   public void print() {
-    notationStrokes.forEach(notationStroke -> {
+    notationDrives.forEach(notationStroke -> {
       System.out.println();
       System.out.println(notationStroke.print(""));
     });

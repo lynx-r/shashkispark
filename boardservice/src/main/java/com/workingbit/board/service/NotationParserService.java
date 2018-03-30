@@ -2,8 +2,8 @@ package com.workingbit.board.service;
 
 import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.model.Notation;
-import com.workingbit.share.model.NotationStroke;
-import com.workingbit.share.model.NotationStrokes;
+import com.workingbit.share.model.NotationDrive;
+import com.workingbit.share.model.NotationDrives;
 import net.percederberg.grammatica.parser.*;
 
 import java.io.BufferedReader;
@@ -26,12 +26,12 @@ public class NotationParserService {
     parseHeader(gameHeader, headers);
 
     Node game = pdnFile.getChildAt(1);
-    NotationStrokes notationStrokes = new NotationStrokes();
-    parseGame(game, notationStrokes);
+    NotationDrives notationDrives = new NotationDrives();
+    parseGame(game, notationDrives);
 
     Notation notation = new Notation();
     notation.setTags(headers);
-    notation.setNotationStrokes(notationStrokes);
+    notation.setNotationDrives(notationDrives);
 
     return notation;
   }
@@ -45,45 +45,39 @@ public class NotationParserService {
     }
   }
 
-  private void parseGame(Node game, NotationStrokes notationStrokes) {
-    boolean first = false, addMove = false, nextStrength;
-    NotationStroke notationStroke = new NotationStroke();
+  private void parseGame(Node game, NotationDrives notationDrives) {
+    boolean firstMove = false;
+    NotationDrive notationDrive = new NotationDrive();
     for (int i = 0; i < game.getChildCount(); i++) {
       Node gameBody = game.getChildAt(i);
       switch (gameBody.getName()) {
         case "GameMove": {
+          int moveNum = 0;
           for (int j = 0; j < gameBody.getChildCount(); j++) {
             Node gameMove = gameBody.getChildAt(j);
             switch (gameMove.getName()) {
               case "MOVENUMBER":
-                if (addMove) {
-                  notationStrokes.add(notationStroke);
-                  notationStroke = new NotationStroke();
+                if (firstMove) {
+                  notationDrives.add(notationDrive);
+                  notationDrive = new NotationDrive();
                 }
-                addMove = true;
+                firstMove = true;
 
                 String moveNumber = ((Token) gameMove).getImage();
-                notationStroke.setMoveNumber(moveNumber);
-                first = true;
+                notationDrive.setNotationNumber(moveNumber);
                 break;
               case "Move":
+                moveNum++;
                 Token move = (Token) gameMove.getChildAt(0);
+                notationDrive.parseNameFromPdn(move.getName());
                 String stroke = move.getImage();
-                notationStroke.parseStrokeFromPdn(stroke, first, move.getName());
-                nextStrength = isNextNode("MoveStrength", j, gameBody);
-                if (!nextStrength) {
-                  first = false;
-                }
+                notationDrive.addAtomStrokeFromPdn(stroke);
+                notationDrive.setMoveNumber(moveNum);
                 break;
               case "MoveStrength":
                 Token moveStrength = (Token) gameMove.getChildAt(0);
                 String strength = moveStrength.getImage();
-                if (first) {
-                  notationStroke.getFirst().setMoveStrength(strength);
-                  first = false;
-                } else {
-                  notationStroke.getSecond().setMoveStrength(strength);
-                }
+                notationDrive.getMoves().get(moveNum - 1).setMoveStrength(strength);
                 break;
             }
           }
@@ -91,19 +85,19 @@ public class NotationParserService {
         }
         case "COMMENT": {
           Token token = (Token) gameBody;
-          notationStroke.setComment(token.getImage());
+          notationDrive.setComment(token.getImage());
           break;
         }
         case "Variation": {
           Node variant = gameBody.getChildAt(1);
-          NotationStrokes notationStrokesVariant = new NotationStrokes();
-          parseGame(variant, notationStrokesVariant);
-          notationStroke.setVariants(notationStrokesVariant);
+          NotationDrives notationDrivesVariant = new NotationDrives();
+          parseGame(variant, notationDrivesVariant);
+          notationDrive.setVariants(notationDrivesVariant);
           break;
         }
       }
     }
-    notationStrokes.add(notationStroke);
+    notationDrives.add(notationDrive);
   }
 
   private boolean isNextNode(String nodeName, int j, Node gameBody) {

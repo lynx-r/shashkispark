@@ -14,49 +14,48 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class NotationStroke implements DeepClone {
+public class NotationDrive implements DeepClone {
 
-  private String moveNumber;
-  private NotationAtomStroke first;
-  private NotationAtomStroke second;
-  private NotationStrokes variants = new NotationStrokes();
+  private String notationNumber;
+  private int moveNumber;
+  private NotationMoves moves = new NotationMoves();
+  private NotationDrives variants = new NotationDrives();
   private boolean ellipses;
   private boolean numeric;
   private String comment;
 
-  public NotationStroke(NotationAtomStroke first, NotationAtomStroke second) {
-    this.first = first;
-    this.second = second;
-  }
-
   @DynamoDBIgnore
-  public int getMoveNumberInt() {
-    return Integer.valueOf(moveNumber.substring(0, moveNumber.indexOf(".")));
+  public int getNotationNumberInt() {
+    return Integer.valueOf(notationNumber.substring(0, notationNumber.indexOf(".")));
   }
 
-  public void setMoveNumberInt(int moveNumber) {
-    this.moveNumber = moveNumber + EnumStrokeType.NUMBER.getPdnType();
+  public void setNotationNumberInt(int moveNumber) {
+    this.notationNumber = moveNumber + EnumStrokeType.NUMBER.getPdnType();
   }
 
-  /**
-   * WARN equals without comparing with super
-   */
+  public static NotationDrive create(NotationMoves moves) {
+    NotationDrive notationDrive = new NotationDrive();
+    notationDrive.setMoves(moves);
+    return notationDrive;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    NotationStroke that = (NotationStroke) o;
-    return Objects.equals(moveNumber, that.moveNumber) &&
-        Objects.equals(first, that.first) &&
-        Objects.equals(second, that.second);
+    if (!(o instanceof NotationDrive)) return false;
+    if (!super.equals(o)) return false;
+    NotationDrive that = (NotationDrive) o;
+    return ellipses == that.ellipses &&
+        Objects.equals(notationNumber, that.notationNumber);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), moveNumber, first, second);
+
+    return Objects.hash(super.hashCode(), notationNumber, ellipses);
   }
 
-  public void parseStrokeFromPdn(String stroke, boolean first, String name) {
+  public void parseNameFromPdn(String name) {
     switch (name) {
       case "NUMERICMOVE":
         numeric = true;
@@ -68,19 +67,22 @@ public class NotationStroke implements DeepClone {
         ellipses = true;
         break;
     }
-    if (first) {
-      this.first = NotationAtomStroke.fromPdn(stroke);
-    } else {
-      this.second = NotationAtomStroke.fromPdn(stroke);
-    }
+  }
+
+  public void addAtomStrokeFromPdn(String stroke, String boardId) {
+    NotationMove atom = NotationMove.fromPdn(stroke, boardId);
+    moves.add(atom);
+  }
+
+  public void addAtomStrokeFromPdn(String stroke) {
+    addAtomStrokeFromPdn(stroke, null);
   }
 
   public String print(String prefix) {
     return new StringBuilder()
         .append(getClass().getSimpleName())
-        .append("\n").append(prefix).append("moveNumber: ").append(moveNumber)
-        .append("\n").append(prefix).append("first: ").append(first != null ? first.print( "\n\t" + prefix) : "")
-        .append("\n").append(prefix).append("second: ").append(second != null ? second.print("\n\t" + prefix) : "")
+        .append("\n").append(prefix).append("notationNumber: ").append(notationNumber)
+        .append("\n").append(prefix).append("notationAtomStrokes: ").append(moves.print(prefix + "\t"))
         .append("\n").append(prefix).append("variants: \n").append(variants.print(prefix + "\t"))
         .append("\n").append(prefix).append("ellipses: ").append(ellipses)
         .append("\n").append(prefix).append("numeric: ").append(numeric)
@@ -90,9 +92,8 @@ public class NotationStroke implements DeepClone {
   }
 
   public String toPdn() {
-    return moveNumber + " " +
-        (first != null ? first.toPdn() + " " : "") +
-        (second != null ? second.toPdn() + " " : "") +
+    return notationNumber + " " +
+        (!moves.isEmpty() ? moves.toPdn() + " " : "") +
         (!variants.isEmpty() ? "( " + variants.toPdn() + ") " : "") +
         (comment != null ? comment + " " : "");
   }

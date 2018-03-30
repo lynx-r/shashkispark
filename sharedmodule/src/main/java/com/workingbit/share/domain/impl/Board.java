@@ -10,7 +10,7 @@ import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.BoardIdNotation;
 import com.workingbit.share.model.EnumRules;
-import com.workingbit.share.model.NotationStrokes;
+import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.Payload;
 import lombok.*;
 
@@ -119,9 +119,9 @@ public class Board extends BaseDomain implements Payload {
   private int strokeCount;
 
   @JsonIgnore
-  @DynamoDBTypeConvertedJson(targetType = NotationStrokes.class)
-  @DynamoDBAttribute(attributeName = "notationStrokes")
-  private NotationStrokes notationStrokes = new NotationStrokes();
+  @DynamoDBTypeConvertedJson(targetType = NotationDrives.class)
+  @DynamoDBAttribute(attributeName = "notationDrives")
+  private NotationDrives notationDrives = new NotationDrives();
 
   public Board(boolean black, EnumRules rules) {
     this.black = black;

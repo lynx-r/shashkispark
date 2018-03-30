@@ -28,7 +28,7 @@ class HighlightMoveUtil {
   }
 
   /**
-   * highlightedAssignedMoves moves for the selected square
+   * highlightedAssignedMoves move for the selected square
    */
   static MovesList highlightedAssignedMoves(Square selectedSquare) {
     if (selectedSquare != null && !selectedSquare.isOccupied()) {
@@ -329,11 +329,11 @@ class HighlightMoveUtil {
 
   /**
    * test case described in the test `HighlightMoveUtilTest::queen_moves_with_beat_in_one_square`
-   * @param walkAllowedMoves moves where I was
+   * @param walkAllowedMoves move where I was
    * @param previous my previous move
-   * @return moves where is was contain my previous this mean
+   * @return move where is was contain my previous this mean
    * that I have deal with a stream that breaks on previous move. E.g. I move from e1 and have two opponent draughts
-   * on f2 and f4 then allowed moves will be the moves that contains g3.
+   * on f2 and f4 then allowed move will be the move that contains g3.
    */
   private boolean hasQueenWalkedThereOrMovesWithBeatInOneSquare(List<Square> walkAllowedMoves, Square previous) {
     return !walkAllowedMoves.isEmpty() && walkAllowedMoves.contains(previous)

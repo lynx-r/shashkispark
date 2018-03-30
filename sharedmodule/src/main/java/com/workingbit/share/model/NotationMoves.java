@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
  */
-public class NotationStrokes extends LinkedList<NotationStroke> {
+public class NotationMoves extends LinkedList<NotationMove> {
 
   public String print(String prefix) {
     return stream()
@@ -28,5 +28,27 @@ public class NotationStrokes extends LinkedList<NotationStroke> {
           }
           return pdn;
         }).collect(Collectors.joining());
+  }
+
+  public static class Builder {
+
+    private NotationMoves moves;
+
+    private Builder() {
+      moves = new NotationMoves();
+    }
+
+    public static Builder getInstance() {
+      return new Builder();
+    }
+
+    public Builder add(NotationMove move) {
+      moves.add(move);
+      return this;
+    }
+
+    public NotationMoves build() {
+      return moves;
+    }
   }
 }

@@ -94,8 +94,8 @@ public class BoardBoxService {
             return null;
           }
           String articleId = boardBox.getArticleId();
-          NotationStrokes notationStrokes = boardBox.getNotation().getNotationStrokes();
-          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId, notationStrokes);
+          NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
+          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId, notationDrives);
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
 
@@ -106,41 +106,38 @@ public class BoardBoxService {
   }
 
   private void updateAlternativesInBoard(BoardBox updatedBox, Board boardUpdated) {
-    NotationStrokes notationStrokes = updatedBox.getNotation().getNotationStrokes();
-    NotationStrokes boardNotationStrokes = boardUpdated.getNotationStrokes();
-    boolean isAtStartStroke = notationStrokes.size() == 1 && !boardNotationStrokes.isEmpty();
-    if (notationStrokes.size() > 1) {
-      NotationStroke lastNotation = notationStrokes.getLast();
-      lastNotation.getVariants().forEach(notationStroke -> {
-        resetNotationAtomStrokeCursor(notationStroke.getFirst());
-        resetNotationAtomStrokeCursor(notationStroke.getSecond());
-      });
-      boardNotationStrokes
+    NotationDrives notationDrives = updatedBox.getNotation().getNotationDrives();
+    NotationDrives boardNotationDrives = boardUpdated.getNotationDrives();
+    boolean isAtStartStroke = notationDrives.size() == 1 && !boardNotationDrives.isEmpty();
+    if (notationDrives.size() > 1) {
+      NotationDrive lastDrive = notationDrives.getLast();
+      lastDrive.getVariants().forEach(move -> move.getMoves().forEach(m->m.setCursor(false)));
+      boardNotationDrives
           .stream()
-          .filter(lastNotation::equals)
+          .filter(lastDrive::equals)
           .findFirst()
-          .ifPresent(notationStroke -> notationStroke.setVariants(lastNotation.getVariants()));
+          .ifPresent(notationStroke -> notationStroke.setVariants(lastDrive.getVariants()));
     } else if (isAtStartStroke) {
-      NotationStroke lastNotation = notationStrokes.getLast();
-      NotationStroke lastBoardStroke = boardNotationStrokes.getLast();
-      boolean isAddedStrokeInBoard = lastBoardStroke.getMoveNumberInt() > notationStrokes.size();
+      NotationDrive lastNotation = notationDrives.getLast();
+      NotationDrive lastBoardStroke = boardNotationDrives.getLast();
+      boolean isAddedStrokeInBoard = lastBoardStroke.getNotationNumberInt() > notationDrives.size();
       if (isAddedStrokeInBoard) { // update variants on prev board stroke
-        boardNotationStrokes.get(boardNotationStrokes.size() - 2).setVariants(lastNotation.getVariants());
+        boardNotationDrives.get(boardNotationDrives.size() - 2).setVariants(lastNotation.getVariants());
       } else { // update variants on last stroke in board
-        boardNotationStrokes.getLast().setVariants(lastNotation.getVariants());
+        boardNotationDrives.getLast().setVariants(lastNotation.getVariants());
       }
     }
-    if (!boardNotationStrokes.isEmpty()) {
-      boolean isFirstCountMoreSecond = boardNotationStrokes.size() >= 2
-          && boardNotationStrokes.getFirst().getMoveNumberInt() > boardNotationStrokes.getLast().getMoveNumberInt();
+    if (!boardNotationDrives.isEmpty()) {
+      boolean isFirstCountMoreSecond = boardNotationDrives.size() >= 2
+          && boardNotationDrives.getFirst().getNotationNumberInt() > boardNotationDrives.getLast().getNotationNumberInt();
       if (isFirstCountMoreSecond) {
-        Collections.reverse(boardNotationStrokes);
+        Collections.reverse(boardNotationDrives);
       }
-      updatedBox.getNotation().setNotationStrokes(boardNotationStrokes);
+      updatedBox.getNotation().setNotationDrives(boardNotationDrives);
     }
   }
 
-  private void resetNotationAtomStrokeCursor(NotationAtomStroke atomStroke) {
+  private void resetNotationAtomStrokeCursor(NotationMove atomStroke) {
     if (atomStroke != null) {
       atomStroke.setCursor(false);
     }
@@ -243,36 +240,35 @@ public class BoardBoxService {
 
   private void forkNotation(BoardBox updated, Board board) {
     Notation notation = updated.getNotation();
-    NotationStrokes notationStrokes = notation.getNotationStrokes();
+    NotationDrives notationDrives = notation.getNotationDrives();
 
-    NotationStroke undoneStrokes = null;
-    if (notationStrokes.size() >= 2) { // if strokes more then two
-      undoneStrokes = notationStrokes.removeLast();
-    } else if (notationStrokes.isEmpty()) {
+    NotationDrive undoneStrokes = null;
+    if (notationDrives.size() >= 2) { // if move more then two
+      undoneStrokes = notationDrives.removeLast();
+    } else if (notationDrives.isEmpty()) {
       return;
     }
 
-    NotationStroke lastStroke = notationStrokes.getLast();
-    NotationStrokes boardNotationStrokes = board.getNotationStrokes();
-    if (!boardNotationStrokes.isEmpty()) { // if user doesn't undone all strokes
-      NotationStroke prevStroke = boardNotationStrokes.get(boardNotationStrokes.size() - 1);
-      boolean isAddedStroke = prevStroke.getMoveNumberInt() > notationStrokes.size();
+    NotationDrive lastDrive = notationDrives.getLast();
+    NotationDrives boardNotationDrives = board.getNotationDrives();
+    if (!boardNotationDrives.isEmpty()) { // if user doesn't undone all move
+      NotationDrive prevStroke = boardNotationDrives.get(boardNotationDrives.size() - 1);
+      boolean isAddedStroke = prevStroke.getNotationNumberInt() > notationDrives.size();
       if (isAddedStroke) { // if user does redo
-        notationStrokes.add(prevStroke);
+        notationDrives.add(prevStroke);
       } else { // if user does undo
-        lastStroke.setFirst(prevStroke.getFirst());
-        lastStroke.setSecond(prevStroke.getSecond());
+        lastDrive.getMoves().addAll(prevStroke.getMoves());
       }
     } else { // first stroke in notation e.g. ( 1. c3-b4 )
-      lastStroke.getFirst().setCursor(false);
-      lastStroke.getVariants().add(lastStroke.deepClone());
-      lastStroke.setMoveNumber(null);
-      lastStroke.setFirst(null);
+      lastDrive.getMoves().get(0).setCursor(false);
+      lastDrive.getVariants().add(lastDrive.deepClone());
+      lastDrive.setNotationNumber(null);
+      lastDrive.getMoves().removeLast();
     }
 
-    boolean isNotFirstStroke = undoneStrokes != null && boardNotationStrokes.size() != 1;
+    boolean isNotFirstStroke = undoneStrokes != null && boardNotationDrives.size() != 1;
     if (isNotFirstStroke) { // if user is on his first stroke
-      lastStroke.getVariants().add(undoneStrokes);
+      lastDrive.getVariants().add(undoneStrokes);
     }
   }
 
