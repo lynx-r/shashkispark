@@ -182,11 +182,11 @@ public class BoardService {
     return board;
   }
 
-  private Board emulateMove(Board board, String articleId, NotationMove atomStroke) {
-    if (atomStroke == null) {
+  private Board emulateMove(Board board, String articleId, NotationMove notationMove) {
+    if (notationMove == null) {
       return board;
     }
-    String[] moves = atomStroke.getMove();
+    String[] moves = notationMove.getMove();
     for (int i = 0; i < moves.length - 1; i++) {
       Square selected = findSquareByNotation(moves[i], board);
       board.setSelectedSquare(selected);

@@ -16,7 +16,14 @@ import java.util.Objects;
 @Data
 public class NotationDrive implements DeepClone, ToPdn {
 
+  /**
+   * Number of drive in notation
+   */
   private String notationNumber;
+
+  /**
+   * Number of move in `moves`
+   */
   private int moveNumber;
   private NotationMoves moves = new NotationMoves();
   private NotationDrives variants = new NotationDrives();
@@ -30,7 +37,7 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public void setNotationNumberInt(int moveNumber) {
-    this.notationNumber = moveNumber + EnumStrokeType.NUMBER.getPdnType();
+    this.notationNumber = moveNumber + EnumMoveType.NUMBER.getPdnType();
   }
 
   public static NotationDrive create(NotationMoves moves) {
@@ -81,12 +88,12 @@ public class NotationDrive implements DeepClone, ToPdn {
   public String print(String prefix) {
     return new StringBuilder()
         .append(getClass().getSimpleName())
-        .append("\n").append(prefix).append("notationNumber: ").append(notationNumber)
-        .append("\n").append(prefix).append("notationAtomStrokes: ").append(moves.print(prefix + "\t"))
-        .append("\n").append(prefix).append("variants: \n").append(variants.print(prefix + "\t"))
-        .append("\n").append(prefix).append("ellipses: ").append(ellipses)
-        .append("\n").append(prefix).append("numeric: ").append(numeric)
-        .append("\n").append(prefix).append("comment: ").append(comment)
+        .append(prefix).append("\t").append("notationNumber: ").append(notationNumber)
+        .append(prefix).append("\t").append("notationMoves: ").append(moves.print(prefix + "\t"))
+        .append(prefix).append("\t").append("variants: \n").append(variants.print(prefix + "\t"))
+        .append(prefix).append("\t").append("ellipses: ").append(ellipses)
+        .append(prefix).append("\t").append("numeric: ").append(numeric)
+        .append(prefix).append("\t").append("comment: ").append(comment)
         .append("\n")
         .toString();
   }
@@ -98,15 +105,16 @@ public class NotationDrive implements DeepClone, ToPdn {
         (comment != null ? comment + " " : "");
   }
 
-  public enum EnumStrokeType {
+  public enum EnumMoveType {
     NUMBER(". ", ". "),
     SIMPLE("-", "-"),
-    CAPTURE(":", "x");
+    CAPTURE(":", "x"),
+    END_GAME_SYMBOL("*", "*");
 
     private String type;
     private String pdnType;
 
-    EnumStrokeType(String type, String pdnType) {
+    EnumMoveType(String type, String pdnType) {
       this.type = type;
       this.pdnType = pdnType;
     }

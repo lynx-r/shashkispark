@@ -115,8 +115,11 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "blackTurn")
   private boolean blackTurn;
 
-  @DynamoDBAttribute(attributeName = "strokeCount")
-  private int strokeCount;
+  /**
+   * Count of completed moves like 1. a1-a2 e2-e3 and 2. f1-f2 c2-c3
+   */
+  @DynamoDBAttribute(attributeName = "driveCount")
+  private int driveCount;
 
   @JsonIgnore
   @DynamoDBTypeConvertedJson(targetType = NotationDrives.class)

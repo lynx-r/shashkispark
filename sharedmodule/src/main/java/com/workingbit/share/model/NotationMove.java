@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.workingbit.share.model.NotationDrive.EnumStrokeType.CAPTURE;
-import static com.workingbit.share.model.NotationDrive.EnumStrokeType.SIMPLE;
+import static com.workingbit.share.model.NotationDrive.EnumMoveType.CAPTURE;
+import static com.workingbit.share.model.NotationDrive.EnumMoveType.SIMPLE;
 
 /**
  * Created by Aleksey Popryaduhin on 21:33 03/10/2017.
@@ -21,7 +21,7 @@ import static com.workingbit.share.model.NotationDrive.EnumStrokeType.SIMPLE;
 @Data
 public class NotationMove implements DeepClone, ToPdn {
 
-  private NotationDrive.EnumStrokeType type;
+  private NotationDrive.EnumMoveType type;
   /**
    * Moves like a1 and b2
    */
@@ -81,7 +81,7 @@ public class NotationMove implements DeepClone, ToPdn {
     return notationMove;
   }
 
-  public static NotationMove create(NotationDrive.EnumStrokeType type, String boardId, boolean cursor) {
+  public static NotationMove create(NotationDrive.EnumMoveType type, String boardId, boolean cursor) {
     NotationMove notationMove = new NotationMove();
     notationMove.setType(type);
     notationMove.setBoardId(boardId);
@@ -96,7 +96,6 @@ public class NotationMove implements DeepClone, ToPdn {
         .append(prefix).append("\t").append("move: ").append(Arrays.toString(move))
         .append(prefix).append("\t").append("cursor: ").append(cursor)
         .append(prefix).append("\t").append("moveStrength: ").append(moveStrength)
-        .append("\n")
         .toString();
   }
 

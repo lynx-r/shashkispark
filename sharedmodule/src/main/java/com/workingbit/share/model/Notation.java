@@ -2,7 +2,6 @@ package com.workingbit.share.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.workingbit.share.common.NotationConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -57,14 +56,13 @@ public class Notation implements ToPdn {
     String moves = notationDrives.toPdn();
     stringBuilder.append("\n")
         .append(moves)
-    .append(NotationConstants.END_GAME_SYMBOL);
+        .append(NotationDrive.EnumMoveType.END_GAME_SYMBOL.getPdnType());
     return stringBuilder.toString();
   }
 
   public void print() {
-    notationDrives.forEach(notationStroke -> {
-      System.out.println();
-      System.out.println(notationStroke.print(""));
+    notationDrives.forEach(notationDrive -> {
+      System.out.println(notationDrive.print("\n"));
     });
   }
 }
