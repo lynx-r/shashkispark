@@ -47,7 +47,6 @@ public class BoardBoxService {
     Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), board.getNotationDrives());
     boardBox.setNotation(notation);
 
-
     boardService.findById(board.getPreviousBoards().getLast().getBoardId()).ifPresent(firstBoard->{
       String boardId = firstBoard.getId();
       boardBox.setBoardId(boardId);

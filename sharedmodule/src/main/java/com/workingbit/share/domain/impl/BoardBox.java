@@ -51,6 +51,7 @@ public class BoardBox extends BaseDomain implements Payload {
   }
 
   public BoardBox(Board board) {
+    this();
     this.board = board;
     this.boardId = board.getId();
   }

@@ -130,6 +130,7 @@ public class Board extends BaseDomain implements Payload {
   }
 
   public Board(boolean black, EnumRules rules) {
+    this();
     this.black = black;
     this.rules = rules;
     notationDrives = new NotationDrives();
