@@ -179,6 +179,13 @@ public class Utils {
     boardBox.setCreatedAt(LocalDateTime.now());
   }
 
+  public static void setBoardBoxIdAndCreatedAt(BoardBox boardBox, String articleId, String boardBoxId) {
+    boardBox.setId(articleId +
+        RANDOM_STR_SEP + boardBoxId +
+        RANDOM_STR_SEP + getRandomString());
+    boardBox.setCreatedAt(LocalDateTime.now());
+  }
+
   public static ObjectMapper configureObjectMapper(ObjectMapper mapper) {
     mapper.registerModule(new JavaTimeModule());
 //    mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
@@ -194,6 +201,9 @@ public class Utils {
   }
 
   public static String listToPdn(List<ToPdn> list) {
+    if (list == null || list.isEmpty()) {
+      return "";
+    }
     AtomicInteger i = new AtomicInteger();
     return list.stream()
         .map(s -> {

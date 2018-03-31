@@ -5,6 +5,7 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
+import com.workingbit.share.util.Utils;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
 import org.apache.commons.lang3.StringUtils;
@@ -22,13 +23,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.share.model.EnumRules.*;
-import static com.workingbit.share.util.Utils.getRandomString;
 import static org.junit.Assert.*;
 
 /**
@@ -107,28 +106,31 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Path path = Paths.get(uri.toURI());
       BufferedReader bufferedReader = Files.newBufferedReader(path);
 
+      // Parse Notation
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      BoardBox boardBoxEmpty = getSavedBoardBoxEmpty();
-      String articleId = boardBoxEmpty.getArticleId();
-      String boardBoxId = boardBoxEmpty.getId();
-      Board boardFromNotation = boardService.createBoardFromNotation(notation, articleId, boardBoxId);
+      String articleId = Utils.getRandomString();
+      String boardBoxId = Utils.getRandomString();
 
-      assertNotNull(boardFromNotation);
+      // Create BoardBox from Notation
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation);
 
-      NotationDrives notationDrives = boardFromNotation.getNotationDrives();
-      Board startBoard = boardService.findById(boardFromNotation.getPreviousBoards().getLast().getBoardId()).get();
-      boardBoxEmpty.setBoard(startBoard);
+      // Test create BoardBox moving draughts
+      NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
+      BoardBox current = boardBox.deepClone();
       for (NotationDrive drive : notationDrives) {
         for (NotationMove move : drive.getMoves()) {
-          boardBoxEmpty = moveStrokes(boardBoxEmpty, move);
+          current = moveStrokes(current, move);
         }
       }
+      String newPdn = current.getNotation().toPdn();
+      String oldPdn = boardBox.getNotation().toPdn();
+      assertEquals(oldPdn, newPdn);
     }
   }
 
-  public BoardBox moveStrokes(BoardBox boardBoxEmpty, NotationMove notationMove) {
+  public BoardBox moveStrokes(BoardBox boardBoxCurrent, NotationMove notationMove) {
     String[] move = notationMove.getMove();
     for (int i = 0; i < move.length - 1; i++) {
       String boardId = notationMove.getBoardId();
@@ -142,47 +144,15 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Square next = findSquareByNotation(nextMove, board);
       board.setNextSquare(next);
 
-      boardBoxEmpty.setBoard(board);
-      boardBoxEmpty.setBoardId(boardId);
+      boardBoxCurrent.setBoard(board);
+      boardBoxCurrent.setBoardId(boardId);
 
-      boardBoxEmpty = boardBoxService.saveAndFillBoard(boardBoxEmpty).get();
-      boardBoxEmpty = boardBoxService.highlight(boardBoxEmpty).get();
-      boardBoxEmpty = boardBoxService.move(boardBoxEmpty).get();
-      boardBoxEmpty.getNotation().print();
-//      NotationDrive lastNewNotation = boardBoxEmpty.getNotation().getNotationDrives().getLast();
-//      NotationMove atomStroke = lastNewNotation.getSecond() == null || lastNewNotation.getSecond().getType() == null
-//          ? lastNewNotation.getFirst() : lastNewNotation.getSecond();
-//      NotationDrive.EnumMoveType moveType = atomStroke.getType();
-//      String notationNew = atomStroke.getNotation();
-//      String notationProposed = b.getSelectedSquare().getNotation() + moveType.getType() + b.getNextSquare().getNotation();
-//      if (!notationProposed.equals(notationNew)) {
-//        notationProposed = b.getSelectedSquare().getNotation() + moveType.getPdnType() + b.getNextSquare().getNotation();
-//        if (!notationProposed.equals(notationNew)) {
-//          assertFalse(notationProposed + " != " + notationNew, false);
-//        }
-//      }
+      boardBoxCurrent = boardBoxService.saveAndFillBoard(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.move(boardBoxCurrent).get();
     }
-    return boardBoxEmpty;
+    return boardBoxCurrent;
   }
-
-  private List<Board> emulateMove(Board board, NotationMove move) {
-    if (move == null) {
-      return Collections.emptyList();
-    }
-    List<Board> boards = new ArrayList<>();
-    for (int i = 0; i < move.getMove().length - 1; i++) {
-      Square selected = findSquareByNotation(move.getMove()[i], board);
-      board.setSelectedSquare(selected);
-      Square next = findSquareByNotation(move.getMove()[i + 1], board);
-      next.setHighlighted(true);
-      board.setNextSquare(next);
-      board.setId(getRandomString());
-      boardDao.save(board);
-      boards.add(board);
-    }
-    return boards;
-  }
-
 
   @Test
   public void test_reparse_from_pdn() throws Exception {

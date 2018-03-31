@@ -16,7 +16,6 @@ import java.util.Objects;
  * Created by Aleksey Popryaduhin on 19:54 12/08/2017.
  */
 @JsonTypeName("boardBox")
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -45,7 +44,11 @@ public class BoardBox extends BaseDomain implements Payload {
 
   @DynamoDBTypeConvertedJson(targetType = Notation.class)
   @DynamoDBAttribute(attributeName = "notation")
-  private Notation notation = new Notation();
+  private Notation notation;
+
+  public BoardBox() {
+    notation = new Notation();
+  }
 
   public BoardBox(Board board) {
     this.board = board;

@@ -4,10 +4,13 @@ import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
-import net.percederberg.grammatica.parser.*;
+import net.percederberg.grammatica.parser.Node;
+import net.percederberg.grammatica.parser.ParserCreationException;
+import net.percederberg.grammatica.parser.ParserLogException;
+import net.percederberg.grammatica.parser.Token;
+import org.apache.commons.collections4.map.ListOrderedMap;
 
 import java.io.BufferedReader;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,7 +25,7 @@ public class NotationParserService {
     Node pdnFile = parse.getChildAt(0);
     Node gameHeader = pdnFile.getChildAt(0);
 
-    Map<String, String> headers = new HashMap<>();
+    ListOrderedMap<String, String> headers = new ListOrderedMap<>();
     parseHeader(gameHeader, headers);
 
     Node game = pdnFile.getChildAt(1);

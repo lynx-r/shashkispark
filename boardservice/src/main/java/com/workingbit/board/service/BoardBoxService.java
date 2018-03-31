@@ -38,6 +38,25 @@ public class BoardBoxService {
     return Optional.of(boardBox);
   }
 
+  public BoardBox createBoardBoxFromNotation(String articleId, String boardBoxId, Notation fromNotation) {
+    BoardBox boardBox = new BoardBox();
+    boardBox.setArticleId(articleId);
+    Utils.setBoardBoxIdAndCreatedAt(boardBox, articleId, boardBoxId);
+
+    Board board = boardService.createBoardFromNotation(fromNotation, articleId, boardBoxId);
+    Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), board.getNotationDrives());
+    boardBox.setNotation(notation);
+
+
+    boardService.findById(board.getPreviousBoards().getLast().getBoardId()).ifPresent(firstBoard->{
+      String boardId = firstBoard.getId();
+      boardBox.setBoardId(boardId);
+      boardBox.setBoard(firstBoard);
+    });
+
+    return boardBox;
+  }
+
   public Optional<BoardBox> findById(String boardBoxId) {
     return boardBoxDao.findByKey(boardBoxId)
         .map(this::updateBoardBox);
@@ -111,7 +130,7 @@ public class BoardBoxService {
     boolean isAtStartStroke = notationDrives.size() == 1 && !boardNotationDrives.isEmpty();
     if (notationDrives.size() > 1) {
       NotationDrive lastDrive = notationDrives.getLast();
-      lastDrive.getVariants().forEach(move -> move.getMoves().forEach(m->m.setCursor(false)));
+      lastDrive.getVariants().forEach(move -> move.getMoves().forEach(m -> m.setCursor(false)));
       boardNotationDrives
           .stream()
           .filter(lastDrive::equals)

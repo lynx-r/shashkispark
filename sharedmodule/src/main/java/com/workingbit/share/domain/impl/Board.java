@@ -21,7 +21,6 @@ import java.util.*;
  * Created by Aleksey Popryaduhin on 23:21 21/09/2017.
  */
 @JsonTypeName("board")
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -124,11 +123,16 @@ public class Board extends BaseDomain implements Payload {
   @JsonIgnore
   @DynamoDBTypeConvertedJson(targetType = NotationDrives.class)
   @DynamoDBAttribute(attributeName = "notationDrives")
-  private NotationDrives notationDrives = new NotationDrives();
+  private NotationDrives notationDrives;
+
+  public Board() {
+    notationDrives = new NotationDrives();
+  }
 
   public Board(boolean black, EnumRules rules) {
     this.black = black;
     this.rules = rules;
+    notationDrives = new NotationDrives();
   }
 
   public String popPreviousBoard() {

@@ -4,14 +4,12 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.workingbit.share.domain.DeepClone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 /**
  * Created by Aleksey Popryaduhin on 21:29 03/10/2017.
  */
-@NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class NotationDrive implements DeepClone, ToPdn {
@@ -24,11 +22,16 @@ public class NotationDrive implements DeepClone, ToPdn {
   /**
    * Number of move in `moves`
    */
-  private NotationMoves moves = new NotationMoves();
-  private NotationDrives variants = new NotationDrives();
+  private NotationMoves moves;
+  private NotationDrives variants;
   private boolean ellipses;
   private boolean numeric;
   private String comment;
+
+  public NotationDrive() {
+    moves = new NotationMoves();
+    variants = new NotationDrives();
+  }
 
   @DynamoDBIgnore
   public int getNotationNumberInt() {

@@ -4,16 +4,12 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.collections4.map.ListOrderedMap;
 
 /**
  * Created by Aleksey Popryaduhin on 21:30 03/10/2017.
  */
 @AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class Notation implements ToPdn {
 
@@ -28,31 +24,41 @@ public class Notation implements ToPdn {
    * result,
    * gameType,
    */
-  private Map<String, String> tags = new HashMap<>();
+  private ListOrderedMap<String, String> tags;
 
   private EnumRules rules;
 
-  private NotationDrives notationDrives = new NotationDrives();
+  private NotationDrives notationDrives;
+
+  public Notation() {
+    tags = new ListOrderedMap<>();
+    notationDrives = new NotationDrives();
+  }
 
   @JsonAnySetter
   public void add(String key, String value) {
-    tags.put(key, value);
+    if (tags == null) {
+      tags = new ListOrderedMap<>();
+    }
+    tags.put(0, key, value);
   }
 
   @JsonAnyGetter
-  public Map<String, String> getTags() {
+  public ListOrderedMap<String, String> getTags() {
     return tags;
   }
 
   public String toPdn() {
     StringBuilder stringBuilder = new StringBuilder();
-    tags.forEach((key, value) -> stringBuilder.append("[")
-        .append(key)
-        .append(" ")
-        .append(value)
-        .append("]")
-        .append("\n")
-    );
+    if (tags != null && !tags.isEmpty()) {
+      tags.forEach((key, value) -> stringBuilder.append("[")
+          .append(key)
+          .append(" ")
+          .append(value)
+          .append("]")
+          .append("\n")
+      );
+    }
     String moves = notationDrives.toPdn();
     stringBuilder.append("\n")
         .append(moves)
@@ -61,8 +67,6 @@ public class Notation implements ToPdn {
   }
 
   public void print() {
-    notationDrives.forEach(notationDrive -> {
-      System.out.println(notationDrive.print("\n"));
-    });
+    notationDrives.forEach(notationDrive -> System.out.println(notationDrive.print("\n")));
   }
 }

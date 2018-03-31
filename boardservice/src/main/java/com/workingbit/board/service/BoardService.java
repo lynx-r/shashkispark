@@ -10,14 +10,11 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static com.workingbit.board.BoardApplication.boardDao;
-import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
-import static com.workingbit.board.controller.util.BoardUtils.highlightedBoard;
-import static com.workingbit.board.controller.util.BoardUtils.initBoard;
+import static com.workingbit.board.controller.util.BoardUtils.*;
 
 /**
  * Created by Aleksey Popryaduhin on 13:45 09/08/2017.
@@ -176,9 +173,6 @@ public class BoardService {
         board = emulateMove(board, articleId, drive);
       }
     }
-    NotationDrives syncedNotationDrives = board.getNotationDrives();
-    Collections.reverse(syncedNotationDrives);
-    board.setNotationDrives(syncedNotationDrives);
     return board;
   }
 
