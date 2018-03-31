@@ -104,13 +104,6 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "rules")
   private EnumRules rules;
 
-  /**
-   * Current move cursor
-   */
-  @JsonIgnore
-  @DynamoDBAttribute(attributeName = "cursor")
-  private boolean cursor;
-
   @DynamoDBAttribute(attributeName = "blackTurn")
   private boolean blackTurn;
 

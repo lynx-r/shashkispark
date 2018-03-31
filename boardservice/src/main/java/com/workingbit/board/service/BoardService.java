@@ -25,7 +25,6 @@ public class BoardService {
     Board board = initBoard(newBoardRequest.getFillBoard(), newBoardRequest.getBlack(),
         newBoardRequest.getRules());
     Utils.setBoardIdAndCreatedAt(board, newBoardRequest.getArticleId(), newBoardRequest.getBoardBoxId());
-    board.setCursor(true);
     save(board);
     return board;
   }
@@ -78,7 +77,7 @@ public class BoardService {
     if (allowed.isEmpty()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
-    currentBoard.setCursor(false);
+    currentBoard.getSelectedSquare().getDraught().setHighlighted(false);
     boardDao.save(currentBoard);
 
     Board nextBoard = currentBoard.deepClone();
@@ -88,7 +87,6 @@ public class BoardService {
     // should be there because in move draught, I set boardId in notation
     String boardBoxId = nextBoard.getBoardBoxId();
     Utils.setBoardIdAndCreatedAt(nextBoard, articleId, boardBoxId);
-    nextBoard.setCursor(true);
 
     nextBoard = BoardUtils.moveDraught(nextBoard, captured);
     String boardId = currentBoard.getId();
@@ -98,15 +96,15 @@ public class BoardService {
 
     if (boardBoxNotationDrives != null) { // in case when I fill it from NotationParseService
       NotationDrives boardNotationDrives = nextBoard.getNotationDrives();
-      updateBoardAlternativeNotation(boardBoxNotationDrives, boardNotationDrives);
+      updateBoardVariantsNotation(boardBoxNotationDrives, boardNotationDrives);
     }
 
     boardDao.save(nextBoard);
     return nextBoard;
   }
 
-  private void updateBoardAlternativeNotation(NotationDrives boardBoxNotationDrives,
-                                              NotationDrives boardNotationDrives) {
+  private void updateBoardVariantsNotation(NotationDrives boardBoxNotationDrives,
+                                           NotationDrives boardNotationDrives) {
     if (boardBoxNotationDrives.size() > 0) {
       NotationDrive lastNotation = boardBoxNotationDrives.getLast();
       boardNotationDrives
@@ -139,6 +137,10 @@ public class BoardService {
       previousBoard.pushNextBoard(currentBoard.getId(),
           currentBoard.getPreviousSquare().getAlphanumericNotation64(),
           currentBoard.getSelectedSquare().getAlphanumericNotation64());
+
+      // reset highlights
+      previousBoard.getSelectedSquare().getDraught().setHighlighted(false);
+      previousBoard.getNextSquare().setHighlighted(false);
       boardDao.save(previousBoard);
       return previousBoard;
     });
@@ -151,15 +153,24 @@ public class BoardService {
     }
     boardDao.save(currentBoard);
     return findById(nextId).map(nextBoard -> {
-      Square square = currentBoard.getNextSquare() == null
-          ? currentBoard.getPreviousSquare() : currentBoard.getNextSquare();
+      Square square = getNextOrPrevSquare(currentBoard);
       String notation = square != null ? square.getAlphanumericNotation64() : null;
       nextBoard.pushPreviousBoard(currentBoard.getId(),
           notation,
           currentBoard.getSelectedSquare().getAlphanumericNotation64());
+
+      // reset highlights
+      Square nextOrPrevSquare = getNextOrPrevSquare(nextBoard);
+      nextBoard.getSelectedSquare().getDraught().setHighlighted(false);
+      nextOrPrevSquare.setHighlighted(false);
       boardDao.save(nextBoard);
       return nextBoard;
     });
+  }
+
+  private Square getNextOrPrevSquare(Board currentBoard) {
+    return currentBoard.getNextSquare() == null
+        ? currentBoard.getPreviousSquare() : currentBoard.getNextSquare();
   }
 
   public Board updateBoard(Board board) {

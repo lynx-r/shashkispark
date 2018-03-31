@@ -1,6 +1,7 @@
 package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BoardUtils;
+import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
@@ -47,7 +48,7 @@ public class BoardBoxService {
     Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), board.getNotationDrives());
     boardBox.setNotation(notation);
 
-    boardService.findById(board.getPreviousBoards().getLast().getBoardId()).ifPresent(firstBoard->{
+    boardService.findById(board.getPreviousBoards().getLast().getBoardId()).ifPresent(firstBoard -> {
       String boardId = firstBoard.getId();
       boardBox.setBoardId(boardId);
       boardBox.setBoard(firstBoard);
@@ -65,7 +66,7 @@ public class BoardBoxService {
     Optional<Board> boardOptional = boardService.findById(boardBox.getBoardId());
     return boardOptional.map(board -> {
       boardBox.setBoard(board);
-      updateAlternativesInBoard(boardBox, board);
+      updateVariantsInBoard(boardBox, board);
       return boardBox;
     }).orElse(null);
   }
@@ -95,6 +96,7 @@ public class BoardBoxService {
             return null;
           }
           updated.setBoard(currentBoard);
+//          updateVariantsInBoard(updated, currentBoard);
           return updated;
         });
   }
@@ -117,13 +119,13 @@ public class BoardBoxService {
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
 
-          updateAlternativesInBoard(updatedBox, boardUpdated);
+          updateVariantsInBoard(updatedBox, boardUpdated);
           boardBoxDao.save(updatedBox);
           return updatedBox;
         });
   }
 
-  private void updateAlternativesInBoard(BoardBox updatedBox, Board boardUpdated) {
+  private void updateVariantsInBoard(BoardBox updatedBox, Board boardUpdated) {
     NotationDrives notationDrives = updatedBox.getNotation().getNotationDrives();
     NotationDrives boardNotationDrives = boardUpdated.getNotationDrives();
     boolean isAtStartStroke = notationDrives.size() == 1 && !boardNotationDrives.isEmpty();
@@ -134,7 +136,7 @@ public class BoardBoxService {
           .stream()
           .filter(lastDrive::equals)
           .findFirst()
-          .ifPresent(notationStroke -> notationStroke.setVariants(lastDrive.getVariants()));
+          .ifPresent(drive -> drive.setVariants(lastDrive.getVariants()));
     } else if (isAtStartStroke) {
       NotationDrive lastNotation = notationDrives.getLast();
       NotationDrive lastBoardStroke = boardNotationDrives.getLast();
@@ -146,9 +148,9 @@ public class BoardBoxService {
       }
     }
     if (!boardNotationDrives.isEmpty()) {
-      boolean isFirstCountMoreSecond = boardNotationDrives.size() >= 2
+      boolean isFirstDrivesNumberMoreThenSecond = boardNotationDrives.size() >= 2
           && boardNotationDrives.getFirst().getNotationNumberInt() > boardNotationDrives.getLast().getNotationNumberInt();
-      if (isFirstCountMoreSecond) {
+      if (isFirstDrivesNumberMoreThenSecond) {
         Collections.reverse(boardNotationDrives);
       }
       updatedBox.getNotation().setNotationDrives(boardNotationDrives);
@@ -190,8 +192,9 @@ public class BoardBoxService {
 
   public Optional<BoardBox> loadBoard(BoardBox boardBox) {
     Board board = boardBox.getBoard();
-    updateAlternativesInBoard(boardBox, board);
+    updateVariantsInBoard(boardBox, board);
     boardBoxDao.save(boardBox);
+    updateBoardBox(boardBox);
     return Optional.of(boardBox);
   }
 
@@ -249,45 +252,59 @@ public class BoardBoxService {
             return null;
           }
           undone.ifPresent((b) -> {
-            forkNotation(updated, b);
+            forkNotationForVariants(updated);
             undoRedoBoardActionAndSave(updated, b);
           });
           return updated;
         });
   }
 
-  private void forkNotation(BoardBox updated, Board board) {
-    Notation notation = updated.getNotation();
+  public Optional<BoardBox> createVariant(BoardBox boardBox) {
+    return findById(boardBox.getId())
+        .map(this::forkNotationForVariants)
+        .map(this::saveAndFillBoard)
+        .orElseThrow(BoardServiceException::new);
+  }
+
+  private BoardBox forkNotationForVariants(BoardBox boardBox) {
+    Notation notation = boardBox.getNotation();
     NotationDrives notationDrives = notation.getNotationDrives();
 
-    NotationDrive undoneStrokes = null;
-    if (notationDrives.size() >= 2) { // if move more then two
-      undoneStrokes = notationDrives.removeLast();
-    } else if (notationDrives.isEmpty()) {
-      return;
-    }
-
     NotationDrive lastDrive = notationDrives.getLast();
-    NotationDrives boardNotationDrives = board.getNotationDrives();
-    if (!boardNotationDrives.isEmpty()) { // if user doesn't undone all move
-      NotationDrive prevStroke = boardNotationDrives.get(boardNotationDrives.size() - 1);
-      boolean isAddedStroke = prevStroke.getNotationNumberInt() > notationDrives.size();
-      if (isAddedStroke) { // if user does redo
-        notationDrives.add(prevStroke);
-      } else { // if user does undo
-        lastDrive.getMoves().addAll(prevStroke.getMoves());
-      }
-    } else { // first stroke in notation e.g. ( 1. c3-b4 )
-      lastDrive.getMoves().get(0).setCursor(false);
-      lastDrive.getVariants().add(lastDrive.deepClone());
-      lastDrive.setNotationNumber(null);
-      lastDrive.getMoves().removeLast();
+    boolean isMoreThenTwoDrives = notationDrives.size() >= 2;
+    boolean isLastMoveInDrive = lastDrive.getMoves().size() == 1;
+    boolean isLastDrive = notationDrives.size() == 1;
+    if (isMoreThenTwoDrives && isLastMoveInDrive) { // if move more then two
+      // remove last drive from current notation
+      NotationDrive lastDriveRemoved = notationDrives.removeLast();
+      NotationDrives lastVariants = notationDrives.getLast().getVariants();
+      // add it to variants of next notation
+      lastVariants.addFirst(lastDriveRemoved);
+      return boardBox;
+    } else if (!isLastDrive && !isMoreThenTwoDrives) { // empty
+      return boardBox;
     }
 
-    boolean isNotFirstStroke = undoneStrokes != null && boardNotationDrives.size() != 1;
-    if (isNotFirstStroke) { // if user is on his first stroke
-      lastDrive.getVariants().add(undoneStrokes);
+    // undo last move
+    NotationMove lastMove = lastDrive.getMoves().removeLast();
+    lastMove.setCursor(false);
+    NotationMoves moves = NotationMoves.Builder.getInstance()
+        .add(lastMove)
+        .build();
+    boolean isNotCurrentDrive = lastDrive.getVariants().isEmpty()
+        || lastDrive.getVariants().getFirst().getNotationNumberInt() != lastDrive.getNotationNumberInt();
+    if (isNotCurrentDrive) {
+      // create a new drive for lastMoves
+      NotationDrive firstNotationDrive = NotationDrive.create(moves);
+      NotationDrive.copyOf(lastDrive, firstNotationDrive);
+      lastDrive.getVariants().addFirst(firstNotationDrive);
+    } else {
+      lastDrive.getVariants().getFirst().getMoves().addFirst(lastMove);
     }
+    if (isLastMoveInDrive) {
+      lastDrive.setNotationNumber(null);
+    }
+    return boardBox;
   }
 
   public Optional<BoardBox> redo(BoardBox boardBox) {
@@ -304,7 +321,7 @@ public class BoardBoxService {
             return null;
           }
           redone.ifPresent((b) -> {
-            updateAlternativesInBoard(updated, b);
+            updateVariantsInBoard(updated, b);
             undoRedoBoardActionAndSave(updated, b);
           });
           return updated;

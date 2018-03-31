@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.workingbit.share.domain.DeepClone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
@@ -19,6 +20,18 @@ public class NotationDrive implements DeepClone, ToPdn {
    */
   private String notationNumber;
 
+  @DynamoDBIgnore
+  public int getNotationNumberInt() {
+    if (StringUtils.isNotBlank(notationNumber)) {
+      return Integer.valueOf(notationNumber.substring(0, notationNumber.indexOf(".")));
+    }
+    return 0;
+  }
+
+  public void setNotationNumberInt(int moveNumber) {
+    this.notationNumber = moveNumber + EnumMoveType.NUMBER.getPdnType();
+  }
+
   /**
    * Number of move in `moves`
    */
@@ -33,26 +46,25 @@ public class NotationDrive implements DeepClone, ToPdn {
     variants = new NotationDrives();
   }
 
-  @DynamoDBIgnore
-  public int getNotationNumberInt() {
-    return Integer.valueOf(notationNumber.substring(0, notationNumber.indexOf(".")));
-  }
-
-  public void setNotationNumberInt(int moveNumber) {
-    this.notationNumber = moveNumber + EnumMoveType.NUMBER.getPdnType();
-  }
-
   public static NotationDrive create(NotationMoves moves) {
     NotationDrive notationDrive = new NotationDrive();
+    notationDrive.setNotationNumber(null);
     notationDrive.setMoves(moves);
     return notationDrive;
+  }
+
+  public static void copyOf(NotationDrive originDrive, NotationDrive newDrive) {
+    newDrive.setNotationNumber(originDrive.getNotationNumber());
+    newDrive.setComment(originDrive.getComment());
+    newDrive.setEllipses(originDrive.isEllipses());
+    newDrive.setNumeric(originDrive.isNumeric());
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof NotationDrive)) return false;
-    if (!super.equals(o)) return false;
+//    if (!super.equals(o)) return false;
     NotationDrive that = (NotationDrive) o;
     return ellipses == that.ellipses &&
         Objects.equals(notationNumber, that.notationNumber);
@@ -101,10 +113,10 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public String toPdn() {
-    return notationNumber + " " +
+    return (StringUtils.isNotBlank(notationNumber) ? notationNumber + " " : "" ) +
         (!moves.isEmpty() ? moves.toPdn() + " " : "") +
         (!variants.isEmpty() ? "( " + variants.toPdn() + ") " : "") +
-        (comment != null ? comment + " " : "");
+        (StringUtils.isNotBlank(comment) ? comment + " " : "");
   }
 
   public enum EnumMoveType {

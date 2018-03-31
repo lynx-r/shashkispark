@@ -45,6 +45,12 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public static @DataPoints
   EnumRules[] ruless = {RUSSIAN, RUSSIAN_GIVEAWAY, INTERNATIONAL, INTERNATIONAL_GIVEAWAY};
 
+  private static final String[] PDN_FILE_NAME_UNDO = {
+//      "/pdn/notation_undo1.pdn",
+//      "/pdn/notation_undo2.pdn",
+      "/pdn/notation_undo3.pdn",
+  };
+
   private final List<String> PDN_FILE_NAMES_PARSE = new ArrayList<String>() {{
     add("/pdn/notation_error1.pdn");
     add("/pdn/example.pdn");
@@ -130,11 +136,66 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     }
   }
 
+  @Test
+  public void test_undo() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
+    for (String fileName : PDN_FILE_NAME_UNDO) {
+      System.out.println("LOADED PDN FILE: " + fileName);
+      URL uri = getClass().getResource(fileName);
+      Path path = Paths.get(uri.toURI());
+      BufferedReader bufferedReader = Files.newBufferedReader(path);
+
+      // Parse Notation
+      Notation notation = notationParserService.parse(bufferedReader);
+      notation.setRules(RUSSIAN);
+
+      String articleId = Utils.getRandomString();
+      String boardBoxId = Utils.getRandomString();
+
+      // Create BoardBox from Notation
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation);
+
+      // Test create BoardBox moving draughts
+      NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
+      BoardBox current = boardBox.deepClone();
+      for (NotationDrive drive : notationDrives) {
+        NotationMoves moves = drive.getMoves();
+        for (NotationMove move : moves) {
+          current = moveStrokes(current, move);
+        }
+      }
+      int u = 0;
+      for (int i = notationDrives.size() - 1; i >= 0; i--) {
+        NotationMoves moves = notationDrives.get(i).getMoves();
+        for (int j = moves.size() - 1; j >= 0; j--) {
+          current = undoMove(current, moves.get(j));
+          u++;
+        }
+        NotationDrive lastUndoneMove = current.getNotation().getNotationDrives().getLast();
+//        assertTrue(lastUndoneMove.getVariants().size() == u);
+        u = 0;
+      }
+      Notation resultNotation = current.getNotation();
+      resultNotation.print();
+      NotationDrive lastUndoneMove = current.getNotation().getNotationDrives().getLast();
+      assertTrue(lastUndoneMove.getVariants().size() >= 1);
+    }
+  }
+
+  private BoardBox undoMove(BoardBox boardBoxCurrent, NotationMove notationMove) {
+    String[] move = notationMove.getMove();
+    for (int i = move.length - 1; i > 0; i--) {
+      boardBoxCurrent = boardBoxService.saveAndFillBoard(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.undo(boardBoxCurrent).get();
+    }
+    return boardBoxCurrent;
+  }
+
   public BoardBox moveStrokes(BoardBox boardBoxCurrent, NotationMove notationMove) {
     String[] move = notationMove.getMove();
     for (int i = 0; i < move.length - 1; i++) {
-      String boardId = notationMove.getBoardId();
-      Board board = boardService.findById(boardId).get();
+//      String boardId = notationMove.getBoardId();
+      Board board = boardBoxCurrent.getBoard(); /*boardService.findById(boardId).get();*/
 
       String selMove = move[i];
       Square selected = findSquareByNotation(selMove, board);
@@ -142,10 +203,13 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       String nextMove = move[i + 1];
       Square next = findSquareByNotation(nextMove, board);
+      next.setHighlighted(true);
       board.setNextSquare(next);
 
+      boardDao.save(board);
+
       boardBoxCurrent.setBoard(board);
-      boardBoxCurrent.setBoardId(boardId);
+//      boardBoxCurrent.setBoardId(boardId);
 
       boardBoxCurrent = boardBoxService.saveAndFillBoard(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();

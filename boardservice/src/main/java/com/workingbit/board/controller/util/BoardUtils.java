@@ -68,6 +68,7 @@ public class BoardUtils {
 
     boardClone.setAssignedSquares(boardSquares);
     updateMoveSquaresDimensionAndDiagonals(boardClone);
+    updateMoveSquaresHighlightAndDraught(boardClone, board);
 
     List<Square> squares = getSquares(boardSquares, rules.getDimension());
     boardClone.setSquares(squares);

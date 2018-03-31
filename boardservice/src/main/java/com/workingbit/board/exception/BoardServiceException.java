@@ -5,6 +5,9 @@ package com.workingbit.board.exception;
  */
 public class BoardServiceException extends RuntimeException {
 
+  public BoardServiceException() {
+  }
+
   public BoardServiceException(String message) {
     super(message);
   }
