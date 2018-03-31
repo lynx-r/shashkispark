@@ -181,13 +181,13 @@ public class BoardService {
     for (NotationDrive notationDrive : notationDrives) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
-        board = emulateMove(board, articleId, drive);
+        board = emulateMove(drive, board, articleId);
       }
     }
     return board;
   }
 
-  private Board emulateMove(Board board, String articleId, NotationMove notationMove) {
+  private Board emulateMove(NotationMove notationMove, Board board, String articleId) {
     if (notationMove == null) {
       return board;
     }

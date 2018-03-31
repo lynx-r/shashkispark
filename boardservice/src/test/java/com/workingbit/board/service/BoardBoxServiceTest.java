@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -45,10 +46,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public static @DataPoints
   EnumRules[] ruless = {RUSSIAN, RUSSIAN_GIVEAWAY, INTERNATIONAL, INTERNATIONAL_GIVEAWAY};
 
-  private static final String[] PDN_FILE_NAME_UNDO = {
+  private static final String[] PDN_FILE_NAME_VARIANT = {
 //      "/pdn/notation_undo1.pdn",
 //      "/pdn/notation_undo2.pdn",
-      "/pdn/notation_undo3.pdn",
+      "/pdn/notation_variant1.pdn",
   };
 
   private final List<String> PDN_FILE_NAMES_PARSE = new ArrayList<String>() {{
@@ -120,7 +121,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation);
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
 
       // Test create BoardBox moving draughts
       NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
@@ -137,12 +138,15 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   @Test
-  public void test_undo() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
-    for (String fileName : PDN_FILE_NAME_UNDO) {
+  public void test_variant() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
+    for (String fileName : PDN_FILE_NAME_VARIANT) {
       System.out.println("LOADED PDN FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
-      BufferedReader bufferedReader = Files.newBufferedReader(path);
+      List<String> lines = Files.readAllLines(path);
+      String startVariantDriveMove = lines.remove(0);
+
+      BufferedReader bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
 
       // Parse Notation
       Notation notation = notationParserService.parse(bufferedReader);
@@ -152,32 +156,15 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation);
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
 
-      // Test create BoardBox moving draughts
+      int forkDriveIndex = Integer.parseInt(startVariantDriveMove);
       NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
-      BoardBox current = boardBox.deepClone();
-      for (NotationDrive drive : notationDrives) {
-        NotationMoves moves = drive.getMoves();
-        for (NotationMove move : moves) {
-          current = moveStrokes(current, move);
-        }
-      }
-      int u = 0;
-      for (int i = notationDrives.size() - 1; i >= 0; i--) {
-        NotationMoves moves = notationDrives.get(i).getMoves();
-        for (int j = moves.size() - 1; j >= 0; j--) {
-          current = undoMove(current, moves.get(j));
-          u++;
-        }
-        NotationDrive lastUndoneMove = current.getNotation().getNotationDrives().getLast();
-//        assertTrue(lastUndoneMove.getVariants().size() == u);
-        u = 0;
-      }
-      Notation resultNotation = current.getNotation();
-      resultNotation.print();
-      NotationDrive lastUndoneMove = current.getNotation().getNotationDrives().getLast();
-      assertTrue(lastUndoneMove.getVariants().size() >= 1);
+
+      NotationDrive forkDrive = notationDrives.get(forkDriveIndex);
+
+      BoardBox boardBoxVariant = boardBoxService.createVariant(boardBox, forkDrive).get();
+      boardBoxVariant.getNotation().print();
     }
   }
 

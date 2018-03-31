@@ -53,13 +53,6 @@ public class NotationDrive implements DeepClone, ToPdn {
     return notationDrive;
   }
 
-  public static void copyOf(NotationDrive originDrive, NotationDrive newDrive) {
-    newDrive.setNotationNumber(originDrive.getNotationNumber());
-    newDrive.setComment(originDrive.getComment());
-    newDrive.setEllipses(originDrive.isEllipses());
-    newDrive.setNumeric(originDrive.isNumeric());
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
