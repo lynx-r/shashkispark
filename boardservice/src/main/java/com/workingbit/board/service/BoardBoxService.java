@@ -75,10 +75,21 @@ public class BoardBoxService {
 
   private BoardBox updateBoardBox(BoardBox boardBox) {
     Optional<Board> boardOptional = boardService.findById(boardBox.getBoardId());
-    return boardOptional.map(board -> {
-      boardBox.setBoard(board);
+    return boardOptional
+        .map(board -> {
+          boardBox.setBoard(board);
+          return boardBox;
+        })
+        .map(this::updateNotationForEditMode)
+        .orElse(null);
+  }
+
+  private BoardBox updateNotationForEditMode(BoardBox boardBox) {
+    if (isEditMode(boardBox)) {
+      System.out.println(boardBox.getNotation().getNotationDrives().toPdn());
       return boardBox;
-    }).orElse(null);
+    }
+    return boardBox;
   }
 
   void delete(String boardBoxId) {
@@ -106,7 +117,6 @@ public class BoardBoxService {
             return null;
           }
           updated.setBoard(currentBoard);
-//          updateVariantsInBoard(updated, currentBoard);
           return updated;
         });
   }
@@ -117,7 +127,9 @@ public class BoardBoxService {
           Board boardUpdated = updatedBox.getBoard();
           Board board = boardBox.getBoard();
           boolean isInUndo = board.getNextBoards().size() > 0;
-          if (isInUndo || !boardBox.getEditMode().equals(EnumEditBoardBoxMode.MOVE)) {
+          if (isInUndo &&
+              isMoveMode(boardBox) &&
+              isNotEditMode(boardBox)) {
             return null;
           }
           BoardUtils.updateMoveSquaresHighlightAndDraught(boardUpdated, board);
@@ -229,7 +241,9 @@ public class BoardBoxService {
             logger.error(e.getMessage(), e);
             return null;
           }
-          undone.ifPresent((b) -> undoRedoBoardActionAndSave(updated, b));
+          undone.ifPresent((b) ->
+            undoRedoBoardActionAndSave(updated, b)
+          );
           return updated;
         });
   }
@@ -280,6 +294,7 @@ public class BoardBoxService {
         .filter(nd -> nd.getMoves().equals(switchToNotationDrive.getVariants().get(0).getMoves()))
         .findFirst();
 
+    // TODO Удалять предыдущую ветку??
     // add varint's to switch variants to main notation drives
     variantToSwitch.ifPresent(switchVariant -> {
       notationDrives.addAll(switchVariant.getVariants());
@@ -332,10 +347,24 @@ public class BoardBoxService {
         });
   }
 
-  private void undoRedoBoardActionAndSave(BoardBox updated, Board redone) {
-    updated.setBoard(redone);
-    updated.setBoardId(redone.getId());
-    boardDao.save(redone);
-    boardBoxDao.save(updated);
+  private void undoRedoBoardActionAndSave(BoardBox boardBox, Board board) {
+    boardBox.setBoard(board);
+    boardBox.setBoardId(board.getId());
+    boardDao.save(board);
+    boardBox.getNotation().setNotationDrives(board.getNotationDrives());
+    boardBoxDao.save(boardBox);
+    System.out.println(boardBox.getNotation().getNotationDrives().toPdn());
+  }
+
+  private boolean isNotEditMode(BoardBox boardBox) {
+    return !boardBox.getEditMode().equals(EnumEditBoardBoxMode.EDIT);
+  }
+
+  private boolean isMoveMode(BoardBox boardBox) {
+    return boardBox.getEditMode().equals(EnumEditBoardBoxMode.MOVE);
+  }
+
+  private boolean isEditMode(BoardBox boardBox) {
+    return boardBox.getEditMode().equals(EnumEditBoardBoxMode.EDIT);
   }
 }

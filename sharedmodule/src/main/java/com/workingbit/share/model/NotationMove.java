@@ -23,13 +23,11 @@ import static com.workingbit.share.model.NotationDrive.EnumNotation.SIMPLE;
 @Data
 public class NotationMove implements DeepClone, ToPdn {
 
-  public static final int MAX_MOVES = 1000;
-
   private NotationDrive.EnumNotation type;
   /**
    * Moves like a1 and b2
    */
-  private String[] move = new String[MAX_MOVES];
+  private String[] move = new String[0];
   private String boardId;
   private boolean cursor;
   private String moveStrength;

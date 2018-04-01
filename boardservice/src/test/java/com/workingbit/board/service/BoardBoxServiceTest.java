@@ -53,6 +53,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   private static final String[] PDN_FILE_NAME_VARIANT = {
 //      "/pdn/notation_undo1.pdn",
 //      "/pdn/notation_undo2.pdn",
+      "/pdn/notation_variant_with_one_move.pdn",
       "/pdn/notation_variant1.pdn",
   };
 
@@ -440,7 +441,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   @Test
-  public void test_move_on_placed_board() {
+  public void test_capture_on_placed_board() {
     BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
     boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
     boardBox = boardBoxService.saveAndFillBoard(boardBox).get();
@@ -477,6 +478,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     Square c3n = getSquare(board, "c3");
     assertNotNull(e5n.getDraught());
     assertNull(c3n.getDraught());
+
+    String pdn = boardBox.getNotation().getNotationDrives().toPdn();
+    assertTrue(pdn.contains("c3xe5"));
   }
   
   @After

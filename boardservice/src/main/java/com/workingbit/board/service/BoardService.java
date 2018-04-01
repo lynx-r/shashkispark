@@ -136,16 +136,25 @@ public class BoardService {
       return Optional.empty();
     }
     boardDao.save(currentBoard);
-    return findById(previousId).map(previousBoard -> {
-      previousBoard.pushNextBoard(currentBoard.getId(),
+    return findById(previousId).map(undoneBoard -> {
+      undoneBoard.pushNextBoard(currentBoard.getId(),
           currentBoard.getPreviousSquare().getAlphanumericNotation64(),
           currentBoard.getSelectedSquare().getAlphanumericNotation64());
 
       // reset highlights
-      previousBoard.getSelectedSquare().getDraught().setHighlighted(false);
-      previousBoard.getNextSquare().setHighlighted(false);
-      boardDao.save(previousBoard);
-      return previousBoard;
+      undoneBoard.getSelectedSquare().getDraught().setHighlighted(false);
+      undoneBoard.getNextSquare().setHighlighted(false);
+
+      NotationDrives currentDrives = currentBoard.getNotationDrives();
+      List<NotationDrive> temp = currentDrives.subList(1, currentDrives.size());
+      NotationDrives forkedDrives = NotationDrives.Builder.getInstance()
+          .addAll(temp)
+          .build();
+      NotationDrive headForked = forkedDrives.getFirst().deepClone();
+      headForked.setVariants(forkedDrives);
+      undoneBoard.getNotationDrives().getLast().getVariants().add(headForked);
+
+      return undoneBoard;
     });
   }
 
@@ -155,19 +164,20 @@ public class BoardService {
       return Optional.empty();
     }
     boardDao.save(currentBoard);
-    return findById(nextId).map(nextBoard -> {
+    return findById(nextId).map(redoneBoard -> {
       Square square = getNextOrPrevSquare(currentBoard);
       String notation = square != null ? square.getAlphanumericNotation64() : null;
-      nextBoard.pushPreviousBoard(currentBoard.getId(),
+      redoneBoard.pushPreviousBoard(currentBoard.getId(),
           notation,
           currentBoard.getSelectedSquare().getAlphanumericNotation64());
 
+      // TODO при переключении удалять старую ветку
       // reset highlights
-      Square nextOrPrevSquare = getNextOrPrevSquare(nextBoard);
-      nextBoard.getSelectedSquare().getDraught().setHighlighted(false);
+      Square nextOrPrevSquare = getNextOrPrevSquare(redoneBoard);
+      redoneBoard.getSelectedSquare().getDraught().setHighlighted(false);
       nextOrPrevSquare.setHighlighted(false);
-      boardDao.save(nextBoard);
-      return nextBoard;
+
+      return redoneBoard;
     });
   }
 

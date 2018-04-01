@@ -7,7 +7,6 @@ import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.board.util.Path;
 import com.workingbit.share.util.Filters;
-import com.workingbit.share.util.JsonUtils;
 import com.workingbit.share.util.SparkUtils;
 import org.apache.log4j.Logger;
 

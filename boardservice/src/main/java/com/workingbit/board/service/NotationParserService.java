@@ -4,7 +4,6 @@ import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
-import com.workingbit.share.util.JsonUtils;
 import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
@@ -21,7 +20,7 @@ import java.util.Map;
  */
 public class NotationParserService {
 
-  private static Logger logger = Logger.getLogger(JsonUtils.class);
+  private static Logger logger = Logger.getLogger(NotationParserService.class);
 
   public Notation parse(String notation) throws ParserLogException, ParserCreationException {
     BufferedReader bufferedReader = new BufferedReader(new StringReader(notation));
