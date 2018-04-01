@@ -74,7 +74,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @Test
   public void createBoard() {
-    BoardBox boardBox = boardBoxService().createBoardBox(getCreateBoardRequest(false, false, RUSSIAN)).get();
+    BoardBox boardBox = boardBoxService().createBoardBox(
+        getCreateBoardRequest(false, false, RUSSIAN, EnumEditBoardBoxMode.EDIT)).get();
     toDelete(boardBox);
     assertNotNull(boardBox.getId());
   }
@@ -90,7 +91,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @Test
   public void findById() throws Exception {
-    BoardBox board = getBoardBoxBlackNotFilledRUSSIAN();
+    BoardBox board = getBoardBoxWhiteNotFilledRUSSIAN();
     toDelete(board);
     assertNotNull(board.getId());
     Optional<BoardBox> byId = boardBoxService().findById(board.getId());
@@ -99,7 +100,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @Test
   public void delete() throws Exception {
-    BoardBox board = getBoardBoxBlackNotFilledRUSSIAN();
+    BoardBox board = getBoardBoxWhiteNotFilledRUSSIAN();
     String boardId = board.getId();
     assertNotNull(boardId);
     boardBoxService().delete(boardId);
@@ -107,8 +108,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     assertTrue(!byId.isPresent());
   }
 
-  private BoardBox getBoardBoxBlackNotFilledRUSSIAN() {
-    return getBoardBox(false, false, RUSSIAN);
+  protected BoardBox getBoardBoxWhiteNotFilledRUSSIAN() {
+    return getBoardBox(false, false, RUSSIAN, EnumEditBoardBoxMode.EDIT);
   }
 
   @Test
@@ -414,6 +415,70 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     }
   }
 
+  @Test
+  public void test_add_draught_in_not_place_mode_fail() {
+    BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
+
+    Board board = boardBox.getBoard();
+    board = addWhiteDraught(board, "c3");
+    boardBox.setBoard(board);
+    boolean isPresent = boardBoxService.addDraught(boardBox).isPresent();
+    assertFalse(isPresent);
+  }
+
+  @Test
+  public void test_add_draught_in_place_mode() {
+    BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
+    boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
+    boardBox = boardBoxService.saveAndFillBoard(boardBox).get();
+
+    Board board = boardBox.getBoard();
+    board = addWhiteDraught(board, "c3");
+    boardBox.setBoard(board);
+    boolean isPresent = boardBoxService.addDraught(boardBox).isPresent();
+    assertTrue(isPresent);
+  }
+
+  @Test
+  public void test_move_on_placed_board() {
+    BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
+    boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
+    boardBox = boardBoxService.saveAndFillBoard(boardBox).get();
+
+    Board board = boardBox.getBoard();
+    board = addWhiteDraught(board, "c3");
+    boardBox.setBoard(board);
+    boardBox = boardBoxService.addDraught(boardBox).get();
+
+    board = boardBox.getBoard();
+    board = addBlackDraught(board, "d4");
+    boardBox.setBoard(board);
+    boardBox = boardBoxService.addDraught(boardBox).get();
+
+    // because place mode
+    boolean isPresent = boardBoxService.move(boardBox).isPresent();
+    assertFalse(isPresent);
+
+    boardBox.setEditMode(EnumEditBoardBoxMode.MOVE);
+    boardBox = boardBoxService.saveAndFillBoard(boardBox).get();
+
+    board = boardBox.getBoard();
+
+    Square c3 = getSquare(board, "c3");
+    board.setSelectedSquare(c3);
+    Square e5 = getSquare(board, "e5");
+    e5.setHighlighted(true);
+    board.setNextSquare(e5);
+    boardBox.setBoard(board);
+
+    boardBox = boardBoxService.move(boardBox).get();
+    board = boardBox.getBoard();
+    Square e5n = getSquare(board, "e5");
+    Square c3n = getSquare(board, "c3");
+    assertNotNull(e5n.getDraught());
+    assertNull(c3n.getDraught());
+  }
+  
   @After
   public void tearUp() {
     boards.forEach(board -> boardBoxService().delete(board.getId()));
@@ -425,8 +490,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     boards.add(board);
   }
 
-  private BoardBox getBoardBox(boolean black, boolean fillBoard, EnumRules rules) {
-    CreateBoardPayload createBoardPayload = getCreateBoardRequest(black, fillBoard, rules);
+  protected BoardBox getBoardBox(boolean black, boolean fillBoard, EnumRules rules, EnumEditBoardBoxMode editMode) {
+    CreateBoardPayload createBoardPayload = getCreateBoardRequest(black, fillBoard, rules, editMode);
     return boardBoxService().createBoardBox(createBoardPayload).get();
   }
 }

@@ -116,12 +116,12 @@ public class MoveUtilTest extends BaseServiceTest {
   public void should_capture_on_cross_diagonal() {
     BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
-    board = getSquareByNotationWithDraught(board, "b2");
-    board = getSquareByNotationWithBlackDraught(board, "c3");
-    board = getSquareByNotationWithBlackDraught(board, "e5");
-    board = getSquareByNotationWithBlackDraught(board, "e7");
-    board = getSquareByNotationWithBlackDraught(board, "c7");
-    board = getSquareByNotationWithBlackDraught(board, "c5");
+    board = addWhiteDraught(board, "b2");
+    board = addBlackDraught(board, "c3");
+    board = addBlackDraught(board, "e5");
+    board = addBlackDraught(board, "e7");
+    board = addBlackDraught(board, "c7");
+    board = addBlackDraught(board, "c5");
     Square b2 = findSquareByNotation("b2", board);
     board.setSelectedSquare(b2);
     board = move(board, "b2", "d4", false);
@@ -144,11 +144,11 @@ public class MoveUtilTest extends BaseServiceTest {
   public void should_capture_turk_stroke() {
     BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
-    board = getSquareByNotationWithDraughtQueen(board, "e1", false);
-    board = getSquareByNotationWithBlackDraught(board, "c3");
-    board = getSquareByNotationWithBlackDraught(board, "b6");
-    board = getSquareByNotationWithBlackDraught(board, "e7");
-    board = getSquareByNotationWithBlackDraught(board, "e5");
+    board = addWhiteQueen(board, "e1");
+    board = addBlackDraught(board, "c3");
+    board = addBlackDraught(board, "b6");
+    board = addBlackDraught(board, "e7");
+    board = addBlackDraught(board, "e5");
     Square e1 = findSquareByNotation("e1", board);
     board.setSelectedSquare(e1);
     board = move(board, "e1", "a5", false);

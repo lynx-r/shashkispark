@@ -13,19 +13,19 @@ import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.CreateBoardPayload;
+import com.workingbit.share.model.EnumEditBoardBoxMode;
 import com.workingbit.share.model.EnumRules;
 import com.workingbit.share.model.MovesList;
-import com.workingbit.share.model.NotationMove;
 import com.workingbit.share.util.Utils;
 import junit.framework.TestCase;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.controller.util.BoardUtils.*;
+import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
+import static com.workingbit.board.controller.util.BoardUtils.highlightedBoard;
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.util.Utils.getRandomString;
 import static junit.framework.TestCase.assertFalse;
@@ -58,8 +58,7 @@ public class BaseServiceTest {
     boardBox.setId(getRandomString());
     boardBox.setCreatedAt(LocalDateTime.now());
     boardBox.setArticleId(getRandomString());
-    boardBoxDao.save(boardBox);
-    return boardBox;
+    return boardBoxService.saveAndFillBoard(boardBox).get();
   }
 
   protected Board getBoard() {
@@ -101,28 +100,42 @@ public class BaseServiceTest {
 //    return new BoardService(boardDao, objectMapper, boardHistoryService);
 //  }
 
-  protected CreateBoardPayload getCreateBoardRequest(boolean black, boolean fillBoard, EnumRules rules) {
+  protected CreateBoardPayload getCreateBoardRequest(boolean black, boolean fillBoard, EnumRules rules,
+                                                     EnumEditBoardBoxMode editMode) {
     CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
     createBoardPayload.setBlack(black);
     createBoardPayload.setFillBoard(fillBoard);
     createBoardPayload.setRules(rules);
-    createBoardPayload.setBoardBoxId(Utils.getRandomUUID());
+    createBoardPayload.setArticleId(Utils.getRandomString());
+    createBoardPayload.setBoardBoxId(Utils.getRandomString());
+    createBoardPayload.setEditMode(editMode);
     return createBoardPayload;
   }
 
-  protected Board getSquareByNotationWithDraught(Board currentBoard, String notation) throws BoardServiceException {
-    BoardUtils.addDraught(currentBoard, notation, new Draught(0, 0, 0, false));
-    return currentBoard;
-  }
-
-  protected Board getSquareByNotationWithBlackDraught(Board currentBoard, String notation) throws BoardServiceException {
-    BoardUtils.addDraught(currentBoard, notation, new Draught(0, 0, 0, true));
-    return currentBoard;
-  }
-
-  protected Board getSquareByNotationWithDraughtQueen(Board board, String notation, boolean black) throws BoardServiceException {
-    BoardUtils.addDraught(board, notation, new Draught(0, 0, 0, black, true));
+  protected Board addWhiteDraught(Board board, String notation) throws BoardServiceException {
+    addSquare(board, notation, false, false);
     return board;
+  }
+
+  protected Board addBlackDraught(Board board, String notation) throws BoardServiceException {
+    addSquare(board, notation, true, false);
+    return board;
+  }
+
+  protected Board addWhiteQueen(Board board, String notation) throws BoardServiceException {
+    addSquare(board, notation, false, true);
+    return board;
+  }
+
+  protected Board addBlackQueen(Board board, String notation) throws BoardServiceException {
+    addSquare(board, notation, true, true);
+    return board;
+  }
+
+  private void addSquare(Board board, String notation, boolean black, boolean queen) {
+    BoardUtils.addDraught(board, notation, new Draught(0, 0, 0, black, queen));
+    Square added = getSquare(board, notation);
+    board.setSelectedSquare(added);
   }
 
   protected void testCollection(String notations, List<Square> items) {
@@ -135,8 +148,7 @@ public class BaseServiceTest {
   }
 
   protected Square getSquare(Board board, String notation) {
-    Square square = BoardUtils.findSquareByNotation(notation, board);
-    return square;
+    return BoardUtils.findSquareByNotation(notation, board);
   }
 
   protected Board move(Board board, Square selectedSquare) {
@@ -161,30 +173,5 @@ public class BaseServiceTest {
     assertFalse(from.isOccupied());
     TestCase.assertTrue(to.isOccupied());
     return board;
-  }
-
-  protected class SetBoardSelectedAndNextSupplier implements Supplier<Board> {
-
-    private NotationMove atomStroke;
-    private Board board;
-    private int i = 0;
-
-    public SetBoardSelectedAndNextSupplier(Board board, NotationMove atomStroke) {
-      this.atomStroke = atomStroke;
-      this.board = board;
-    }
-
-    @Override
-    public Board get() {
-//      Square selected = findSquareByNotation(atomStroke.getMove().get(i), board);
-//      board.setSelectedSquare(selected);
-//      Square next = findSquareByNotation(atomStroke.getMove().get(i + 1), board);
-//      next.setHighlighted(true);
-//      board.setNextSquare(next);
-//      board.setId(getRandomString());
-//      boardDao.save(board);
-      i++;
-      return board;
-    }
   }
 }

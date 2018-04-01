@@ -17,6 +17,7 @@ public class CreateBoardPayload implements Payload {
   private Boolean black;
   private EnumRules rules;
   private String boardBoxId;
+  private EnumEditBoardBoxMode editMode;
 
   private CreateBoardPayload() {
   }
@@ -26,13 +27,15 @@ public class CreateBoardPayload implements Payload {
                             @JsonProperty("fillBoard") Boolean fillBoard,
                             @JsonProperty("black") Boolean black,
                             @JsonProperty("rules") EnumRules rules,
-                            @JsonProperty("boardBoxId") String boardBoxId
+                            @JsonProperty("boardBoxId") String boardBoxId,
+                            @JsonProperty("editMode") EnumEditBoardBoxMode editMode
   ) {
     this.articleId = articleId;
     this.fillBoard = fillBoard;
     this.black = black;
     this.rules = rules;
     this.boardBoxId = boardBoxId;
+    this.editMode = editMode;
   }
 
   public static CreateBoardPayload createBoardPayload() {

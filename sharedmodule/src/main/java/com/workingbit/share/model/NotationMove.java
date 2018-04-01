@@ -14,6 +14,8 @@ import static com.workingbit.share.model.NotationDrive.EnumNotation.CAPTURE;
 import static com.workingbit.share.model.NotationDrive.EnumNotation.SIMPLE;
 
 /**
+ * Moves like e1-b2 or a1:e2
+ *
  * Created by Aleksey Popryaduhin on 21:33 03/10/2017.
  */
 @NoArgsConstructor

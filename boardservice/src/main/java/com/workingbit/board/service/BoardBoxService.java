@@ -190,7 +190,8 @@ public class BoardBoxService {
   public Optional<BoardBox> addDraught(BoardBox boardBox) {
     Square selectedSquare = boardBox.getBoard().getSelectedSquare();
     if (selectedSquare == null
-        || !selectedSquare.isOccupied()) {
+        || !selectedSquare.isOccupied()
+        || !boardBox.getEditMode().equals(EnumEditBoardBoxMode.PLACE)) {
       return Optional.empty();
     }
     Draught draught = selectedSquare.getDraught();
