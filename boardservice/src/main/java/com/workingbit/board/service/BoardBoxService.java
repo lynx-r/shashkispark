@@ -124,11 +124,15 @@ public class BoardBoxService {
             logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
             return null;
           }
+          NotationDrives notationDrivesInBoardBox = updatedBox.getNotation().getNotationDrives();
+          boardUpdated.setNotationDrives(notationDrivesInBoardBox);
+          boardUpdated.setDriveCount(notationDrivesInBoardBox.size() - 1);
           String articleId = boardBox.getArticleId();
           NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
           boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId, notationDrives);
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
+          updatedBox.getNotation().setNotationDrives(boardUpdated.getNotationDrives());
 
           updateVariantsInBoard(updatedBox, boardUpdated);
           boardBoxDao.save(updatedBox);
@@ -281,41 +285,38 @@ public class BoardBoxService {
 
     Notation notation = boardBox.getNotation();
     NotationDrives notationDrives = notation.getNotationDrives();
-    NotationDrive lastDrive = notationDrives.getLast();
-    NotationDrives lastVariants = lastDrive.getVariants();
 
-    // forkNumber current notation
     int indexFork = notationDrives.indexOf(switchToNotationDrive);
-    List<NotationDrive> forked = notationDrives.subList(indexFork, notationDrives.size());
-    NotationDrives forkedNotationDrives;
-    // add current notation drive after indexFork to variants
-    if (forked.size() > 1) {
-      forkedNotationDrives = NotationDrives.Builder.getInstance()
+    NotationDrive toSwitchDrive = notationDrives.get(indexFork);
+    NotationDrives toSwitchVariants = toSwitchDrive.getVariants();
+
+    // add current notation drive after indexSwitch to variants
+    if (indexFork + 1 < notationDrives.size()) {
+      List<NotationDrive> forked = notationDrives.subList(indexFork + 1, notationDrives.size());
+      NotationDrives forkedNotationDrives = NotationDrives.Builder.getInstance()
           .addAll(forked)
           .build();
 
+      // remove tail
       notationDrives.removeAll(forkedNotationDrives);
 
       NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
       variant.setVariants(forkedNotationDrives);
-      lastVariants.add(variant);
+      toSwitchVariants.add(variant);
     }
 
     // find drive to switch in last variants
-    Optional<NotationDrive> variantToSwitch = lastVariants
+    Optional<NotationDrive> variantToSwitch = toSwitchVariants
         .stream()
         // switchToNotationDrive MUST have one variant to witch user switches
         .filter(nd -> nd.getMoves().equals(switchToNotationDrive.getVariants().get(0).getMoves()))
         .findFirst();
 
-    // add its variants to main notation drives
+    // add varint's to switch variants to main notation drives
     variantToSwitch.ifPresent(switchVariant -> {
-      notationDrives.addAll(switchVariant.getVariants().deepClone());
-      lastDrive.getVariants().clear();
-      switchVariant.getVariants().clear();
-      switchVariant.setSibling(0);
+      notationDrives.addAll(switchVariant.getVariants());
     });
-    lastDrive.setForkNumber(lastDrive.getForkNumber() - 1);
+    toSwitchDrive.setForkNumber(toSwitchDrive.getForkNumber() - 1);
 
     return boardBox;
   }

@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.workingbit.share.model.NotationDrive.EnumMoveType.CAPTURE;
-import static com.workingbit.share.model.NotationDrive.EnumMoveType.SIMPLE;
+import static com.workingbit.share.model.NotationDrive.EnumNotation.CAPTURE;
+import static com.workingbit.share.model.NotationDrive.EnumNotation.SIMPLE;
 
 /**
  * Created by Aleksey Popryaduhin on 21:33 03/10/2017.
@@ -23,7 +23,7 @@ public class NotationMove implements DeepClone, ToPdn {
 
   public static final int MAX_MOVES = 1000;
 
-  private NotationDrive.EnumMoveType type;
+  private NotationDrive.EnumNotation type;
   /**
    * Moves like a1 and b2
    */
@@ -35,13 +35,13 @@ public class NotationMove implements DeepClone, ToPdn {
   @DynamoDBIgnore
   public String getNotation() {
     return Stream.of(move)
-        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getType() : CAPTURE.getType()));
+        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getSimple() : CAPTURE.getSimple()));
   }
 
   @DynamoDBIgnore
   private String getNotationPdn() {
     return Stream.of(move)
-        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdnType() : CAPTURE.getPdnType()));
+        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdn() : CAPTURE.getPdn()));
   }
 
   @SuppressWarnings("unused")
@@ -71,19 +71,19 @@ public class NotationMove implements DeepClone, ToPdn {
 
   public static NotationMove fromPdn(String stroke, String boardId) {
     NotationMove notationMove = new NotationMove();
-    boolean capture = stroke.contains(CAPTURE.getPdnType());
+    boolean capture = stroke.contains(CAPTURE.getPdn());
     if (capture) {
       notationMove.setType(CAPTURE);
-      notationMove.setMove(stroke.split(CAPTURE.getPdnType()));
+      notationMove.setMove(stroke.split(CAPTURE.getPdn()));
     } else {
       notationMove.setType(SIMPLE);
-      notationMove.setMove(stroke.split(SIMPLE.getPdnType()));
+      notationMove.setMove(stroke.split(SIMPLE.getPdn()));
     }
     notationMove.setBoardId(boardId);
     return notationMove;
   }
 
-  public static NotationMove create(NotationDrive.EnumMoveType type, String boardId, boolean cursor) {
+  public static NotationMove create(NotationDrive.EnumNotation type, String boardId, boolean cursor) {
     NotationMove notationMove = new NotationMove();
     notationMove.setType(type);
     notationMove.setBoardId(boardId);

@@ -2,6 +2,7 @@ package com.workingbit.share.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.util.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +58,7 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public void setNotationNumberInt(int moveNumber) {
-    this.notationNumber = moveNumber + EnumMoveType.NUMBER.getPdnType();
+    this.notationNumber = moveNumber + EnumNotation.NUMBER.getPdn();
   }
 
   @Override
@@ -121,37 +122,33 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public String toPdn() {
-    if (root) {
-      return "";
-    }
-    if (forkNumber == 0 && sibling > 0) {
-      return (sibling == 1 ? variants.toPdn() : " ( " + variants.toPdn() + " ) ");
-    }
     return (StringUtils.isNotBlank(notationNumber) ? notationNumber + " " : "" ) +
         (!moves.isEmpty() ? moves.toPdn() + " " : "") +
-        variants.toPdn();
+        Utils.notationDrivesToPdn(variants);
   }
 
-  public enum EnumMoveType {
+  public enum EnumNotation {
     NUMBER(". ", ". "),
+    LBRACKET("(", " ( "),
+    RBRACKET("(", " ( "),
     SIMPLE("-", "-"),
     CAPTURE(":", "x"),
     END_GAME_SYMBOL("*", "*");
 
-    private String type;
-    private String pdnType;
+    private String simple;
+    private String pdn;
 
-    EnumMoveType(String type, String pdnType) {
-      this.type = type;
-      this.pdnType = pdnType;
+    EnumNotation(String simple, String pdn) {
+      this.simple = simple;
+      this.pdn = pdn;
     }
 
-    public String getType() {
-      return type;
+    public String getSimple() {
+      return simple;
     }
 
-    public String getPdnType() {
-      return pdnType;
+    public String getPdn() {
+      return pdn;
     }
   }
 }

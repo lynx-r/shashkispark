@@ -37,6 +37,9 @@ import static org.junit.Assert.*;
 @RunWith(Theories.class)
 public class BoardBoxServiceTest extends BaseServiceTest {
 
+  private static final String[] PDN_FILE_NAME_VARIANT_WITH_FORWARD_MOVE = {
+      "/pdn/notation_variant_with_forward_move.pdn",
+  };
   public static @DataPoints
   boolean[] blacks = {true, false};
 
@@ -208,6 +211,100 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       BoardBox switched = boardBoxService.switchToNotationDrive(boardBoxVariant, nd).get();
       switched.getNotation().print();
       System.out.println(switched.getNotation().toPdn());
+    }
+  }
+
+  @Test
+  public void test_create_variant_with_forward_move() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
+    for (String fileName : PDN_FILE_NAME_VARIANT_WITH_FORWARD_MOVE) {
+      System.out.println("LOADED PDN FILE: " + fileName);
+      URL uri = getClass().getResource(fileName);
+      Path path = Paths.get(uri.toURI());
+      List<String> lines = Files.readAllLines(path);
+      int lineCount = Integer.parseInt(lines.remove(0));
+      int forkNumber = Integer.parseInt(lines.get(0));
+      List<String> forwardNotationLines = new ArrayList<>(lines.subList(0, lineCount));
+      lines.removeAll(forwardNotationLines);
+      forwardNotationLines.remove(0);
+
+      BufferedReader bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
+
+      // Parse Notation
+      Notation notation = notationParserService.parse(bufferedReader);
+      notation.setRules(RUSSIAN);
+
+      String articleId = Utils.getRandomString();
+      String boardBoxId = Utils.getRandomString();
+
+      // Create BoardBox from Notation
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+
+      // forkNumber notation by index from test file
+      NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
+      NotationDrive forkDrive = notationDrives.get(forkNumber);
+      BoardBox boardBoxVariant = boardBoxService.forkBoardBox(boardBox, forkDrive).get();
+
+      System.out.println(boardBoxVariant.getNotation().getNotationDrives().toPdn());
+
+      Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
+      NotationDrive forwardDrive = forwardNotation.getNotationDrives().get(1);
+
+      BoardBox current = boardBoxVariant.deepClone();
+      for (NotationMove move : forwardDrive.getMoves()) {
+        current = moveStrokes(current, move);
+      }
+
+      System.out.println(current.getNotation().getNotationDrives().toPdn());
+    }
+  }
+
+  @Test
+  public void test_switch_to_variant_with_forward_move() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
+    for (String fileName : PDN_FILE_NAME_VARIANT_WITH_FORWARD_MOVE) {
+      System.out.println("LOADED PDN FILE: " + fileName);
+      URL uri = getClass().getResource(fileName);
+      Path path = Paths.get(uri.toURI());
+      List<String> lines = Files.readAllLines(path);
+      int lineCount = Integer.parseInt(lines.remove(0));
+      int forkNumber = Integer.parseInt(lines.get(0));
+      List<String> forwardNotationLines = new ArrayList<>(lines.subList(0, lineCount));
+      lines.removeAll(forwardNotationLines);
+      forwardNotationLines.remove(0);
+
+      BufferedReader bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
+
+      // Parse Notation
+      Notation notation = notationParserService.parse(bufferedReader);
+      notation.setRules(RUSSIAN);
+
+      String articleId = Utils.getRandomString();
+      String boardBoxId = Utils.getRandomString();
+
+      // Create BoardBox from Notation
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+
+      // forkNumber notation by index from test file
+      NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
+      NotationDrive forkDrive = notationDrives.get(forkNumber);
+      BoardBox boardBoxVariant = boardBoxService.forkBoardBox(boardBox, forkDrive).get();
+
+      Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
+      NotationDrive forwardDrive = forwardNotation.getNotationDrives().get(1);
+
+      BoardBox current = boardBoxVariant.deepClone();
+      for (NotationMove move : forwardDrive.getMoves()) {
+        current = moveStrokes(current, move);
+      }
+
+      System.out.println(current.getNotation().getNotationDrives().toPdn());
+
+      // get previous drive
+      NotationDrives nds = current.getNotation().getNotationDrives();
+      NotationDrive nd = nds.get(forkNumber - 1);
+
+      BoardBox switched = boardBoxService.switchToNotationDrive(current, nd).get();
+
+      System.out.println(switched.getNotation().getNotationDrives().toPdn());
     }
   }
 

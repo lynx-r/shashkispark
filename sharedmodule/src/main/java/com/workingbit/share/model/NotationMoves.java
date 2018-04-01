@@ -1,10 +1,10 @@
 package com.workingbit.share.model;
 
+import com.workingbit.share.util.Utils;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
-
-import static com.workingbit.share.util.Utils.listToPdn;
 
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
@@ -18,7 +18,7 @@ public class NotationMoves extends LinkedList<NotationMove> implements ToPdn {
   }
 
   public String toPdn() {
-    return listToPdn(new ArrayList<>(this));
+    return Utils.listToPdn(new ArrayList<>(this));
   }
 
   public static class Builder {

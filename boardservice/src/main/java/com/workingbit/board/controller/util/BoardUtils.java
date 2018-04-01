@@ -253,7 +253,7 @@ public class BoardUtils {
     String boardId = board.getId();
     NotationDrives notationDrives = board.getNotationDrives();
 
-    NotationMove move = NotationMove.create(NotationDrive.EnumMoveType.CAPTURE, boardId, true);
+    NotationMove move = NotationMove.create(NotationDrive.EnumNotation.CAPTURE, boardId, true);
     move.setMove(new String[]{
         board.getPreviousSquare().getNotation(),
         board.getSelectedSquare().getNotation()
@@ -307,7 +307,7 @@ public class BoardUtils {
     };
 
     String boardId = board.getId();
-    NotationMove notationMove = NotationMove.create(NotationDrive.EnumMoveType.SIMPLE, boardId, true);
+    NotationMove notationMove = NotationMove.create(NotationDrive.EnumNotation.SIMPLE, boardId, true);
     notationMove.setMove(move);
 
     if (notationNumber != 0) {
@@ -325,7 +325,7 @@ public class BoardUtils {
 
   private static NotationDrive getFirstNotationDrive(int strokeCount, NotationDrives notationDrives, String boardId) {
     if (notationDrives.isEmpty()) {
-      NotationMove firstMove = NotationMove.create(NotationDrive.EnumMoveType.SIMPLE, boardId, true);
+      NotationMove firstMove = NotationMove.create(NotationDrive.EnumNotation.SIMPLE, boardId, true);
       NotationMoves moves = NotationMoves.Builder.getInstance()
           .add(firstMove)
           .build();

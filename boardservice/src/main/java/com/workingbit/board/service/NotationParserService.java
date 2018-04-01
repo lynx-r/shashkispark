@@ -13,6 +13,7 @@ import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Map;
 
 /**
@@ -21,6 +22,11 @@ import java.util.Map;
 public class NotationParserService {
 
   private static Logger logger = Logger.getLogger(JsonUtils.class);
+
+  public Notation parse(String notation) throws ParserLogException, ParserCreationException {
+    BufferedReader bufferedReader = new BufferedReader(new StringReader(notation));
+    return parse(bufferedReader);
+  }
 
   public Notation parse(BufferedReader bufferedReader) throws ParserCreationException, ParserLogException {
     NotationParser notationParser = new NotationParser(bufferedReader);

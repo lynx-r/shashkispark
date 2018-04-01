@@ -1,18 +1,16 @@
 package com.workingbit.share.model;
 
-import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.util.Utils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.workingbit.share.util.Utils.listToPdn;
-
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
  */
-public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn, DeepClone {
+public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn {
 
   public NotationDrives() {
     this(false);
@@ -33,7 +31,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn, 
   }
 
   public String toPdn() {
-    return listToPdn(new ArrayList<>(this));
+    return Utils.listToPdn(new ArrayList<>(this));
   }
 
   public static NotationDrives createWithoutRoot() {
