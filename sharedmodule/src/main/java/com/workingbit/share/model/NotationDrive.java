@@ -31,9 +31,10 @@ public class NotationDrive implements DeepClone, ToPdn {
   private String comment;
   private boolean root;
   /**
-   * Is the current drive a fork?
+   * Is the current drive a forkNumber?
    */
-  private boolean fork;
+  private int forkNumber;
+  private int sibling;
 
   public NotationDrive() {
     variants = NotationDrives.createWithoutRoot();
@@ -107,6 +108,8 @@ public class NotationDrive implements DeepClone, ToPdn {
     }
     return new StringBuilder()
         .append(prefix).append(getClass().getSimpleName())
+        .append(prefix).append("\t").append("forkNumber: ").append(forkNumber)
+        .append(prefix).append("\t").append("sibling: ").append(sibling)
         .append(prefix).append("\t").append("notationNumber: ").append(notationNumber)
         .append(prefix).append("\t").append("notationMoves: ").append(moves.print(prefix + "\t"))
         .append(prefix).append("\t").append("variants: ").append(variants.print(prefix + "\t"))
@@ -121,13 +124,12 @@ public class NotationDrive implements DeepClone, ToPdn {
     if (root) {
       return "";
     }
-    if (fork) {
-      return variants.toPdn();
+    if (forkNumber == 0 && sibling > 0) {
+      return (sibling == 1 ? variants.toPdn() : " ( " + variants.toPdn() + " ) ");
     }
     return (StringUtils.isNotBlank(notationNumber) ? notationNumber + " " : "" ) +
         (!moves.isEmpty() ? moves.toPdn() + " " : "") +
-        (!variants.isEmpty() ? "( " + variants.toPdn() + ") " : "") +
-        (StringUtils.isNotBlank(comment) ? comment + " " : "");
+        variants.toPdn();
   }
 
   public enum EnumMoveType {

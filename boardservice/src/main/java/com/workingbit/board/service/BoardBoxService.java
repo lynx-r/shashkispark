@@ -277,11 +277,14 @@ public class BoardBoxService {
   }
 
   private BoardBox switchNotationToVariant(BoardBox boardBox, NotationDrive switchToNotationDrive) {
+    assert switchToNotationDrive.getVariants().size() == 1;
+
     Notation notation = boardBox.getNotation();
     NotationDrives notationDrives = notation.getNotationDrives();
-    NotationDrives lastVariants = notationDrives.getLast().getVariants();
+    NotationDrive lastDrive = notationDrives.getLast();
+    NotationDrives lastVariants = lastDrive.getVariants();
 
-    // fork current notation
+    // forkNumber current notation
     int indexFork = notationDrives.indexOf(switchToNotationDrive);
     List<NotationDrive> forked = notationDrives.subList(indexFork, notationDrives.size());
     NotationDrives forkedNotationDrives;
@@ -298,14 +301,21 @@ public class BoardBoxService {
       lastVariants.add(variant);
     }
 
-    // find drive to switch
+    // find drive to switch in last variants
     Optional<NotationDrive> variantToSwitch = lastVariants
         .stream()
+        // switchToNotationDrive MUST have one variant to witch user switches
         .filter(nd -> nd.getMoves().equals(switchToNotationDrive.getVariants().get(0).getMoves()))
         .findFirst();
 
     // add its variants to main notation drives
-    variantToSwitch.ifPresent(v-> notationDrives.addAll(v.getVariants()));
+    variantToSwitch.ifPresent(switchVariant -> {
+      notationDrives.addAll(switchVariant.getVariants().deepClone());
+      lastDrive.getVariants().clear();
+      switchVariant.getVariants().clear();
+      switchVariant.setSibling(0);
+    });
+    lastDrive.setForkNumber(lastDrive.getForkNumber() - 1);
 
     return boardBox;
   }
@@ -324,9 +334,12 @@ public class BoardBoxService {
 
     NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
     variant.setVariants(forkedNotationDrives);
-    variant.setFork(true);
+    variant.setSibling(variant.getVariants().size());
 
-    notationDrives.getLast().getVariants().add(variant);
+    NotationDrive newDriveNotation = notationDrives.getLast();
+    newDriveNotation.setForkNumber(newDriveNotation.getForkNumber() + 1);
+
+    newDriveNotation.getVariants().add(variant);
     return boardBox;
   }
 
