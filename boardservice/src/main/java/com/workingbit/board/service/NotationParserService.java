@@ -102,7 +102,7 @@ public class NotationParserService {
         }
         case "Variation": {
           Node variant = gameBody.getChildAt(1);
-          NotationDrives notationDrivesVariant = NotationDrives.createWithoutRoot();
+          NotationDrives notationDrivesVariant = notationDrive.getVariants();
           parseGame(variant, notationDrivesVariant);
           notationDrive.setVariants(notationDrivesVariant);
           break;

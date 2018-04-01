@@ -30,6 +30,10 @@ public class NotationDrive implements DeepClone, ToPdn {
   private boolean numeric;
   private String comment;
   private boolean root;
+  /**
+   * Is the current drive a fork?
+   */
+  private boolean fork;
 
   public NotationDrive() {
     variants = NotationDrives.createWithoutRoot();
@@ -116,6 +120,9 @@ public class NotationDrive implements DeepClone, ToPdn {
   public String toPdn() {
     if (root) {
       return "";
+    }
+    if (fork) {
+      return variants.toPdn();
     }
     return (StringUtils.isNotBlank(notationNumber) ? notationNumber + " " : "" ) +
         (!moves.isEmpty() ? moves.toPdn() + " " : "") +

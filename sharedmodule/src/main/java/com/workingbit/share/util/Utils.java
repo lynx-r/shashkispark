@@ -8,6 +8,8 @@ import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.CreateBoardPayload;
+import com.workingbit.share.model.NotationDrive;
+import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.ToPdn;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Aleksey Popryaduhin on 12:01 12/08/2017.
@@ -202,8 +205,15 @@ public class Utils {
     if (list == null || list.isEmpty()) {
       return "";
     }
+    return streamToPdn(list.stream()).collect(Collectors.joining());
+  }
+
+  public static Stream<String> streamToPdn(Stream<ToPdn> stream) {
+    if (stream == null) {
+      return Stream.empty();
+    }
     AtomicInteger i = new AtomicInteger();
-    return list.stream()
+    return stream
         .map(s -> {
           String pdn = s.toPdn();
           i.getAndIncrement();
@@ -213,6 +223,25 @@ public class Utils {
             i.set(0);
           }
           return pdn;
-        }).collect(Collectors.joining());
+        });
+  }
+
+  public static String notationDrivesToPdn(NotationDrives drives) {
+    if (drives == null || drives.isEmpty()) {
+      return "";
+    }
+    return drives
+        .stream()
+        .map(d -> {
+          if (d.getMoves().isEmpty()) {
+            return d.getVariants()
+                .stream()
+                .map(NotationDrive::toPdn)
+                .collect(Collectors.joining(" ) ( ", "(", ")"));
+          } else {
+            return d.toPdn();
+          }
+        })
+        .collect(Collectors.joining(" ", " ( ", " ) "));
   }
 }

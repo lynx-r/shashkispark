@@ -53,8 +53,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   };
 
   private final List<String> PDN_FILE_NAMES_PARSE = new ArrayList<String>() {{
-    add("/pdn/notation_error1.pdn");
     add("/pdn/example.pdn");
+    add("/pdn/notation_error1.pdn");
     add("/pdn/notation_comment.pdn");
     add("/pdn/notation_simple.pdn");
     add("/pdn/notation_strength.pdn");
@@ -168,6 +168,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       NotationDrives nds = boardBoxVariant.getNotation().getNotationDrives();
       NotationDrive nd = nds.get(forkDriveIndex - 1);
       assertEquals(nd.getVariants().getLast().getVariants().size(), notationDrives.size() - forkDriveIndex);
+      System.out.println("Prev: " + notationDrives.toPdn());
+      System.out.println("New: " + nds.toPdn());
     }
   }
 
@@ -205,6 +207,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // switch
       BoardBox switched = boardBoxService.switchToNotationDrive(boardBoxVariant, nd).get();
       switched.getNotation().print();
+      System.out.println(switched.getNotation().toPdn());
     }
   }
 

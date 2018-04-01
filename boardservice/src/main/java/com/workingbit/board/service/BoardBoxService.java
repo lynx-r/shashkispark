@@ -284,7 +284,7 @@ public class BoardBoxService {
     // fork current notation
     int indexFork = notationDrives.indexOf(switchToNotationDrive);
     List<NotationDrive> forked = notationDrives.subList(indexFork, notationDrives.size());
-    NotationDrives forkedNotationDrives = null;
+    NotationDrives forkedNotationDrives;
     // add current notation drive after indexFork to variants
     if (forked.size() > 1) {
       forkedNotationDrives = NotationDrives.Builder.getInstance()
@@ -324,6 +324,7 @@ public class BoardBoxService {
 
     NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
     variant.setVariants(forkedNotationDrives);
+    variant.setFork(true);
 
     notationDrives.getLast().getVariants().add(variant);
     return boardBox;
