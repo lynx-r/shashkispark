@@ -20,6 +20,29 @@ public class NotationDrive implements DeepClone, ToPdn {
    */
   private String notationNumber;
 
+  /**
+   * Number of move in `moves`
+   */
+  private NotationMoves moves;
+
+  private NotationDrives variants;
+  private boolean ellipses;
+  private boolean numeric;
+  private String comment;
+  private boolean root;
+
+  public NotationDrive() {
+    variants = NotationDrives.createWithoutRoot();
+    moves = new NotationMoves();
+  }
+
+  public static NotationDrive create(NotationMoves moves) {
+    NotationDrive notationDrive = new NotationDrive();
+    notationDrive.setNotationNumber(null);
+    notationDrive.setMoves(moves);
+    return notationDrive;
+  }
+
   @DynamoDBIgnore
   public int getNotationNumberInt() {
     if (StringUtils.isNotBlank(notationNumber)) {
@@ -32,27 +55,6 @@ public class NotationDrive implements DeepClone, ToPdn {
     this.notationNumber = moveNumber + EnumMoveType.NUMBER.getPdnType();
   }
 
-  /**
-   * Number of move in `moves`
-   */
-  private NotationMoves moves;
-  private NotationDrives variants;
-  private boolean ellipses;
-  private boolean numeric;
-  private String comment;
-
-  public NotationDrive() {
-    moves = new NotationMoves();
-    variants = new NotationDrives();
-  }
-
-  public static NotationDrive create(NotationMoves moves) {
-    NotationDrive notationDrive = new NotationDrive();
-    notationDrive.setNotationNumber(null);
-    notationDrive.setMoves(moves);
-    return notationDrive;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -60,13 +62,14 @@ public class NotationDrive implements DeepClone, ToPdn {
 //    if (!super.equals(o)) return false;
     NotationDrive that = (NotationDrive) o;
     return ellipses == that.ellipses &&
-        Objects.equals(notationNumber, that.notationNumber);
+        Objects.equals(moves, that.moves) &&
+        Objects.equals(getNotationNumberInt(), that.getNotationNumberInt());
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(super.hashCode(), notationNumber, ellipses);
+    return Objects.hash(super.hashCode(), getNotationNumberInt(), ellipses);
   }
 
   public void parseNameFromPdn(String name) {
@@ -93,6 +96,11 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public String print(String prefix) {
+    if (root) {
+      return prefix + getClass().getSimpleName() +
+          prefix + "\t" + "root" +
+          prefix + "\t" + "variants: " + variants.print(prefix + "\t");
+    }
     return new StringBuilder()
         .append(prefix).append(getClass().getSimpleName())
         .append(prefix).append("\t").append("notationNumber: ").append(notationNumber)
@@ -106,6 +114,9 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public String toPdn() {
+    if (root) {
+      return "";
+    }
     return (StringUtils.isNotBlank(notationNumber) ? notationNumber + " " : "" ) +
         (!moves.isEmpty() ? moves.toPdn() + " " : "") +
         (!variants.isEmpty() ? "( " + variants.toPdn() + ") " : "") +

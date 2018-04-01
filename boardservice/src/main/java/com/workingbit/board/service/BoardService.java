@@ -35,10 +35,16 @@ public class BoardService {
     return syncBoardWithStrokes(board, notation.getNotationDrives(), articleId);
   }
 
-  Optional<Board> findById(String boardId) {
+  public Optional<Board> find(Board board) {
+    Optional<Board> boardOptional = boardDao.find(board);
+    return boardOptional.map(this::updateBoard);
+  }
+
+  public Optional<Board> findById(String boardId) {
     Optional<Board> boardOptional = boardDao.findByKey(boardId);
     return boardOptional.map(this::updateBoard);
   }
+
 
   void delete(String boardId) {
     boardDao.delete(boardId);
@@ -65,8 +71,6 @@ public class BoardService {
    * @param currentBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
-   * @param articleId
-   * @param boardBoxNotationDrives
    */
   public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId,
                     NotationDrives boardBoxNotationDrives) {
@@ -94,10 +98,10 @@ public class BoardService {
     String nextNotation = nextSquare.getNotation();
     nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
 
-    if (boardBoxNotationDrives != null) { // in case when I fill it from NotationParseService
-      NotationDrives boardNotationDrives = nextBoard.getNotationDrives();
-      updateBoardVariantsNotation(boardBoxNotationDrives, boardNotationDrives);
-    }
+//    if (boardBoxNotationDrives != null) { // in case when I fill it from NotationParseService
+//      NotationDrives boardNotationDrives = nextBoard.getNotationDrives();
+//      updateBoardVariantsNotation(boardBoxNotationDrives, boardNotationDrives);
+//    }
 
     boardDao.save(nextBoard);
     return nextBoard;

@@ -129,4 +129,8 @@ public class BaseDao<T extends BaseDomain> {
     }
     return Collections.emptyList();
   }
+
+  public Optional<T> find(T obj) {
+    return findByKey(obj.getId());
+  }
 }

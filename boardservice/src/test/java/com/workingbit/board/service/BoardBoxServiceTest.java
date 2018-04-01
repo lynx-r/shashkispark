@@ -123,7 +123,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
 
-      // Test create BoardBox moving draughts
+      // Test createWithoutRoot BoardBox moving draughts
       NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
       BoardBox current = boardBox.deepClone();
       for (NotationDrive drive : notationDrives) {
@@ -138,7 +138,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   @Test
-  public void test_variant() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
+  public void test_create_variant() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
     for (String fileName : PDN_FILE_NAME_VARIANT) {
       System.out.println("LOADED PDN FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
@@ -163,8 +163,48 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       NotationDrive forkDrive = notationDrives.get(forkDriveIndex);
 
-      BoardBox boardBoxVariant = boardBoxService.createVariant(boardBox, forkDrive).get();
-      boardBoxVariant.getNotation().print();
+      BoardBox boardBoxVariant = boardBoxService.forkBoardBox(boardBox, forkDrive).get();
+
+      NotationDrives nds = boardBoxVariant.getNotation().getNotationDrives();
+      NotationDrive nd = nds.get(forkDriveIndex - 1);
+      assertEquals(nd.getVariants().getLast().getVariants().size(), notationDrives.size() - forkDriveIndex);
+    }
+  }
+
+  @Test
+  public void test_switch_to_variant() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
+    for (String fileName : PDN_FILE_NAME_VARIANT) {
+      System.out.println("LOADED PDN FILE: " + fileName);
+      URL uri = getClass().getResource(fileName);
+      Path path = Paths.get(uri.toURI());
+      List<String> lines = Files.readAllLines(path);
+      String startVariantDriveMove = lines.remove(0);
+
+      BufferedReader bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
+
+      // Parse Notation
+      Notation notation = notationParserService.parse(bufferedReader);
+      notation.setRules(RUSSIAN);
+
+      String articleId = Utils.getRandomString();
+      String boardBoxId = Utils.getRandomString();
+
+      // Create BoardBox from Notation
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+
+      // fork notation by index from test file
+      int forkDriveIndex = Integer.parseInt(startVariantDriveMove);
+      NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
+      NotationDrive forkDrive = notationDrives.get(forkDriveIndex);
+      BoardBox boardBoxVariant = boardBoxService.forkBoardBox(boardBox, forkDrive).get();
+
+      // get previous drive
+      NotationDrives nds = boardBoxVariant.getNotation().getNotationDrives();
+      NotationDrive nd = nds.get(forkDriveIndex - 1);
+
+      // switch
+      BoardBox switched = boardBoxService.switchToNotationDrive(boardBoxVariant, nd).get();
+      switched.getNotation().print();
     }
   }
 
@@ -182,7 +222,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     String[] move = notationMove.getMove();
     for (int i = 0; i < move.length - 1; i++) {
 //      String boardId = notationMove.getBoardId();
-      Board board = boardBoxCurrent.getBoard(); /*boardService.findById(boardId).get();*/
+      Board board = boardBoxCurrent.getBoard(); /*boardService.find(boardId).get();*/
 
       String selMove = move[i];
       Square selected = findSquareByNotation(selMove, board);
@@ -208,6 +248,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_reparse_from_pdn() throws Exception {
     for (String fileName : PDN_FILE_NAMES_PARSE) {
+      System.out.println("Test filename: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       BufferedReader bufferedReader = Files.newBufferedReader(path);

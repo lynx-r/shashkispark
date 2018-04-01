@@ -2,14 +2,12 @@ package com.workingbit.share.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.collections4.map.ListOrderedMap;
 
 /**
  * Created by Aleksey Popryaduhin on 21:30 03/10/2017.
  */
-@AllArgsConstructor
 @Data
 public class Notation implements ToPdn {
 
@@ -32,7 +30,14 @@ public class Notation implements ToPdn {
 
   public Notation() {
     tags = new ListOrderedMap<>();
-    notationDrives = new NotationDrives();
+    notationDrives = NotationDrives.createWithRoot();
+  }
+
+  public Notation(ListOrderedMap<String, String> tags, EnumRules rules, NotationDrives notationDrives) {
+    this();
+    this.tags = tags;
+    this.rules = rules;
+    this.notationDrives.addAll(notationDrives);
   }
 
   @JsonAnySetter

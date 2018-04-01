@@ -4,11 +4,13 @@ import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
+import com.workingbit.share.util.JsonUtils;
 import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
 import net.percederberg.grammatica.parser.Token;
 import org.apache.commons.collections4.map.ListOrderedMap;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.util.Map;
@@ -17,6 +19,8 @@ import java.util.Map;
  * Created by Aleksey Popryadukhin on 29/03/2018.
  */
 public class NotationParserService {
+
+  private static Logger logger = Logger.getLogger(JsonUtils.class);
 
   public Notation parse(BufferedReader bufferedReader) throws ParserCreationException, ParserLogException {
     NotationParser notationParser = new NotationParser(bufferedReader);
@@ -29,11 +33,12 @@ public class NotationParserService {
     parseHeader(gameHeader, headers);
 
     Node game = pdnFile.getChildAt(1);
-    NotationDrives notationDrives = new NotationDrives();
+    NotationDrives notationDrives = NotationDrives.createWithRoot();
     try {
       parseGame(game, notationDrives);
     } catch (Exception e) {
       game.printTo(System.err);
+      logger.error("Parse error ", e);
     }
 
     Notation notation = new Notation();
@@ -97,7 +102,7 @@ public class NotationParserService {
         }
         case "Variation": {
           Node variant = gameBody.getChildAt(1);
-          NotationDrives notationDrivesVariant = new NotationDrives();
+          NotationDrives notationDrivesVariant = NotationDrives.createWithoutRoot();
           parseGame(variant, notationDrivesVariant);
           notationDrive.setVariants(notationDrivesVariant);
           break;

@@ -174,15 +174,13 @@ public class Utils {
 
   public static void setBoardBoxIdAndCreatedAt(BoardBox boardBox, CreateBoardPayload createBoardPayload) {
     boardBox.setId(createBoardPayload.getArticleId() +
-        RANDOM_STR_SEP + createBoardPayload.getBoardBoxId() +
-        RANDOM_STR_SEP + getRandomString());
+        RANDOM_STR_SEP + createBoardPayload.getBoardBoxId());
     boardBox.setCreatedAt(LocalDateTime.now());
   }
 
   public static void setBoardBoxIdAndCreatedAt(BoardBox boardBox, String articleId, String boardBoxId) {
     boardBox.setId(articleId +
-        RANDOM_STR_SEP + boardBoxId +
-        RANDOM_STR_SEP + getRandomString());
+        RANDOM_STR_SEP + boardBoxId);
     boardBox.setCreatedAt(LocalDateTime.now());
   }
 
