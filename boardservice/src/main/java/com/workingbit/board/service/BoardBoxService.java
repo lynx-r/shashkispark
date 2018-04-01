@@ -77,7 +77,6 @@ public class BoardBoxService {
     Optional<Board> boardOptional = boardService.findById(boardBox.getBoardId());
     return boardOptional.map(board -> {
       boardBox.setBoard(board);
-      updateVariantsInBoard(boardBox, board);
       return boardBox;
     }).orElse(null);
   }
@@ -117,6 +116,10 @@ public class BoardBoxService {
         .map(updatedBox -> {
           Board boardUpdated = updatedBox.getBoard();
           Board board = boardBox.getBoard();
+          boolean isInUndo = board.getNextBoards().size() > 0;
+          if (isInUndo || !boardBox.getEditMode().equals(EnumEditBoardBoxMode.MOVE)) {
+            return null;
+          }
           BoardUtils.updateMoveSquaresHighlightAndDraught(boardUpdated, board);
           Square nextSquare = boardUpdated.getNextSquare();
           Square selectedSquare = boardUpdated.getSelectedSquare();
@@ -128,48 +131,14 @@ public class BoardBoxService {
           boardUpdated.setNotationDrives(notationDrivesInBoardBox);
           boardUpdated.setDriveCount(notationDrivesInBoardBox.size() - 1);
           String articleId = boardBox.getArticleId();
-          NotationDrives notationDrives = boardBox.getNotation().getNotationDrives();
-          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId, notationDrives);
+          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId);
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
           updatedBox.getNotation().setNotationDrives(boardUpdated.getNotationDrives());
 
-          updateVariantsInBoard(updatedBox, boardUpdated);
-          boardBoxDao.save(updatedBox);
-          return updatedBox;
+          return saveAndFillBoard(updatedBox)
+              .orElseThrow(BoardServiceException::new);
         });
-  }
-
-  private void updateVariantsInBoard(BoardBox updatedBox, Board boardUpdated) {
-//    NotationDrives notationDrives = updatedBox.getNotation().getNotationDrives();
-//    NotationDrives boardNotationDrives = boardUpdated.getNotationDrives();
-//    boolean isAtStartStroke = notationDrives.size() == 1 && !boardNotationDrives.isEmpty();
-//    if (notationDrives.size() > 1) {
-//      NotationDrive lastDrive = notationDrives.getLast();
-//      lastDrive.getVariants().forEach(move -> move.getMoves().forEach(m -> m.setCursor(false)));
-//      boardNotationDrives
-//          .stream()
-//          .filter(lastDrive::equals)
-//          .findFirst()
-//          .ifPresent(drive -> drive.setVariants(lastDrive.getVariants()));
-//    } else if (isAtStartStroke) {
-//      NotationDrive lastNotation = notationDrives.getLast();
-//      NotationDrive lastBoardStroke = boardNotationDrives.getLast();
-//      boolean isAddedStrokeInBoard = lastBoardStroke.getNotationNumberInt() > notationDrives.size();
-//      if (isAddedStrokeInBoard) { // update variants on prev board stroke
-//        boardNotationDrives.get(boardNotationDrives.size() - 2).setVariants(lastNotation.getVariants());
-//      } else { // update variants on last stroke in board
-//        boardNotationDrives.getLast().setVariants(lastNotation.getVariants());
-//      }
-//    }
-//    if (!boardNotationDrives.isEmpty()) {
-//      boolean isFirstDrivesNumberMoreThenSecond = boardNotationDrives.size() >= 2
-//          && boardNotationDrives.getFirst().getNotationNumberInt() > boardNotationDrives.getLast().getNotationNumberInt();
-//      if (isFirstDrivesNumberMoreThenSecond) {
-//        Collections.reverse(boardNotationDrives);
-//      }
-//      updatedBox.getNotation().setNotationDrives(boardNotationDrives);
-//    }
   }
 
   public Optional<BoardBox> makeWhiteStroke(BoardBox boardBox) {
@@ -196,13 +165,11 @@ public class BoardBoxService {
   public Optional<BoardBox> saveAndFillBoard(BoardBox boardBox) {
     boardBoxDao.save(boardBox);
     boardBox = updateBoardBox(boardBox);
-//    boardBoxDao.save(boardBox);
     return Optional.of(boardBox);
   }
 
   public Optional<BoardBox> loadBoard(BoardBox boardBox) {
     Board board = boardBox.getBoard();
-    updateVariantsInBoard(boardBox, board);
     boardBoxDao.save(boardBox);
     updateBoardBox(boardBox);
     return Optional.of(boardBox);
@@ -358,7 +325,6 @@ public class BoardBoxService {
             return null;
           }
           redone.ifPresent((b) -> {
-            updateVariantsInBoard(updated, b);
             undoRedoBoardActionAndSave(updated, b);
           });
           return updated;

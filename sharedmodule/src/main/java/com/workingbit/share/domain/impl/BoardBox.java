@@ -2,12 +2,17 @@ package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.workingbit.share.common.DBConstants;
+import com.workingbit.share.converter.EnumEditBoardBoxModeConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
+import com.workingbit.share.model.EnumEditBoardBoxMode;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.Payload;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -45,6 +50,11 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBTypeConvertedJson(targetType = Notation.class)
   @DynamoDBAttribute(attributeName = "notation")
   private Notation notation;
+
+  @JsonDeserialize(using = EnumEditBoardBoxModeConverter.class)
+  @DynamoDBTypeConvertedEnum
+  @DynamoDBAttribute(attributeName = "editMode")
+  private EnumEditBoardBoxMode editMode;
 
   public BoardBox() {
     notation = new Notation();

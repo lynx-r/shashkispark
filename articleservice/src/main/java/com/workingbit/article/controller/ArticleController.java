@@ -30,8 +30,7 @@ public class ArticleController {
       ((ParamsHandlerFunc) params ->
           articleService.findById(params.get(RequestConstants.ID))
               .map(Answer::ok)
-              .orElse(Answer.error(HTTP_NOT_FOUND, String.format(ErrorMessages.ARTICLE_WITH_ID_NOT_FOUND,
-                  params.get(RequestConstants.ID))))
+              .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.ARTICLE_WITH_ID_NOT_FOUND))
       ).handleRequest(req, res);
 
   public static Route createArticleAndBoard = (req, res) ->

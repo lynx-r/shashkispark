@@ -11,7 +11,6 @@ import com.workingbit.share.model.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.HighlightMoveUtil.highlightedAssignedMoves;
@@ -323,30 +322,6 @@ public class BoardUtils {
     }
   }
 
-  private static NotationDrive getFirstNotationDrive(int strokeCount, NotationDrives notationDrives, String boardId) {
-    if (notationDrives.isEmpty()) {
-      NotationMove firstMove = NotationMove.create(NotationDrive.EnumNotation.SIMPLE, boardId, true);
-      NotationMoves moves = NotationMoves.Builder.getInstance()
-          .add(firstMove)
-          .build();
-      NotationDrive notationDrive = NotationDrive.create(moves);
-      notationDrive.setNotationNumberInt(strokeCount);
-//      notationDrives.push(notationDrive);
-    } else {
-      NotationDrive notationDrive = notationDrives.getFirst();
-      if (notationDrive.getNotationNumberInt() != strokeCount && notationDrive.getMoves() != null) {
-        NotationMove move = NotationMove.create(null, boardId, false);
-        NotationMoves moves = NotationMoves.Builder.getInstance()
-            .add(move)
-            .build();
-        NotationDrive drive = NotationDrive.create(moves);
-        drive.setNotationNumberInt(strokeCount);
-        notationDrives.push(drive);
-      }
-    }
-    return notationDrives.getFirst();
-  }
-
   private static void resetBoardHighlight(Board board) {
     board.getAssignedSquares()
         .forEach(square -> {
@@ -572,26 +547,5 @@ public class BoardUtils {
     } catch (JsonProcessingException e) {
       return "";
     }
-  }
-
-  public static NotationDrives reverseBoardNotation(NotationDrives notationDrives) {
-    Collections.reverse(notationDrives);
-    return notationDrives;
-  }
-
-//  public static void assignBoardNotationCursor(NotationDrives notationDrives, String boardId) {
-//    resetBoardNotationCursor(notationDrives);
-//    setCursorForAtomStroke(notationDrives, boardId, NotationDrive::getFirst);
-//    setCursorForAtomStroke(notationDrives, boardId, NotationDrive::getSecond);
-//  }
-
-  private static void setCursorForAtomStroke(NotationDrives notationDrives, String boardId, Function<NotationDrive, NotationMove> predicate) {
-    notationDrives
-        .stream()
-        .map(predicate)
-        .filter(Objects::nonNull)
-        .filter(atomStroke -> atomStroke.getBoardId().equals(boardId))
-        .findFirst()
-        .ifPresent(notationAtomStroke -> notationAtomStroke.setCursor(true));
   }
 }

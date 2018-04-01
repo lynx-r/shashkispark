@@ -72,8 +72,7 @@ public class BoardService {
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
    */
-  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId,
-                    NotationDrives boardBoxNotationDrives) {
+  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId) {
     boolean blackTurn = currentBoard.isBlackTurn();
     MovesList movesList = highlightedBoard(blackTurn, selectedSquare, currentBoard);
     List<Square> allowed = movesList.getAllowed();
@@ -201,7 +200,7 @@ public class BoardService {
       board.setSelectedSquare(selected);
       Square next = findSquareByNotation(moves[i + 1], board);
       board.setNextSquare(next);
-      board = move(selected, next, board, articleId, null);
+      board = move(selected, next, board, articleId);
     }
     return board;
   }

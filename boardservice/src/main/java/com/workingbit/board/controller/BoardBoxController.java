@@ -47,7 +47,7 @@ public class BoardBoxController {
           boardBoxService.findById(params.get(RequestConstants.ID))
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND,
-                  String.format(ErrorMessages.BOARD_WITH_ID_NOT_FOUND, req.params(RequestConstants.ID))))
+                  ErrorMessages.BOARD_WITH_ID_NOT_FOUND))
       ).handleRequest(req, res);
 
   public static Route addDraught = (req, res) ->
