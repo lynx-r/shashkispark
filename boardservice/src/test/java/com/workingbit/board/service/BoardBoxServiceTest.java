@@ -38,7 +38,8 @@ import static org.junit.Assert.*;
 public class BoardBoxServiceTest extends BaseServiceTest {
 
   private static final String[] PDN_FILE_NAME_VARIANT_WITH_FORWARD_MOVE = {
-      "/pdn/notation_variant_with_forward_move.pdn",
+//      "/pdn/notation_variant_with_forward_move1.pdn",
+      "/pdn/notation_variant_with_forward_move2.pdn",
   };
   public static @DataPoints
   boolean[] blacks = {true, false};
@@ -56,6 +57,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   };
 
   private final List<String> PDN_FILE_NAMES_PARSE = new ArrayList<String>() {{
+    add("/pdn/example_multivariants1.pdn");
+    add("/pdn/example_multivariants2.pdn");
     add("/pdn/example.pdn");
     add("/pdn/notation_error1.pdn");
     add("/pdn/notation_comment.pdn");

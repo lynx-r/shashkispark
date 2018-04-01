@@ -107,10 +107,17 @@ public class NotationParserService {
           break;
         }
         case "Variation": {
-          Node variant = gameBody.getChildAt(1);
-          NotationDrives notationDrivesVariant = notationDrive.getVariants();
-          parseGame(variant, notationDrivesVariant);
-          notationDrive.setVariants(notationDrivesVariant);
+          Node variants = gameBody.getChildAt(1);
+          NotationDrive collectVariants = notationDrive.deepClone();
+          for (int v = 0; v < variants.getChildCount(); v++) {
+            Node variant = variants.getChildAt(v);
+            NotationDrives subVariants = NotationDrives.createWithoutRoot();
+            parseGame(variant.getChildAt(1), subVariants);
+            NotationDrive subDrive = subVariants.getFirst().deepClone();
+            subDrive.setVariants(subVariants);
+            collectVariants.getVariants().add(subDrive);
+          }
+          notationDrives.add(collectVariants);
           break;
         }
       }

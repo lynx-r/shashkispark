@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.workingbit.share.model.NotationDrive.EnumNotation.LBRACKET;
-import static com.workingbit.share.model.NotationDrive.EnumNotation.RBRACKET;
+import static com.workingbit.share.model.NotationDrive.EnumNotation.LPAREN;
+import static com.workingbit.share.model.NotationDrive.EnumNotation.RPAREN;
 
 /**
  * Created by Aleksey Popryaduhin on 12:01 12/08/2017.
@@ -238,7 +238,7 @@ public class Utils {
         .map(d -> d.getVariants()
             .stream()
             .map(NotationDrive::toPdn)
-            .collect(Collectors.joining(" ", LBRACKET.getPdn(), RBRACKET.getPdn())))
-        .collect(Collectors.joining(" ", LBRACKET.getPdn(), RBRACKET.getPdn()));
+            .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn())))
+        .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn()));
   }
 }

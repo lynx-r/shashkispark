@@ -122,15 +122,18 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public String toPdn() {
+    if (root) {
+      return Utils.notationDrivesToPdn(variants);
+    }
     return (StringUtils.isNotBlank(notationNumber) ? notationNumber + " " : "" ) +
         (!moves.isEmpty() ? moves.toPdn() + " " : "") +
-        Utils.notationDrivesToPdn(variants);
+        (!variants.isEmpty() ? Utils.notationDrivesToPdn(variants) : "");
   }
 
   public enum EnumNotation {
     NUMBER(". ", ". "),
-    LBRACKET("(", " ( "),
-    RBRACKET("(", " ( "),
+    LPAREN("(", " ( "),
+    RPAREN(")", " ) "),
     SIMPLE("-", "-"),
     CAPTURE(":", "x"),
     END_GAME_SYMBOL("*", "*");
