@@ -4,7 +4,7 @@ import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
-import com.workingbit.share.model.NotationDrivesContainer;
+import com.workingbit.share.model.NotationHistory;
 import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
@@ -40,7 +40,7 @@ public class NotationParserService {
     parseHeader(gameHeader, headers);
 
     Node game = pdnFile.getChildAt(1);
-    NotationDrivesContainer notationDrives = notation.getNotationDrivesContainer();
+    NotationHistory notationDrives = notation.getNotationHistory();
     try {
       parseGame(game, notationDrives.getVariants());
     } catch (Exception e) {
@@ -49,7 +49,7 @@ public class NotationParserService {
     }
 
     notation.setTags(headers);
-    notation.setNotationDrivesContainer(notationDrives);
+    notation.setNotationHistory(notationDrives);
 
     return notation;
   }

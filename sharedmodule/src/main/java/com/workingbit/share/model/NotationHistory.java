@@ -1,5 +1,7 @@
 package com.workingbit.share.model;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
 
 import java.util.Collection;
@@ -10,16 +12,16 @@ import java.util.stream.Collectors;
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
  */
-public class NotationDrivesContainer implements DeepClone {
+public class NotationHistory implements DeepClone {
 
   private NotationDrives history;
   private NotationDrives variants;
 
-  public NotationDrivesContainer() {
+  public NotationHistory() {
     this(true);
   }
 
-  private NotationDrivesContainer(boolean hasRoot) {
+  private NotationHistory(boolean hasRoot) {
     if (hasRoot) {
       variants = NotationDrives.create();
       NotationDrive root = new NotationDrive(true);
@@ -32,10 +34,14 @@ public class NotationDrivesContainer implements DeepClone {
     }
   }
 
+  @DynamoDBIgnore
+  @JsonIgnore
   public NotationDrives getVariants() {
     return variants;
   }
 
+  @DynamoDBIgnore
+  @JsonIgnore
   public NotationDrives getHistory() {
     return history;
   }
@@ -62,10 +68,14 @@ public class NotationDrivesContainer implements DeepClone {
     add(notationDrive);
   }
 
+  @DynamoDBIgnore
+  @JsonIgnore
   public NotationDrive getFirst() {
     return variants.getFirst();
   }
 
+  @DynamoDBIgnore
+  @JsonIgnore
   public NotationDrive getLast() {
     return variants.getLast();
   }
@@ -189,6 +199,8 @@ public class NotationDrivesContainer implements DeepClone {
     h_toSwitchDrive.setForkNumber(h_toSwitchDrive.getForkNumber() - 1);
   }
 
+  @JsonIgnore
+  @DynamoDBIgnore
   public boolean isEmpty() {
     return variants.isEmpty();
   }
@@ -201,12 +213,12 @@ public class NotationDrivesContainer implements DeepClone {
     this.variants = variants.deepClone();
   }
 
-  public static NotationDrivesContainer create() {
-    return new NotationDrivesContainer(false);
+  public static NotationHistory create() {
+    return new NotationHistory(false);
   }
 
-  public static NotationDrivesContainer createWithRoot() {
-    return new NotationDrivesContainer(true);
+  public static NotationHistory createWithRoot() {
+    return new NotationHistory(true);
   }
 
   public String variantsToPdn() {

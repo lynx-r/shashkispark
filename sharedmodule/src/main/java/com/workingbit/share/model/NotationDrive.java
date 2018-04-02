@@ -1,6 +1,7 @@
 package com.workingbit.share.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -169,6 +170,8 @@ public class NotationDrive implements DeepClone, ToPdn {
         .toString();
   }
 
+  @DynamoDBIgnore
+  @JsonIgnore
   public int getVariantsSize() {
     return variants.size();
   }

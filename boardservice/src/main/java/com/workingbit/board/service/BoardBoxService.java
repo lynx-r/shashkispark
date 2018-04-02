@@ -48,7 +48,7 @@ public class BoardBoxService {
     Utils.setBoardBoxIdAndCreatedAt(boardBox, articleId, boardBoxId);
 
     Board board = boardService.createBoardFromNotation(fromNotation, articleId, boardBoxId);
-    Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), board.getNotationDrivesContainer());
+    Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), board.getNotationHistory());
     boardBox.setNotation(notation);
 
     // switch boardBox to the first board
@@ -57,7 +57,7 @@ public class BoardBoxService {
     return boardDao.findByKey(firstBoardId)
         .map(firstBoard -> {
           String f_boardId = firstBoard.getId();
-          firstBoard.setNotationDrivesContainer(notation.getNotationDrivesContainer());
+          firstBoard.setNotationHistory(notation.getNotationHistory());
           boardDao.save(firstBoard);
           boardBox.setBoardId(f_boardId);
           boardBox.setBoard(firstBoard);
@@ -129,10 +129,10 @@ public class BoardBoxService {
         .map(updatedBox -> {
           Board boardUpdated = updatedBox.getBoard();
           Board board = boardBox.getBoard();
-          boolean hasFirstMoveInDrive = board.getNotationDrivesContainer().size() > 0
-              && board.getNotationDrivesContainer().getLast().getMoves().size() == 1;
-          boolean hasSecondMoveInDrive = board.getNotationDrivesContainer().size() > 0
-              && board.getNotationDrivesContainer().getLast().getMoves().size() == 2;
+          boolean hasFirstMoveInDrive = board.getNotationHistory().size() > 0
+              && board.getNotationHistory().getLast().getMoves().size() == 1;
+          boolean hasSecondMoveInDrive = board.getNotationHistory().size() > 0
+              && board.getNotationHistory().getLast().getMoves().size() == 2;
           boolean isWhiteTurn = !board.isBlackTurn();
           boolean isBlackTurn = board.isBlackTurn();
           boolean hasWhiteMoves = isWhiteTurn && hasFirstMoveInDrive;
@@ -152,14 +152,14 @@ public class BoardBoxService {
             logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
             return null;
           }
-          NotationDrivesContainer notationDrivesInBoardBox = updatedBox.getNotation().getNotationDrivesContainer();
-          boardUpdated.setNotationDrivesContainer(notationDrivesInBoardBox);
+          NotationHistory notationDrivesInBoardBox = updatedBox.getNotation().getNotationHistory();
+          boardUpdated.setNotationHistory(notationDrivesInBoardBox);
           boardUpdated.setDriveCount(notationDrivesInBoardBox.size() - 1);
           String articleId = boardBox.getArticleId();
           boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId);
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
-          updatedBox.getNotation().setNotationDrivesContainer(boardUpdated.getNotationDrivesContainer());
+          updatedBox.getNotation().setNotationHistory(boardUpdated.getNotationHistory());
 
           return saveAndFillBoard(updatedBox)
               .orElseThrow(BoardServiceException::new);
@@ -276,11 +276,11 @@ public class BoardBoxService {
   }
 
   private BoardBox switchNotationToVariant(BoardBox boardBox, NotationDrive switchToNotationDrive) {
-    NotationDrivesContainer notationDrives = boardBox.getNotation().getNotationDrivesContainer();
+    NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
     notationDrives.switchTo(switchToNotationDrive);
     // switch to new board
     return boardBox.getNotation()
-        .getNotationDrivesContainer()
+        .getNotationHistory()
         .findLastVariantBoardId()
         .map(boardId ->
             boardDao.findByKey(boardId)
@@ -295,11 +295,11 @@ public class BoardBoxService {
 
   private BoardBox forkNotationForVariants(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
     Notation notation = boardBox.getNotation();
-    NotationDrivesContainer notationDrives = notation.getNotationDrivesContainer();
+    NotationHistory notationDrives = notation.getNotationHistory();
     notationDrives.forkAt(forkFromNotationDrive);
     // switch to new board
     return boardBox.getNotation()
-        .getNotationDrivesContainer()
+        .getNotationHistory()
         .findLastVariantBoardId()
         .map(boardId ->
             boardDao.findByKey(boardId)
@@ -336,7 +336,7 @@ public class BoardBoxService {
     boardBox.setBoard(board);
     boardBox.setBoardId(board.getId());
     boardDao.save(board);
-    boardBox.getNotation().setNotationDrivesContainer(board.getNotationDrivesContainer());
+    boardBox.getNotation().setNotationHistory(board.getNotationHistory());
     boardBoxDao.save(boardBox);
   }
 

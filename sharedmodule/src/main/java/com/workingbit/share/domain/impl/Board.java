@@ -10,7 +10,7 @@ import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.BoardIdNotation;
 import com.workingbit.share.model.EnumRules;
-import com.workingbit.share.model.NotationDrivesContainer;
+import com.workingbit.share.model.NotationHistory;
 import com.workingbit.share.model.Payload;
 import lombok.*;
 
@@ -114,12 +114,12 @@ public class Board extends BaseDomain implements Payload {
   private int driveCount;
 
   @JsonIgnore
-  @DynamoDBTypeConvertedJson(targetType = NotationDrivesContainer.class)
-  @DynamoDBAttribute(attributeName = "notationDrivesContainer")
-  private NotationDrivesContainer notationDrivesContainer;
+  @DynamoDBTypeConvertedJson(targetType = NotationHistory.class)
+  @DynamoDBAttribute(attributeName = "notationHistory")
+  private NotationHistory notationHistory;
 
   public Board() {
-    notationDrivesContainer = NotationDrivesContainer.createWithRoot();
+    notationHistory = NotationHistory.createWithRoot();
   }
 
   public Board(boolean black, EnumRules rules) {

@@ -32,7 +32,7 @@ public class BoardService {
   public Board createBoardFromNotation(Notation notation, String articleId, String boardBoxId) {
     Board board = initBoard(true, false, notation.getRules());
     Utils.setBoardIdAndCreatedAt(board, articleId, boardBoxId);
-    return syncBoardWithStrokes(board, notation.getNotationDrivesContainer(), articleId);
+    return syncBoardWithStrokes(board, notation.getNotationHistory(), articleId);
   }
 
   public Optional<Board> find(Board board) {
@@ -128,13 +128,13 @@ public class BoardService {
       undoneBoard.getSelectedSquare().getDraught().setHighlighted(false);
       undoneBoard.getNextSquare().setHighlighted(false);
 
-      NotationDrivesContainer currentDrives = currentBoard.getNotationDrivesContainer();
+      NotationHistory currentDrives = currentBoard.getNotationHistory();
       NotationDrive lastUndone = currentDrives.getLast().deepClone();
       lastUndone.setSubRoot(true);
-      NotationDrivesContainer drivesOfUndone = undoneBoard.getNotationDrivesContainer();
+      NotationHistory drivesOfUndone = undoneBoard.getNotationHistory();
 
 //      NotationMove lastMove = lastUndone.getMoves().getLast().deepClone();
-//      NotationDrivesContainer variantsForUndoneBoard = drivesOfUndone.getLast().getVariants();
+//      NotationHistory variantsForUndoneBoard = drivesOfUndone.getLast().getVariants();
 //      boolean isUndoneVariantsEmpty = variantsForUndoneBoard.isEmpty();
 //      if (isUndoneVariantsEmpty) {
 //        variantsForUndoneBoard.add(lastUndone);
@@ -181,7 +181,7 @@ public class BoardService {
     return BoardUtils.updateBoard(board);
   }
 
-  private Board syncBoardWithStrokes(Board board, NotationDrivesContainer notationDrives, String articleId) {
+  private Board syncBoardWithStrokes(Board board, NotationHistory notationDrives, String articleId) {
     for (NotationDrive notationDrive : notationDrives.getVariants()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {

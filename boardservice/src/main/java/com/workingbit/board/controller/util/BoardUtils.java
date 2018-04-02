@@ -250,7 +250,7 @@ public class BoardUtils {
 
   private static void updateNotationMiddle(Board board) {
     String boardId = board.getId();
-    NotationDrivesContainer notationDrives = board.getNotationDrivesContainer();
+    NotationHistory notationDrives = board.getNotationHistory();
 
     NotationMove move = NotationMove.create(EnumNotation.CAPTURE, boardId, true);
     move.setMove(new String[]{
@@ -271,7 +271,7 @@ public class BoardUtils {
   }
 
   private static void updateNotationEnd(boolean previousCaptured, Board board) {
-    NotationDrivesContainer notationDrives = board.getNotationDrivesContainer();
+    NotationHistory notationDrives = board.getNotationHistory();
 
     boolean blackTurn = board.isBlackTurn();
     int notationNumber = 0;
@@ -289,7 +289,7 @@ public class BoardUtils {
   }
 
   private static void pushCaptureMove(Board board, int notationNumber) {
-    NotationDrivesContainer notationDrives = board.getNotationDrivesContainer();
+    NotationHistory notationDrives = board.getNotationHistory();
     resetBoardNotationCursor(notationDrives);
 
     NotationDrive notationDrive;
@@ -320,14 +320,14 @@ public class BoardUtils {
     notationDrive.getMoves().add(lastCapturedMove);
   }
 
-  private static void resetBoardNotationCursor(NotationDrivesContainer notationDrives) {
+  private static void resetBoardNotationCursor(NotationHistory notationDrives) {
     notationDrives.getVariants()
         .forEach(drive -> drive.getMoves()
             .forEach(move -> move.setCursor(false)));
   }
 
-  private static void pushSimpleMove(int notationNumber, NotationDrivesContainer notationDrives, Board board) {
-    resetBoardNotationCursor(board.getNotationDrivesContainer());
+  private static void pushSimpleMove(int notationNumber, NotationHistory notationDrives, Board board) {
+    resetBoardNotationCursor(board.getNotationHistory());
 
     String[] move = new String[]{
         board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()
@@ -571,7 +571,7 @@ public class BoardUtils {
     return null;
   }
 
-  public static String printBoardNotation(NotationDrivesContainer notationDrives) {
+  public static String printBoardNotation(NotationHistory notationDrives) {
     ObjectMapper mapper = new ObjectMapper();
     try {
       return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(notationDrives);
