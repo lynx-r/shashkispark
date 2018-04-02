@@ -194,7 +194,6 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> loadBoard(BoardBox boardBox) {
-    Board board = boardBox.getBoard();
     boardBoxDao.save(boardBox);
     updateBoardBox(boardBox);
     return Optional.of(boardBox);
@@ -257,12 +256,15 @@ public class BoardBoxService {
 
           return undone
               .map((b) -> forkNotationForVariantsForBoard(updated, b)
-                  .map((bb) -> {
+                  .map(bb -> {
                     undoRedoBoardActionAndSave(bb, b);
                     return bb;
                   })
-                  .orElse(null))
-              .orElseThrow(BoardServiceException::new);
+                  .orElseGet(() -> {
+                    undoRedoBoardActionAndSave(updated, b);
+                    return updated;
+                  }))
+              .orElse(null);
         });
   }
 
@@ -271,22 +273,21 @@ public class BoardBoxService {
     NotationHistory history = boardBox.getNotation().getNotationHistory();
     return history.findBoardNotationalDrive(forkBoardId)
         .map((forkVariant) ->
-            forkNotationForVariants(boardBox, forkVariant)
-        );
+            forkNotationForVariants(boardBox, forkVariant));
   }
 
   public Optional<BoardBox> forkBoardBox(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
     return find(boardBox)
         .map(bb -> forkNotationForVariants(bb, forkFromNotationDrive))
         .map(this::saveAndFillBoard)
-        .orElseThrow(BoardServiceException::new);
+        .orElse(null);
   }
 
   public Optional<BoardBox> switchToNotationDrive(BoardBox boardBox, NotationDrive switchToNotationDrive) {
     return find(boardBox)
         .map(bb -> switchNotationToVariant(bb, switchToNotationDrive))
         .map(this::saveAndFillBoard)
-        .orElseThrow(BoardServiceException::new);
+        .orElse(null);
   }
 
   private BoardBox switchNotationToVariant(BoardBox boardBox, NotationDrive switchToNotationDrive) {
@@ -297,14 +298,8 @@ public class BoardBoxService {
         .getNotationHistory()
         .findLastVariantBoardId()
         .map(boardId ->
-            boardDao.findByKey(boardId)
-                .map(board -> {
-                  boardBox.setBoard(board);
-                  boardBox.setBoardId(board.getId());
-                  return boardBox;
-                })
-                .orElse(null))
-        .orElseThrow(BoardServiceException::new);
+            setBoardForBoardBox(boardBox, boardId))
+        .orElse(null);
   }
 
   private BoardBox forkNotationForVariants(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
@@ -316,13 +311,17 @@ public class BoardBoxService {
         .getNotationHistory()
         .findLastVariantBoardId()
         .map(boardId ->
-            boardDao.findByKey(boardId)
-                .map(board -> {
-                  boardBox.setBoard(board);
-                  boardBox.setBoardId(board.getId());
-                  return boardBox;
-                })
-                .orElse(null))
+            setBoardForBoardBox(boardBox, boardId))
+        .orElse(boardBox);
+  }
+
+  private BoardBox setBoardForBoardBox(BoardBox boardBox, String boardId) {
+    return boardDao.findByKey(boardId)
+        .map(board -> {
+          boardBox.setBoard(board);
+          boardBox.setBoardId(board.getId());
+          return boardBox;
+        })
         .orElse(null);
   }
 
@@ -347,7 +346,7 @@ public class BoardBoxService {
                 }
                 return bb;
               })
-              .orElseThrow(BoardServiceException::new);
+              .orElse(null);
         });
   }
 

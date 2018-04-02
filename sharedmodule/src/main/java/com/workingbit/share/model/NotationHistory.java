@@ -133,6 +133,11 @@ public class NotationHistory implements DeepClone {
   public void forkAt(NotationDrive forkFromNotationDrive) {
     System.out.println("FORK");
 
+    if (forkFromNotationDrive.getMoves().size() < 2) {
+      System.out.println("Ignore fork " + forkFromNotationDrive.toPdn());
+      return;
+    }
+
     int indexFork = indexOf(forkFromNotationDrive);
     NotationDrives forked = subList(indexFork, size());
     NotationDrives forkedNotationDrives = NotationDrives.Builder.getInstance()
@@ -155,7 +160,7 @@ public class NotationHistory implements DeepClone {
     history.getLast().setForkNumber(forkNumber);
     history.getLast().addVariant(variant);
 
-    printPdn();
+    System.out.println("FORK VARIANTS: " + variants.toPdn());
   }
 
   public void switchTo(NotationDrive switchToNotationDrive) {
@@ -171,6 +176,12 @@ public class NotationHistory implements DeepClone {
     } else {
       v_toSwitchDrive = get(indexFork);
     }
+
+    if (v_toSwitchDrive.getMoves().size() == 1) {
+      System.out.println("Ignore switch: " + v_toSwitchDrive.toPdn());
+      return;
+    }
+
     NotationDrives v_switchVariants = v_toSwitchDrive.getVariants().deepClone();
     v_toSwitchDrive.removeLastVariant();
 
@@ -213,6 +224,8 @@ public class NotationHistory implements DeepClone {
 
     NotationDrive h_toSwitchDrive = history.get(indexFork);
     h_toSwitchDrive.setForkNumber(h_toSwitchDrive.getForkNumber() - 1);
+
+    System.out.println("SWITCH VARIANTS: " + variants.toPdn());
   }
 
   @JsonIgnore
@@ -255,9 +268,13 @@ public class NotationHistory implements DeepClone {
 
   public Optional<String> findLastVariantBoardId() {
     try {
-      return Optional.of(getVariants()
+      NotationMoves moves = getVariants()
           .getLast()
-          .getMoves()
+          .getMoves();
+      if (moves.isEmpty()) {
+        return Optional.empty();
+      }
+      return Optional.of(moves
           .getLast()
           .getBoardId());
     } catch (Exception e) {

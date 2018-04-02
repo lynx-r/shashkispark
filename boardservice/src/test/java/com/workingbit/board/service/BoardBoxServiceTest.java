@@ -633,25 +633,6 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
 
-//      String firstBoardId = boardBox.getNotation().getNotationHistory().get(1).getMoves().getFirst().getBoardId();
-//      Board board = boardDao.findByKey(firstBoardId).get();
-//      String initBoardId = board.getPreviousBoards().getLast().getBoardId();
-//      board = boardDao.findByKey(initBoardId).get();
-//      board.setNotationHistory(NotationHistory.createWithRoot());
-//      boardBox.setBoard(board);
-//      boardBox.getNotation().setNotationHistory(board.getNotationHistory());
-//      boardBoxService.saveAndFillBoard(boardBox);
-//
-//      Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
-//      NotationDrive forwardDrive = forwardNotation.getNotationHistory().get(1);
-//
-//      BoardBox current = boardBox.deepClone();
-//      for (NotationMove move : forwardDrive.getMoves()) {
-//        current = moveStrokes(current, move);
-//      }
-
-//      System.out.println(current.getNotation().getNotationHistory().variantsToPdn());
-
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
 
       Board board = boardBox.getBoard();

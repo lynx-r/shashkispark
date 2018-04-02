@@ -120,8 +120,8 @@ public class BoardService {
     }
     boardDao.save(currentBoard);
     return findById(previousId).map(undoneBoard -> {
-      String selectedMove = currentBoard.getPreviousSquare().getAlphanumericNotation64();
-      String possibleMove = currentBoard.getSelectedSquare().getAlphanumericNotation64();
+      String selectedMove = currentBoard.getPreviousSquare().getNotation();
+      String possibleMove = currentBoard.getSelectedSquare().getNotation();
       undoneBoard.pushNextBoard(currentBoard.getId(), selectedMove, possibleMove);
 
       // reset highlights
@@ -140,10 +140,10 @@ public class BoardService {
     boardDao.save(currentBoard);
     return findById(nextId).map(redoneBoard -> {
       Square square = getNextOrPrevSquare(currentBoard);
-      String notation = square != null ? square.getAlphanumericNotation64() : null;
+      String notation = square != null ? square.getNotation() : null;
       redoneBoard.pushPreviousBoard(currentBoard.getId(),
           notation,
-          currentBoard.getSelectedSquare().getAlphanumericNotation64());
+          currentBoard.getSelectedSquare().getNotation());
       return redoneBoard;
     });
   }
