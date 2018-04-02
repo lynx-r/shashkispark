@@ -30,7 +30,7 @@ public class Notation implements ToPdn {
 
   public Notation() {
     tags = new ListOrderedMap<>();
-    notationDrivesContainer = new NotationDrivesContainer();
+    notationDrivesContainer = NotationDrivesContainer.createWithRoot();
   }
 
   public Notation(ListOrderedMap<String, String> tags, EnumRules rules, NotationDrivesContainer notationDrivesContainer) {
@@ -67,7 +67,7 @@ public class Notation implements ToPdn {
     String moves = notationDrivesContainer.getVariants().toPdn();
     stringBuilder.append("\n")
         .append(moves)
-        .append(NotationDrive.EnumNotation.END_GAME_SYMBOL.getPdn());
+        .append(EnumNotation.END_GAME_SYMBOL.getPdn());
     return stringBuilder.toString();
   }
 

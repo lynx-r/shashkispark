@@ -34,7 +34,7 @@ public class BoardDao extends BaseDao<Board> {
 //    scanExpression.withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
 //    PaginatedScanList<Article> scanArticle = getDynamoDBMapper().scan(Article.class, scanExpression);
 //    scanArticle.loadAllResults();
-//    List<Article> articles = new ArrayList<>(scanArticle.size());
+//    List<Article> articles = new ArrayList<>(scanArticle.countVariants());
 //    articles.addAll(scanArticle);
 //    return articles;
 //  }

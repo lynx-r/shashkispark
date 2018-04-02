@@ -13,25 +13,8 @@ import java.util.stream.Collectors;
  */
 public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn, DeepClone {
 
-  public NotationDrives() {
-    this(false);
-  }
-
-  private NotationDrives(boolean hasRoot) {
-    if (hasRoot) {
-      NotationDrive root = new NotationDrive();
-      root.setRoot(hasRoot);
-      add(root);
-    }
-  }
-
-
-  public static NotationDrives createWithoutRoot() {
-    return new NotationDrives(false);
-  }
-
-  public static NotationDrives createWithRoot() {
-    return new NotationDrives(true);
+  public static NotationDrives create() {
+    return new NotationDrives();
   }
 
   public String toPdn() {

@@ -129,18 +129,18 @@ public class BoardService {
       undoneBoard.getNextSquare().setHighlighted(false);
 
       NotationDrivesContainer currentDrives = currentBoard.getNotationDrivesContainer();
-      NotationDrive lastUndone = currentDrives.getLast().deepClone();
+      NotationDrive lastUndone = currentDrives.getLastVariant().deepClone();
       lastUndone.setSubRoot(true);
       NotationDrivesContainer drivesOfUndone = undoneBoard.getNotationDrivesContainer();
 
-//      NotationMove lastMove = lastUndone.getMoves().getLast().deepClone();
-//      NotationDrivesContainer variantsForUndoneBoard = drivesOfUndone.getLast().getVariants();
+//      NotationMove lastMove = lastUndone.getMoves().getLastVariant().deepClone();
+//      NotationDrivesContainer variantsForUndoneBoard = drivesOfUndone.getLastVariant().getVariants();
 //      boolean isUndoneVariantsEmpty = variantsForUndoneBoard.isEmpty();
 //      if (isUndoneVariantsEmpty) {
 //        variantsForUndoneBoard.add(lastUndone);
 //        lastUndone.setVariants(variantsForUndoneBoard.deepClone());
 //      } else {
-//        variantsForUndoneBoard.getLast().getMoves().add(lastMove);
+//        variantsForUndoneBoard.getLastVariant().getMoves().add(lastMove);
 //      }
 
       return undoneBoard;

@@ -5,13 +5,14 @@ import com.workingbit.share.domain.DeepClone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.workingbit.share.model.NotationDrive.EnumNotation.CAPTURE;
-import static com.workingbit.share.model.NotationDrive.EnumNotation.SIMPLE;
+import static com.workingbit.share.model.EnumNotation.CAPTURE;
+import static com.workingbit.share.model.EnumNotation.SIMPLE;
 
 /**
  * Moves like e1-b2 or a1:e2
@@ -23,7 +24,7 @@ import static com.workingbit.share.model.NotationDrive.EnumNotation.SIMPLE;
 @Data
 public class NotationMove implements DeepClone, ToPdn {
 
-  private NotationDrive.EnumNotation type;
+  private EnumNotation type;
   /**
    * Moves like a1 and b2
    */
@@ -83,7 +84,7 @@ public class NotationMove implements DeepClone, ToPdn {
     return notationMove;
   }
 
-  public static NotationMove create(NotationDrive.EnumNotation type, String boardId, boolean cursor) {
+  public static NotationMove create(EnumNotation type, String boardId, boolean cursor) {
     NotationMove notationMove = new NotationMove();
     notationMove.setType(type);
     notationMove.setBoardId(boardId);
@@ -104,5 +105,15 @@ public class NotationMove implements DeepClone, ToPdn {
   public String toPdn() {
     String stroke = getNotationPdn() + (moveStrength != null ? " " + moveStrength : " ");
     return String.format("%1$-10s", stroke);
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("type", type)
+        .append("move", move)
+        .append("cursor", cursor)
+        .append("moveStrength", moveStrength)
+        .toString();
   }
 }

@@ -2,10 +2,10 @@ package com.workingbit.share.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.workingbit.share.domain.DeepClone;
-import com.workingbit.share.util.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Objects;
 
@@ -42,8 +42,13 @@ public class NotationDrive implements DeepClone, ToPdn {
   private int sibling;
 
   public NotationDrive() {
-    variants = NotationDrives.createWithoutRoot();
+    variants = NotationDrives.create();
     moves = new NotationMoves();
+  }
+
+  public NotationDrive(boolean root) {
+    this();
+    this.root = root;
   }
 
   public static NotationDrive create(NotationMoves moves) {
@@ -59,6 +64,10 @@ public class NotationDrive implements DeepClone, ToPdn {
 
   public NotationDrives getVariants() {
     return variants;
+  }
+
+  public void setVariants(NotationDrives variants) {
+    this.variants = variants.deepClone();
   }
 
   @DynamoDBIgnore
@@ -136,35 +145,23 @@ public class NotationDrive implements DeepClone, ToPdn {
 
   public String toPdn() {
     if (root) {
-      return Utils.notationDrivesToPdn(variants);
+      return variants.toPdn();
     }
     return (StringUtils.isNotBlank(notationNumber) ? notationNumber + " " : "" ) +
         (!moves.isEmpty() ? moves.toPdn() + " " : "") +
-        (!variants.isEmpty() ? Utils.notationDrivesToPdn(variants) : "");
+        (!variants.isEmpty() ? variants.toPdn() : "");
   }
 
-  public enum EnumNotation {
-    NUMBER(".", ". "),
-    LPAREN("(", " ( "),
-    RPAREN(")", " ) "),
-    SIMPLE("-", "-"),
-    CAPTURE(":", "x"),
-    END_GAME_SYMBOL("*", " * ");
-
-    private String simple;
-    private String pdn;
-
-    EnumNotation(String simple, String pdn) {
-      this.simple = simple;
-      this.pdn = pdn;
-    }
-
-    public String getSimple() {
-      return simple;
-    }
-
-    public String getPdn() {
-      return pdn;
-    }
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("notationNumber", notationNumber)
+        .append("moves", moves)
+        .append("variants", variants)
+        .append("root", root)
+        .append("subRoot", subRoot)
+        .append("forkNumber", forkNumber)
+        .append("sibling", sibling)
+        .toString();
   }
 }

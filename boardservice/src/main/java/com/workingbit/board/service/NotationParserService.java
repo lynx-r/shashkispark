@@ -35,11 +35,12 @@ public class NotationParserService {
     Node pdnFile = parse.getChildAt(0);
     Node gameHeader = pdnFile.getChildAt(0);
 
-    ListOrderedMap<String, String> headers = new ListOrderedMap<>();
+    Notation notation = new Notation();
+    ListOrderedMap<String, String> headers = notation.getTags();
     parseHeader(gameHeader, headers);
 
     Node game = pdnFile.getChildAt(1);
-    NotationDrivesContainer notationDrives = new NotationDrivesContainer();
+    NotationDrivesContainer notationDrives = notation.getNotationDrivesContainer();
     try {
       parseGame(game, notationDrives.getVariants());
     } catch (Exception e) {
@@ -47,7 +48,6 @@ public class NotationParserService {
       logger.error("Parse error ", e);
     }
 
-    Notation notation = new Notation();
     notation.setTags(headers);
     notation.setNotationDrivesContainer(notationDrives);
 
@@ -111,7 +111,7 @@ public class NotationParserService {
           NotationDrive collectVariants = notationDrive.deepClone();
           for (int v = 0; v < variants.getChildCount(); v++) {
             Node variant = variants.getChildAt(v);
-            NotationDrives subVariants = NotationDrives.createWithoutRoot();
+            NotationDrives subVariants = NotationDrives.create();
             parseGame(variant.getChildAt(1), subVariants);
             NotationDrive subDrive = subVariants.getFirst().deepClone();
             subDrive.setVariants(subVariants);

@@ -252,14 +252,14 @@ public class BoardUtils {
     String boardId = board.getId();
     NotationDrivesContainer notationDrives = board.getNotationDrivesContainer();
 
-    NotationMove move = NotationMove.create(NotationDrive.EnumNotation.CAPTURE, boardId, true);
+    NotationMove move = NotationMove.create(EnumNotation.CAPTURE, boardId, true);
     move.setMove(new String[]{
         board.getPreviousSquare().getNotation(),
         board.getSelectedSquare().getNotation()
     });
 
     if (!notationDrives.isEmpty()) {
-      NotationDrive lastNotationDrive = notationDrives.getLast();
+      NotationDrive lastNotationDrive = notationDrives.getLastVariant();
       lastNotationDrive.getMoves().add(move);
     } else {
       NotationMoves moves = NotationMoves.Builder.getInstance()
@@ -293,9 +293,9 @@ public class BoardUtils {
     resetBoardNotationCursor(notationDrives);
 
     NotationDrive notationDrive;
-    boolean isRootDrive = notationDrives.size() > 1;
+    boolean isRootDrive = notationDrives.countVariants() > 1;
     if (isRootDrive) {
-      notationDrive = notationDrives.getLast();
+      notationDrive = notationDrives.getLastVariant();
     } else {
       notationDrive = new NotationDrive();
       notationDrive.setNotationNumberInt(notationNumber);
@@ -304,7 +304,7 @@ public class BoardUtils {
     NotationMoves moves = notationDrive.getMoves();
     NotationMove lastCapturedMove;
     if (moves.isEmpty()) {
-      lastCapturedMove = NotationMove.create(NotationDrive.EnumNotation.CAPTURE, board.getId(), true);
+      lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE, board.getId(), true);
       String[] mvs = new String[] {
           board.getPreviousSquare().getNotation()
       };
@@ -336,7 +336,7 @@ public class BoardUtils {
     NotationMoves moves = new NotationMoves();
 
     String boardId = board.getId();
-    NotationMove notationMove = NotationMove.create(NotationDrive.EnumNotation.SIMPLE, boardId, true);
+    NotationMove notationMove = NotationMove.create(EnumNotation.SIMPLE, boardId, true);
     notationMove.setMove(move);
     moves.add(notationMove);
 
@@ -347,7 +347,7 @@ public class BoardUtils {
       notationDrive.setNotationNumberInt(notationNumber);
       notationDrives.add(notationDrive);
     } else {
-      notationDrives.getLast().getMoves().addAll(moves);
+      notationDrives.getLastVariant().getMoves().addAll(moves);
     }
   }
 

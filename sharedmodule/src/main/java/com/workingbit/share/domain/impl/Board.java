@@ -119,7 +119,7 @@ public class Board extends BaseDomain implements Payload {
   private NotationDrivesContainer notationDrivesContainer;
 
   public Board() {
-    notationDrivesContainer = new NotationDrivesContainer();
+    notationDrivesContainer = NotationDrivesContainer.createWithRoot();
   }
 
   public Board(boolean black, EnumRules rules) {

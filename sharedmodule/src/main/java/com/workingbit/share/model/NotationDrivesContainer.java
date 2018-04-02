@@ -1,6 +1,7 @@
 package com.workingbit.share.model;
 
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.util.Utils;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,8 +17,20 @@ public class NotationDrivesContainer implements ToPdn, DeepClone {
   private NotationDrives variants;
 
   public NotationDrivesContainer() {
-    variants = NotationDrives.createWithRoot();
-    history = NotationDrives.createWithRoot();
+    this(true);
+  }
+
+  private NotationDrivesContainer(boolean hasRoot) {
+    if (hasRoot) {
+      variants = NotationDrives.create();
+      NotationDrive root = new NotationDrive(true);
+      variants.add(root);
+      history = NotationDrives.create();
+      history.add(root.deepClone());
+    } else {
+      variants = NotationDrives.create();
+      history = NotationDrives.create();
+    }
   }
 
   public NotationDrives getVariants() {
@@ -62,7 +75,7 @@ public class NotationDrivesContainer implements ToPdn, DeepClone {
     return variants.getFirst();
   }
 
-  public NotationDrive getLast() {
+  public NotationDrive getLastVariant() {
     return variants.getLast();
   }
 
@@ -71,9 +84,8 @@ public class NotationDrivesContainer implements ToPdn, DeepClone {
     return variants.remove(o);
   }
 
-  public boolean removeAll(Collection<?> c) {
-    history.removeAll(c);
-    return variants.removeAll(c);
+  public void removeAllVariants(NotationDrives c) {
+    variants.removeAll(c);
   }
 
   public NotationDrive removeFirst() {
@@ -86,15 +98,15 @@ public class NotationDrivesContainer implements ToPdn, DeepClone {
     return variants.removeLast();
   }
 
-  public int size() {
+  public int countVariants() {
     return variants.size();
   }
 
-  public int indexOf(NotationDrive o) {
+  public int indexOfVariant(NotationDrive o) {
     return variants.indexOf(o);
   }
 
-  public NotationDrives subList(int fromIndex, int toIndex) {
+  public NotationDrives subVariants(int fromIndex, int toIndex) {
     List<NotationDrive> subList = variants.subList(fromIndex, toIndex);
     NotationDrives nd = new NotationDrives();
     nd.addAll(subList);
@@ -110,19 +122,19 @@ public class NotationDrivesContainer implements ToPdn, DeepClone {
   public void forkAt(NotationDrive forkFromNotationDrive) {
     assert forkFromNotationDrive.getVariants().size() == 1;
 
-    int indexFork = indexOf(forkFromNotationDrive);
-    List<NotationDrive> forked = subList(indexFork, size());
+    int indexFork = indexOfVariant(forkFromNotationDrive);
+    NotationDrives forked = subVariants(indexFork, countVariants());
     NotationDrives forkedNotationDrives = NotationDrives.Builder.getInstance()
         .addAll(forked)
         .build();
 
-    removeAll(forkedNotationDrives);
+    removeAllVariants(forkedNotationDrives);
 
     NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
     variant.setVariants(forkedNotationDrives);
     variant.setSibling(variant.getVariants().size());
 
-    NotationDrive newDriveNotation = getLast();
+    NotationDrive newDriveNotation = getLastVariant();
     newDriveNotation.setForkNumber(newDriveNotation.getForkNumber() + 1);
 
     newDriveNotation.getVariants().add(variant);
@@ -131,14 +143,14 @@ public class NotationDrivesContainer implements ToPdn, DeepClone {
   public void switchTo(NotationDrive switchToNotationDrive) {
     assert switchToNotationDrive.getVariants().size() == 1;
 
-    int indexFork = indexOf(switchToNotationDrive);
+    int indexFork = indexOfVariant(switchToNotationDrive);
     NotationDrive toSwitchDrive = variants.get(indexFork);
     NotationDrivesContainer toSwitchVariants = toSwitchDrive.getVariants().deepClone();
     toSwitchDrive.getVariants().removeLast();
 
     // add current notation drive after indexSwitch to variants
-    if (indexFork + 1 < size()) {
-      List<NotationDrive> forked = subList(indexFork + 1, size());
+    if (indexFork + 1 < countVariants()) {
+      List<NotationDrive> forked = subVariants(indexFork + 1, countVariants());
       NotationDrives forkedNotationDrives = NotationDrives.Builder.getInstance()
           .addAll(forked)
           .build();
@@ -176,6 +188,18 @@ public class NotationDrivesContainer implements ToPdn, DeepClone {
 
   @Override
   public String toPdn() {
-    return variants.toPdn();
+    return Utils.notationDrivesToPdn(variants);
+  }
+
+  public void setVariants(NotationDrives variants) {
+    this.variants = variants.deepClone();
+  }
+
+  public static NotationDrivesContainer create() {
+    return new NotationDrivesContainer(false);
+  }
+
+  public static NotationDrivesContainer createWithRoot() {
+    return new NotationDrivesContainer(true);
   }
 }

@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.workingbit.share.model.NotationDrive.EnumNotation.LPAREN;
-import static com.workingbit.share.model.NotationDrive.EnumNotation.RPAREN;
+import static com.workingbit.share.model.EnumNotation.LPAREN;
+import static com.workingbit.share.model.EnumNotation.RPAREN;
 
 /**
  * Created by Aleksey Popryaduhin on 12:01 12/08/2017.

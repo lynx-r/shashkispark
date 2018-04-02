@@ -126,10 +126,10 @@ public class BoardBoxService {
         .map(updatedBox -> {
           Board boardUpdated = updatedBox.getBoard();
           Board board = boardBox.getBoard();
-          boolean hasFirstMoveInDrive = board.getNotationDrivesContainer().size() > 0
-              && board.getNotationDrivesContainer().getLast().getMoves().size() == 1;
-          boolean hasSecondMoveInDrive = board.getNotationDrivesContainer().size() > 0
-              && board.getNotationDrivesContainer().getLast().getMoves().size() == 2;
+          boolean hasFirstMoveInDrive = board.getNotationDrivesContainer().countVariants() > 0
+              && board.getNotationDrivesContainer().getLastVariant().getMoves().size() == 1;
+          boolean hasSecondMoveInDrive = board.getNotationDrivesContainer().countVariants() > 0
+              && board.getNotationDrivesContainer().getLastVariant().getMoves().size() == 2;
           boolean isWhiteTurn = !board.isBlackTurn();
           boolean isBlackTurn = board.isBlackTurn();
           boolean hasWhiteMoves = isWhiteTurn && hasFirstMoveInDrive;
@@ -151,7 +151,7 @@ public class BoardBoxService {
           }
           NotationDrivesContainer notationDrivesInBoardBox = updatedBox.getNotation().getNotationDrivesContainer();
           boardUpdated.setNotationDrivesContainer(notationDrivesInBoardBox);
-          boardUpdated.setDriveCount(notationDrivesInBoardBox.size() - 1);
+          boardUpdated.setDriveCount(notationDrivesInBoardBox.countVariants() - 1);
           String articleId = boardBox.getArticleId();
           boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId);
           updatedBox.setBoard(boardUpdated);

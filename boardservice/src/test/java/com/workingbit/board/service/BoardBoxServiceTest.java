@@ -134,7 +134,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
 
-      // Test createWithoutRoot BoardBox moving draughts
+      // Test create BoardBox moving draughts
       NotationDrivesContainer notationDrives = boardBox.getNotation().getNotationDrivesContainer();
       BoardBox current = boardBox.deepClone();
       for (NotationDrive drive : notationDrives.getVariants()) {
@@ -173,7 +173,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       NotationDrivesContainer nds = boardBoxVariant.getNotation().getNotationDrivesContainer();
       NotationDrive nd = nds.get(forkNumber - 1);
-      assertEquals(nd.getVariants().getLast().getVariants().size(), notationDrives.size() - forkNumber);
+      assertEquals(nd.getVariants().getLast().getVariants().size(), notationDrives.countVariants() - forkNumber);
       System.out.println("Prev: " + notationDrives.toPdn());
       System.out.println("New: " + nds.toPdn());
     }
@@ -498,7 +498,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
 //      String firstBoardId = boardBox.getNotation().getNotationDrivesContainer().get(1).getMoves().getFirst().getBoardId();
 //      Board board = boardDao.findByKey(firstBoardId).get();
-//      String initBoardId = board.getPreviousBoards().getLast().getBoardId();
+//      String initBoardId = board.getPreviousBoards().getLastVariant().getBoardId();
 //      board = boardDao.findByKey(initBoardId).get();
 //      board.setNotationDrivesContainer(NotationDrivesContainer.createWithRoot());
 //      boardBox.setBoard(board);
@@ -518,9 +518,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       NotationDrivesContainer notationDrives = boardBox.getNotation().getNotationDrivesContainer().deepClone();
 
       Board board = boardBox.getBoard();
-      board.setNotationDrivesContainer(new NotationDrivesContainer());
+      board.setNotationDrivesContainer(NotationDrivesContainer.createWithRoot());
       boardDao.save(board);
-      boardBox.getNotation().setNotationDrivesContainer(new NotationDrivesContainer());
+      boardBox.getNotation().setNotationDrivesContainer(NotationDrivesContainer.createWithRoot());
       boardBoxDao.save(boardBox);
       for (NotationDrive notationDrive : notationDrives.getVariants()) {
         for (NotationMove notationMove : notationDrive.getMoves()) {
