@@ -3,7 +3,7 @@ package com.workingbit.board.service;
 import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.NotationDrive;
-import com.workingbit.share.model.NotationDrives;
+import com.workingbit.share.model.NotationDrivesContainer;
 import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
@@ -38,7 +38,7 @@ public class NotationParserService {
     parseHeader(gameHeader, headers);
 
     Node game = pdnFile.getChildAt(1);
-    NotationDrives notationDrives = NotationDrives.createWithRoot();
+    NotationDrivesContainer notationDrives = NotationDrivesContainer.createWithRoot();
     try {
       parseGame(game, notationDrives);
     } catch (Exception e) {
@@ -62,7 +62,7 @@ public class NotationParserService {
     }
   }
 
-  private void parseGame(Node game, NotationDrives notationDrives) {
+  private void parseGame(Node game, NotationDrivesContainer notationDrives) {
     boolean firstMove = false;
     NotationDrive notationDrive = new NotationDrive();
     int gameMoveNumber = 0;
@@ -110,11 +110,11 @@ public class NotationParserService {
           NotationDrive collectVariants = notationDrive.deepClone();
           for (int v = 0; v < variants.getChildCount(); v++) {
             Node variant = variants.getChildAt(v);
-            NotationDrives subVariants = NotationDrives.createWithoutRoot();
+            NotationDrivesContainer subVariants = NotationDrivesContainer.createWithoutRoot();
             parseGame(variant.getChildAt(1), subVariants);
             NotationDrive subDrive = subVariants.getFirst().deepClone();
             subDrive.setVariants(subVariants);
-            collectVariants.getVariants().add(subDrive);
+            collectVariants.addVariant(subDrive);
           }
           notationDrives.add(collectVariants);
           break;

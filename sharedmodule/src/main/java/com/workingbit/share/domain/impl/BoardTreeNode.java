@@ -60,7 +60,7 @@
 //
 //
 //  @Override
-//  public String print() {
+//  public String printVariants() {
 //    return "BoardTreeNode{" +
 //        "data=" + data +
 //        '}';

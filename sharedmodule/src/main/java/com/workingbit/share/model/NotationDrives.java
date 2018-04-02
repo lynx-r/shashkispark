@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
+ * Created by Aleksey Popryadukhin on 02/04/2018.
  */
 public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn, DeepClone {
 
@@ -25,15 +25,6 @@ public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn, 
     }
   }
 
-  public String print(String prefix) {
-    return stream()
-        .map(notationStroke -> notationStroke.print(prefix + "\t"))
-        .collect(Collectors.joining("\n"));
-  }
-
-  public String toPdn() {
-    return Utils.listToPdn(new ArrayList<>(this));
-  }
 
   public static NotationDrives createWithoutRoot() {
     return new NotationDrives(false);
@@ -43,12 +34,22 @@ public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn, 
     return new NotationDrives(true);
   }
 
+  public String toPdn() {
+    return Utils.listToPdn(new ArrayList<>(this));
+  }
+
+  public String print(String prefix) {
+    return stream()
+        .map(notationStroke -> notationStroke.print(prefix + "\t"))
+        .collect(Collectors.joining("\n"));
+  }
+
   public static class Builder {
 
     private NotationDrives drives;
 
     private Builder() {
-      drives = new NotationDrives(false);
+      drives = new NotationDrives();
     }
 
     public static NotationDrives.Builder getInstance() {

@@ -48,6 +48,7 @@ public class BoardBoxService {
     Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), board.getNotationDrives());
     boardBox.setNotation(notation);
 
+    // switch boardBox to the first board
     LinkedList<BoardIdNotation> previousBoards = board.getPreviousBoards();
     String firstBoardId = previousBoards.getLast().getBoardId();
     return boardDao.findByKey(firstBoardId)
@@ -86,7 +87,6 @@ public class BoardBoxService {
 
   private BoardBox updateNotationForEditMode(BoardBox boardBox) {
     if (isEditMode(boardBox)) {
-      System.out.println(boardBox.getNotation().getNotationDrives().toPdn());
       return boardBox;
     }
     return boardBox;
@@ -126,8 +126,18 @@ public class BoardBoxService {
         .map(updatedBox -> {
           Board boardUpdated = updatedBox.getBoard();
           Board board = boardBox.getBoard();
+          boolean hasFirstMoveInDrive = board.getNotationDrives().size() > 0
+              && board.getNotationDrives().getLast().getMoves().size() == 1;
+          boolean hasSecondMoveInDrive = board.getNotationDrives().size() > 0
+              && board.getNotationDrives().getLast().getMoves().size() == 2;
+          boolean isWhiteTurn = !board.isBlackTurn();
+          boolean isBlackTurn = board.isBlackTurn();
+          boolean hasWhiteMoves = isWhiteTurn && hasFirstMoveInDrive;
+          boolean hasBlackMoves = isBlackTurn && hasSecondMoveInDrive;
           boolean isInUndo = board.getNextBoards().size() > 0;
-          if (isInUndo &&
+          if (hasWhiteMoves ||
+              hasBlackMoves ||
+              isInUndo &&
               isMoveMode(boardBox) &&
               isNotEditMode(boardBox)) {
             return null;
@@ -139,7 +149,7 @@ public class BoardBoxService {
             logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
             return null;
           }
-          NotationDrives notationDrivesInBoardBox = updatedBox.getNotation().getNotationDrives();
+          NotationDrivesContainer notationDrivesInBoardBox = updatedBox.getNotation().getNotationDrives();
           boardUpdated.setNotationDrives(notationDrivesInBoardBox);
           boardUpdated.setDriveCount(notationDrivesInBoardBox.size() - 1);
           String articleId = boardBox.getArticleId();
@@ -263,67 +273,15 @@ public class BoardBoxService {
   }
 
   private BoardBox switchNotationToVariant(BoardBox boardBox, NotationDrive switchToNotationDrive) {
-    assert switchToNotationDrive.getVariants().size() == 1;
-
-    Notation notation = boardBox.getNotation();
-    NotationDrives notationDrives = notation.getNotationDrives();
-
-    int indexFork = notationDrives.indexOf(switchToNotationDrive);
-    NotationDrive toSwitchDrive = notationDrives.get(indexFork);
-    NotationDrives toSwitchVariants = toSwitchDrive.getVariants();
-
-    // add current notation drive after indexSwitch to variants
-    if (indexFork + 1 < notationDrives.size()) {
-      List<NotationDrive> forked = notationDrives.subList(indexFork + 1, notationDrives.size());
-      NotationDrives forkedNotationDrives = NotationDrives.Builder.getInstance()
-          .addAll(forked)
-          .build();
-
-      // remove tail
-      notationDrives.removeAll(forkedNotationDrives);
-
-      NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
-      variant.setVariants(forkedNotationDrives);
-      toSwitchVariants.add(variant);
-    }
-
-    // find drive to switch in last variants
-    Optional<NotationDrive> variantToSwitch = toSwitchVariants
-        .stream()
-        // switchToNotationDrive MUST have one variant to witch user switches
-        .filter(nd -> nd.getMoves().equals(switchToNotationDrive.getVariants().get(0).getMoves()))
-        .findFirst();
-
-    // TODO Удалять предыдущую ветку??
-    // add varint's to switch variants to main notation drives
-    variantToSwitch.ifPresent(switchVariant -> {
-      notationDrives.addAll(switchVariant.getVariants());
-    });
-    toSwitchDrive.setForkNumber(toSwitchDrive.getForkNumber() - 1);
-
+    NotationDrivesContainer notationDrives = boardBox.getNotation().getNotationDrives();
+    notationDrives.switchTo(switchToNotationDrive);
     return boardBox;
   }
 
   private BoardBox forkNotationForVariants(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
     Notation notation = boardBox.getNotation();
-    NotationDrives notationDrives = notation.getNotationDrives();
-
-    int indexFork = notationDrives.indexOf(forkFromNotationDrive);
-    List<NotationDrive> forked = notationDrives.subList(indexFork, notationDrives.size());
-    NotationDrives forkedNotationDrives = NotationDrives.Builder.getInstance()
-        .addAll(forked)
-        .build();
-
-    notationDrives.removeAll(forkedNotationDrives);
-
-    NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
-    variant.setVariants(forkedNotationDrives);
-    variant.setSibling(variant.getVariants().size());
-
-    NotationDrive newDriveNotation = notationDrives.getLast();
-    newDriveNotation.setForkNumber(newDriveNotation.getForkNumber() + 1);
-
-    newDriveNotation.getVariants().add(variant);
+    NotationDrivesContainer notationDrives = notation.getNotationDrives();
+    notationDrives.forkAt(forkFromNotationDrive);
     return boardBox;
   }
 
@@ -353,7 +311,6 @@ public class BoardBoxService {
     boardDao.save(board);
     boardBox.getNotation().setNotationDrives(board.getNotationDrives());
     boardBoxDao.save(boardBox);
-    System.out.println(boardBox.getNotation().getNotationDrives().toPdn());
   }
 
   private boolean isNotEditMode(BoardBox boardBox) {

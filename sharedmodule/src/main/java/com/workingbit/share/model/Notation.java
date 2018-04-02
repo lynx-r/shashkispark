@@ -26,14 +26,14 @@ public class Notation implements ToPdn {
 
   private EnumRules rules;
 
-  private NotationDrives notationDrives;
+  private NotationDrivesContainer notationDrives;
 
   public Notation() {
     tags = new ListOrderedMap<>();
-    notationDrives = NotationDrives.createWithRoot();
+    notationDrives = NotationDrivesContainer.createWithRoot();
   }
 
-  public Notation(ListOrderedMap<String, String> tags, EnumRules rules, NotationDrives notationDrives) {
+  public Notation(ListOrderedMap<String, String> tags, EnumRules rules, NotationDrivesContainer notationDrives) {
     this();
     this.tags = tags;
     this.rules = rules;

@@ -97,25 +97,8 @@ public class BoardService {
     String nextNotation = nextSquare.getNotation();
     nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
 
-//    if (boardBoxNotationDrives != null) { // in case when I fill it from NotationParseService
-//      NotationDrives boardNotationDrives = nextBoard.getNotationDrives();
-//      updateBoardVariantsNotation(boardBoxNotationDrives, boardNotationDrives);
-//    }
-
     boardDao.save(nextBoard);
     return nextBoard;
-  }
-
-  private void updateBoardVariantsNotation(NotationDrives boardBoxNotationDrives,
-                                           NotationDrives boardNotationDrives) {
-    if (boardBoxNotationDrives.size() > 0) {
-      NotationDrive lastNotation = boardBoxNotationDrives.getLast();
-      boardNotationDrives
-          .stream()
-          .filter(lastNotation::equals)
-          .findFirst()
-          .ifPresent(notationStroke -> notationStroke.setVariants(lastNotation.getVariants()));
-    }
   }
 
   void save(Board board) {
@@ -137,22 +120,28 @@ public class BoardService {
     }
     boardDao.save(currentBoard);
     return findById(previousId).map(undoneBoard -> {
-      undoneBoard.pushNextBoard(currentBoard.getId(),
-          currentBoard.getPreviousSquare().getAlphanumericNotation64(),
-          currentBoard.getSelectedSquare().getAlphanumericNotation64());
+      String selectedMove = currentBoard.getPreviousSquare().getAlphanumericNotation64();
+      String possibleMove = currentBoard.getSelectedSquare().getAlphanumericNotation64();
+      undoneBoard.pushNextBoard(currentBoard.getId(), selectedMove, possibleMove);
 
       // reset highlights
       undoneBoard.getSelectedSquare().getDraught().setHighlighted(false);
       undoneBoard.getNextSquare().setHighlighted(false);
 
-      NotationDrives currentDrives = currentBoard.getNotationDrives();
-      List<NotationDrive> temp = currentDrives.subList(1, currentDrives.size());
-      NotationDrives forkedDrives = NotationDrives.Builder.getInstance()
-          .addAll(temp)
-          .build();
-      NotationDrive headForked = forkedDrives.getFirst().deepClone();
-      headForked.setVariants(forkedDrives);
-      undoneBoard.getNotationDrives().getLast().getVariants().add(headForked);
+      NotationDrivesContainer currentDrives = currentBoard.getNotationDrives();
+      NotationDrive lastUndone = currentDrives.getLast().deepClone();
+      lastUndone.setSubRoot(true);
+      NotationDrivesContainer drivesOfUndone = undoneBoard.getNotationDrives();
+
+      NotationMove lastMove = lastUndone.getMoves().getLast().deepClone();
+      NotationDrivesContainer variantsForUndoneBoard = drivesOfUndone.getLast().getVariants();
+      boolean isUndoneVariantsEmpty = variantsForUndoneBoard.isEmpty();
+      if (isUndoneVariantsEmpty) {
+        variantsForUndoneBoard.add(lastUndone);
+        lastUndone.setVariants(variantsForUndoneBoard.deepClone());
+      } else {
+        variantsForUndoneBoard.getLast().getMoves().add(lastMove);
+      }
 
       return undoneBoard;
     });
@@ -177,6 +166,8 @@ public class BoardService {
       redoneBoard.getSelectedSquare().getDraught().setHighlighted(false);
       nextOrPrevSquare.setHighlighted(false);
 
+
+
       return redoneBoard;
     });
   }
@@ -190,7 +181,7 @@ public class BoardService {
     return BoardUtils.updateBoard(board);
   }
 
-  private Board syncBoardWithStrokes(Board board, NotationDrives notationDrives, String articleId) {
+  private Board syncBoardWithStrokes(Board board, NotationDrivesContainer notationDrives, String articleId) {
     for (NotationDrive notationDrive : notationDrives) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {

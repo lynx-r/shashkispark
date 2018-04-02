@@ -239,6 +239,7 @@ public class Utils {
             .stream()
             .map(NotationDrive::toPdn)
             .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn())))
-        .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn()));
+        .reduce(" 0 ", (s1,s2)-> "1 " + s1 + "+" + s2 + " 2", (s1, s2) -> s1 + " - " + s2);
+//        .collect(Collectors.joining(" | ", "+" + LPAREN.getPdn(), RPAREN.getPdn() + "-"));
   }
 }

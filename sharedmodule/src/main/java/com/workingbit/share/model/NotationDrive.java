@@ -32,6 +32,10 @@ public class NotationDrive implements DeepClone, ToPdn {
   private String comment;
   private boolean root;
   /**
+   * Root of variants
+   */
+  private boolean subRoot;
+  /**
    * Is the current drive a forkNumber?
    */
   private int forkNumber;
@@ -47,6 +51,14 @@ public class NotationDrive implements DeepClone, ToPdn {
     notationDrive.setNotationNumber(null);
     notationDrive.setMoves(moves);
     return notationDrive;
+  }
+
+  public boolean addVariant(NotationDrive variant) {
+    return variants.add(variant);
+  }
+
+  public NotationDrives getVariants() {
+    return variants;
   }
 
   @DynamoDBIgnore
@@ -109,6 +121,7 @@ public class NotationDrive implements DeepClone, ToPdn {
     }
     return new StringBuilder()
         .append(prefix).append(getClass().getSimpleName())
+        .append(prefix).append("\t").append("subRoot: ").append(subRoot)
         .append(prefix).append("\t").append("forkNumber: ").append(forkNumber)
         .append(prefix).append("\t").append("sibling: ").append(sibling)
         .append(prefix).append("\t").append("notationNumber: ").append(notationNumber)
@@ -131,12 +144,12 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public enum EnumNotation {
-    NUMBER(". ", ". "),
+    NUMBER(".", ". "),
     LPAREN("(", " ( "),
     RPAREN(")", " ) "),
     SIMPLE("-", "-"),
     CAPTURE(":", "x"),
-    END_GAME_SYMBOL("*", "*");
+    END_GAME_SYMBOL("*", " * ");
 
     private String simple;
     private String pdn;

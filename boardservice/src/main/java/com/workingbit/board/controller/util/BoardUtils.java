@@ -250,7 +250,7 @@ public class BoardUtils {
 
   private static void updateNotationMiddle(Board board) {
     String boardId = board.getId();
-    NotationDrives notationDrives = board.getNotationDrives();
+    NotationDrivesContainer notationDrives = board.getNotationDrives();
 
     NotationMove move = NotationMove.create(NotationDrive.EnumNotation.CAPTURE, boardId, true);
     move.setMove(new String[]{
@@ -271,7 +271,7 @@ public class BoardUtils {
   }
 
   private static void updateNotationEnd(boolean previousCaptured, Board board) {
-    NotationDrives notationDrives = board.getNotationDrives();
+    NotationDrivesContainer notationDrives = board.getNotationDrives();
 
     boolean blackTurn = board.isBlackTurn();
     int notationNumber = 0;
@@ -289,7 +289,7 @@ public class BoardUtils {
   }
 
   private static void pushCaptureMove(Board board, int notationNumber) {
-    NotationDrives notationDrives = board.getNotationDrives();
+    NotationDrivesContainer notationDrives = board.getNotationDrives();
     resetBoardNotationCursor(notationDrives);
 
     NotationDrive notationDrive;
@@ -320,13 +320,13 @@ public class BoardUtils {
     notationDrive.getMoves().add(lastCapturedMove);
   }
 
-  private static void resetBoardNotationCursor(NotationDrives notationDrives) {
+  private static void resetBoardNotationCursor(NotationDrivesContainer notationDrives) {
     notationDrives
         .forEach(drive -> drive.getMoves()
             .forEach(move -> move.setCursor(false)));
   }
 
-  private static void pushSimpleMove(int notationNumber, NotationDrives notationDrives, Board board) {
+  private static void pushSimpleMove(int notationNumber, NotationDrivesContainer notationDrives, Board board) {
     resetBoardNotationCursor(board.getNotationDrives());
 
     String[] move = new String[]{
@@ -569,7 +569,7 @@ public class BoardUtils {
     return null;
   }
 
-  public static String printBoardNotation(NotationDrives notationDrives) {
+  public static String printBoardNotation(NotationDrivesContainer notationDrives) {
     ObjectMapper mapper = new ObjectMapper();
     try {
       return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(notationDrives);
