@@ -115,11 +115,11 @@ public class Board extends BaseDomain implements Payload {
 
   @JsonIgnore
   @DynamoDBTypeConvertedJson(targetType = NotationDrivesContainer.class)
-  @DynamoDBAttribute(attributeName = "notationDrives")
-  private NotationDrivesContainer notationDrives;
+  @DynamoDBAttribute(attributeName = "notationDrivesContainer")
+  private NotationDrivesContainer notationDrivesContainer;
 
   public Board() {
-    notationDrives = new NotationDrivesContainer();
+    notationDrivesContainer = new NotationDrivesContainer();
   }
 
   public Board(boolean black, EnumRules rules) {

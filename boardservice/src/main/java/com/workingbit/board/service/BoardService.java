@@ -32,7 +32,7 @@ public class BoardService {
   public Board createBoardFromNotation(Notation notation, String articleId, String boardBoxId) {
     Board board = initBoard(true, false, notation.getRules());
     Utils.setBoardIdAndCreatedAt(board, articleId, boardBoxId);
-    return syncBoardWithStrokes(board, notation.getNotationDrives(), articleId);
+    return syncBoardWithStrokes(board, notation.getNotationDrivesContainer(), articleId);
   }
 
   public Optional<Board> find(Board board) {
@@ -128,20 +128,20 @@ public class BoardService {
       undoneBoard.getSelectedSquare().getDraught().setHighlighted(false);
       undoneBoard.getNextSquare().setHighlighted(false);
 
-      NotationDrivesContainer currentDrives = currentBoard.getNotationDrives();
+      NotationDrivesContainer currentDrives = currentBoard.getNotationDrivesContainer();
       NotationDrive lastUndone = currentDrives.getLast().deepClone();
       lastUndone.setSubRoot(true);
-      NotationDrivesContainer drivesOfUndone = undoneBoard.getNotationDrives();
+      NotationDrivesContainer drivesOfUndone = undoneBoard.getNotationDrivesContainer();
 
-      NotationMove lastMove = lastUndone.getMoves().getLast().deepClone();
-      NotationDrivesContainer variantsForUndoneBoard = drivesOfUndone.getLast().getVariants();
-      boolean isUndoneVariantsEmpty = variantsForUndoneBoard.isEmpty();
-      if (isUndoneVariantsEmpty) {
-        variantsForUndoneBoard.add(lastUndone);
-        lastUndone.setVariants(variantsForUndoneBoard.deepClone());
-      } else {
-        variantsForUndoneBoard.getLast().getMoves().add(lastMove);
-      }
+//      NotationMove lastMove = lastUndone.getMoves().getLast().deepClone();
+//      NotationDrivesContainer variantsForUndoneBoard = drivesOfUndone.getLast().getVariants();
+//      boolean isUndoneVariantsEmpty = variantsForUndoneBoard.isEmpty();
+//      if (isUndoneVariantsEmpty) {
+//        variantsForUndoneBoard.add(lastUndone);
+//        lastUndone.setVariants(variantsForUndoneBoard.deepClone());
+//      } else {
+//        variantsForUndoneBoard.getLast().getMoves().add(lastMove);
+//      }
 
       return undoneBoard;
     });
@@ -182,7 +182,7 @@ public class BoardService {
   }
 
   private Board syncBoardWithStrokes(Board board, NotationDrivesContainer notationDrives, String articleId) {
-    for (NotationDrive notationDrive : notationDrives) {
+    for (NotationDrive notationDrive : notationDrives.getVariants()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
         board = emulateMove(drive, board, articleId);

@@ -250,7 +250,7 @@ public class BoardUtils {
 
   private static void updateNotationMiddle(Board board) {
     String boardId = board.getId();
-    NotationDrivesContainer notationDrives = board.getNotationDrives();
+    NotationDrivesContainer notationDrives = board.getNotationDrivesContainer();
 
     NotationMove move = NotationMove.create(NotationDrive.EnumNotation.CAPTURE, boardId, true);
     move.setMove(new String[]{
@@ -271,7 +271,7 @@ public class BoardUtils {
   }
 
   private static void updateNotationEnd(boolean previousCaptured, Board board) {
-    NotationDrivesContainer notationDrives = board.getNotationDrives();
+    NotationDrivesContainer notationDrives = board.getNotationDrivesContainer();
 
     boolean blackTurn = board.isBlackTurn();
     int notationNumber = 0;
@@ -289,7 +289,7 @@ public class BoardUtils {
   }
 
   private static void pushCaptureMove(Board board, int notationNumber) {
-    NotationDrivesContainer notationDrives = board.getNotationDrives();
+    NotationDrivesContainer notationDrives = board.getNotationDrivesContainer();
     resetBoardNotationCursor(notationDrives);
 
     NotationDrive notationDrive;
@@ -321,13 +321,13 @@ public class BoardUtils {
   }
 
   private static void resetBoardNotationCursor(NotationDrivesContainer notationDrives) {
-    notationDrives
+    notationDrives.getVariants()
         .forEach(drive -> drive.getMoves()
             .forEach(move -> move.setCursor(false)));
   }
 
   private static void pushSimpleMove(int notationNumber, NotationDrivesContainer notationDrives, Board board) {
-    resetBoardNotationCursor(board.getNotationDrives());
+    resetBoardNotationCursor(board.getNotationDrivesContainer());
 
     String[] move = new String[]{
         board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()

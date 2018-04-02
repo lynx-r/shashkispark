@@ -26,18 +26,18 @@ public class Notation implements ToPdn {
 
   private EnumRules rules;
 
-  private NotationDrivesContainer notationDrives;
+  private NotationDrivesContainer notationDrivesContainer;
 
   public Notation() {
     tags = new ListOrderedMap<>();
-    notationDrives = NotationDrivesContainer.createWithRoot();
+    notationDrivesContainer = new NotationDrivesContainer();
   }
 
-  public Notation(ListOrderedMap<String, String> tags, EnumRules rules, NotationDrivesContainer notationDrives) {
+  public Notation(ListOrderedMap<String, String> tags, EnumRules rules, NotationDrivesContainer notationDrivesContainer) {
     this();
     this.tags = tags;
     this.rules = rules;
-    this.notationDrives.addAll(notationDrives);
+    this.notationDrivesContainer = notationDrivesContainer;
   }
 
   @JsonAnySetter
@@ -64,7 +64,7 @@ public class Notation implements ToPdn {
           .append("\n")
       );
     }
-    String moves = notationDrives.toPdn();
+    String moves = notationDrivesContainer.getVariants().toPdn();
     stringBuilder.append("\n")
         .append(moves)
         .append(NotationDrive.EnumNotation.END_GAME_SYMBOL.getPdn());
@@ -72,6 +72,6 @@ public class Notation implements ToPdn {
   }
 
   public void print() {
-    notationDrives.forEach(notationDrive -> System.out.println(notationDrive.print("\n")));
+    notationDrivesContainer.getVariants().forEach(notationDrive -> System.out.println(notationDrive.print("\n")));
   }
 }

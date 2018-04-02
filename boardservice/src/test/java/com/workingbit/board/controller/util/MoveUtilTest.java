@@ -44,7 +44,7 @@ public class MoveUtilTest extends BaseServiceTest {
     Board board = boardBox.getBoard();
     board = move(board, "c3", "d4", false);
     board = move(board, "d6", "e5", true);
-    System.out.println(printBoardNotation(board.getNotationDrives()));
+    System.out.println(printBoardNotation(board.getNotationDrivesContainer()));
   }
 
   @Test
@@ -56,7 +56,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "a3", "b4", false);
     board = move(board, "b6", "a5", true);
 
-    System.out.println(printBoardNotation(board.getNotationDrives()));
+    System.out.println(printBoardNotation(board.getNotationDrivesContainer()));
 //    assertEquals("1. c3-d4 h6-g5 2. a3-b4 b6-a5", board.getNotation());
   }
 
@@ -68,7 +68,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "f6", "e5", true);
     board = move(board, "d4", "f6", false);
     board = move(board, "g7", "e5", true);
-    System.out.println(printBoardNotation(board.getNotationDrives()));
+    System.out.println(printBoardNotation(board.getNotationDrivesContainer()));
 //    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
   }
 
@@ -108,7 +108,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "e3", "d4", false);
     board = move(board, "e5", "c3", true);
     board = move(board, "c3", "a5", true);
-    System.out.println(printBoardNotation(board.getNotationDrives()));
+    System.out.println(printBoardNotation(board.getNotationDrivesContainer()));
 //    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
   }
 
@@ -137,7 +137,7 @@ public class MoveUtilTest extends BaseServiceTest {
     highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
     testCollection("d4,e3,f2,g1,b6", highlight.getAllowed());
     testCollection("c5,c7", highlight.getCaptured());
-    System.out.println(printBoardNotation(board.getNotationDrives()));
+    System.out.println(printBoardNotation(board.getNotationDrivesContainer()));
   }
 
   @Test
@@ -165,7 +165,7 @@ public class MoveUtilTest extends BaseServiceTest {
 //    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
 //    testCollection("d4,e3,f2,g1,b6", highlight.getAllowed());
 //    testCollection("c5,c7", highlight.getCaptured());
-    System.out.println(printBoardNotation(board.getNotationDrives()));
+    System.out.println(printBoardNotation(board.getNotationDrivesContainer()));
   }
 
   @Test

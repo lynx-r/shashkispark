@@ -3,6 +3,7 @@ package com.workingbit.board.service;
 import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.NotationDrive;
+import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.NotationDrivesContainer;
 import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParserCreationException;
@@ -38,9 +39,9 @@ public class NotationParserService {
     parseHeader(gameHeader, headers);
 
     Node game = pdnFile.getChildAt(1);
-    NotationDrivesContainer notationDrives = NotationDrivesContainer.createWithRoot();
+    NotationDrivesContainer notationDrives = new NotationDrivesContainer();
     try {
-      parseGame(game, notationDrives);
+      parseGame(game, notationDrives.getVariants());
     } catch (Exception e) {
       game.printTo(System.err);
       logger.error("Parse error ", e);
@@ -48,7 +49,7 @@ public class NotationParserService {
 
     Notation notation = new Notation();
     notation.setTags(headers);
-    notation.setNotationDrives(notationDrives);
+    notation.setNotationDrivesContainer(notationDrives);
 
     return notation;
   }
@@ -62,7 +63,7 @@ public class NotationParserService {
     }
   }
 
-  private void parseGame(Node game, NotationDrivesContainer notationDrives) {
+  private void parseGame(Node game, NotationDrives notationDrives) {
     boolean firstMove = false;
     NotationDrive notationDrive = new NotationDrive();
     int gameMoveNumber = 0;
@@ -110,7 +111,7 @@ public class NotationParserService {
           NotationDrive collectVariants = notationDrive.deepClone();
           for (int v = 0; v < variants.getChildCount(); v++) {
             Node variant = variants.getChildAt(v);
-            NotationDrivesContainer subVariants = NotationDrivesContainer.createWithoutRoot();
+            NotationDrives subVariants = NotationDrives.createWithoutRoot();
             parseGame(variant.getChildAt(1), subVariants);
             NotationDrive subDrive = subVariants.getFirst().deepClone();
             subDrive.setVariants(subVariants);
