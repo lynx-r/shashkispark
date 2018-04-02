@@ -677,7 +677,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
       boardBox = boardBoxService.redo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
+      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 0);
       break;
     }
   }
@@ -734,17 +734,5 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
       return this;
     }
-  }
-
-  @Test
-  public void flatNotationalVariants() throws ParserLogException, ParserCreationException, IOException, URISyntaxException {
-    LoadNotationForkNumberAndForwardMoves loadNotationForkNumberAndForwardMoves = new LoadNotationForkNumberAndForwardMoves(FLAT_NOTATION_FILE_NAME).invoke();
-    BufferedReader bufferedReader = loadNotationForkNumberAndForwardMoves.getBufferedReader();
-
-    Notation notation = notationParserService.parse(bufferedReader);
-    notation.setRules(RUSSIAN);
-    notation.getNotationHistory().printPdn();
-    NotationDrives notationDrives = Utils.flatNotationalVariants(notation.getNotationHistory().getVariants());
-    System.out.println(notationDrives.toPdn());
   }
 }

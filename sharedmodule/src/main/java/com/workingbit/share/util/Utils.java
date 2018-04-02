@@ -242,16 +242,6 @@ public class Utils {
             .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn()))
         )
         .collect(Collectors.toList());
-//    if (pdns.size() > 1) {
-//      return LPAREN.getPdn() + StringUtils.join(pdns, "") + RPAREN.getPdn();
-//    }
     return StringUtils.join(pdns, "");
-  }
-
-  public static NotationDrives flatNotationalVariants(NotationDrives variants) {
-    return variants
-        .stream()
-        .flatMap(notationDrive -> flatNotationalVariants(notationDrive.getVariants()).stream())
-        .collect(Collectors.toCollection(NotationDrives::new));
   }
 }

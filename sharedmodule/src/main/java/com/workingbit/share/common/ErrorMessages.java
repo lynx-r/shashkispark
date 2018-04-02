@@ -16,6 +16,7 @@ public class ErrorMessages {
   public static final String UNABLE_TO_REDO = "Не удалось повторить действие";
   public static final String UNABLE_TO_UNDO = "Не удалось отменить действие";
   public static final String UNABLE_TO_MAKE_WHITE_STROKE = "Изменить очередь ходов";
+  public static final String UNABLE_TO_SWITCH = "Не удалось переключиться на доску";
 
   public static final String MALFORMED_REQUEST = "Malformed request params";
   public static final String IGNORE_VK_API_SIGN = "Ignore VK API Sign";

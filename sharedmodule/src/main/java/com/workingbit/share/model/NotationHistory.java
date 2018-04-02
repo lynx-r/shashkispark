@@ -3,7 +3,6 @@ package com.workingbit.share.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
-import com.workingbit.share.util.Utils;
 
 import java.util.Collection;
 import java.util.List;
@@ -165,10 +164,15 @@ public class NotationHistory implements DeepClone {
     System.out.println("SWITCH");
 
     int indexFork = indexOf(switchToNotationDrive);
-    NotationDrive v_toSwitchDrive = get(indexFork);
+    NotationDrive v_toSwitchDrive;
+    if (switchToNotationDrive == null) {
+      v_toSwitchDrive = getLast();
+      indexFork = indexOf(v_toSwitchDrive);
+    } else {
+      v_toSwitchDrive = get(indexFork);
+    }
     NotationDrives v_switchVariants = v_toSwitchDrive.getVariants().deepClone();
     v_toSwitchDrive.removeLastVariant();
-
 
     // add rest notation to variants
     if (indexFork + 1 < size()) {
@@ -179,7 +183,7 @@ public class NotationHistory implements DeepClone {
 
       // remove tail
       removeAll(forkedNotationDrives);
-      history.removeAll(forkedNotationDrives);
+//      history.removeAll(forkedNotationDrives);
 
       NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
       variant.setVariants(forkedNotationDrives);
@@ -188,11 +192,18 @@ public class NotationHistory implements DeepClone {
     }
 
     // find in last variants drive to switch
-    Optional<NotationDrive> variantToSwitch = v_switchVariants
-        .stream()
-        // switchToNotationDrive MUST have one variant to witch user switches
-        .filter(nd -> nd.getMoves().equals(switchToNotationDrive.getVariants().get(0).getMoves()))
-        .findFirst();
+    Optional<NotationDrive> variantToSwitch;
+    if (switchToNotationDrive == null) {
+      NotationDrive first = v_switchVariants.getFirst();
+      variantToSwitch = Optional.of(first);
+      history.getLast().getVariants().add(first);
+    } else {
+      variantToSwitch = v_switchVariants
+          .stream()
+          // switchToNotationDrive MUST have one variant to witch user switches
+          .filter(nd -> nd.getMoves().equals(switchToNotationDrive.getVariants().get(0).getMoves()))
+          .findFirst();
+    }
 
     // add varint's to switch variants to main notation drives
     variantToSwitch.ifPresent(switchVariant -> {
@@ -269,13 +280,18 @@ public class NotationHistory implements DeepClone {
         .findFirst();
   }
 
-  public Optional<NotationDrive> findBoardNotationalDriveInVariants(String boardId) {
-    return Utils.flatNotationalVariants(variants)
-        .stream()
-        .filter(drive -> !drive.getMoves().isEmpty() && drive.getMoves()
-            .stream()
-            .anyMatch(move -> move.getBoardId().equals(boardId))
-        )
-        .findFirst();
+  public static Optional<NotationDrive> findBoardNotationDriveInVariants(NotationDrives searchInVariants, String boardId) {
+    for (NotationDrive variant : searchInVariants) {
+      NotationMoves moves = variant.getMoves();
+      for (NotationMove move : moves) {
+        if (move.getBoardId().equals(boardId)) {
+          return Optional.of(variant);
+        }
+      }
+      if (!variant.getVariants().isEmpty()) {
+        return findBoardNotationDriveInVariants(variant.getVariants(), boardId);
+      }
+    }
+    return Optional.empty();
   }
 }

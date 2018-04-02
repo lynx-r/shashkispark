@@ -340,30 +340,21 @@ public class BoardBoxService {
             return null;
           }
           return redone
-              .map((b) -> switchNotationToBoard(updated, b)
-                  .map((bb -> {
-                    undoRedoBoardActionAndSave(bb, b);
-                    return bb;
-                  }))
-                  .orElse(null))
+              .map((b) -> {
+                BoardBox bb = switchNotationToVariant(boardBox, null);
+                if (bb != null) {
+                  undoRedoBoardActionAndSave(bb, b);
+                }
+                return bb;
+              })
               .orElseThrow(BoardServiceException::new);
         });
-  }
-
-  private Optional<BoardBox> switchNotationToBoard(BoardBox boardBox, Board board) {
-    String boardId = board.getId();
-    NotationHistory history = boardBox.getNotation().getNotationHistory();
-    return history.findBoardNotationalDriveInVariants(boardId)
-        .map((switchToVariant) ->
-            switchNotationToVariant(boardBox, switchToVariant)
-        );
   }
 
   private void undoRedoBoardActionAndSave(BoardBox boardBox, Board board) {
     boardBox.setBoard(board);
     boardBox.setBoardId(board.getId());
     boardDao.save(board);
-//    boardBox.getNotation().setNotationHistory(board.getNotationHistory());
     boardBoxDao.save(boardBox);
   }
 
