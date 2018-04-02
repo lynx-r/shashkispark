@@ -254,11 +254,25 @@ public class BoardBoxService {
             logger.error(e.getMessage(), e);
             return null;
           }
-          undone.ifPresent((b) ->
-              undoRedoBoardActionAndSave(updated, b)
-          );
-          return updated;
+
+          return undone
+              .map((b) -> forkNotationForVariantsForBoard(updated, b)
+                  .map((bb) -> {
+                    undoRedoBoardActionAndSave(bb, b);
+                    return bb;
+                  })
+                  .orElse(null))
+              .orElseThrow(BoardServiceException::new);
         });
+  }
+
+  private Optional<BoardBox> forkNotationForVariantsForBoard(BoardBox boardBox, Board forkBoard) {
+    String forkBoardId = forkBoard.getId();
+    NotationHistory history = boardBox.getNotation().getNotationHistory();
+    return history.findBoardNotationalDrive(forkBoardId)
+        .map((forkVariant) ->
+            forkNotationForVariants(boardBox, forkVariant)
+        );
   }
 
   public Optional<BoardBox> forkBoardBox(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
@@ -289,7 +303,7 @@ public class BoardBoxService {
                   boardBox.setBoardId(board.getId());
                   return boardBox;
                 })
-                .orElseThrow(BoardServiceException::new))
+                .orElse(null))
         .orElseThrow(BoardServiceException::new);
   }
 
@@ -308,8 +322,8 @@ public class BoardBoxService {
                   boardBox.setBoardId(board.getId());
                   return boardBox;
                 })
-                .orElseThrow(BoardServiceException::new))
-        .orElseThrow(BoardServiceException::new);
+                .orElse(null))
+        .orElse(null);
   }
 
   public Optional<BoardBox> redo(BoardBox boardBox) {
@@ -325,18 +339,31 @@ public class BoardBoxService {
             logger.error(e.getMessage(), e);
             return null;
           }
-          redone.ifPresent((b) -> {
-            undoRedoBoardActionAndSave(updated, b);
-          });
-          return updated;
+          return redone
+              .map((b) -> switchNotationToBoard(updated, b)
+                  .map((bb -> {
+                    undoRedoBoardActionAndSave(bb, b);
+                    return bb;
+                  }))
+                  .orElse(null))
+              .orElseThrow(BoardServiceException::new);
         });
+  }
+
+  private Optional<BoardBox> switchNotationToBoard(BoardBox boardBox, Board board) {
+    String boardId = board.getId();
+    NotationHistory history = boardBox.getNotation().getNotationHistory();
+    return history.findBoardNotationalDriveInVariants(boardId)
+        .map((switchToVariant) ->
+            switchNotationToVariant(boardBox, switchToVariant)
+        );
   }
 
   private void undoRedoBoardActionAndSave(BoardBox boardBox, Board board) {
     boardBox.setBoard(board);
     boardBox.setBoardId(board.getId());
     boardDao.save(board);
-    boardBox.getNotation().setNotationHistory(board.getNotationHistory());
+//    boardBox.getNotation().setNotationHistory(board.getNotationHistory());
     boardBoxDao.save(boardBox);
   }
 

@@ -3,6 +3,7 @@ package com.workingbit.share.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.util.Utils;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,16 +35,20 @@ public class NotationHistory implements DeepClone {
     }
   }
 
-  @DynamoDBIgnore
-  @JsonIgnore
   public NotationDrives getVariants() {
     return variants;
   }
 
-  @DynamoDBIgnore
-  @JsonIgnore
+  public void setVariants(NotationDrives variants) {
+    this.variants = variants.deepClone();
+  }
+
   public NotationDrives getHistory() {
     return history;
+  }
+
+  public void setHistory(NotationDrives history) {
+    this.history = history;
   }
 
   public void add(NotationDrive notationDrive) {
@@ -205,12 +210,10 @@ public class NotationHistory implements DeepClone {
     return variants.isEmpty();
   }
 
+  @JsonIgnore
+  @DynamoDBIgnore
   public NotationDrive get(int index) {
     return variants.get(index);
-  }
-
-  public void setVariants(NotationDrives variants) {
-    this.variants = variants.deepClone();
   }
 
   public static NotationHistory create() {
@@ -235,7 +238,7 @@ public class NotationHistory implements DeepClone {
     }
   }
 
-  private void printPdn() {
+  public void printPdn() {
     System.out.println(variantsToPdn());
   }
 
@@ -250,5 +253,29 @@ public class NotationHistory implements DeepClone {
       e.printStackTrace();
       return Optional.empty();
     }
+  }
+
+  public NotationDrives getFlatVariants() {
+    return null;
+  }
+
+  public Optional<NotationDrive> findBoardNotationalDrive(String boardId) {
+    return variants
+        .stream()
+        .filter(drive -> !drive.getMoves().isEmpty() && drive.getMoves()
+            .stream()
+            .anyMatch(move -> move.getBoardId().equals(boardId))
+        )
+        .findFirst();
+  }
+
+  public Optional<NotationDrive> findBoardNotationalDriveInVariants(String boardId) {
+    return Utils.flatNotationalVariants(variants)
+        .stream()
+        .filter(drive -> !drive.getMoves().isEmpty() && drive.getMoves()
+            .stream()
+            .anyMatch(move -> move.getBoardId().equals(boardId))
+        )
+        .findFirst();
   }
 }

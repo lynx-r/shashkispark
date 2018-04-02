@@ -41,6 +41,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 //      "/pdn/notation_variant_with_forward_move1.pdn",
       "/pdn/notation_variant_with_forward_move2.pdn",
   };
+  private static final String FLAT_NOTATION_FILE_NAME = "/pdn/notation_variant_nested.pdn";
   public static @DataPoints
   boolean[] blacks = {true, false};
 
@@ -555,6 +556,66 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   @Test
+  public void test_undo() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
+    for (String fileName : PDN_FILE_NAME_VARIANT) {
+      LoadNotationForkNumberAndForwardMoves loadNotationForkNumberAndForwardMoves = new LoadNotationForkNumberAndForwardMoves(fileName).invoke();
+      int forkNumber = loadNotationForkNumberAndForwardMoves.getForkNumber();
+      List<String> forwardNotationLines = loadNotationForkNumberAndForwardMoves.getForwardNotationLines();
+      BufferedReader bufferedReader = loadNotationForkNumberAndForwardMoves.getBufferedReader();
+
+      // Parse Notation
+      Notation notation = notationParserService.parse(bufferedReader);
+      notation.setRules(RUSSIAN);
+
+      String articleId = Utils.getRandomString();
+      String boardBoxId = Utils.getRandomString();
+
+      // Create BoardBox from Notation
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+
+//      String firstBoardId = boardBox.getNotation().getNotationHistory().get(1).getMoves().getFirst().getBoardId();
+//      Board board = boardDao.findByKey(firstBoardId).get();
+//      String initBoardId = board.getPreviousBoards().getLast().getBoardId();
+//      board = boardDao.findByKey(initBoardId).get();
+//      board.setNotationHistory(NotationHistory.createWithRoot());
+//      boardBox.setBoard(board);
+//      boardBox.getNotation().setNotationHistory(board.getNotationHistory());
+//      boardBoxService.saveAndFillBoard(boardBox);
+//
+//      Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
+//      NotationDrive forwardDrive = forwardNotation.getNotationHistory().get(1);
+//
+//      BoardBox current = boardBox.deepClone();
+//      for (NotationMove move : forwardDrive.getMoves()) {
+//        current = moveStrokes(current, move);
+//      }
+
+//      System.out.println(current.getNotation().getNotationHistory().variantsToPdn());
+
+      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
+
+      Board board = boardBox.getBoard();
+      board.setNotationHistory(NotationHistory.createWithRoot());
+      boardDao.save(board);
+      boardBox.getNotation().setNotationHistory(NotationHistory.createWithRoot());
+      boardBoxDao.save(boardBox);
+      for (NotationDrive notationDrive : notationDrives.getVariants()) {
+        for (NotationMove notationMove : notationDrive.getMoves()) {
+          boardBox = moveStrokes(boardBox, notationMove);
+        }
+      }
+
+      boardBox = boardBoxService.undo(boardBox).get();
+      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
+      boardBox = boardBoxService.undo(boardBox).get();
+      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
+      break;
+    }
+  }
+
+  @Test
   public void test_undo_redo() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
     for (String fileName : PDN_FILE_NAME_VARIANT) {
       LoadNotationForkNumberAndForwardMoves loadNotationForkNumberAndForwardMoves = new LoadNotationForkNumberAndForwardMoves(fileName).invoke();
@@ -606,10 +667,17 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       boardBox = boardBoxService.undo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
       boardBox = boardBoxService.undo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-//      boardBox = boardBoxService.redo(boardBox).get();
-//      System.out.println("REDO: " + boardBox.getNotation().variantsToPdn());
+      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
+
+      boardBox = boardBoxService.redo(boardBox).get();
+      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
+      boardBox = boardBoxService.redo(boardBox).get();
+      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
       break;
     }
   }
@@ -666,5 +734,17 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
       return this;
     }
+  }
+
+  @Test
+  public void flatNotationalVariants() throws ParserLogException, ParserCreationException, IOException, URISyntaxException {
+    LoadNotationForkNumberAndForwardMoves loadNotationForkNumberAndForwardMoves = new LoadNotationForkNumberAndForwardMoves(FLAT_NOTATION_FILE_NAME).invoke();
+    BufferedReader bufferedReader = loadNotationForkNumberAndForwardMoves.getBufferedReader();
+
+    Notation notation = notationParserService.parse(bufferedReader);
+    notation.setRules(RUSSIAN);
+    notation.getNotationHistory().printPdn();
+    NotationDrives notationDrives = Utils.flatNotationalVariants(notation.getNotationHistory().getVariants());
+    System.out.println(notationDrives.toPdn());
   }
 }

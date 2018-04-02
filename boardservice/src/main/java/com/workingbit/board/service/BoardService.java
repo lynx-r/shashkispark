@@ -128,21 +128,6 @@ public class BoardService {
       undoneBoard.getSelectedSquare().getDraught().setHighlighted(false);
       undoneBoard.getNextSquare().setHighlighted(false);
 
-      NotationHistory currentDrives = currentBoard.getNotationHistory();
-      NotationDrive lastUndone = currentDrives.getLast().deepClone();
-      lastUndone.setSubRoot(true);
-      NotationHistory drivesOfUndone = undoneBoard.getNotationHistory();
-
-//      NotationMove lastMove = lastUndone.getMoves().getLast().deepClone();
-//      NotationHistory variantsForUndoneBoard = drivesOfUndone.getLast().getVariants();
-//      boolean isUndoneVariantsEmpty = variantsForUndoneBoard.isEmpty();
-//      if (isUndoneVariantsEmpty) {
-//        variantsForUndoneBoard.add(lastUndone);
-//        lastUndone.setVariants(variantsForUndoneBoard.deepClone());
-//      } else {
-//        variantsForUndoneBoard.getLast().getMoves().add(lastMove);
-//      }
-
       return undoneBoard;
     });
   }
@@ -159,15 +144,6 @@ public class BoardService {
       redoneBoard.pushPreviousBoard(currentBoard.getId(),
           notation,
           currentBoard.getSelectedSquare().getAlphanumericNotation64());
-
-      // TODO при переключении удалять старую ветку
-      // reset highlights
-      Square nextOrPrevSquare = getNextOrPrevSquare(redoneBoard);
-      redoneBoard.getSelectedSquare().getDraught().setHighlighted(false);
-      nextOrPrevSquare.setHighlighted(false);
-
-
-
       return redoneBoard;
     });
   }
