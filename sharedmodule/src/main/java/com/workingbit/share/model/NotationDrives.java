@@ -21,6 +21,10 @@ public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn, 
     return Utils.listToPdn(new ArrayList<>(this));
   }
 
+  public String variantsToPdn() {
+    return Utils.notationDrivesToPdn(this);
+  }
+
   public String print(String prefix) {
     return stream()
         .map(notationStroke -> notationStroke.print(prefix + "\t"))

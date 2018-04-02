@@ -145,11 +145,11 @@ public class NotationDrive implements DeepClone, ToPdn {
 
   public String toPdn() {
     if (root) {
-      return variants.toPdn();
+      return variants.variantsToPdn();
     }
     return (StringUtils.isNotBlank(notationNumber) ? notationNumber + " " : "" ) +
         (!moves.isEmpty() ? moves.toPdn() + " " : "") +
-        (!variants.isEmpty() ? variants.toPdn() : "");
+        (!variants.isEmpty() ? variants.variantsToPdn() : "");
   }
 
   @Override

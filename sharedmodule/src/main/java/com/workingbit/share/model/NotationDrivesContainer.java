@@ -1,7 +1,6 @@
 package com.workingbit.share.model;
 
 import com.workingbit.share.domain.DeepClone;
-import com.workingbit.share.util.Utils;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
  */
-public class NotationDrivesContainer implements ToPdn, DeepClone {
+public class NotationDrivesContainer implements DeepClone {
 
   private NotationDrives history;
   private NotationDrives variants;
@@ -186,11 +185,6 @@ public class NotationDrivesContainer implements ToPdn, DeepClone {
     return variants.get(index);
   }
 
-  @Override
-  public String toPdn() {
-    return Utils.notationDrivesToPdn(variants);
-  }
-
   public void setVariants(NotationDrives variants) {
     this.variants = variants.deepClone();
   }
@@ -201,5 +195,9 @@ public class NotationDrivesContainer implements ToPdn, DeepClone {
 
   public static NotationDrivesContainer createWithRoot() {
     return new NotationDrivesContainer(true);
+  }
+
+  public String variantsToPdn() {
+    return variants.toPdn();
   }
 }

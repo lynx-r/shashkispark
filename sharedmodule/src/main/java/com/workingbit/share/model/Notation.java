@@ -64,7 +64,7 @@ public class Notation implements ToPdn {
           .append("\n")
       );
     }
-    String moves = notationDrivesContainer.getVariants().toPdn();
+    String moves = notationDrivesContainer.variantsToPdn();
     stringBuilder.append("\n")
         .append(moves)
         .append(EnumNotation.END_GAME_SYMBOL.getPdn());
