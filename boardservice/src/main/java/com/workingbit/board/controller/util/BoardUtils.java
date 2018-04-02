@@ -259,7 +259,7 @@ public class BoardUtils {
     });
 
     if (!notationDrives.isEmpty()) {
-      NotationDrive lastNotationDrive = notationDrives.getLastVariant();
+      NotationDrive lastNotationDrive = notationDrives.getLast();
       lastNotationDrive.getMoves().add(move);
     } else {
       NotationMoves moves = NotationMoves.Builder.getInstance()
@@ -293,9 +293,9 @@ public class BoardUtils {
     resetBoardNotationCursor(notationDrives);
 
     NotationDrive notationDrive;
-    boolean isRootDrive = notationDrives.countVariants() > 1;
+    boolean isRootDrive = notationDrives.size() > 1;
     if (isRootDrive) {
-      notationDrive = notationDrives.getLastVariant();
+      notationDrive = notationDrives.getLast();
     } else {
       notationDrive = new NotationDrive();
       notationDrive.setNotationNumberInt(notationNumber);
@@ -347,7 +347,9 @@ public class BoardUtils {
       notationDrive.setNotationNumberInt(notationNumber);
       notationDrives.add(notationDrive);
     } else {
-      notationDrives.getLastVariant().getMoves().addAll(moves);
+      notationDrives.addMovesToLast(moves);
+//      notationDrives.getLast().getMoves().addAll(moves);
+//      notationDrives.getLast().getMoves().addAll(moves);
     }
   }
 

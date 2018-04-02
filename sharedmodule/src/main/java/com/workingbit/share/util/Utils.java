@@ -13,6 +13,7 @@ import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.ToPdn;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -233,12 +234,17 @@ public class Utils {
     if (drives == null || drives.isEmpty()) {
       return "";
     }
-    return drives
+    List<String> pdns = drives
         .stream()
         .map(d -> d.getVariants()
             .stream()
             .map(NotationDrive::toPdn)
-            .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn())))
-        .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn()));
+            .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn()))
+        )
+        .collect(Collectors.toList());
+    if (pdns.size() > 1) {
+      return LPAREN.getPdn() + StringUtils.join(pdns, "") + RPAREN.getPdn();
+    }
+    return StringUtils.join(pdns, "");
   }
 }

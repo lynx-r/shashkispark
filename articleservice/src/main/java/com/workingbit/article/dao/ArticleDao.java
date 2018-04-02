@@ -34,7 +34,7 @@ public class ArticleDao extends BaseDao<Article> {
 //    scanExpression.withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
 //    PaginatedScanList<Article> scanArticle = getDynamoDBMapper().scan(Article.class, scanExpression);
 //    scanArticle.loadAllResults();
-//    List<Article> articles = new ArrayList<>(scanArticle.countVariants());
+//    List<Article> articles = new ArrayList<>(scanArticle.size());
 //    articles.addAll(scanArticle);
 //    return articles;
 //  }

@@ -1,5 +1,6 @@
 package com.workingbit.share.model;
 
+import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.util.Utils;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
  */
-public class NotationMoves extends LinkedList<NotationMove> implements ToPdn {
+public class NotationMoves extends LinkedList<NotationMove> implements ToPdn, DeepClone {
 
   public String print(String prefix) {
     return stream()

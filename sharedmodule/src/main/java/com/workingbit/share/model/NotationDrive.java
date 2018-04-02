@@ -62,6 +62,10 @@ public class NotationDrive implements DeepClone, ToPdn {
     return variants.add(variant);
   }
 
+  public boolean addAllVariants(NotationDrives variants) {
+    return this.variants.addAll(variants);
+  }
+
   public NotationDrives getVariants() {
     return variants;
   }
@@ -163,5 +167,13 @@ public class NotationDrive implements DeepClone, ToPdn {
         .append("forkNumber", forkNumber)
         .append("sibling", sibling)
         .toString();
+  }
+
+  public int getVariantsSize() {
+    return variants.size();
+  }
+
+  public NotationDrive removeLastVariant() {
+    return variants.removeLast();
   }
 }

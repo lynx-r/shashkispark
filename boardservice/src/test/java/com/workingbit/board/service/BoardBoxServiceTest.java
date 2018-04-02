@@ -53,11 +53,11 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   private static final String[] PDN_FILE_NAME_VARIANT = {
 //      "/pdn/notation_undo1.pdn",
 //      "/pdn/notation_undo2.pdn",
-      "/pdn/notation_variant_with_one_drive_and_two_move.pdn",
-      "/pdn/notation_variant_with_one_drive_and_one_move.pdn",
-      "/pdn/notation_variant_with_two_move.pdn",
-      "/pdn/notation_variant_with_one_move.pdn",
       "/pdn/notation_variant1.pdn",
+//      "/pdn/notation_variant_with_one_drive_and_two_move.pdn",
+//      "/pdn/notation_variant_with_one_drive_and_one_move.pdn",
+//      "/pdn/notation_variant_with_two_move.pdn",
+//      "/pdn/notation_variant_with_one_move.pdn",
   };
 
   private final List<String> PDN_FILE_NAMES_PARSE = new ArrayList<String>() {{
@@ -173,7 +173,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       NotationDrivesContainer nds = boardBoxVariant.getNotation().getNotationDrivesContainer();
       NotationDrive nd = nds.get(forkNumber - 1);
-      assertEquals(nd.getVariants().getLast().getVariants().size(), notationDrives.countVariants() - forkNumber);
+      assertEquals(nd.getVariants().getLast().getVariants().size(), notationDrives.size() - forkNumber);
       System.out.println("Prev: " + notationDrives.variantsToPdn());
       System.out.println("New: " + nds.variantsToPdn());
     }
@@ -182,13 +182,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_switch_to_variant() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
     for (String fileName : PDN_FILE_NAME_VARIANT) {
-      System.out.println("LOADED PDN FILE: " + fileName);
-      URL uri = getClass().getResource(fileName);
-      Path path = Paths.get(uri.toURI());
-      List<String> lines = Files.readAllLines(path);
-      String startVariantDriveMove = lines.remove(0);
-
-      BufferedReader bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
+      LoadNotationForkNumberAndForwardMoves loadNotationForkNumberAndForwardMoves = new LoadNotationForkNumberAndForwardMoves(fileName).invoke();
+      int forkNumber = loadNotationForkNumberAndForwardMoves.getForkNumber();
+      BufferedReader bufferedReader = loadNotationForkNumberAndForwardMoves.getBufferedReader();
 
       // Parse Notation
       Notation notation = notationParserService.parse(bufferedReader);
@@ -201,14 +197,13 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
 
       // forkNumber notation by index from test file
-      int forkDriveIndex = Integer.parseInt(startVariantDriveMove);
       NotationDrivesContainer notationDrives = boardBox.getNotation().getNotationDrivesContainer();
-      NotationDrive forkDrive = notationDrives.get(forkDriveIndex);
+      NotationDrive forkDrive = notationDrives.get(forkNumber);
       BoardBox boardBoxVariant = boardBoxService.forkBoardBox(boardBox, forkDrive).get();
 
       // get previous drive
       NotationDrivesContainer nds = boardBoxVariant.getNotation().getNotationDrivesContainer();
-      NotationDrive nd = nds.get(forkDriveIndex - 1);
+      NotationDrive nd = nds.get(forkNumber - 1);
 
       // switch
       BoardBox switched = boardBoxService.switchToNotationDrive(boardBoxVariant, nd).get();
@@ -304,7 +299,88 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       System.out.println(switched.getNotation().getNotationDrivesContainer().variantsToPdn());
 
       boardBox = boardBoxService.find(boardBox).get();
-      System.out.println(boardBox.getNotation().getNotationDrivesContainer().variantsToPdn());
+      System.out.println("SWITCH: " + boardBox.getNotation().getNotationDrivesContainer().variantsToPdn());
+    }
+  }
+
+  @Test
+  public void test_double_switch_to_variant_with_forward_move() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
+    for (String fileName : PDN_FILE_NAME_VARIANT_WITH_FORWARD_MOVE) {
+      System.out.println("LOADED PDN FILE: " + fileName);
+      URL uri = getClass().getResource(fileName);
+      Path path = Paths.get(uri.toURI());
+      List<String> lines = Files.readAllLines(path);
+      int lineCount = Integer.parseInt(lines.remove(0));
+      int forkNumber = Integer.parseInt(lines.get(0));
+      List<String> forwardNotationLines = new ArrayList<>(lines.subList(0, lineCount));
+      lines.removeAll(forwardNotationLines);
+      forwardNotationLines.remove(0);
+
+      BufferedReader bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
+
+      // Parse Notation
+      Notation notation = notationParserService.parse(bufferedReader);
+      notation.setRules(RUSSIAN);
+
+      String articleId = Utils.getRandomString();
+      String boardBoxId = Utils.getRandomString();
+
+      // Create BoardBox from Notation
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+
+      // forkNumber notation by index from test file
+      NotationDrivesContainer notationDrives = boardBox.getNotation().getNotationDrivesContainer();
+      NotationDrive forkDrive = notationDrives.get(forkNumber);
+      BoardBox fork1 = boardBoxService.forkBoardBox(boardBox, forkDrive).get();
+
+      Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
+      NotationDrive forwardDrive = forwardNotation.getNotationDrivesContainer().get(1);
+
+      BoardBox current = fork1.deepClone();
+      for (NotationMove move : forwardDrive.getMoves()) {
+        current = moveStrokes(current, move);
+      }
+
+      System.out.println(current.getNotation().getNotationDrivesContainer().variantsToPdn());
+
+      // get previous drive
+      NotationDrivesContainer nds = current.getNotation().getNotationDrivesContainer();
+      NotationDrive nd = nds.get(forkNumber - 1);
+
+      boardBox = current.deepClone();
+      BoardBox switch1 = boardBoxService.switchToNotationDrive(current, nd).get();
+
+      System.out.println(switch1.getNotation().getNotationDrivesContainer().variantsToPdn());
+
+      boardBox = boardBoxService.find(boardBox).get();
+      System.out.println("SWITCH: " + boardBox.getNotation().getNotationDrivesContainer().variantsToPdn());
+
+      // forkNumber notation by index from test file
+      notationDrives = boardBox.getNotation().getNotationDrivesContainer();
+      forkDrive = notationDrives.get(forkNumber);
+      BoardBox fork2 = boardBoxService.forkBoardBox(boardBox, forkDrive).get();
+
+      forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
+      forwardDrive = forwardNotation.getNotationDrivesContainer().get(1);
+
+      current = fork2.deepClone();
+      for (NotationMove move : forwardDrive.getMoves()) {
+        current = moveStrokes(current, move);
+      }
+
+      // get previous drive
+      nds = current.getNotation().getNotationDrivesContainer();
+      nd = nds.get(forkNumber - 1);
+
+      BoardBox switched2 = boardBoxService.switchToNotationDrive(current, nd).get();
+
+      System.out.println(switched2.getNotation().getNotationDrivesContainer().variantsToPdn());
+
+      assertEquals(fork1.getNotation().getNotationDrivesContainer().getVariants(),
+          fork2.getNotation().getNotationDrivesContainer().getVariants());
+
+      assertEquals(switch1.getNotation().getNotationDrivesContainer().getVariants(),
+          switched2.getNotation().getNotationDrivesContainer().getVariants());
     }
   }
 
@@ -498,7 +574,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
 //      String firstBoardId = boardBox.getNotation().getNotationDrivesContainer().get(1).getMoves().getFirst().getBoardId();
 //      Board board = boardDao.findByKey(firstBoardId).get();
-//      String initBoardId = board.getPreviousBoards().getLastVariant().getBoardId();
+//      String initBoardId = board.getPreviousBoards().getLast().getBoardId();
 //      board = boardDao.findByKey(initBoardId).get();
 //      board.setNotationDrivesContainer(NotationDrivesContainer.createWithRoot());
 //      boardBox.setBoard(board);

@@ -11,7 +11,10 @@ import com.workingbit.share.util.Utils;
 import org.apache.log4j.Logger;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardApplication.boardBoxDao;
@@ -126,10 +129,10 @@ public class BoardBoxService {
         .map(updatedBox -> {
           Board boardUpdated = updatedBox.getBoard();
           Board board = boardBox.getBoard();
-          boolean hasFirstMoveInDrive = board.getNotationDrivesContainer().countVariants() > 0
-              && board.getNotationDrivesContainer().getLastVariant().getMoves().size() == 1;
-          boolean hasSecondMoveInDrive = board.getNotationDrivesContainer().countVariants() > 0
-              && board.getNotationDrivesContainer().getLastVariant().getMoves().size() == 2;
+          boolean hasFirstMoveInDrive = board.getNotationDrivesContainer().size() > 0
+              && board.getNotationDrivesContainer().getLast().getMoves().size() == 1;
+          boolean hasSecondMoveInDrive = board.getNotationDrivesContainer().size() > 0
+              && board.getNotationDrivesContainer().getLast().getMoves().size() == 2;
           boolean isWhiteTurn = !board.isBlackTurn();
           boolean isBlackTurn = board.isBlackTurn();
           boolean hasWhiteMoves = isWhiteTurn && hasFirstMoveInDrive;
@@ -138,8 +141,8 @@ public class BoardBoxService {
           if (hasWhiteMoves ||
               hasBlackMoves ||
               isInUndo &&
-              isMoveMode(boardBox) &&
-              isNotEditMode(boardBox)) {
+                  isMoveMode(boardBox) &&
+                  isNotEditMode(boardBox)) {
             return null;
           }
           BoardUtils.updateMoveSquaresHighlightAndDraught(boardUpdated, board);
@@ -151,7 +154,7 @@ public class BoardBoxService {
           }
           NotationDrivesContainer notationDrivesInBoardBox = updatedBox.getNotation().getNotationDrivesContainer();
           boardUpdated.setNotationDrivesContainer(notationDrivesInBoardBox);
-          boardUpdated.setDriveCount(notationDrivesInBoardBox.countVariants() - 1);
+          boardUpdated.setDriveCount(notationDrivesInBoardBox.size() - 1);
           String articleId = boardBox.getArticleId();
           boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId);
           updatedBox.setBoard(boardUpdated);
@@ -252,7 +255,7 @@ public class BoardBoxService {
             return null;
           }
           undone.ifPresent((b) ->
-            undoRedoBoardActionAndSave(updated, b)
+              undoRedoBoardActionAndSave(updated, b)
           );
           return updated;
         });
@@ -275,14 +278,38 @@ public class BoardBoxService {
   private BoardBox switchNotationToVariant(BoardBox boardBox, NotationDrive switchToNotationDrive) {
     NotationDrivesContainer notationDrives = boardBox.getNotation().getNotationDrivesContainer();
     notationDrives.switchTo(switchToNotationDrive);
-    return boardBox;
+    // switch to new board
+    return boardBox.getNotation()
+        .getNotationDrivesContainer()
+        .findLastVariantBoardId()
+        .map(boardId ->
+            boardDao.findByKey(boardId)
+                .map(board -> {
+                  boardBox.setBoard(board);
+                  boardBox.setBoardId(board.getId());
+                  return boardBox;
+                })
+                .orElseThrow(BoardServiceException::new))
+        .orElseThrow(BoardServiceException::new);
   }
 
   private BoardBox forkNotationForVariants(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
     Notation notation = boardBox.getNotation();
     NotationDrivesContainer notationDrives = notation.getNotationDrivesContainer();
     notationDrives.forkAt(forkFromNotationDrive);
-    return boardBox;
+    // switch to new board
+    return boardBox.getNotation()
+        .getNotationDrivesContainer()
+        .findLastVariantBoardId()
+        .map(boardId ->
+            boardDao.findByKey(boardId)
+                .map(board -> {
+                  boardBox.setBoard(board);
+                  boardBox.setBoardId(board.getId());
+                  return boardBox;
+                })
+                .orElseThrow(BoardServiceException::new))
+        .orElseThrow(BoardServiceException::new);
   }
 
   public Optional<BoardBox> redo(BoardBox boardBox) {
