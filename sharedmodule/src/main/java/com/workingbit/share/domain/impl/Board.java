@@ -8,10 +8,7 @@ import com.workingbit.share.converter.BoardIdNotationConverter;
 import com.workingbit.share.converter.DraughtMapConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.model.BoardIdNotation;
-import com.workingbit.share.model.EnumRules;
-import com.workingbit.share.model.NotationHistory;
-import com.workingbit.share.model.Payload;
+import com.workingbit.share.model.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -106,6 +103,10 @@ public class Board extends BaseDomain implements Payload {
 
   @DynamoDBAttribute(attributeName = "blackTurn")
   private boolean blackTurn;
+
+  @DynamoDBTypeConvertedJson(targetType = NotationMove.class)
+  @DynamoDBAttribute(attributeName = "boardNotationMove")
+  private NotationMove boardNotationMove;
 
   /**
    * Count of completed moves like 1. a1-a2 e2-e3 and 2. f1-f2 c2-c3

@@ -47,14 +47,14 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBIgnore
   private Board board;
 
-  @DynamoDBTypeConvertedJson(targetType = Notation.class)
-  @DynamoDBAttribute(attributeName = "notation")
-  private Notation notation;
-
   @JsonDeserialize(using = EnumEditBoardBoxModeConverter.class)
   @DynamoDBTypeConvertedEnum
   @DynamoDBAttribute(attributeName = "editMode")
   private EnumEditBoardBoxMode editMode;
+
+  @DynamoDBTypeConvertedJson(targetType = Notation.class)
+  @DynamoDBAttribute(attributeName = "notation")
+  private Notation notation;
 
   public BoardBox() {
     notation = new Notation();

@@ -283,9 +283,10 @@ public class BoardUtils {
     if (previousCaptured) {
       pushCaptureMove(board, notationNumber);
     } else {
-      pushSimpleMove(notationNumber, notationDrives, board);
+      pushSimpleMove(notationNumber, board);
     }
     board.setBlackTurn(!blackTurn);
+    board.setBoardNotationMove(board.getNotationHistory().getLastMove());
   }
 
   private static void pushCaptureMove(Board board, int notationNumber) {
@@ -326,8 +327,9 @@ public class BoardUtils {
             .forEach(move -> move.setCursor(false)));
   }
 
-  private static void pushSimpleMove(int notationNumber, NotationHistory notationDrives, Board board) {
+  private static void pushSimpleMove(int notationNumber, Board board) {
     resetBoardNotationCursor(board.getNotationHistory());
+    NotationHistory notationDrives = board.getNotationHistory();
 
     String[] move = new String[]{
         board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()

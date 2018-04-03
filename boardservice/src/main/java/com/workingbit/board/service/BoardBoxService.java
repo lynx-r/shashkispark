@@ -255,25 +255,23 @@ public class BoardBoxService {
           }
 
           return undone
-              .map((b) -> forkNotationForVariantsForBoard(updated, b)
-                  .map(bb -> {
-                    undoRedoBoardActionAndSave(bb, b);
-                    return bb;
-                  })
-                  .orElseGet(() -> {
-                    undoRedoBoardActionAndSave(updated, b);
-                    return updated;
-                  }))
+              .map((b) -> {
+                BoardBox bb = forkNotationForVariantsForBoard(updated, b);
+                undoRedoBoardActionAndSave(bb, b);
+                return bb;
+              })
               .orElse(null);
         });
   }
 
-  private Optional<BoardBox> forkNotationForVariantsForBoard(BoardBox boardBox, Board forkBoard) {
-    String forkBoardId = forkBoard.getId();
+  private BoardBox forkNotationForVariantsForBoard(BoardBox boardBox, Board forkBoard) {
     NotationHistory history = boardBox.getNotation().getNotationHistory();
-    return history.findBoardNotationalDrive(forkBoardId)
-        .map((forkVariant) ->
-            forkNotationForVariants(boardBox, forkVariant));
+    NotationHistory forkHistory = forkBoard.getNotationHistory();
+    boolean isNotMovedOnDrive = history.getVariants().size() - forkHistory.getVariants().size() == 0;
+    if (isNotMovedOnDrive) {
+      return boardBox;
+    }
+    return forkNotationForVariants(boardBox, history.getLast());
   }
 
   public Optional<BoardBox> forkBoardBox(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
@@ -307,12 +305,14 @@ public class BoardBoxService {
     NotationHistory notationDrives = notation.getNotationHistory();
     notationDrives.forkAt(forkFromNotationDrive);
     // switch to new board
-    return boardBox.getNotation()
-        .getNotationHistory()
-        .findLastVariantBoardId()
-        .map(boardId ->
-            setBoardForBoardBox(boardBox, boardId))
-        .orElse(boardBox);
+    String boardId = forkFromNotationDrive.getMoves().getFirst().getBoardId();
+    return setBoardForBoardBox(boardBox, boardId);
+//    return boardBox.getNotation()
+//        .getNotationHistory()
+//        .findLastVariantBoardId()
+//        .map(boardId ->
+//            setBoardForBoardBox(boardBox, boardId))
+//        .orElse(boardBox);
   }
 
   private BoardBox setBoardForBoardBox(BoardBox boardBox, String boardId) {
@@ -340,14 +340,22 @@ public class BoardBoxService {
           }
           return redone
               .map((b) -> {
-                BoardBox bb = switchNotationToVariant(boardBox, null);
-                if (bb != null) {
-                  undoRedoBoardActionAndSave(bb, b);
-                }
+                BoardBox bb = switchNotationForBoard(updated, b);
+                undoRedoBoardActionAndSave(bb, b);
                 return bb;
               })
               .orElse(null);
         });
+  }
+
+  private BoardBox switchNotationForBoard(BoardBox boardBox, Board board) {
+    NotationHistory history = boardBox.getNotation().getNotationHistory();
+    NotationHistory switchToHistory = board.getNotationHistory();
+    boolean isNotSecondMove = switchToHistory.getVariants().getLast().getMoves().size() <= 1;
+    if (isNotSecondMove) {
+      return boardBox;
+    }
+    return switchNotationToVariant(boardBox, history.getLast().deepClone());
   }
 
   private void undoRedoBoardActionAndSave(BoardBox boardBox, Board board) {
