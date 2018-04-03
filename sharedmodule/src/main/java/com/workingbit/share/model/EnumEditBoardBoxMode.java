@@ -6,5 +6,5 @@ package com.workingbit.share.model;
 public enum EnumEditBoardBoxMode {
   EDIT,
   PLACE,
-  MOVE
+  VIEW, MOVE
 }

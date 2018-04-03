@@ -706,6 +706,18 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     System.out.println("REDO: " + boardBox.getNotation().toPdn());
     assertEquals(boardBoxOrig.getNotation().getNotationHistory().getVariants(),
         boardBox.getNotation().getNotationHistory().getVariants());
+
+    boardBox = boardBoxService.undo(boardBox).get();
+    System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+    boardBox = boardBoxService.undo(boardBox).get();
+    System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+
+    boardBox = boardBoxService.redo(boardBox).get();
+    System.out.println("REDO: " + boardBox.getNotation().toPdn());
+    boardBox = boardBoxService.redo(boardBox).get();
+    System.out.println("REDO: " + boardBox.getNotation().toPdn());
+    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getVariants(),
+        boardBox.getNotation().getNotationHistory().getVariants());
   }
 
   @After

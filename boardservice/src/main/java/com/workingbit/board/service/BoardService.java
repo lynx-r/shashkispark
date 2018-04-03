@@ -45,6 +45,12 @@ public class BoardService {
     return boardOptional.map(this::updateBoard);
   }
 
+  public Board resetHighlightAndUpdate(Board board) {
+    board = updateBoard(board);
+    resetBoardHighlight(board);
+    return board;
+  }
+
 
   void delete(String boardId) {
     boardDao.delete(boardId);

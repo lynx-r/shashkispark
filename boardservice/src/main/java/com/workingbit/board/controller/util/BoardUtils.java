@@ -355,7 +355,7 @@ public class BoardUtils {
     }
   }
 
-  private static void resetBoardHighlight(Board board) {
+  public static void resetBoardHighlight(Board board) {
     board.getAssignedSquares()
         .forEach(square -> {
           square.setHighlighted(false);
