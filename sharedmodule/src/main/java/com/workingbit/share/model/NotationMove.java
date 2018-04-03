@@ -1,15 +1,17 @@
 package com.workingbit.share.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.workingbit.share.model.EnumNotation.CAPTURE;
 import static com.workingbit.share.model.EnumNotation.SIMPLE;
@@ -26,23 +28,31 @@ public class NotationMove implements DeepClone, ToPdn {
 
   private EnumNotation type;
   /**
-   * Moves like a1 and b2
+   * Moves. The first is notation like a1 or b2 the second is boardId
    */
-  private String[] move = new String[0];
-  private String boardId;
+  private TreeMap<String, String> move = new TreeMap<>();
   private boolean cursor;
   private String moveStrength;
 
+  @JsonIgnore
   @DynamoDBIgnore
   public String getNotation() {
-    return Stream.of(move)
+    return getMoveNotations()
+        .stream()
         .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getSimple() : CAPTURE.getSimple()));
   }
 
+  @JsonIgnore
   @DynamoDBIgnore
   private String getNotationPdn() {
-    return Stream.of(move)
+    return getMoveNotations()
+        .stream()
         .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdn() : CAPTURE.getPdn()));
+  }
+
+  private Set<String> getMoveNotations() {
+    return move
+        .keySet();
   }
 
   @SuppressWarnings("unused")
@@ -55,39 +65,32 @@ public class NotationMove implements DeepClone, ToPdn {
     if (!(o instanceof NotationMove)) return false;
 //    if (!super.equals(o)) return false;
     NotationMove that = (NotationMove) o;
-    return Arrays.equals(move, that.move);
+    return type == that.type &&
+        Objects.equals(move, that.move);
   }
 
   @Override
   public int hashCode() {
 
-    int result = super.hashCode();
-    result = 31 * result + Arrays.hashCode(move);
-    return result;
+    return Objects.hash(super.hashCode(), type, move);
   }
 
   public static NotationMove fromPdn(String stroke) {
-    return fromPdn(stroke, null);
-  }
-
-  public static NotationMove fromPdn(String stroke, String boardId) {
     NotationMove notationMove = new NotationMove();
     boolean capture = stroke.contains(CAPTURE.getPdn());
     if (capture) {
       notationMove.setType(CAPTURE);
-      notationMove.setMove(stroke.split(CAPTURE.getPdn()));
+      notationMove.setMoveKeysForPdn(stroke.split(CAPTURE.getPdn()));
     } else {
       notationMove.setType(SIMPLE);
-      notationMove.setMove(stroke.split(SIMPLE.getPdn()));
+      notationMove.setMoveKeysForPdn(stroke.split(SIMPLE.getPdn()));
     }
-    notationMove.setBoardId(boardId);
     return notationMove;
   }
 
-  public static NotationMove create(EnumNotation type, String boardId, boolean cursor) {
+  public static NotationMove create(EnumNotation type, boolean cursor) {
     NotationMove notationMove = new NotationMove();
     notationMove.setType(type);
-    notationMove.setBoardId(boardId);
     notationMove.setCursor(cursor);
     return notationMove;
   }
@@ -96,7 +99,7 @@ public class NotationMove implements DeepClone, ToPdn {
     return new StringBuilder()
         .append(prefix).append(getClass().getSimpleName())
         .append(prefix).append("\t").append("type: ").append(type)
-        .append(prefix).append("\t").append("move: ").append(Arrays.toString(move))
+        .append(prefix).append("\t").append("move: ").append(move.toString())
         .append(prefix).append("\t").append("cursor: ").append(cursor)
         .append(prefix).append("\t").append("moveStrength: ").append(moveStrength)
         .toString();
@@ -115,5 +118,27 @@ public class NotationMove implements DeepClone, ToPdn {
         .append("cursor", cursor)
         .append("moveStrength", moveStrength)
         .toString();
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  private void setMoveKeysForPdn(String[] moveKeys) {
+    move = new TreeMap<>();
+    for (String moveKey : moveKeys) {
+      move.put(moveKey, null);
+    }
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  public String getLastMoveBoardId() {
+    return move.lastEntry().getValue();
+  }
+
+  public void addMove(String previousNotation, String prevBoardId, String currentNotation, String currentBoardId) {
+    move = new TreeMap<String, String>() {{
+      put(previousNotation, prevBoardId);
+      put(currentNotation, currentBoardId);
+    }};
   }
 }

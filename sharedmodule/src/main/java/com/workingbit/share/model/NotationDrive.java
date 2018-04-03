@@ -119,7 +119,7 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public void addMoveFromPdn(String move, String boardId) {
-    NotationMove atom = NotationMove.fromPdn(move, boardId);
+    NotationMove atom = NotationMove.fromPdn(move);
     moves.add(atom);
   }
 

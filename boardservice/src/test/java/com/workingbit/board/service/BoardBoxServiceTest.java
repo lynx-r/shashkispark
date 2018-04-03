@@ -429,9 +429,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   private BoardBox undoMove(BoardBox boardBoxCurrent, NotationMove notationMove) {
-    String[] move = notationMove.getMove();
+    String[] move = notationMove.getMove().keySet().toArray(new String[0]);
     for (int i = move.length - 1; i > 0; i--) {
-      boardBoxCurrent = boardBoxService.saveAndFillBoard(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.undo(boardBoxCurrent).get();
     }
@@ -439,7 +439,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   public BoardBox moveStrokes(BoardBox boardBoxCurrent, NotationMove notationMove) {
-    String[] move = notationMove.getMove();
+    String[] move = notationMove.getMove().keySet().toArray(new String[0]);
     for (int i = 0; i < move.length - 1; i++) {
 //      String boardId = notationMove.getBoardId();
       Board board = boardBoxCurrent.getBoard(); /*boardService.find(boardId).get();*/
@@ -458,7 +458,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       boardBoxCurrent.setBoard(board);
 //      boardBoxCurrent.setBoardId(boardId);
 
-      boardBoxCurrent = boardBoxService.saveAndFillBoard(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.move(boardBoxCurrent).get();
     }
@@ -503,7 +503,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public void test_add_draught_in_place_mode() {
     BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
     boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
-    boardBox = boardBoxService.saveAndFillBoard(boardBox).get();
+    boardBox = boardBoxService.save(boardBox).get();
 
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
@@ -516,7 +516,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public void test_capture_on_placed_board() {
     BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
     boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
-    boardBox = boardBoxService.saveAndFillBoard(boardBox).get();
+    boardBox = boardBoxService.save(boardBox).get();
 
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
@@ -533,7 +533,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     assertFalse(isPresent);
 
     boardBox.setEditMode(EnumEditBoardBoxMode.MOVE);
-    boardBox = boardBoxService.saveAndFillBoard(boardBox).get();
+    boardBox = boardBoxService.save(boardBox).get();
 
     board = boardBox.getBoard();
 
@@ -575,7 +575,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
 //      String firstBoardId = boardBox.getNotation().getNotationHistory().get(1).getMoves().getFirst().getBoardId();
 //      Board board = boardDao.findByKey(firstBoardId).get();
-//      String initBoardId = board.getPreviousBoards().getLast().getBoardId();
+//      String initBoardId = board.getPreviousBoards().getLastOrCreateIfRoot().getBoardId();
 //      board = boardDao.findByKey(initBoardId).get();
 //      board.setNotationHistory(NotationHistory.createWithRoot());
 //      boardBox.setBoard(board);
@@ -607,10 +607,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       boardBox = boardBoxService.undo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
-      boardBox = boardBoxService.undo(boardBox).get();
+      assertEquals(1, boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size());
+      boolean undoNotPossible = !boardBoxService.undo(boardBox).isPresent();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
+      assertTrue(undoNotPossible);
       break;
     }
   }

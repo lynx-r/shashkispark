@@ -80,12 +80,26 @@ public class NotationHistory implements DeepClone {
 
   @DynamoDBIgnore
   @JsonIgnore
+  public NotationDrive getLastOrCreateIfRoot() {
+    boolean isRootDrive = variants.getLast().isRoot();
+    if (isRootDrive) {
+      NotationDrive notationDrive = new NotationDrive();
+      notationDrive.setNotationNumberInt(1);
+      add(notationDrive);
+      return notationDrive;
+    } else {
+      return variants.getLast();
+    }
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
   public NotationDrive getLast() {
     return variants.getLast();
   }
 
   public void addMovesToLast(NotationMoves moves) {
-    NotationMoves ms = getLast().getMoves();
+    NotationMoves ms = getLastOrCreateIfRoot().getMoves();
     ms.addAll(moves);
     history.getLast().setMoves(ms.deepClone());
   }
@@ -130,12 +144,12 @@ public class NotationHistory implements DeepClone {
         .collect(Collectors.joining("\n"));
   }
 
-  public void forkAt(NotationDrive forkFromNotationDrive) {
+  public boolean forkAt(NotationDrive forkFromNotationDrive) {
     System.out.println("FORK");
 
     if (forkFromNotationDrive.getMoves().size() < 2) {
       System.out.println("Ignore fork " + forkFromNotationDrive.toPdn());
-      return;
+      return false;
     }
 
     int indexFork = indexOf(forkFromNotationDrive);
@@ -161,9 +175,10 @@ public class NotationHistory implements DeepClone {
     history.getLast().addVariant(variant);
 
     System.out.println("FORK VARIANTS: " + variants.toPdn());
+    return true;
   }
 
-  public void switchTo(NotationDrive switchToNotationDrive) {
+  public boolean switchTo(NotationDrive switchToNotationDrive) {
     assert switchToNotationDrive == null || switchToNotationDrive.getVariantsSize() == 1;
 
     System.out.println("SWITCH");
@@ -171,7 +186,7 @@ public class NotationHistory implements DeepClone {
     int indexFork = indexOf(switchToNotationDrive);
     NotationDrive v_toSwitchDrive;
     if (switchToNotationDrive == null) {
-      v_toSwitchDrive = getLast();
+      v_toSwitchDrive = getLastOrCreateIfRoot();
       indexFork = indexOf(v_toSwitchDrive);
     } else {
       v_toSwitchDrive = get(indexFork);
@@ -179,7 +194,7 @@ public class NotationHistory implements DeepClone {
 
     if (v_toSwitchDrive.getMoves().size() == 1) {
       System.out.println("Ignore switch: " + v_toSwitchDrive.toPdn());
-      return;
+      return false;
     }
 
     NotationDrives v_switchVariants = v_toSwitchDrive.getVariants().deepClone();
@@ -226,6 +241,7 @@ public class NotationHistory implements DeepClone {
     h_toSwitchDrive.setForkNumber(h_toSwitchDrive.getForkNumber() - 1);
 
     System.out.println("SWITCH VARIANTS: " + variants.toPdn());
+    return true;
   }
 
   @JsonIgnore
@@ -277,69 +293,11 @@ public class NotationHistory implements DeepClone {
       return Optional.of(
           moves
               .getLast()
-              .getBoardId());
+              .getLastMoveBoardId());
     } catch (Exception e) {
       e.printStackTrace();
       return Optional.empty();
     }
-  }
-
-  public Optional<String> findLastVariantAndFirstMoveBoardId() {
-    try {
-      NotationMoves moves = variants
-          .getLast()
-          .getMoves();
-      if (moves.isEmpty()) {
-        return Optional.empty();
-      }
-      return Optional.of(
-          moves
-              .getFirst()
-              .getBoardId());
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Optional.empty();
-    }
-  }
-
-  public NotationDrives getFlatVariants() {
-    return null;
-  }
-
-  public Optional<NotationDrive> findSwitchToBoardNotationalDrive(String boardId) {
-    Optional<NotationDrive> notationDriveOpt = variants
-        .stream()
-        .filter(drive -> !drive.getMoves().isEmpty() && drive.getMoves()
-            .stream()
-            .anyMatch(move -> move.getBoardId().equals(boardId))
-        )
-        .findFirst();
-    if (notationDriveOpt.isPresent()) {
-      NotationMoves moves = notationDriveOpt.get().getMoves();
-      if (moves.isEmpty()) {
-        return Optional.empty();
-      }
-      boolean boardIdInFirstMove = moves.getLast().getBoardId().equals(boardId);
-      if (boardIdInFirstMove) {
-        return notationDriveOpt;
-      }
-    }
-    return Optional.empty();
-  }
-
-  public static Optional<NotationDrive> findBoardNotationDriveInVariants(NotationDrives searchInVariants, String boardId) {
-    for (NotationDrive variant : searchInVariants) {
-      NotationMoves moves = variant.getMoves();
-      for (NotationMove move : moves) {
-        if (move.getBoardId().equals(boardId)) {
-          return Optional.of(variant);
-        }
-      }
-      if (!variant.getVariants().isEmpty()) {
-        return findBoardNotationDriveInVariants(variant.getVariants(), boardId);
-      }
-    }
-    return Optional.empty();
   }
 
   @JsonIgnore

@@ -24,14 +24,14 @@ public class BoardService {
   Board createBoard(CreateBoardPayload newBoardRequest) {
     Board board = initBoard(newBoardRequest.getFillBoard(), newBoardRequest.getBlack(),
         newBoardRequest.getRules());
-    Utils.setBoardIdAndCreatedAt(board, newBoardRequest.getArticleId(), newBoardRequest.getBoardBoxId());
+    Utils.setBoardIdAndCreatedAt(board, newBoardRequest.getBoardBoxId());
     save(board);
     return board;
   }
 
   public Board createBoardFromNotation(Notation notation, String articleId, String boardBoxId) {
     Board board = initBoard(true, false, notation.getRules());
-    Utils.setBoardIdAndCreatedAt(board, articleId, boardBoxId);
+    Utils.setBoardIdAndCreatedAt(board, boardBoxId);
     return syncBoardWithStrokes(board, notation.getNotationHistory(), articleId);
   }
 
@@ -95,9 +95,9 @@ public class BoardService {
 
     // should be there because in move draught, I set boardId in notation
     String boardBoxId = nextBoard.getBoardBoxId();
-    Utils.setBoardIdAndCreatedAt(nextBoard, articleId, boardBoxId);
+    Utils.setBoardIdAndCreatedAt(nextBoard, boardBoxId);
 
-    nextBoard = BoardUtils.moveDraught(nextBoard, captured);
+    nextBoard = BoardUtils.moveDraught(nextBoard, captured, currentBoard.getId());
     String boardId = currentBoard.getId();
     String notation = selectedSquare.getNotation();
     String nextNotation = nextSquare.getNotation();
@@ -113,7 +113,7 @@ public class BoardService {
 
   Board addDraught(String articleId, Board currentBoard, String notation, Draught draught) {
     Board deepClone = currentBoard.deepClone();
-    Utils.setBoardIdAndCreatedAt(deepClone, articleId, currentBoard.getBoardBoxId());
+    Utils.setBoardIdAndCreatedAt(deepClone, currentBoard.getBoardBoxId());
     BoardUtils.addDraught(deepClone, notation, draught);
     boardDao.save(deepClone);
     return deepClone;
@@ -177,7 +177,7 @@ public class BoardService {
     if (notationMove == null) {
       return board;
     }
-    String[] moves = notationMove.getMove();
+    String[] moves = notationMove.getMove().keySet().toArray(new String[0]);
     for (int i = 0; i < moves.length - 1; i++) {
       Square selected = findSquareByNotation(moves[i], board);
       board.setSelectedSquare(selected);

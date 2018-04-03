@@ -231,7 +231,7 @@ public class BoardUtils {
     addDraught(board, notation, black, false, true);
   }
 
-  public static Board moveDraught(Board board, List<Square> capturedSquares) {
+  public static Board moveDraught(Board board, List<Square> capturedSquares, String prevBoardId) {
     performMoveDraught(board, capturedSquares);
     Board newBoard = board.deepClone();
     boolean blackTurn = board.isBlackTurn();
@@ -240,26 +240,25 @@ public class BoardUtils {
     boolean previousCaptured = !capturedSquares.isEmpty();
     boolean nextCaptured = !nextMovesSquares.getCaptured().isEmpty();
     if (previousCaptured && nextCaptured) {
-      updateNotationMiddle(newBoard);
+      updateNotationMiddle(newBoard, prevBoardId);
       return newBoard;
     }
-    updateNotationEnd(previousCaptured, board);
+    updateNotationEnd(board, prevBoardId, previousCaptured);
     resetBoardHighlight(board);
     return board;
   }
 
-  private static void updateNotationMiddle(Board board) {
-    String boardId = board.getId();
+  private static void updateNotationMiddle(Board board, String prevBoardId) {
     NotationHistory notationDrives = board.getNotationHistory();
 
-    NotationMove move = NotationMove.create(EnumNotation.CAPTURE, boardId, true);
-    move.setMove(new String[]{
-        board.getPreviousSquare().getNotation(),
-        board.getSelectedSquare().getNotation()
-    });
+    NotationMove move = NotationMove.create(EnumNotation.CAPTURE, true);
+    String prevNotation = board.getPreviousSquare().getNotation();
+    String currentNotation = board.getSelectedSquare().getNotation();
+    String currentBoardId = board.getId();
+    move.addMove(prevNotation, prevBoardId, currentNotation, currentBoardId);
 
     if (!notationDrives.isEmpty()) {
-      NotationDrive lastNotationDrive = notationDrives.getLast();
+      NotationDrive lastNotationDrive = notationDrives.getLastOrCreateIfRoot();
       lastNotationDrive.getMoves().add(move);
     } else {
       NotationMoves moves = NotationMoves.Builder.getInstance()
@@ -270,9 +269,7 @@ public class BoardUtils {
     }
   }
 
-  private static void updateNotationEnd(boolean previousCaptured, Board board) {
-    NotationHistory notationDrives = board.getNotationHistory();
-
+  private static void updateNotationEnd(Board board, String prevBoardId, boolean previousCaptured) {
     boolean blackTurn = board.isBlackTurn();
     int notationNumber = 0;
     if (!blackTurn) { // white move
@@ -281,78 +278,66 @@ public class BoardUtils {
     }
 
     if (previousCaptured) {
-      pushCaptureMove(board, notationNumber);
+      pushCaptureMove(board, prevBoardId, notationNumber);
     } else {
-      pushSimpleMove(notationNumber, board);
+      pushSimpleMove(board, prevBoardId, notationNumber);
     }
     board.setBlackTurn(!blackTurn);
-    board.setBoardNotationMove(board.getNotationHistory().getLastMove());
   }
 
-  private static void pushCaptureMove(Board board, int notationNumber) {
+  private static void pushCaptureMove(Board board, String prevBoardId, int notationNumber) {
     NotationHistory notationDrives = board.getNotationHistory();
     resetBoardNotationCursor(notationDrives);
 
-    NotationDrive notationDrive;
-    boolean isRootDrive = notationDrives.size() > 1;
-    if (isRootDrive) {
-      notationDrive = notationDrives.getLast();
-    } else {
-      notationDrive = new NotationDrive();
-      notationDrive.setNotationNumberInt(notationNumber);
-      notationDrives.add(notationDrive);
-    }
+    NotationDrive notationDrive = notationDrives.getLastOrCreateIfRoot();
+    notationDrive.setNotationNumberInt(notationNumber);
     NotationMoves moves = notationDrive.getMoves();
     NotationMove lastCapturedMove;
     if (moves.isEmpty()) {
-      lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE, board.getId(), true);
-      String[] mvs = new String[] {
-          board.getPreviousSquare().getNotation()
-      };
-      lastCapturedMove.setMove(mvs);
+      lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE, true);
+      String previousNotation = board.getPreviousSquare().getNotation();
+      lastCapturedMove.addMove(previousNotation, prevBoardId, null, null);
     } else {
       lastCapturedMove = moves.getLast();
     }
-    String[] lastMove = lastCapturedMove.getMove();
-    int length = lastMove.length;
-    lastMove = Arrays.copyOf(lastMove, length + 1);
-    lastMove[length] = board.getSelectedSquare().getNotation();
+    TreeMap<String, String> lastMove = lastCapturedMove.getMove();
+    String currentNotation = board.getSelectedSquare().getNotation();
+    String currentBoardId = board.getId();
+    lastMove.put(currentNotation, currentBoardId);
     lastCapturedMove.setMove(lastMove);
     notationDrive.getMoves().add(lastCapturedMove);
   }
 
-  private static void resetBoardNotationCursor(NotationHistory notationDrives) {
-    notationDrives.getVariants()
-        .forEach(drive -> drive.getMoves()
-            .forEach(move -> move.setCursor(false)));
-  }
-
-  private static void pushSimpleMove(int notationNumber, Board board) {
+  private static void pushSimpleMove(Board board, String prevBoardId, int notationNumber) {
     resetBoardNotationCursor(board.getNotationHistory());
     NotationHistory notationDrives = board.getNotationHistory();
 
-    String[] move = new String[]{
-        board.getPreviousSquare().getNotation(), board.getSelectedSquare().getNotation()
-    };
-
     NotationMoves moves = new NotationMoves();
 
-    String boardId = board.getId();
-    NotationMove notationMove = NotationMove.create(EnumNotation.SIMPLE, boardId, true);
-    notationMove.setMove(move);
+    NotationMove notationMove = NotationMove.create(EnumNotation.SIMPLE, true);
+
+    String previousNotation = board.getPreviousSquare().getNotation();
+    String currentNotation = board.getSelectedSquare().getNotation();
+    String currentBoard = board.getId();
+    notationMove.addMove(previousNotation, prevBoardId, currentNotation, currentBoard);
+
     moves.add(notationMove);
 
-    boolean isAddNewDriveIfBlack = notationNumber != 0;
-    if (isAddNewDriveIfBlack) {
+    boolean isWhiteTurn = notationNumber != 0;
+    if (isWhiteTurn) {
       NotationDrive notationDrive = NotationDrive.create(moves);
 
       notationDrive.setNotationNumberInt(notationNumber);
       notationDrives.add(notationDrive);
     } else {
       notationDrives.addMovesToLast(moves);
-//      notationDrives.getLast().getMoves().addAll(moves);
-//      notationDrives.getLast().getMoves().addAll(moves);
     }
+  }
+
+  private static void resetBoardNotationCursor(NotationHistory notationDrives) {
+    notationDrives.getVariants()
+        .forEach(drive -> drive.getMoves()
+            .forEach(move -> move.setCursor(false)));
   }
 
   public static void resetBoardHighlight(Board board) {

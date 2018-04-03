@@ -7,7 +7,6 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.ToPdn;
@@ -134,6 +133,7 @@ public class Utils {
 
   private static String RANDOM_STR_SEP = "-";
   private static int COUNT_RANDOM_STR = 10;
+  private static int COUNT_RANDOM_STR_LONG = 20;
 
   public static boolean isBlank(String s) {
     if (s == null) {
@@ -173,21 +173,14 @@ public class Utils {
     article.setCreatedAt(LocalDateTime.now());
   }
 
-  public static void setBoardIdAndCreatedAt(Board board, String articleId, String boardBoxId) {
+  public static void setBoardIdAndCreatedAt(Board board, String boardBoxId) {
     board.setBoardBoxId(boardBoxId);
-    board.setId(articleId + RANDOM_STR_SEP + boardBoxId + RANDOM_STR_SEP + getRandomString());
+    board.setId(getRandomUUID());
     board.setCreatedAt(LocalDateTime.now());
   }
 
-  public static void setBoardBoxIdAndCreatedAt(BoardBox boardBox, CreateBoardPayload createBoardPayload) {
-    boardBox.setId(createBoardPayload.getArticleId() +
-        RANDOM_STR_SEP + createBoardPayload.getBoardBoxId());
-    boardBox.setCreatedAt(LocalDateTime.now());
-  }
-
-  public static void setBoardBoxIdAndCreatedAt(BoardBox boardBox, String articleId, String boardBoxId) {
-    boardBox.setId(articleId +
-        RANDOM_STR_SEP + boardBoxId);
+  public static void setBoardBoxIdAndCreatedAt(BoardBox boardBox) {
+    boardBox.setId(getRandomUUID());
     boardBox.setCreatedAt(LocalDateTime.now());
   }
 

@@ -29,7 +29,7 @@ public class BoardBoxController {
   public static Route saveBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) boardRequest ->
           boardBoxService
-              .saveAndFillBoard(boardRequest)
+              .save(boardRequest)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
       ).handleRequest(req, res, BoardBox.class);

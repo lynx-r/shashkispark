@@ -58,7 +58,7 @@ public class BaseServiceTest {
     boardBox.setId(getRandomString());
     boardBox.setCreatedAt(LocalDateTime.now());
     boardBox.setArticleId(getRandomString());
-    return boardBoxService.saveAndFillBoard(boardBox).get();
+    return boardBoxService.save(boardBox).get();
   }
 
   protected Board getBoard() {
@@ -154,7 +154,7 @@ public class BaseServiceTest {
   protected Board move(Board board, Square selectedSquare) {
     boolean blackTurn = board.isBlackTurn();
     MovesList capturedSquares = highlightedBoard(blackTurn, selectedSquare, board);
-    return BoardUtils.moveDraught(board, capturedSquares.getCaptured());
+    return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getId());
   }
 
   protected Board move(Board board, String fromNotation, String toNotation, boolean blackTurn) {
