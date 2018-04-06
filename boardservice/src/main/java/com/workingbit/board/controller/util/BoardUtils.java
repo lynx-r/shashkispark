@@ -300,10 +300,10 @@ public class BoardUtils {
     } else {
       lastCapturedMove = moves.getLast();
     }
-    TreeMap<String, String> lastMove = lastCapturedMove.getMove();
+    LinkedList<NotationSimpleMove> lastMove = lastCapturedMove.getMove();
     String currentNotation = board.getSelectedSquare().getNotation();
     String currentBoardId = board.getId();
-    lastMove.put(currentNotation, currentBoardId);
+    lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId));
     lastCapturedMove.setMove(lastMove);
     notationDrive.getMoves().add(lastCapturedMove);
   }
@@ -343,7 +343,7 @@ public class BoardUtils {
   public static void resetBoardHighlight(Board board) {
     board.getAssignedSquares()
         .forEach(square -> {
-          square.setHighlighted(false);
+          square.setHighlight(false);
           if (square.isOccupied() && square.getDraught().isCaptured()) {
             removeDraught(board, square.getNotation(), square.getDraught().isBlack());
           }
@@ -361,15 +361,15 @@ public class BoardUtils {
     List<Square> captured = movesList.getCaptured();
     if (!captured.isEmpty()) {
       board.getAssignedSquares().forEach((Square square) -> {
-        square.setHighlighted(false);
+        square.setHighlight(false);
         if (square.isOccupied()) {
           square.getDraught().setMarkCaptured(false);
         }
         if (square.isOccupied() && square.equals(selectedSquare)) {
-          square.getDraught().setHighlighted(true);
+          square.getDraught().setHighlight(true);
         }
         if (allowed.contains(square)) {
-          square.setHighlighted(true);
+          square.setHighlight(true);
         }
         if (captured.contains(square)) {
           square.getDraught().setMarkCaptured(true);
@@ -397,19 +397,19 @@ public class BoardUtils {
       // reset highlight
       board.getAssignedSquares()
           .stream()
-          .filter(Square::isHighlighted)
-          .forEach(square -> square.setHighlighted(false));
+          .filter(Square::isHighlight)
+          .forEach(square -> square.setHighlight(false));
       if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
         board.getAssignedSquares()
             .stream()
             .peek((square -> {
               // highlight selected draught
               if (square.isOccupied() && square.equals(selectedSquare)) {
-                square.getDraught().setHighlighted(true);
+                square.getDraught().setHighlight(true);
               }
             }))
             .filter(allowed::contains)
-            .forEach(square -> square.setHighlighted(true));
+            .forEach(square -> square.setHighlight(true));
       }
       return movesList;
     }
@@ -418,7 +418,7 @@ public class BoardUtils {
   private static void performMoveDraught(Board board, List<Square> capturedSquares) {
     Square sourceSquare = board.getSelectedSquare();
     Square targetSquare = board.getNextSquare();
-    if (!targetSquare.isHighlighted()
+    if (!targetSquare.isHighlight()
         || sourceSquare == null
         || !sourceSquare.isOccupied()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
@@ -536,7 +536,7 @@ public class BoardUtils {
   }
 
   private static Square updateSquare(Square selectedSquare, Square origSquare) {
-    return selectedSquare.highlight(origSquare.isHighlighted()).draught(origSquare.getDraught());
+    return selectedSquare.highlight(origSquare.isHighlight()).draught(origSquare.getDraught());
   }
 
   private static void updateMoveDraughtsNotation(Square square) {

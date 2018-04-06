@@ -21,9 +21,9 @@ import static java.lang.String.format;
  */
 public class BaseDao<T extends BaseDomain> {
 
+  protected Logger logger;
   private final Class<T> clazz;
-  private Logger logger;
-  private final DynamoDBMapper dynamoDBMapper;
+  protected final DynamoDBMapper dynamoDBMapper;
 
   protected BaseDao(Class<T> clazz, String region, String endpoint, boolean test) {
     this.clazz = clazz;
@@ -71,6 +71,19 @@ public class BaseDao<T extends BaseDomain> {
     logger.info(String.format("Find all with limit %s", limit));
 
     DynamoDBScanExpression dynamoDBQueryExpression = new DynamoDBScanExpression();
+    dynamoDBQueryExpression
+        .withLimit(limit);
+    try {
+      DynamoDBIndexHashKey indexAnnotation = clazz.getDeclaredField("id").getAnnotation(DynamoDBIndexHashKey.class);
+      if (indexAnnotation != null) {
+        String indexName = indexAnnotation.globalSecondaryIndexName();
+        dynamoDBQueryExpression
+            .withIndexName(indexName);
+      }
+    } catch (NoSuchFieldException e) {
+      logger.info("No DynamoDBIndexHashKey annotation on class " + clazz.getCanonicalName(), e);
+    }
+
     List<T> result = dynamoDBMapper.scanPage(clazz, dynamoDBQueryExpression)
         .getResults();
     if (limit != null && limit < result.size()) {

@@ -86,7 +86,7 @@ public class BoardService {
     if (allowed.isEmpty()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
-    currentBoard.getSelectedSquare().getDraught().setHighlighted(false);
+    currentBoard.getSelectedSquare().getDraught().setHighlight(false);
     boardDao.save(currentBoard);
 
     Board nextBoard = currentBoard.deepClone();
@@ -131,8 +131,8 @@ public class BoardService {
       undoneBoard.pushNextBoard(currentBoard.getId(), selectedMove, possibleMove);
 
       // reset highlights
-      undoneBoard.getSelectedSquare().getDraught().setHighlighted(false);
-      undoneBoard.getNextSquare().setHighlighted(false);
+      undoneBoard.getSelectedSquare().getDraught().setHighlight(false);
+      undoneBoard.getNextSquare().setHighlight(false);
 
       return undoneBoard;
     });
@@ -177,11 +177,11 @@ public class BoardService {
     if (notationMove == null) {
       return board;
     }
-    String[] moves = notationMove.getMove().keySet().toArray(new String[0]);
-    for (int i = 0; i < moves.length - 1; i++) {
-      Square selected = findSquareByNotation(moves[i], board);
+    List<String> moves = notationMove.getMoveNotations();
+    for (String move : moves) {
+      Square selected = findSquareByNotation(move, board);
       board.setSelectedSquare(selected);
-      Square next = findSquareByNotation(moves[i + 1], board);
+      Square next = findSquareByNotation(move, board);
       board.setNextSquare(next);
       board = move(selected, next, board, articleId);
     }

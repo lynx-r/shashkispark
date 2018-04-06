@@ -160,7 +160,7 @@ public class BaseServiceTest {
   protected Board move(Board board, String fromNotation, String toNotation, boolean blackTurn) {
     Square from = BoardUtils.findSquareByNotation(fromNotation, board);
     Square to = BoardUtils.findSquareByNotation(toNotation, board);
-    to.setHighlighted(true);
+    to.setHighlight(true);
     board.setSelectedSquare(from);
     board.setNextSquare(to);
     board.setBlackTurn(blackTurn);

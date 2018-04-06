@@ -83,7 +83,7 @@ public class BoardBoxControllerTest {
     List<Square> highlighted = board.getSquares()
         .stream()
         .filter(Objects::nonNull)
-        .filter(Square::isHighlighted)
+        .filter(Square::isHighlight)
         .collect(Collectors.toList());
     assertEquals(highlighted.size(), 2);
     highlighted.forEach(square -> {
@@ -105,7 +105,7 @@ public class BoardBoxControllerTest {
         .filter(square -> square.getNotation().equals("b4"))
         .findFirst()
         .get();
-    nextSquare.setHighlighted(true);
+    nextSquare.setHighlight(true);
     boardBox.getBoard().setNextSquare(nextSquare);
 
     boardBox = (BoardBox) post("/move", boardBox).getBody();

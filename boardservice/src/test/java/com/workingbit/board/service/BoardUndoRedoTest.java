@@ -27,7 +27,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     Square squareC3 = BoardUtils.findSquareByNotation(c3, board);
     String d4 = "d4";
     Square squareD4 = BoardUtils.findSquareByNotation(d4, board);
-    squareD4.setHighlighted(true);
+    squareD4.setHighlight(true);
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
@@ -53,7 +53,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     Square squareC3 = BoardUtils.findSquareByNotation(c3, board);
     String d4 = "d4";
     Square squareD4 = BoardUtils.findSquareByNotation(d4, board);
-    squareD4.setHighlighted(true);
+    squareD4.setHighlight(true);
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
@@ -65,7 +65,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 
     String e5 = "e5";
     Square squareE5 = BoardUtils.findSquareByNotation(e5, board);
-    squareE5.setHighlighted(true);
+    squareE5.setHighlight(true);
     board.setSelectedSquare(squareD4);
     board.setNextSquare(squareE5);
 
@@ -96,7 +96,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     Square squareC3 = BoardUtils.findSquareByNotation(c3, board);
     String d4 = "d4";
     Square squareD4 = BoardUtils.findSquareByNotation(d4, board);
-    squareD4.setHighlighted(true);
+    squareD4.setHighlight(true);
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
@@ -108,7 +108,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 
     String e5 = "e5";
     Square squareE5 = BoardUtils.findSquareByNotation(e5, board);
-    squareE5.setHighlighted(true);
+    squareE5.setHighlight(true);
     board.setSelectedSquare(squareD4);
     board.setNextSquare(squareE5);
 
@@ -140,7 +140,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     Square squareC3 = BoardUtils.findSquareByNotation(c3, board);
     String d4 = "d4";
     Square squareD4 = BoardUtils.findSquareByNotation(d4, board);
-    squareD4.setHighlighted(true);
+    squareD4.setHighlight(true);
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
@@ -171,7 +171,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     Square squareC3 = BoardUtils.findSquareByNotation(c3, board);
     String d4 = "d4";
     Square squareD4 = BoardUtils.findSquareByNotation(d4, board);
-    squareD4.setHighlighted(true);
+    squareD4.setHighlight(true);
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 

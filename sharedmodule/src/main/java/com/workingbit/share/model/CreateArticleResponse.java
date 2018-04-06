@@ -10,8 +10,6 @@ import lombok.Data;
 /**
  * CreateBoardPayload
  */
-//@JsonRootName(value = "createArticleResponse")
-//@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonTypeName("createArticleResponse")
 @Data
 public class CreateArticleResponse implements Payload {

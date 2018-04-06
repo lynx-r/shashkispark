@@ -41,7 +41,7 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
   /**
    * if square highlight for allowing to move
    */
-  private boolean highlighted;
+  private boolean highlight;
 
   private Draught draught;
 
@@ -134,7 +134,7 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
   public String toString() {
     return "Square{" +
         "notation=" + getAlphanumericNotation64() +
-        ", highlight=" + highlighted +
+        ", highlight=" + highlight +
         ", draught=" + draught +
         '}';
   }
@@ -144,7 +144,7 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
   }
 
   public Square highlight(boolean highlight) {
-    setHighlighted(highlight);
+    setHighlight(highlight);
     return this;
   }
 

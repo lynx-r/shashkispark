@@ -13,7 +13,7 @@ public class ArticleDao extends BaseDao<Article> {
     super(Article.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
   }
 
-//  @Override
+  //  @Override
 //  public void save(Article entity) {
 //    super.save(entity);
 //  }

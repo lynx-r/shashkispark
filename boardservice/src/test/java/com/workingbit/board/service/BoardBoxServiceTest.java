@@ -450,7 +450,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       String nextMove = move[i + 1];
       Square next = findSquareByNotation(nextMove, board);
-      next.setHighlighted(true);
+      next.setHighlight(true);
       board.setNextSquare(next);
 
       boardDao.save(board);
@@ -540,7 +540,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     Square c3 = getSquare(board, "c3");
     board.setSelectedSquare(c3);
     Square e5 = getSquare(board, "e5");
-    e5.setHighlighted(true);
+    e5.setHighlight(true);
     board.setNextSquare(e5);
     boardBox.setBoard(board);
 

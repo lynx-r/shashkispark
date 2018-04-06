@@ -26,6 +26,7 @@ import java.util.Objects;
 @DynamoDBTable(tableName = DBConstants.ARTICLE_TABLE)
 public class Article extends BaseDomain implements Payload {
 
+  @DynamoDBIndexHashKey(globalSecondaryIndexName = "articleIndex")
   @DynamoDBHashKey(attributeName = "id")
   private String id;
 

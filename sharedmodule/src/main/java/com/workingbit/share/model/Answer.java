@@ -13,7 +13,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 @Data
 public class Answer {
 
-  int statusCode;
+  private int statusCode;
   private Payload body;
   private MessageResponse message;
 

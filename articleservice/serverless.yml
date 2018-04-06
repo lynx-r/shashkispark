@@ -115,6 +115,25 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+        - IndexName: articleIndex
+          KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: '1'
+            WriteCapacityUnits: '1'
+#        LocalSecondaryIndexes:
+#        - IndexName: articleIndex
+#          KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#          - AttributeName: createdAt
+#            KeyType: RANGE
     DynamoDBIamPolicy:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTable

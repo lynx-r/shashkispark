@@ -27,6 +27,7 @@ import java.util.Objects;
 @DynamoDBTable(tableName = DBConstants.BOARD_BOX_TABLE)
 public class BoardBox extends BaseDomain implements Payload {
 
+  @DynamoDBIndexHashKey(globalSecondaryIndexName = "boardBoxIndex")
   @DynamoDBHashKey(attributeName = "id")
   private String id;
 
@@ -44,6 +45,10 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "boardId")
   private String boardId;
 
+  @DynamoDBTypeConvertedJson(targetType = Notation.class)
+  @DynamoDBAttribute(attributeName = "notation")
+  private Notation notation;
+
   @DynamoDBIgnore
   private Board board;
 
@@ -51,10 +56,6 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBTypeConvertedEnum
   @DynamoDBAttribute(attributeName = "editMode")
   private EnumEditBoardBoxMode editMode;
-
-  @DynamoDBTypeConvertedJson(targetType = Notation.class)
-  @DynamoDBAttribute(attributeName = "notation")
-  private Notation notation;
 
   public BoardBox() {
     notation = new Notation();

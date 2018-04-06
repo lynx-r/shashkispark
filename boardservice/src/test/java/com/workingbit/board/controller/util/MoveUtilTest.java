@@ -29,7 +29,7 @@ public class MoveUtilTest extends BaseServiceTest {
     Square squareC3 = BoardUtils.findSquareByNotation(c3, board);
     String d4 = "d4";
     Square squareD4 = BoardUtils.findSquareByNotation(d4, board);
-    squareD4.setHighlighted(true);
+    squareD4.setHighlight(true);
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
@@ -83,7 +83,7 @@ public class MoveUtilTest extends BaseServiceTest {
     assertTrue(!movesList.getCaptured().isEmpty());
     Square from = BoardUtils.findSquareByNotation("a1", board);
     Square to = BoardUtils.findSquareByNotation("f6", board);
-    to.setHighlighted(true);
+    to.setHighlight(true);
     board.setSelectedSquare(from);
     board.setNextSquare(to);
     board.setBlackTurn(false);
@@ -177,7 +177,7 @@ public class MoveUtilTest extends BaseServiceTest {
     Square squareC3 = BoardUtils.findSquareByNotation(c7, board);
     String d8 = "d8";
     Square squareD4 = BoardUtils.findSquareByNotation(d8, board);
-    squareD4.setHighlighted(true);
+    squareD4.setHighlight(true);
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
@@ -195,7 +195,7 @@ public class MoveUtilTest extends BaseServiceTest {
     Square squareC7 = BoardUtils.findSquareByNotation(c7, board);
     String d6 = "d6";
     Square squareD6 = (Square) BoardUtils.findSquareByNotation(d6, board).deepClone();
-    squareD6.setHighlighted(true);
+    squareD6.setHighlight(true);
     board.setSelectedSquare(squareC7);
     board.setNextSquare(squareD6);
 
@@ -209,7 +209,7 @@ public class MoveUtilTest extends BaseServiceTest {
   private boolean testSameHighlight(Board board, MovesList highlight) {
     List<Square> highlighted = board.getAssignedSquares()
         .stream()
-        .filter(Square::isHighlighted)
+        .filter(Square::isHighlight)
         .sorted()
         .collect(Collectors.toList());
     List<Square> allowed = highlight.getAllowed();

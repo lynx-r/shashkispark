@@ -290,7 +290,7 @@ public class BoardBoxService {
     return nextSquare == null
         || selectedSquare == null
         || !selectedSquare.isOccupied()
-        || !nextSquare.isHighlighted();
+        || !nextSquare.isHighlight();
   }
 
   private boolean resetHighlightIfNotLastBoard(BoardBox boardBox) {

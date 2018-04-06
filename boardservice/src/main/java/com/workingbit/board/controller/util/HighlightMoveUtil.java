@@ -24,7 +24,7 @@ class HighlightMoveUtil {
       throw new BoardServiceException("Selected square without placed draught");
     }
     this.selectedSquare = selectedSquare.deepClone();
-    this.selectedSquare.getDraught().setHighlighted(true);
+    this.selectedSquare.getDraught().setHighlight(true);
   }
 
   /**
@@ -280,7 +280,7 @@ class HighlightMoveUtil {
     if (next == null) {
       return;
     }
-    next.setHighlighted(true);
+    next.setHighlight(true);
     allowedMoves.add(next);
   }
 

@@ -8,9 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.workingbit.share.model.EnumNotation.CAPTURE;
@@ -30,7 +28,7 @@ public class NotationMove implements DeepClone, ToPdn {
   /**
    * Moves. The first is notation like a1 or b2 the second is boardId
    */
-  private TreeMap<String, String> move = new TreeMap<>();
+  private LinkedList<NotationSimpleMove> move = new LinkedList<>();
   private boolean cursor;
   private String moveStrength;
 
@@ -50,9 +48,13 @@ public class NotationMove implements DeepClone, ToPdn {
         .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdn() : CAPTURE.getPdn()));
   }
 
-  private Set<String> getMoveNotations() {
+  @JsonIgnore
+  @DynamoDBIgnore
+  public List<String> getMoveNotations() {
     return move
-        .keySet();
+        .stream()
+        .map(NotationSimpleMove::getNotation)
+        .collect(Collectors.toList());
   }
 
   @SuppressWarnings("unused")
@@ -123,22 +125,22 @@ public class NotationMove implements DeepClone, ToPdn {
   @JsonIgnore
   @DynamoDBIgnore
   private void setMoveKeysForPdn(String[] moveKeys) {
-    move = new TreeMap<>();
+    move = new LinkedList<>();
     for (String moveKey : moveKeys) {
-      move.put(moveKey, null);
+      move.add(new NotationSimpleMove(moveKey, null));
     }
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public String getLastMoveBoardId() {
-    return move.lastEntry().getValue();
+    return move.getLast().getBoardId();
   }
 
   public void addMove(String previousNotation, String prevBoardId, String currentNotation, String currentBoardId) {
-    move = new TreeMap<String, String>() {{
-      put(previousNotation, prevBoardId);
-      put(currentNotation, currentBoardId);
+    move = new LinkedList<NotationSimpleMove>() {{
+      add(new NotationSimpleMove(previousNotation, prevBoardId));
+      add(new NotationSimpleMove(currentNotation, currentBoardId));
     }};
   }
 }

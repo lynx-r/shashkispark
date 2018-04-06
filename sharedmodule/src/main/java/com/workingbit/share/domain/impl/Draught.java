@@ -31,7 +31,7 @@ public class Draught extends BaseDomain implements ICoordinates{
   private boolean queen;
   private boolean captured;
   private boolean markCaptured;
-  private boolean highlighted;
+  private boolean highlight;
 
   public Draught() {
   }
@@ -118,7 +118,7 @@ public class Draught extends BaseDomain implements ICoordinates{
         ", black=" + black +
         ", queen=" + queen +
         ", captured=" + captured +
-        ", highlight=" + highlighted +
+        ", highlight=" + highlight +
         '}';
   }
 
