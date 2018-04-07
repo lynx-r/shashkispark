@@ -78,7 +78,7 @@ public class BoardService {
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
    */
-  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, String articleId) {
+  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard) {
     boolean blackTurn = currentBoard.isBlackTurn();
     MovesList movesList = highlightedBoard(blackTurn, selectedSquare, currentBoard);
     List<Square> allowed = movesList.getAllowed();
@@ -164,7 +164,7 @@ public class BoardService {
   }
 
   private Board syncBoardWithStrokes(Board board, NotationHistory notationDrives, String articleId) {
-    for (NotationDrive notationDrive : notationDrives.getVariants()) {
+    for (NotationDrive notationDrive : notationDrives.getNotation()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
         board = emulateMove(drive, board, articleId);
@@ -183,7 +183,7 @@ public class BoardService {
       board.setSelectedSquare(selected);
       Square next = findSquareByNotation(move, board);
       board.setNextSquare(next);
-      board = move(selected, next, board, articleId);
+      board = move(selected, next, board);
     }
     return board;
   }

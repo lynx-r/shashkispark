@@ -1,7 +1,6 @@
 package com.workingbit.share.common;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.cfg4j.provider.ConfigurationProvider;
 import org.cfg4j.provider.ConfigurationProviderBuilder;
 import org.cfg4j.source.ConfigurationSource;
@@ -9,6 +8,8 @@ import org.cfg4j.source.classpath.ClasspathConfigurationSource;
 import org.cfg4j.source.context.environment.Environment;
 import org.cfg4j.source.context.environment.ImmutableEnvironment;
 import org.cfg4j.source.context.filesprovider.ConfigFilesProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -18,7 +19,7 @@ import java.util.Arrays;
  */
 public class Config4j {
 
-  private static Logger logger = Logger.getLogger(Config4j.class);
+  private static Logger logger = LoggerFactory.getLogger(Config4j.class);
 
   public static ConfigurationProvider configurationProvider() {
     // Specify which files to load. Configuration from both files will be merged.

@@ -1,12 +1,13 @@
 package com.workingbit.share.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class JsonUtils {
-  private static Logger logger = Logger.getLogger(JsonUtils.class);
+  private static Logger logger = LoggerFactory.getLogger(JsonUtils.class);
 
   private static final ObjectMapper mapper;
 

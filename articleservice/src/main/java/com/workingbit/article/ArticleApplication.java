@@ -8,7 +8,8 @@ import com.workingbit.article.util.Path;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import com.workingbit.share.util.UnirestUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.common.CorsConfig.enableCors;
@@ -16,7 +17,7 @@ import static spark.Spark.*;
 
 public class ArticleApplication {
 
-  private static final Logger LOG = Logger.getLogger(ArticleApplication.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ArticleApplication.class);
 
   // Declare dependencies
   public static ArticleDao articleDao;
@@ -36,7 +37,7 @@ public class ArticleApplication {
   }
 
   public static void start() {
-    Logger logger = Logger.getLogger(ArticleApplication.class);
+    Logger logger = LoggerFactory.getLogger(ArticleApplication.class);
     SparkUtils.createServerWithRequestLog(logger);
 
     UnirestUtil.configureSerialization();

@@ -7,7 +7,8 @@ import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -21,7 +22,7 @@ import static com.workingbit.board.BoardApplication.boardDao;
  */
 public class BoardBoxService {
 
-  private final Logger logger = Logger.getLogger(BoardBoxService.class);
+  private final Logger logger = LoggerFactory.getLogger(BoardBoxService.class);
   private final static BoardService boardService = new BoardService();
 
   public Optional<BoardBox> createBoardBox(CreateBoardPayload createBoardPayload) {
@@ -137,14 +138,15 @@ public class BoardBoxService {
           boardUpdated.setNotationHistory(notationDrivesInBoardBox);
           boardUpdated.setDriveCount(notationDrivesInBoardBox.size() - 1);
 
-          String articleId = boardBox.getArticleId();
-          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, articleId);
+          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated);
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
 
           updatedBox.getNotation().setNotationHistory(boardUpdated.getNotationHistory());
+          logger.info("Нотация после хода: " + updatedBox.getNotation().getNotationHistory().pdnString());
 
-          return saveAndFillBoard(updatedBox);
+          boardBoxDao.save(updatedBox);
+          return updatedBox;
         });
   }
 
@@ -294,14 +296,14 @@ public class BoardBoxService {
   }
 
   private boolean resetHighlightIfNotLastBoard(BoardBox boardBox) {
-    NotationDrives variants = boardBox.getNotation().getNotationHistory().getVariants();
+    NotationDrives variants = boardBox.getNotation().getNotationHistory().getNotation();
     NotationMoves moves = variants.getLast().getMoves();
     boolean isMovesEmpty = moves.isEmpty();
     boolean isHighlightLastMove = !isMovesEmpty && !moves.getLast().getLastMoveBoardId().equals(boardBox.getBoardId());
     if (isHighlightLastMove) {
       Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
       boardBox.setBoard(noHighlight);
-      return false;
+      return true;
     }
     return false;
   }

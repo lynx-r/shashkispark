@@ -240,7 +240,7 @@ public class BoardUtils {
     boolean previousCaptured = !capturedSquares.isEmpty();
     boolean nextCaptured = !nextMovesSquares.getCaptured().isEmpty();
     if (previousCaptured && nextCaptured) {
-      updateNotationMiddle(newBoard, prevBoardId);
+      updateNotationMiddle(newBoard, prevBoardId, nextMovesSquares);
       return newBoard;
     }
     updateNotationEnd(board, prevBoardId, previousCaptured);
@@ -248,25 +248,32 @@ public class BoardUtils {
     return board;
   }
 
-  private static void updateNotationMiddle(Board board, String prevBoardId) {
+  private static void updateNotationMiddle(Board board, String prevBoardId, MovesList nextMovesSquares) {
     NotationHistory notationDrives = board.getNotationHistory();
 
     NotationMove move = NotationMove.create(EnumNotation.CAPTURE, true);
     String prevNotation = board.getPreviousSquare().getNotation();
-    String currentNotation = board.getSelectedSquare().getNotation();
+    Square selectedSquare = board.getSelectedSquare();
+    String currentNotation = selectedSquare.getNotation();
     String currentBoardId = board.getId();
     move.addMove(prevNotation, prevBoardId, currentNotation, currentBoardId);
 
-    if (!notationDrives.isEmpty()) {
-      NotationDrive lastNotationDrive = notationDrives.getLastOrCreateIfRoot();
+    // using this var in Place mode
+    boolean isDrivesNotEmpty = !notationDrives.isEmpty();
+    boolean isBlackTurn = board.isBlackTurn();
+    if (isDrivesNotEmpty && isBlackTurn) {
+      NotationDrive lastNotationDrive = notationDrives.getLast();
       lastNotationDrive.getMoves().add(move);
     } else {
+      int notationNumber = notationDrives.getLast().getNotationNumberInt() + 1;
       NotationMoves moves = NotationMoves.Builder.getInstance()
           .add(move)
           .build();
       NotationDrive lastNotationDrive = NotationDrive.create(moves);
+      lastNotationDrive.setNotationNumberInt(notationNumber);
       notationDrives.add(lastNotationDrive);
     }
+//    highlightCaptured(selectedSquare, board, nextMovesSquares.getAllowed(), nextMovesSquares.getCaptured());
   }
 
   private static void updateNotationEnd(Board board, String prevBoardId, boolean previousCaptured) {
@@ -289,23 +296,63 @@ public class BoardUtils {
     NotationHistory notationDrives = board.getNotationHistory();
     resetBoardNotationCursor(notationDrives);
 
-    NotationDrive notationDrive = notationDrives.getLastOrCreateIfRoot();
-    notationDrive.setNotationNumberInt(notationNumber);
+    NotationDrive notationDrive;
+    String previousNotation = board.getPreviousSquare().getNotation();
+    boolean isBlackTurn = board.isBlackTurn();
+    boolean isContinueCapture = isContinueCapture(notationDrives, previousNotation);
+    if (isBlackTurn) {
+      notationDrive = notationDrives.getLast();
+    } else {
+      if (!isContinueCapture) {
+        notationDrive = new NotationDrive();
+        NotationDrive.copyMetaOf(notationDrives.getLastOrCreateIfRoot(), notationDrive);
+        notationDrive.setNotationNumberInt(notationNumber);
+        notationDrives.add(notationDrive);
+        notationDrive = notationDrives.getLast();
+      } else {
+        notationDrive = notationDrives.getLast();
+      }
+    }
     NotationMoves moves = notationDrive.getMoves();
     NotationMove lastCapturedMove;
-    if (moves.isEmpty()) {
+    if (!isContinueCapture && isBlackTurn) {
       lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE, true);
-      String previousNotation = board.getPreviousSquare().getNotation();
-      lastCapturedMove.addMove(previousNotation, prevBoardId, null, null);
+      // take previous square notation
+      // and put it in last moves
+      lastCapturedMove.getMove().add(new NotationSimpleMove(previousNotation, prevBoardId));
+      LinkedList<NotationSimpleMove> lastMove = lastCapturedMove.getMove();
+      // take current notation
+      String currentNotation = board.getSelectedSquare().getNotation();
+      String currentBoardId = board.getId();
+      // and put it in last moves
+      lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId));
+      lastCapturedMove.setMove(lastMove);
+      lastCapturedMove.setCursor(true);
+      // put last moves in last drive
+      moves.add(lastCapturedMove);
     } else {
+      if (moves.isEmpty()) {
+        lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE, true);
+        // put it in last moves
+        lastCapturedMove.getMove().add(new NotationSimpleMove(previousNotation, prevBoardId));
+        moves.add(lastCapturedMove);
+      }
       lastCapturedMove = moves.getLast();
+      // take last move
+      LinkedList<NotationSimpleMove> lastMove = lastCapturedMove.getMove();
+      String currentNotation = board.getSelectedSquare().getNotation();
+      String currentBoardId = board.getId();
+      // add last move to last drive
+      lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId));
+      lastCapturedMove.setCursor(true);
     }
-    LinkedList<NotationSimpleMove> lastMove = lastCapturedMove.getMove();
-    String currentNotation = board.getSelectedSquare().getNotation();
-    String currentBoardId = board.getId();
-    lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId));
-    lastCapturedMove.setMove(lastMove);
-    notationDrive.getMoves().add(lastCapturedMove);
+  }
+
+  private static boolean isContinueCapture(NotationHistory notationDrives, String previousNotation) {
+    return notationDrives.getLast()
+            .getMoves().getLast()
+            .getMove().getLast()
+            .getNotation().equals(previousNotation);
   }
 
   private static void pushSimpleMove(Board board, String prevBoardId, int notationNumber) {
@@ -335,7 +382,7 @@ public class BoardUtils {
   }
 
   private static void resetBoardNotationCursor(NotationHistory notationDrives) {
-    notationDrives.getVariants()
+    notationDrives.getNotation()
         .forEach(drive -> drive.getMoves()
             .forEach(move -> move.setCursor(false)));
   }
@@ -359,60 +406,69 @@ public class BoardUtils {
     MovesList movesList = highlightedAssignedMoves(selectedSquare);
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();
-    if (!captured.isEmpty()) {
-      board.getAssignedSquares().forEach((Square square) -> {
-        square.setHighlight(false);
-        if (square.isOccupied()) {
-          square.getDraught().setMarkCaptured(false);
-        }
-        if (square.isOccupied() && square.equals(selectedSquare)) {
-          square.getDraught().setHighlight(true);
-        }
-        if (allowed.contains(square)) {
-          square.setHighlight(true);
-        }
-        if (captured.contains(square)) {
-          square.getDraught().setMarkCaptured(true);
-        }
-      });
+    boolean isCapturedFound = !captured.isEmpty();
+    if (isCapturedFound) {
+      highlightCaptured(selectedSquare, board, allowed, captured);
       return movesList;
     } else {
-      Set<String> draughtsNotations;
-      if (blackTurn) {
-        draughtsNotations = board.getBlackDraughts().keySet();
-      } else {
-        draughtsNotations = board.getWhiteDraughts().keySet();
-      }
-      // find squares occupied by current user
-      List<Square> draughtsSquares = board.getAssignedSquares()
-          .stream()
-          .filter(square -> !square.equals(selectedSquare))
-          .filter(square -> draughtsNotations.contains(square.getAlphanumericNotation64()))
-          .collect(Collectors.toList());
-      // find all squares captured by current user
-      List<Square> allCaptured = draughtsSquares
-          .stream()
-          .flatMap(square -> highlightedAssignedMoves(square).getCaptured().stream())
-          .collect(Collectors.toList());
-      // reset highlight
+      return highlightSimple(blackTurn, selectedSquare, board, movesList, allowed);
+    }
+  }
+
+  private static MovesList highlightSimple(boolean blackTurn, Square selectedSquare, Board board, MovesList movesList, List<Square> allowed) {
+    Set<String> draughtsNotations;
+    if (blackTurn) {
+      draughtsNotations = board.getBlackDraughts().keySet();
+    } else {
+      draughtsNotations = board.getWhiteDraughts().keySet();
+    }
+    // find squares occupied by current user
+    List<Square> draughtsSquares = board.getAssignedSquares()
+        .stream()
+        .filter(square -> !square.equals(selectedSquare))
+        .filter(square -> draughtsNotations.contains(square.getAlphanumericNotation64()))
+        .collect(Collectors.toList());
+    // find all squares captured by current user
+    List<Square> allCaptured = draughtsSquares
+        .stream()
+        .flatMap(square -> highlightedAssignedMoves(square).getCaptured().stream())
+        .collect(Collectors.toList());
+    // reset highlight
+    board.getAssignedSquares()
+        .stream()
+        .filter(Square::isHighlight)
+        .forEach(square -> square.setHighlight(false));
+    if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
       board.getAssignedSquares()
           .stream()
-          .filter(Square::isHighlight)
-          .forEach(square -> square.setHighlight(false));
-      if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
-        board.getAssignedSquares()
-            .stream()
-            .peek((square -> {
-              // highlight selected draught
-              if (square.isOccupied() && square.equals(selectedSquare)) {
-                square.getDraught().setHighlight(true);
-              }
-            }))
-            .filter(allowed::contains)
-            .forEach(square -> square.setHighlight(true));
-      }
-      return movesList;
+          .peek((square -> {
+            // highlight selected draught
+            if (square.isOccupied() && square.equals(selectedSquare)) {
+              square.getDraught().setHighlight(true);
+            }
+          }))
+          .filter(allowed::contains)
+          .forEach(square -> square.setHighlight(true));
     }
+    return movesList;
+  }
+
+  private static void highlightCaptured(Square selectedSquare, Board board, List<Square> allowed, List<Square> captured) {
+    board.getAssignedSquares().forEach((Square square) -> {
+      square.setHighlight(false);
+      if (square.isOccupied()) {
+        square.getDraught().setMarkCaptured(false);
+      }
+      if (square.isOccupied() && square.equals(selectedSquare)) {
+        square.getDraught().setHighlight(true);
+      }
+      if (allowed.contains(square)) {
+        square.setHighlight(true);
+      }
+      if (captured.contains(square)) {
+        square.getDraught().setMarkCaptured(true);
+      }
+    });
   }
 
   private static void performMoveDraught(Board board, List<Square> capturedSquares) {

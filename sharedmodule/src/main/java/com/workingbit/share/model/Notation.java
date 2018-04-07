@@ -72,6 +72,6 @@ public class Notation implements ToPdn {
   }
 
   public void print() {
-    notationHistory.getVariants().forEach(notationDrive -> System.out.println(notationDrive.print("\n")));
+    notationHistory.getNotation().forEach(notationDrive -> System.out.println(notationDrive.print("\n")));
   }
 }

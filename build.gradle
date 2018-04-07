@@ -26,7 +26,6 @@ subprojects {
         mavenLocal()
         mavenCentral()
         jcenter()
-        maven { url "https://jitpack.io" }
     }
 
     dependencies {
@@ -37,7 +36,9 @@ subprojects {
         compile 'com.amazonaws.serverless:aws-serverless-java-container-spark:0.7'
         compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.150'
         compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
-        compile 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
+        compile ('com.amazonaws:aws-lambda-java-log4j:1.0.0') {
+            exclude group: 'log4j', module: 'log4j'
+        }
 
         compile "com.sparkjava:spark-core:2.6.0"
 

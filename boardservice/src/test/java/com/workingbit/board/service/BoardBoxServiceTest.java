@@ -138,7 +138,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Test create BoardBox moving draughts
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       BoardBox current = boardBox.deepClone();
-      for (NotationDrive drive : notationDrives.getVariants()) {
+      for (NotationDrive drive : notationDrives.getNotation()) {
         for (NotationMove move : drive.getMoves()) {
           current = moveStrokes(current, move);
         }
@@ -377,11 +377,11 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       System.out.println(switched2.getNotation().getNotationHistory().variantsToPdn());
 
-      assertEquals(fork1.getNotation().getNotationHistory().getVariants(),
-          fork2.getNotation().getNotationHistory().getVariants());
+      assertEquals(fork1.getNotation().getNotationHistory().getNotation(),
+          fork2.getNotation().getNotationHistory().getNotation());
 
-      assertEquals(switch1.getNotation().getNotationHistory().getVariants(),
-          switched2.getNotation().getNotationHistory().getVariants());
+      assertEquals(switch1.getNotation().getNotationHistory().getNotation(),
+          switched2.getNotation().getNotationHistory().getNotation());
     }
   }
 
@@ -599,7 +599,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       boardDao.save(board);
       boardBox.getNotation().setNotationHistory(NotationHistory.createWithRoot());
       boardBoxDao.save(boardBox);
-      for (NotationDrive notationDrive : notationDrives.getVariants()) {
+      for (NotationDrive notationDrive : notationDrives.getNotation()) {
         for (NotationMove notationMove : notationDrive.getMoves()) {
           boardBox = moveStrokes(boardBox, notationMove);
         }
@@ -607,7 +607,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       boardBox = boardBoxService.undo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertEquals(1, boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size());
+      assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
       boolean undoNotPossible = !boardBoxService.undo(boardBox).isPresent();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
       assertTrue(undoNotPossible);
@@ -640,7 +640,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       boardDao.save(board);
       boardBox.getNotation().setNotationHistory(NotationHistory.createWithRoot());
       boardBoxDao.save(boardBox);
-      for (NotationDrive notationDrive : notationDrives.getVariants()) {
+      for (NotationDrive notationDrive : notationDrives.getNotation()) {
         for (NotationMove notationMove : notationDrive.getMoves()) {
           boardBox = moveStrokes(boardBox, notationMove);
         }
@@ -648,17 +648,17 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       boardBox = boardBoxService.undo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
+      assertTrue(boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size() == 1);
       boardBox = boardBoxService.undo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
+      assertTrue(boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size() == 1);
 
       boardBox = boardBoxService.redo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 1);
+      assertTrue(boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size() == 1);
       boardBox = boardBoxService.redo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertTrue(boardBox.getNotation().getNotationHistory().getVariants().getLast().getVariants().size() == 0);
+      assertTrue(boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size() == 0);
       break;
     }
   }
@@ -689,7 +689,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     boardDao.save(board);
     boardBox.getNotation().setNotationHistory(NotationHistory.createWithRoot());
     boardBoxDao.save(boardBox);
-    for (NotationDrive notationDrive : notationDrives.getVariants()) {
+    for (NotationDrive notationDrive : notationDrives.getNotation()) {
       for (NotationMove notationMove : notationDrive.getMoves()) {
         boardBox = moveStrokes(boardBox, notationMove);
       }
@@ -710,14 +710,14 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     boardBox = boardBoxService.redo(boardBox).get();
     System.out.print("REDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
-    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getVariants(),
-        boardBox.getNotation().getNotationHistory().getVariants());
+    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation(),
+        boardBox.getNotation().getNotationHistory().getNotation());
 
     // MOVE FORWARD
     Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
 
     BoardBox current = boardBox;
-    for (NotationDrive forwardDrive: forwardNotation.getNotationHistory().getVariants()) {
+    for (NotationDrive forwardDrive: forwardNotation.getNotationHistory().getNotation()) {
       for (NotationMove move : forwardDrive.getMoves()) {
         current = moveStrokes(current, move);
         System.out.println(move.toPdn());
@@ -739,8 +739,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     boardBox = boardBoxService.redo(boardBox).get();
     System.out.print("REDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
-    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getVariants(),
-        boardBox.getNotation().getNotationHistory().getVariants());
+    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation(),
+        boardBox.getNotation().getNotationHistory().getNotation());
   }
 
   @After

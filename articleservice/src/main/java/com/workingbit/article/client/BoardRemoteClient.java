@@ -6,7 +6,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.CreateBoardPayload;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -17,7 +18,7 @@ import static com.workingbit.article.ArticleApplication.appProperties;
  */
 public class BoardRemoteClient {
 
-  private static final Logger logger = Logger.getLogger(BoardRemoteClient.class);
+  private static final Logger logger = LoggerFactory.getLogger(BoardRemoteClient.class);
 
   public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest) {
     try {

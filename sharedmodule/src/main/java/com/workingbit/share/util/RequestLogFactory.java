@@ -1,9 +1,7 @@
 package com.workingbit.share.util;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.AbstractNCSARequestLog;
-
-import java.io.IOException;
+import org.slf4j.Logger;
 
 public class RequestLogFactory {
 
@@ -21,7 +19,7 @@ public class RequestLogFactory {
             }
 
             @Override
-            public void write(String s) throws IOException {
+            public void write(String s) {
               logger.info(s);
             }
         };

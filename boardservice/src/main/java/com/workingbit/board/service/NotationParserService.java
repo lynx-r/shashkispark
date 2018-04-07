@@ -10,7 +10,8 @@ import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
 import net.percederberg.grammatica.parser.Token;
 import org.apache.commons.collections4.map.ListOrderedMap;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 public class NotationParserService {
 
-  private static Logger logger = Logger.getLogger(NotationParserService.class);
+  private static Logger logger = LoggerFactory.getLogger(NotationParserService.class);
   private static final String GAME_MOVE = "GameMove";
   private static final String MOVENUMBER = "MOVENUMBER";
   private static final String MOVE = "Move";
@@ -48,7 +49,7 @@ public class NotationParserService {
     Node game = pdnFile.getChildAt(1);
     NotationHistory notationDrives = notation.getNotationHistory();
     try {
-      parseGameBody(game, notationDrives.getVariants());
+      parseGameBody(game, notationDrives.getNotation());
     } catch (Exception e) {
       game.printTo(System.err);
       logger.error("Parse error ", e);

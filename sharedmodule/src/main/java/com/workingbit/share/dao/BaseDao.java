@@ -7,7 +7,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.util.Utils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,7 +29,7 @@ public class BaseDao<T extends BaseDomain> {
   protected BaseDao(Class<T> clazz, String region, String endpoint, boolean test) {
     this.clazz = clazz;
 
-    logger = Logger.getLogger(clazz);
+    logger = LoggerFactory.getLogger(clazz);
 
     AmazonDynamoDB ddb;
     if (test) {

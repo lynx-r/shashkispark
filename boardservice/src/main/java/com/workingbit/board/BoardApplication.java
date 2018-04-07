@@ -8,7 +8,8 @@ import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.board.util.Path;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.common.CorsConfig.enableCors;
@@ -16,7 +17,7 @@ import static spark.Spark.*;
 
 public class BoardApplication {
 
-  private static final Logger LOG = Logger.getLogger(BoardApplication.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BoardApplication.class);
 
   // Declare dependencies
   public static BoardBoxService boardBoxService;
@@ -44,7 +45,7 @@ public class BoardApplication {
   }
 
   public static void start() {
-    Logger logger = Logger.getLogger(BoardApplication.class);
+    Logger logger = LoggerFactory.getLogger(BoardApplication.class);
     SparkUtils.createServerWithRequestLog(logger);
 
     LOG.info("Initializing routes");

@@ -4,7 +4,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.workingbit.share.common.Log;
 import com.workingbit.share.domain.impl.Draught;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ public class DraughtMapConverter implements DynamoDBTypeConverter<String, HashMa
     try {
       return mapper.writeValueAsString(object);
     } catch (JsonProcessingException e) {
-      Log.error(e.getMessage());
+      e.printStackTrace();
       return "";
     }
   }
@@ -34,7 +33,7 @@ public class DraughtMapConverter implements DynamoDBTypeConverter<String, HashMa
           = new TypeReference<HashMap<String, Draught>>() {};
       return mapper.readValue(object, typeRef);
     } catch (IOException e) {
-      Log.error(e.getMessage());
+      e.printStackTrace();
       return new HashMap<>();
     }
   }

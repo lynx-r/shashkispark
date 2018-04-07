@@ -29,6 +29,9 @@ public class NotationDrive implements DeepClone, ToPdn {
 
   private NotationDrives variants;
   private boolean ellipses;
+  /**
+   * Does notation in numeric format like 1. 12-21
+   */
   private boolean numeric;
   private String comment;
   private boolean root;
@@ -57,6 +60,10 @@ public class NotationDrive implements DeepClone, ToPdn {
     notationDrive.setNotationNumber(null);
     notationDrive.setMoves(moves);
     return notationDrive;
+  }
+
+  public static void copyMetaOf(NotationDrive orig, NotationDrive target) {
+    target.numeric = orig.numeric;
   }
 
   public boolean addVariant(NotationDrive variant) {
