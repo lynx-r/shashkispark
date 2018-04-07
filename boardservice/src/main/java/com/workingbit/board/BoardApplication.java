@@ -61,7 +61,6 @@ public class BoardApplication {
           post(Path.BOARD_ADD_DRAUGHT, BoardBoxController.addDraught);
           post(Path.BOARD, BoardBoxController.createBoard);
           put(Path.BOARD, BoardBoxController.saveBoard);
-          post(Path.BOARD_UPDATE, BoardBoxController.updateBoard);
           post(Path.BOARD_LOAD_PREVIEW, BoardBoxController.loadPreviewBoard);
           post(Path.BOARD_MOVE, BoardBoxController.move);
           post(Path.BOARD_HIGHLIGHT, BoardBoxController.highlightBoard);

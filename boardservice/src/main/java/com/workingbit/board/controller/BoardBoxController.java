@@ -31,15 +31,7 @@ public class BoardBoxController {
           boardBoxService
               .save(boardRequest)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
-      ).handleRequest(req, res, BoardBox.class);
-
-  public static Route updateBoard = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) boardRequest ->
-          boardBoxService
-              .updateBoard(boardRequest)
-              .map(Answer::ok)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_BOARD))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route loadPreviewBoard = (req, res) ->
@@ -47,7 +39,7 @@ public class BoardBoxController {
           boardBoxService
               .loadPreviewBoard(boardRequest)
               .map(Answer::ok)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_LOAD_BOARD))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route findBoardById = (req, res) ->

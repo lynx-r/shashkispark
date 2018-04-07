@@ -168,12 +168,6 @@ public class BoardBoxService {
     return Optional.of(saveAndFillBoard(boardBox));
   }
 
-  public Optional<BoardBox> updateBoard(BoardBox boardBox) {
-    boardBoxDao.save(boardBox);
-    updateBoardBox(boardBox);
-    return Optional.of(boardBox);
-  }
-
   public Optional<BoardBox> loadPreviewBoard(BoardBox boardBox) {
     updateBoardBox(boardBox);
     Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
