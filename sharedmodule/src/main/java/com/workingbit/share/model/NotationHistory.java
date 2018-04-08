@@ -143,7 +143,7 @@ public class NotationHistory implements DeepClone {
 
   public boolean forkAt(NotationDrive forkFromNotationDrive) {
     if (forkFromNotationDrive.getMoves().size() < 2) {
-      System.out.println("Ignore fork " + forkFromNotationDrive.toPdn());
+      logger.info("Ignore fork " + forkFromNotationDrive.toPdn());
       return false;
     }
 
@@ -186,7 +186,7 @@ public class NotationHistory implements DeepClone {
     }
 
     if (v_toSwitchDrive.getMoves().size() == 1) {
-      System.out.println("Ignore switch: " + v_toSwitchDrive.toPdn());
+      logger.info("Ignore switch: " + v_toSwitchDrive.toPdn());
       return false;
     }
 

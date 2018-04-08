@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -429,8 +430,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   private BoardBox undoMove(BoardBox boardBoxCurrent, NotationMove notationMove) {
-    String[] move = notationMove.getMove().keySet().toArray(new String[0]);
-    for (int i = move.length - 1; i > 0; i--) {
+    LinkedList<NotationSimpleMove> move = notationMove.getMove();
+    for (NotationSimpleMove m : move) {
       boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.undo(boardBoxCurrent).get();
@@ -439,16 +440,16 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   public BoardBox moveStrokes(BoardBox boardBoxCurrent, NotationMove notationMove) {
-    String[] move = notationMove.getMove().keySet().toArray(new String[0]);
+    NotationSimpleMove[] move = notationMove.getMove().toArray(new NotationSimpleMove[0]);
     for (int i = 0; i < move.length - 1; i++) {
 //      String boardId = notationMove.getBoardId();
       Board board = boardBoxCurrent.getBoard(); /*boardService.find(boardId).get();*/
 
-      String selMove = move[i];
+      String selMove = move[i].getNotation();
       Square selected = findSquareByNotation(selMove, board);
       board.setSelectedSquare(selected);
 
-      String nextMove = move[i + 1];
+      String nextMove = move[i + 1].getNotation();
       Square next = findSquareByNotation(nextMove, board);
       next.setHighlight(true);
       board.setNextSquare(next);

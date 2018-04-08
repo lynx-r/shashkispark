@@ -34,13 +34,20 @@ subprojects {
 
         compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
         compile 'com.amazonaws.serverless:aws-serverless-java-container-spark:0.7'
-        compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.150'
         compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
         compile ('com.amazonaws:aws-lambda-java-log4j:1.0.0') {
             exclude group: 'log4j', module: 'log4j'
         }
 
-        compile "com.sparkjava:spark-core:2.6.0"
+    }
+
+    test.onlyIf { Boolean.getBoolean('skip.tests') }
+}
+
+configure(subprojects.findAll {it.name.endsWith('module')}) {
+
+    dependencies {
+        compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.150'
 
         compile 'com.fasterxml.jackson.core:jackson-core:2.8.5'
         compile 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
@@ -49,24 +56,28 @@ subprojects {
         compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.1'
         compile 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.1'
 
-        compile 'org.slf4j:slf4j-log4j12:1.7.12'
-        compile 'log4j:log4j:1.2.17'
-
         compile 'org.projectlombok:lombok:1.16.18'
-
-        compile 'org.cfg4j:cfg4j-core:4.4.1'
 
         compile 'uk.com.robust-it:cloning:1.9.5'
 
-        compile 'io.reactivex:rxjava:1.2.2'
-
         compile 'com.mashape.unirest:unirest-java:1.4.9'
+
+        compile 'org.cfg4j:cfg4j-core:4.4.1'
+
+        compile 'org.slf4j:slf4j-log4j12:1.7.12'
+        compile 'log4j:log4j:1.2.17'
+    }
+}
+
+configure(subprojects.findAll {it.name.endsWith('service')}) {
+    dependencies {
+        compile "com.sparkjava:spark-core:2.7.2"
+
+        compile 'io.reactivex:rxjava:1.2.2'
 
         testCompile group: 'junit', name: 'junit', version: '4.+'
         testCompile "com.despegar:spark-test:1.1.4"
     }
-
-    test.onlyIf { Boolean.getBoolean('skip.tests') }
 }
 
 project(':articleservice') {
@@ -107,6 +118,7 @@ project(':boardservice') {
     dependencies {
         compile project(':sharedmodule')
 
+        // tree
         compile 'com.github.rutledgepaulv:prune:1.3'
 
         compile files('lib/grammatica-1.6.jar')

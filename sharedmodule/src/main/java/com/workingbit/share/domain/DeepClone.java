@@ -10,5 +10,5 @@ public interface DeepClone {
   default <T> T deepClone() {
     Cloner cloner = new Cloner();
     return cloner.deepClone((T) this);
-  };
+  }
 }

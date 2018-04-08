@@ -24,7 +24,7 @@ public class BaseDao<T extends BaseDomain> {
 
   protected Logger logger;
   private final Class<T> clazz;
-  protected final DynamoDBMapper dynamoDBMapper;
+  private final DynamoDBMapper dynamoDBMapper;
 
   protected BaseDao(Class<T> clazz, String region, String endpoint, boolean test) {
     this.clazz = clazz;
