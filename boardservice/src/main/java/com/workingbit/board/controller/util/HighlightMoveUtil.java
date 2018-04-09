@@ -174,7 +174,7 @@ class HighlightMoveUtil {
         break;
       }
       next = getNextSquare(down, first, squareListIterator);
-      if (isCantMoveNextOrNextIsCaptured(next)) {
+      if (isCanNotMoveNextAndNextIsCaptured(previous, next)) {
         break;
       }
       if (mustBeat(next, previous)) {
@@ -322,15 +322,16 @@ class HighlightMoveUtil {
    * @return must or not beat
    */
   private boolean mustBeat(Square nextSquare, Square previousSquare) {
-    return previousSquare!=null && previousSquare.isOccupied()
-        && previousSquare.getDraught().isBlack() != this.selectedSquare.getDraught().isBlack()
+    return previousSquare != null && previousSquare.isOccupied()
+        && !isDraughtWithSameColor(previousSquare)
         && isDraughtNotOccupied(nextSquare);
   }
 
   /**
    * test case described in the test `HighlightMoveUtilTest::queen_moves_with_beat_in_one_square`
+   *
    * @param walkAllowedMoves move where I was
-   * @param previous my previous move
+   * @param previous         my previous move
    * @return move where is was contain my previous this mean
    * that I have deal with a stream that breaks on previous move. E.g. I move from e1 and have two opponent draughts
    * on f2 and f4 then allowed move will be the move that contains g3.
@@ -372,7 +373,9 @@ class HighlightMoveUtil {
   }
 
   private boolean isDraughtWithSameColor(Square next) {
-    return next.isOccupied() && next.getDraught().isBlack() == this.selectedSquare.getDraught().isBlack();
+    return next != null &&
+        next.isOccupied() &&
+        next.getDraught().isBlack() == this.selectedSquare.getDraught().isBlack();
   }
 
   private boolean isMoveAllowed(Square previous, Square next) {
@@ -387,8 +390,11 @@ class HighlightMoveUtil {
     return toSquare != null && !toSquare.isOccupied();
   }
 
-  private boolean isCantMoveNextOrNextIsCaptured(Square next) {
-    return next == null || next.isOccupied() && next.getDraught().isCaptured();
+  private boolean isCanNotMoveNextAndNextIsCaptured(Square previous, Square next) {
+    return next != null && next.isOccupied() &&
+        (next.getDraught().isCaptured() ||
+            previous != selectedSquare &&
+                previous.isOccupied());
   }
 
   private boolean isDraughtOnDiagonal(Square selectedSquare, List<Square> diagonal) {

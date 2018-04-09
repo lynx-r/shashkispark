@@ -143,7 +143,7 @@ public class BoardBoxService {
           updatedBox.setBoardId(boardUpdated.getId());
 
           updatedBox.getNotation().setNotationHistory(boardUpdated.getNotationHistory());
-          logger.info("Нотация после хода: " + updatedBox.getNotation().getNotationHistory().pdnString());
+          logger.info("Notation after move: " + updatedBox.getNotation().getNotationHistory().pdnString());
 
           boardBoxDao.save(updatedBox);
           return updatedBox;
@@ -231,7 +231,7 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> switchToNotationDrive(BoardBox boardBox, NotationDrive switchToNotationDrive) {
-    return find(boardBox)
+    return boardBoxDao.find(boardBox)
         .map(bb -> switchNotationToVariant(bb, switchToNotationDrive))
         .map(this::saveAndFillBoard);
   }

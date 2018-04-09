@@ -34,16 +34,10 @@ public class NotationDrive implements DeepClone, ToPdn {
    */
   private boolean numeric;
   private String comment;
+  /**
+   * Mark drive as first in list
+   */
   private boolean root;
-  /**
-   * Root of variants
-   */
-  private boolean subRoot;
-  /**
-   * Is the current drive a forkNumber?
-   */
-  private int forkNumber;
-  private int sibling;
 
   public NotationDrive() {
     variants = NotationDrives.create();
@@ -64,6 +58,15 @@ public class NotationDrive implements DeepClone, ToPdn {
 
   public static void copyMetaOf(NotationDrive orig, NotationDrive target) {
     target.numeric = orig.numeric;
+  }
+
+  public static void copyOf(NotationDrive orig, NotationDrive target) {
+    copyMetaOf(orig, target);
+    target.ellipses = orig.ellipses;
+    target.comment = orig.comment;
+    target.variants = target.variants.deepClone();
+    target.notationNumber = orig.notationNumber;
+    target.moves = orig.moves.deepClone();
   }
 
   public boolean addVariant(NotationDrive variant) {
@@ -142,9 +145,6 @@ public class NotationDrive implements DeepClone, ToPdn {
     }
     return new StringBuilder()
         .append(prefix).append(getClass().getSimpleName())
-        .append(prefix).append("\t").append("subRoot: ").append(subRoot)
-        .append(prefix).append("\t").append("forkNumber: ").append(forkNumber)
-        .append(prefix).append("\t").append("sibling: ").append(sibling)
         .append(prefix).append("\t").append("notationNumber: ").append(notationNumber)
         .append(prefix).append("\t").append("notationMoves: ").append(moves.print(prefix + "\t"))
         .append(prefix).append("\t").append("variants: ").append(variants.print(prefix + "\t"))
@@ -171,9 +171,6 @@ public class NotationDrive implements DeepClone, ToPdn {
         .append("moves", moves)
         .append("variants", variants)
         .append("root", root)
-        .append("subRoot", subRoot)
-        .append("forkNumber", forkNumber)
-        .append("sibling", sibling)
         .toString();
   }
 
