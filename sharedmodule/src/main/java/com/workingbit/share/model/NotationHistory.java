@@ -83,7 +83,7 @@ public class NotationHistory implements DeepClone {
 
   @DynamoDBIgnore
   @JsonIgnore
-  public NotationDrive getLastOrCreateIfRoot() {
+  public NotationDrive getLastSafe() {
     boolean isRootDrive = notation.getLast().isRoot();
     if (isRootDrive) {
       NotationDrive notationDrive = new NotationDrive();
@@ -169,7 +169,7 @@ public class NotationHistory implements DeepClone {
     int indexFork = indexOf(switchToNotationDrive);
     NotationDrive toSwitchDrive;
     if (switchToNotationDrive == null) {
-      toSwitchDrive = getLastOrCreateIfRoot();
+      toSwitchDrive = getLastSafe();
       indexFork = indexOf(toSwitchDrive);
     } else {
       toSwitchDrive = get(indexFork);

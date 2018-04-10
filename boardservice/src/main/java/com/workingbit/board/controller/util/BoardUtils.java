@@ -317,7 +317,7 @@ public class BoardUtils {
     } else {
       if (!isContinueCapture) {
         notationDrive = new NotationDrive();
-        NotationDrive.copyMetaOf(notationDrives.getLastOrCreateIfRoot(), notationDrive);
+        NotationDrive.copyMetaOf(notationDrives.getLast(), notationDrive);
         notationDrive.setNotationNumberInt(notationNumber);
         notationDrives.add(notationDrive);
         notationDrive = notationDrives.getLast();

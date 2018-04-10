@@ -12,7 +12,7 @@ public class Path {
   public static final String BOARD_HIGHLIGHT = "/board/highlight";
   public static final String BOARD_REDO = "/board/redo";
   public static final String BOARD_UNDO = "/board/undo";
-  public static final String MAKE_WHITE_STROKE = "/board/make-white-stroke";
+  public static final String CHANGE_TURN = "/board/change-turn";
   /**
    * save changes and return updated Board in BoardBox
    */

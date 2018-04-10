@@ -150,10 +150,11 @@ public class BoardBoxService {
         });
   }
 
-  public Optional<BoardBox> makeWhiteStroke(BoardBox boardBox) {
+  public Optional<BoardBox> changeTurn(BoardBox boardBox) {
     return find(boardBox)
         .map(updatedBox -> {
           Board inverted = boardBox.getBoard();
+          inverted.setSelectedSquare(null);
           inverted.setBlackTurn(!inverted.isBlackTurn());
           boardService.save(inverted);
 

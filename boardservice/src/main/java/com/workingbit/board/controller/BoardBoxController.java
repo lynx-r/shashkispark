@@ -90,11 +90,11 @@ public class BoardBoxController {
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_UNDO))
       ).handleRequest(req, res, BoardBox.class);
 
-  public static Route makeWhiteStroke = (req, res) ->
+  public static Route changeTurn = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) data ->
           boardBoxService
-              .makeWhiteStroke((BoardBox) data)
+              .changeTurn((BoardBox) data)
               .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_MAKE_WHITE_STROKE))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CHANGE_TURN))
       ).handleRequest(req, res, BoardBox.class);
 }

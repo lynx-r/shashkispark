@@ -8,6 +8,7 @@
     </appender>
 
     <logger name="com.workingbit" level="DEBUG"/>
+    <logger name="spark" level="ERROR"/>
 
 
     <root level="error">
