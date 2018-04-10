@@ -164,7 +164,9 @@ public class NotationHistory implements DeepClone {
   }
 
   public boolean switchTo(NotationDrive switchToNotationDrive) {
-    assert switchToNotationDrive == null || switchToNotationDrive.getVariantsSize() == 1;
+    if (!(switchToNotationDrive == null || switchToNotationDrive.getVariantsSize() >= 1)) {
+      return false;
+    }
 
     int indexFork = indexOf(switchToNotationDrive);
     NotationDrive toSwitchDrive;
@@ -181,9 +183,8 @@ public class NotationHistory implements DeepClone {
     }
 
     NotationDrives switchVariants = toSwitchDrive.getVariants().deepClone();
-//    toSwitchDrive.removeLastVariant();
 
-    // add rest notation to notation
+    // add rest notation to notations
     if (indexFork + 1 < size()) {
       List<NotationDrive> forked = subList(indexFork + 1, size());
       NotationDrives forkedNotationDrives = NotationDrives.Builder.getInstance()
@@ -192,7 +193,6 @@ public class NotationHistory implements DeepClone {
 
       // remove tail
       removeAll(forkedNotationDrives);
-//      history.removeAll(forkedNotationDrives);
 
       NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
       variant.setVariants(forkedNotationDrives);
@@ -215,9 +215,7 @@ public class NotationHistory implements DeepClone {
     }
 
     // add varint's to switch notation to main notation drives
-    variantToSwitch.ifPresent(switchVariant -> {
-      addAll(switchVariant.getVariants());
-    });
+    variantToSwitch.ifPresent(switchVariant -> addAll(switchVariant.getVariants()));
 
     logger.info("Notation after move: " + pdnString());
     return true;
@@ -261,14 +259,23 @@ public class NotationHistory implements DeepClone {
     System.out.println(variantsToPdn());
   }
 
-  public Optional<String> findLastVariantBoardId() {
+  @JsonIgnore
+  @DynamoDBIgnore
+  public Optional<String> getLastNotationBoardId() {
     try {
-      NotationMoves moves = notation
-          .getLast()
-          .getMoves();
-      if (moves.isEmpty()) {
+      NotationDrive notationLast = notation.getLast();
+      if (notationLast.isRoot()) {
+        NotationMoves moves = notationLast.getVariants()
+            .getLast()
+            .getMoves();
+        if (!moves.isEmpty()) {
+          return Optional.of(moves.getFirst()
+              .getMove().getFirst()
+              .getBoardId());
+        }
         return Optional.empty();
       }
+      NotationMoves moves = notationLast.getMoves();
       return Optional.of(
           moves
               .getLast()

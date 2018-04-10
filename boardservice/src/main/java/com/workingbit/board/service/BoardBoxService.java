@@ -227,14 +227,12 @@ public class BoardBoxService {
 
   public Optional<BoardBox> forkBoardBox(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
     return find(boardBox)
-        .map(bb -> forkNotationForVariants(bb, forkFromNotationDrive))
-        .map(this::saveAndFillBoard);
+        .map(bb -> forkNotationForVariants(bb, forkFromNotationDrive));
   }
 
   public Optional<BoardBox> switchToNotationDrive(BoardBox boardBox, NotationDrive switchToNotationDrive) {
     return boardBoxDao.find(boardBox)
-        .map(bb -> switchNotationToVariant(bb, switchToNotationDrive))
-        .map(this::saveAndFillBoard);
+        .map(bb -> switchNotationToVariant(bb, switchToNotationDrive));
   }
 
   private BoardBox switchNotationToVariant(BoardBox boardBox, NotationDrive switchToNotationDrive) {
@@ -244,9 +242,8 @@ public class BoardBoxService {
       return null;
     }
     // switch to new board
-    return boardBox.getNotation()
-        .getNotationHistory()
-        .findLastVariantBoardId()
+    return notationDrives
+        .getLastNotationBoardId()
         .map(boardId ->
             setBoardForBoardBox(boardBox, boardId))
         .orElse(null);
@@ -258,9 +255,10 @@ public class BoardBoxService {
     boolean success = notationDrives.forkAt(forkFromNotationDrive);
     // switch to new board
     if (success) {
-      NotationMoves moves = forkFromNotationDrive.getMoves();
-      String boardId = moves.getFirst().getLastMoveBoardId();
-      return setBoardForBoardBox(boardBox, boardId);
+      return notationDrives
+          .getLastNotationBoardId()
+          .map(boardId -> setBoardForBoardBox(boardBox, boardId))
+          .orElse(null);
     }
     return null;
   }
@@ -268,8 +266,11 @@ public class BoardBoxService {
   private BoardBox setBoardForBoardBox(BoardBox boardBox, String boardId) {
     return boardDao.findByKey(boardId)
         .map(board -> {
+          board = boardService.resetHighlightAndUpdate(board);
+          boardDao.save(board);
           boardBox.setBoard(board);
           boardBox.setBoardId(board.getId());
+          boardBoxDao.save(boardBox);
           return boardBox;
         })
         .orElse(null);
