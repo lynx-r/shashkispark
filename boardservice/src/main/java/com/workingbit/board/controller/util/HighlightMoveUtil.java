@@ -383,7 +383,8 @@ class HighlightMoveUtil {
   }
 
   private boolean isDraughtStopMoveOrCapturingFinished(boolean down, int moveCounter, Tree.Node<Square> capturedMoves) {
-    return moveCounter > 0 && (!down || capturedMoves.getChildren().isEmpty());
+    return (moveCounter > 0 && (!down || capturedMoves.getChildren().isEmpty()))
+        || moveCounter >= 2;
   }
 
   private boolean isDraughtNotOccupied(Square toSquare) {
@@ -391,7 +392,7 @@ class HighlightMoveUtil {
   }
 
   private boolean isCanNotMoveNextAndNextIsCaptured(Square previous, Square next) {
-    return next != null && next.isOccupied() &&
+    return next == null || next.isOccupied() &&
         (next.getDraught().isCaptured() ||
             previous != selectedSquare &&
                 previous.isOccupied());
