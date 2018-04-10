@@ -19,6 +19,8 @@ public class NotationHistory implements DeepClone {
 
   private NotationDrives history;
   private NotationDrives notation;
+  private NotationDrive currentNotationDrive;
+  private NotationDrive variantNotationDrive;
 
   public NotationHistory() {
     this(true);
@@ -43,6 +45,22 @@ public class NotationHistory implements DeepClone {
 
   public void setNotation(NotationDrives notation) {
     this.notation = notation.deepClone();
+  }
+
+  public NotationDrive getCurrentNotationDrive() {
+    return currentNotationDrive;
+  }
+
+  public void setCurrentNotationDrive(NotationDrive currentNotationDrive) {
+    this.currentNotationDrive = currentNotationDrive;
+  }
+
+  public NotationDrive getVariantNotationDrive() {
+    return variantNotationDrive;
+  }
+
+  public void setVariantNotationDrive(NotationDrive variantNotationDrive) {
+    this.variantNotationDrive = variantNotationDrive;
   }
 
   public NotationDrives getHistory() {
@@ -163,14 +181,15 @@ public class NotationHistory implements DeepClone {
     return true;
   }
 
-  public boolean switchTo(NotationDrive switchToNotationDrive) {
-    if (!(switchToNotationDrive == null || switchToNotationDrive.getVariantsSize() >= 1)) {
+  public boolean switchTo(NotationDrive currentNotationDrive,
+                          NotationDrive variantNotationDrive) {
+    if (!(currentNotationDrive == null || currentNotationDrive.getVariantsSize() >= 1)) {
       return false;
     }
 
-    int indexFork = indexOf(switchToNotationDrive);
+    int indexFork = indexOf(currentNotationDrive);
     NotationDrive toSwitchDrive;
-    if (switchToNotationDrive == null) {
+    if (currentNotationDrive == null) {
       toSwitchDrive = getLastSafe();
       indexFork = indexOf(toSwitchDrive);
     } else {
@@ -202,15 +221,19 @@ public class NotationHistory implements DeepClone {
 
     // find in last notation drive to switch
     Optional<NotationDrive> variantToSwitch;
-    if (switchToNotationDrive == null) {
+    if (currentNotationDrive == null) {
       NotationDrive first = switchVariants.getFirst();
       variantToSwitch = Optional.of(first);
       history.getLast().getVariants().add(first);
     } else {
       variantToSwitch = switchVariants
           .stream()
-          // switchToNotationDrive MUST have one variant to witch user switches
-          .filter(nd -> nd.getMoves().equals(switchToNotationDrive.getVariants().get(0).getMoves()))
+          // currentNotationDrive MUST have one variant to witch user switches
+          .filter(nd -> nd.getMoves().equals(
+              variantNotationDrive != null
+                  ? variantNotationDrive.getVariants().get(0).getMoves()
+                  : currentNotationDrive.getVariants().get(0).getMoves())
+          )
           .findFirst();
     }
 

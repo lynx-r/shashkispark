@@ -90,6 +90,22 @@ public class BoardBoxController {
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_UNDO))
       ).handleRequest(req, res, BoardBox.class);
 
+  public static Route switchNotation = (req, res) ->
+      ((ModelHandlerFunc<BoardBox>) data ->
+          boardBoxService
+              .switchNotation((BoardBox) data)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SWITCH))
+      ).handleRequest(req, res, BoardBox.class);
+
+  public static Route forkNotation = (req, res) ->
+      ((ModelHandlerFunc<BoardBox>) data ->
+          boardBoxService
+              .forkNotation((BoardBox) data)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_FORK))
+      ).handleRequest(req, res, BoardBox.class);
+
   public static Route changeTurn = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) data ->
           boardBoxService

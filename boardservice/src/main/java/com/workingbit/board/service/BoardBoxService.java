@@ -210,7 +210,7 @@ public class BoardBoxService {
         .map(filledBoardBox -> {
           NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
           NotationDrive forkToDrive = history.getLast().deepClone();
-          return forkBoardBox(filledBoardBox, forkToDrive);
+          return forkNotationFor(filledBoardBox, forkToDrive);
         })
         .orElse(null);
   }
@@ -220,24 +220,37 @@ public class BoardBoxService {
         .map(filledBoardBox -> {
           NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
           NotationDrive switchToDrive = history.getLast().deepClone();
-          return switchToNotationDrive(filledBoardBox, switchToDrive);
+          return switchNotationTo(filledBoardBox, switchToDrive, null);
         })
         .orElse(null);
   }
 
-  public Optional<BoardBox> forkBoardBox(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
+  public Optional<BoardBox> forkNotation(BoardBox boardBox) {
+    NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
+    return forkNotationFor(boardBox, currentNotationDrive);
+  }
+
+  public Optional<BoardBox> switchNotation(BoardBox boardBox) {
+    NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
+    NotationDrive variantNotationDrive = boardBox.getNotation().getNotationHistory().getVariantNotationDrive();
+    return switchNotationTo(boardBox, currentNotationDrive, variantNotationDrive);
+  }
+
+  private Optional<BoardBox> forkNotationFor(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
     return find(boardBox)
         .map(bb -> forkNotationForVariants(bb, forkFromNotationDrive));
   }
 
-  public Optional<BoardBox> switchToNotationDrive(BoardBox boardBox, NotationDrive switchToNotationDrive) {
+  private Optional<BoardBox> switchNotationTo(BoardBox boardBox, NotationDrive currentNotationDrive, NotationDrive variantNotationDrive) {
     return boardBoxDao.find(boardBox)
-        .map(bb -> switchNotationToVariant(bb, switchToNotationDrive));
+        .map(bb -> switchNotationToVariant(bb, currentNotationDrive, variantNotationDrive));
   }
 
-  private BoardBox switchNotationToVariant(BoardBox boardBox, NotationDrive switchToNotationDrive) {
+  private BoardBox switchNotationToVariant(BoardBox boardBox,
+                                           NotationDrive currentNotationDrive,
+                                           NotationDrive variantNotationDrive) {
     NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
-    boolean success = notationDrives.switchTo(switchToNotationDrive);
+    boolean success = notationDrives.switchTo(currentNotationDrive, variantNotationDrive);
     if (!success) {
       return null;
     }

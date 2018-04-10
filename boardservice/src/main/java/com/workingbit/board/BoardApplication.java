@@ -66,6 +66,8 @@ public class BoardApplication {
           post(Path.BOARD_HIGHLIGHT, BoardBoxController.highlightBoard);
           post(Path.BOARD_REDO, BoardBoxController.redo);
           post(Path.BOARD_UNDO, BoardBoxController.undo);
+          post(Path.BOARD_SWITCH, BoardBoxController.switchNotation);
+          post(Path.BOARD_FORK, BoardBoxController.forkNotation);
           put(Path.CHANGE_TURN, BoardBoxController.changeTurn);
 
           notFound((req, res) -> "Not found");

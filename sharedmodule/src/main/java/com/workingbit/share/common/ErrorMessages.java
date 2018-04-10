@@ -16,6 +16,7 @@ public class ErrorMessages {
   public static final String UNABLE_TO_REDO = "Не удалось возобновить действие";
   public static final String UNABLE_TO_UNDO = "Не удалось отменить действие";
   public static final String UNABLE_TO_CHANGE_TURN = "Не удалось изменить очередь ходов";
+  public static final String UNABLE_TO_FORK = "Не удалось добавить вариант";
   public static final String UNABLE_TO_SWITCH = "Не удалось переключиться на доску";
 
   public static final String MALFORMED_REQUEST = "Malformed request params";
