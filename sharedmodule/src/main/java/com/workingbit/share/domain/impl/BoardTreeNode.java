@@ -52,7 +52,7 @@
 //      @Override
 //      public BoardTreeNode next() {
 //        BoardTreeNode node = queue.remove(0);
-//        queue.addAll(node.getChildren());
+//        queue.addAllEverywhere(node.getChildren());
 //        return node;
 //      }
 //    };

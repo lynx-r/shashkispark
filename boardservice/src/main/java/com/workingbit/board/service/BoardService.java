@@ -10,6 +10,7 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,10 +30,10 @@ public class BoardService {
     return board;
   }
 
-  public Board createBoardFromNotation(Notation notation, String articleId, String boardBoxId) {
+  public Board createBoardFromNotation(Notation notation, String boardBoxId) {
     Board board = initBoard(true, false, notation.getRules());
     Utils.setBoardIdAndCreatedAt(board, boardBoxId);
-    return syncBoardWithStrokes(board, notation.getNotationHistory(), articleId);
+    return syncBoardWithStrokes(board, notation.getNotationHistory());
   }
 
   public Optional<Board> find(Board board) {
@@ -97,8 +98,8 @@ public class BoardService {
     String boardBoxId = nextBoard.getBoardBoxId();
     Utils.setBoardIdAndCreatedAt(nextBoard, boardBoxId);
 
-    nextBoard = BoardUtils.moveDraught(nextBoard, captured, currentBoard.getId());
     String boardId = currentBoard.getId();
+    nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId);
     String notation = selectedSquare.getNotation();
     String nextNotation = nextSquare.getNotation();
     nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
@@ -163,27 +164,33 @@ public class BoardService {
     return BoardUtils.updateBoard(board);
   }
 
-  private Board syncBoardWithStrokes(Board board, NotationHistory notationDrives, String articleId) {
+  private Board syncBoardWithStrokes(Board board, NotationHistory notationDrives) {
     for (NotationDrive notationDrive : notationDrives.getNotation()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
-        board = emulateMove(drive, board, articleId);
+        board = emulateMove(drive, board);
       }
     }
     return board;
   }
 
-  private Board emulateMove(NotationMove notationMove, Board board, String articleId) {
+  private Board emulateMove(NotationMove notationMove, Board board) {
     if (notationMove == null) {
       return board;
     }
     List<String> moves = notationMove.getMoveNotations();
-    for (String move : moves) {
-      Square selected = findSquareByNotation(move, board);
+    Iterator<String> iterator = moves.iterator();
+    for (String move = iterator.next(); iterator.hasNext();) {
+      Square selected = findSquareByNotation(move, board).deepClone();
       board.setSelectedSquare(selected);
-      Square next = findSquareByNotation(move, board);
+      move = iterator.next();
+      Square next = findSquareByNotation(move, board).deepClone();
+      next.setHighlight(true);
       board.setNextSquare(next);
       board = move(selected, next, board);
+      if (!iterator.hasNext()) {
+        break;
+      }
     }
     return board;
   }

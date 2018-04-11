@@ -1,7 +1,7 @@
 3
 1
 [Ident "a"]
-1. h4-f6 e7-g5
+3.  c3-d4     e5xc3
 [Site "Hardenberg, NED"]
 [White "Mikhalchenko,I."]
 [WhiteTime "1:36"]
@@ -13,4 +13,4 @@
 [Date "2007.05.19"]
 [Result "0-2"]
 
-1. c3-d4     f6-g5  2. g3-h4 b6-a5
+1.  g3-h4     f6-g5      2.  h4xf6     g7xe5      *

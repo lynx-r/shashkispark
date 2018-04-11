@@ -437,7 +437,8 @@ public class BoardUtils {
     }
   }
 
-  private static MovesList highlightSimple(boolean blackTurn, Square selectedSquare, Board board, MovesList movesList, List<Square> allowed) {
+  private static MovesList highlightSimple(boolean blackTurn, Square selectedSquare, Board board, MovesList movesList,
+                                           List<Square> allowed) {
     Set<String> draughtsNotations;
     if (blackTurn) {
       draughtsNotations = board.getBlackDraughts().keySet();

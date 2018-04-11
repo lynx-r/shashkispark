@@ -608,7 +608,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       boardBox = boardBoxService.undo(boardBox).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
+      assertEquals(0, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
       boolean undoNotPossible = !boardBoxService.undo(boardBox).isPresent();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
       assertTrue(undoNotPossible);
@@ -705,14 +705,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
 
-    boardBox = boardBoxService.redo(boardBox).get();
-    System.out.print("REDO ");
-    boardBox.getNotation().getNotationHistory().printPdn();
-    boardBox = boardBoxService.redo(boardBox).get();
-    System.out.print("REDO ");
-    boardBox.getNotation().getNotationHistory().printPdn();
-    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation(),
-        boardBox.getNotation().getNotationHistory().getNotation());
+    boardBox = redo(boardBox);
+    boardBox = redo(boardBox);
+    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().toPdn(),
+        boardBox.getNotation().getNotationHistory().getNotation().toPdn());
 
     // MOVE FORWARD
     Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
@@ -734,14 +730,125 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
 
-    boardBox = boardBoxService.redo(boardBox).get();
-    System.out.print("REDO ");
-    boardBox.getNotation().getNotationHistory().printPdn();
-    boardBox = boardBoxService.redo(boardBox).get();
-    System.out.print("REDO ");
-    boardBox.getNotation().getNotationHistory().printPdn();
+    boardBox = redo(boardBox);
+    boardBox = redo(boardBox);
     assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation(),
         boardBox.getNotation().getNotationHistory().getNotation());
+  }
+
+  @Test
+  public void test_undo_redo3() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
+    LoadNotationForkNumberAndForwardMoves loadNotationForkNumberAndForwardMoves = new LoadNotationForkNumberAndForwardMoves("/pdn/notation_undo3.pdn").invoke();
+    int forkNumber = loadNotationForkNumberAndForwardMoves.getForkNumber();
+    List<String> forwardNotationLines = loadNotationForkNumberAndForwardMoves.getForwardNotationLines();
+    BufferedReader bufferedReader = loadNotationForkNumberAndForwardMoves.getBufferedReader();
+
+    // Parse Notation
+    Notation notation = notationParserService.parse(bufferedReader);
+    notation.setRules(RUSSIAN);
+
+    String articleId = Utils.getRandomString();
+    String boardBoxId = Utils.getRandomString();
+
+    // Create BoardBox from Notation
+    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+
+    BoardBox boardBoxOrig = boardBox.deepClone();
+
+    NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
+
+    Board board = boardBox.getBoard();
+    board.setNotationHistory(NotationHistory.createWithRoot());
+    boardDao.save(board);
+    boardBox.getNotation().setNotationHistory(NotationHistory.createWithRoot());
+    boardBoxDao.save(boardBox);
+    for (NotationDrive notationDrive : notationDrives.getNotation()) {
+      for (NotationMove notationMove : notationDrive.getMoves()) {
+        boardBox = moveStrokes(boardBox, notationMove);
+      }
+    }
+
+    boardBox.getNotation().getNotationHistory().printPdn();
+
+//    boardBox = boardBoxService.undo(boardBox).get();
+//    System.out.print("UNDO ");
+//    boardBox.getNotation().getNotationHistory().printPdn();
+    boardBox = undo(boardBox);
+
+//    boardBox = boardBoxService.redo(boardBox).get();
+//    System.out.print("REDO ");
+//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox = boardBoxService.redo(boardBox).get();
+//    System.out.print("REDO ");
+//    boardBox.getNotation().getNotationHistory().printPdn();
+//    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().toPdn(),
+//        boardBox.getNotation().getNotationHistory().getNotation().toPdn());
+
+//    boardBox = boardBoxService.undo(boardBox).get();
+//    System.out.print("UNDO ");
+//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox = boardBoxService.undo(boardBox).get();
+//    System.out.print("UNDO ");
+//    boardBox.getNotation().getNotationHistory().printPdn();
+
+    boardBox = redo(boardBox);
+//    boardBox = boardBoxService.redo(boardBox).get();
+//    System.out.print("REDO ");
+//    boardBox.getNotation().getNotationHistory().printPdn();
+//    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation(),
+//        boardBox.getNotation().getNotationHistory().getNotation());
+
+    // MOVE FORWARD
+    Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
+
+    BoardBox current = boardBox;
+    for (NotationDrive forwardDrive: forwardNotation.getNotationHistory().getNotation()) {
+      for (NotationMove move : forwardDrive.getMoves()) {
+        current = moveStrokes(current, move);
+        System.out.println(move.toPdn());
+      }
+    }
+    boardBoxOrig = current.deepClone();
+
+    boardBox = undo(boardBox);
+    boardBox = undo(boardBox);
+
+    boardBox = redo(boardBox);
+    boardBox = redo(boardBox);
+
+    boardBox = undo(boardBox);
+    boardBox = undo(boardBox);
+    boardBox = undo(boardBox);
+
+    boardBox = redo(boardBox);
+    boardBox = redo(boardBox);
+    boardBox = redo(boardBox);
+    BoardBox orig = boardBox.deepClone();
+
+    boardBox = undo(boardBox);
+    boardBox = undo(boardBox);
+    boardBox = undo(boardBox);
+
+    boardBox = redo(boardBox);
+    boardBox = redo(boardBox);
+    boardBox = redo(boardBox);
+
+    assertEquals(orig.getNotation().getNotationHistory().pdnString(),
+        boardBox.getNotation().getNotationHistory().pdnString());
+  }
+
+  public BoardBox redo(BoardBox boardBox) {
+    boardBox = boardBoxService.redo(boardBox).get();
+    System.out.println("REDO ");
+    boardBox.getNotation().getNotationHistory().printPdn();
+    return boardBox;
+  }
+
+  public BoardBox undo(BoardBox boardBox) {
+    boardBox = boardBoxService.undo(boardBox).get();
+    System.out.println("UNDO ");
+    boardBox.getNotation().getNotationHistory().printPdn();
+    return boardBox;
   }
 
   @After

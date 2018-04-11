@@ -44,7 +44,7 @@ public class BoardBoxService {
     boardBox.setArticleId(articleId);
     Utils.setBoardBoxIdAndCreatedAt(boardBox);
 
-    Board board = boardService.createBoardFromNotation(fromNotation, articleId, boardBoxId);
+    Board board = boardService.createBoardFromNotation(fromNotation, boardBoxId);
     Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), board.getNotationHistory());
     boardBox.setNotation(notation);
 
