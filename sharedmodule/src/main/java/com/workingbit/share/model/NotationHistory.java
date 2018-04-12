@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.toCollection;
-
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
  */
@@ -170,59 +168,38 @@ public class NotationHistory implements DeepClone {
 
     history.removeAll(cutNotationDrives);
 
-    NotationDrive variant = cutNotationDrives.getFirst().deepClone();
-    if (!variantHasContinue(history.getLast(), variant)) {
+    // if not duplicated
+    NotationDrive cutFirst = cutNotationDrives.getFirst();
+    NotationDrive variant = cutFirst.deepClone();
+    cutpoint.getFirst().setCurrent(true);
+    NotationDrive lastHist = history.getLast();
+    Optional<NotationDrive> continueDrive = variantHasContinue(lastHist, variant);
+    if (!continueDrive.isPresent()) {
       variant.setVariants(cutNotationDrives);
-      history.getLast().addVariant(variant);
+      lastHist.getVariants().forEach(v -> v.setCurrent(false));
+      variant.setCurrent(true);
+      lastHist.addVariant(variant);
+    }
+
+//    continueDrive.ifPresent(d -> d.setCurrent(true));
+
+    NotationMoves moves = lastHist.getMoves();
+    if (!moves.isEmpty()) {
+      moves.getLast().setCursor(true);
+    }
+    if (!notation.isEmpty()) {
+      NotationMoves moves1 = notation.getLast().getMoves();
+      if (!moves1.isEmpty()) {
+        moves1.getLast().setCursor(true);
+      }
     }
 
     logger.info("Notation after fork: " + pdnString());
     return true;
   }
 
-  private boolean variantHasContinue(NotationDrive currentDrive, NotationDrive variant) {
-    if (currentDrive.getVariants().isEmpty() && variant.getVariants().isEmpty()) {
-      return isNotationDriveMovesEqual(currentDrive, variant);
-    }
-    for (NotationDrive current : currentDrive.getVariants()) {
-      if (isNotationDriveMovesEqual(current, variant)) {
-        NotationDrive firstVariant = current.getVariants().getFirst();
-        if (variantHasContinuePair(firstVariant, variant)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private boolean variantHasContinuePair(NotationDrive current, NotationDrive variant) {
-    NotationDrives currents = current.getVariants();
-    NotationDrives variants = variant.getVariants();
-    if (variants.isEmpty() && currents.isEmpty()) {
-      return true;
-    }
-    Iterator<NotationDrive> iteratorCurrent = currents.iterator();
-    Iterator<NotationDrive> iteratorVariant = variants.iterator();
-    while ((iteratorCurrent.hasNext() && iteratorVariant.hasNext())) {
-      if (variantHasContinuePair(iteratorCurrent.next(), iteratorVariant.next())) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean isNotationDriveMovesEqual(NotationDrive currentDrive, NotationDrive variant) {
-    return currentDrive.getMoves().equals(variant.getMoves());
-  }
-
   public boolean switchTo(NotationDrive currentNotationDrive,
                           NotationDrive variantNotationDrive) {
-    if (!(currentNotationDrive == null
-        || (currentNotationDrive.getVariantsSize() >= 1))
-        && variantNotationDrive != null) {
-      return false;
-    }
-
     int indexFork = history.indexOf(currentNotationDrive);
     NotationDrive toSwitchDrive;
     if (currentNotationDrive == null) {
@@ -250,10 +227,14 @@ public class NotationHistory implements DeepClone {
       notation.removeAll(forkedNotationDrives);
       history.removeAll(forkedNotationDrives);
 
+      // if not duplicated
       NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
-      variant.setVariants(forkedNotationDrives);
-      switchVariants.add(variant);
-      history.getLast().getVariants().add(variant);
+      Optional<NotationDrive> continueDrive = variantHasContinue(history.getLast(), variant);
+      if (!continueDrive.isPresent()) {
+        variant.setVariants(forkedNotationDrives);
+        history.getLast().addVariant(variant);
+      }
+      continueDrive.ifPresent(d -> d.setCurrent(true));
     }
 
     // find in last notation drive to switch
@@ -263,23 +244,26 @@ public class NotationHistory implements DeepClone {
       variantToSwitch = first;
       history.getLast().getVariants().add(first);
     } else {
-      LinkedList<NotationDrive> variants = switchVariants
-          .stream()
-          // currentNotationDrive MUST have one variant to witch user switches
-          .filter(nd ->
-              nd.getMoves()
-                  .equals(switchToMoves(currentNotationDrive, variantNotationDrive)))
-          .collect(toCollection(LinkedList::new));
-      variantToSwitch = variants.isEmpty() ? null : variants.getLast();
+      currentNotationDrive.getVariants()
+          .forEach(v -> v.setCurrent(false));
+      variantToSwitch = variantNotationDrive;
     }
 
     removeVariantsFromLastNotation();
 
     // add varint's to switch notation to main notation drives
     if (variantToSwitch != null) {
+      toSwitchDrive.getVariants().forEach(v -> v.setCurrent(false));
+      variantHasContinue(toSwitchDrive, variantToSwitch).ifPresent(v -> v.setCurrent(true));
       addAllVariantsInHistoryAndNotation(variantToSwitch);
     } else if (!switchVariants.isEmpty()) {
-      addAllVariantsInHistoryAndNotation(switchVariants.getLast());
+      // switch sequentially to drive with min variants
+      Optional<NotationDrive> withMinVariants = switchVariants
+          .stream()
+          .filter(NotationDrive::isCurrent)
+          .findFirst();
+      toSwitchDrive.getVariants().forEach(v -> v.setCurrent(false));
+      withMinVariants.ifPresent(this::addAllVariantsInHistoryAndNotation);
     } else {
       return false;
     }
@@ -288,9 +272,45 @@ public class NotationHistory implements DeepClone {
     return true;
   }
 
-  public void removeVariantsFromLastNotation() {
+  private Optional<NotationDrive> variantHasContinue(NotationDrive currentDrive, NotationDrive variant) {
+    if (currentDrive.getVariants().isEmpty() && variant.getVariants().isEmpty()) {
+      return isNotationDriveMovesEqual(currentDrive, variant) ? Optional.of(currentDrive) : Optional.empty();
+    }
+    for (NotationDrive current : currentDrive.getVariants()) {
+      if (isNotationDriveMovesEqual(current, variant)) {
+        NotationDrive firstVariant = current.getVariants().getFirst();
+        if (variantHasContinuePair(firstVariant, variant)) {
+          return Optional.of(current);
+        }
+      }
+    }
+    return Optional.empty();
+  }
+
+  private boolean variantHasContinuePair(NotationDrive current, NotationDrive variant) {
+    NotationDrives currents = current.getVariants();
+    NotationDrives variants = variant.getVariants();
+    if (variants.isEmpty() && currents.isEmpty()) {
+      return true;
+    }
+    Iterator<NotationDrive> iteratorCurrent = currents.iterator();
+    Iterator<NotationDrive> iteratorVariant = variants.iterator();
+    while ((iteratorCurrent.hasNext() && iteratorVariant.hasNext())) {
+      if (variantHasContinuePair(iteratorCurrent.next(), iteratorVariant.next())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isNotationDriveMovesEqual(NotationDrive currentDrive, NotationDrive variant) {
+    return currentDrive.getMoves().equals(variant.getMoves());
+  }
+
+  private void removeVariantsFromLastNotation() {
     if (!notation.isEmpty()) {
-      NotationDrives variants = notation.getLast().getVariants();
+      NotationDrive last = notation.getLast();
+      NotationDrives variants = last.getVariants();
       if (!variants.isEmpty()) {
         variants.removeLast();
       }
@@ -298,6 +318,15 @@ public class NotationHistory implements DeepClone {
   }
 
   private void addAllVariantsInHistoryAndNotation(NotationDrive variant) {
+    NotationDrive lastHist = history.getLast();
+    lastHist.getVariants()
+        .stream()
+        .filter(h -> h.equals(variant)).findFirst()
+        .ifPresent(v -> v.setCurrent(true));
+    lastHist.getMoves().forEach(m -> m.setCursor(false));
+    NotationDrive lastNot = notation.getLast();
+    lastNot.setCurrent(true);
+    lastNot.getMoves().forEach(m -> m.setCursor(false));
     history.addAll(variant.getVariants());
     notation.addAll(variant.getVariants());
   }

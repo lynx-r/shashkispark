@@ -39,6 +39,8 @@ public class NotationDrive implements DeepClone, ToPdn {
    */
   private boolean root;
 
+  private boolean current;
+
   public NotationDrive() {
     variants = NotationDrives.create();
     moves = new NotationMoves();
