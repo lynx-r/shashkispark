@@ -181,8 +181,6 @@ public class NotationHistory implements DeepClone {
       lastHist.addVariant(variant);
     }
 
-//    continueDrive.ifPresent(d -> d.setCurrent(true));
-
     NotationMoves moves = lastHist.getMoves();
     if (!moves.isEmpty()) {
       moves.getLast().setCursor(true);
@@ -238,12 +236,8 @@ public class NotationHistory implements DeepClone {
     }
 
     // find in last notation drive to switch
-    NotationDrive variantToSwitch;
-    if (currentNotationDrive == null) {
-      NotationDrive first = switchVariants.getFirst();
-      variantToSwitch = first;
-      history.getLast().getVariants().add(first);
-    } else {
+    NotationDrive variantToSwitch = null;
+    if (currentNotationDrive != null) {
       currentNotationDrive.getVariants()
           .forEach(v -> v.setCurrent(false));
       variantToSwitch = variantNotationDrive;
@@ -254,7 +248,7 @@ public class NotationHistory implements DeepClone {
     // add varint's to switch notation to main notation drives
     if (variantToSwitch != null) {
       toSwitchDrive.getVariants().forEach(v -> v.setCurrent(false));
-      variantHasContinue(toSwitchDrive, variantToSwitch).ifPresent(v -> v.setCurrent(true));
+//      variantHasContinue(toSwitchDrive, variantToSwitch).ifPresent(v -> v.setCurrent(true));
       addAllVariantsInHistoryAndNotation(variantToSwitch);
     } else if (!switchVariants.isEmpty()) {
       // switch sequentially to drive with min variants
@@ -291,7 +285,7 @@ public class NotationHistory implements DeepClone {
     NotationDrives currents = current.getVariants();
     NotationDrives variants = variant.getVariants();
     if (variants.isEmpty() && currents.isEmpty()) {
-      return true;
+      return current.getMoves().equals(variant.getMoves());
     }
     Iterator<NotationDrive> iteratorCurrent = currents.iterator();
     Iterator<NotationDrive> iteratorVariant = variants.iterator();
@@ -321,7 +315,8 @@ public class NotationHistory implements DeepClone {
     NotationDrive lastHist = history.getLast();
     lastHist.getVariants()
         .stream()
-        .filter(h -> h.equals(variant)).findFirst()
+        .filter(h -> variantHasContinuePair(h, variant))
+        .findFirst()
         .ifPresent(v -> v.setCurrent(true));
     lastHist.getMoves().forEach(m -> m.setCursor(false));
     NotationDrive lastNot = notation.getLast();
