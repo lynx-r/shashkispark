@@ -171,12 +171,12 @@ public class NotationHistory implements DeepClone {
     // if not duplicated
     NotationDrive cutFirst = cutNotationDrives.getFirst();
     NotationDrive variant = cutFirst.deepClone();
-    cutpoint.getFirst().setCurrent(true);
+//    cutpoint.getFirst().setCurrent(true);
     NotationDrive lastHist = history.getLast();
     Optional<NotationDrive> continueDrive = variantHasContinue(lastHist, variant);
     if (!continueDrive.isPresent()) {
       variant.setVariants(cutNotationDrives);
-      lastHist.getVariants().forEach(v -> v.setCurrent(false));
+      resetCurrentAndSetPresious(lastHist);
       variant.setCurrent(true);
       lastHist.addVariant(variant);
     }
@@ -194,6 +194,21 @@ public class NotationHistory implements DeepClone {
 
     logger.info("Notation after fork: " + pdnString());
     return true;
+  }
+
+  public void resetCurrentAndSetPresious(NotationDrive lastHist) {
+    lastHist.getVariants().forEach(v -> {
+      setPreviousNotation(v);
+      v.setCurrent(false);
+    });
+  }
+
+  public void setPreviousNotation(NotationDrive v) {
+    if (v.isCurrent()) {
+      v.setPrevious(true);
+    } else {
+      v.setPrevious(false);
+    }
   }
 
   public boolean switchTo(NotationDrive currentNotationDrive,
@@ -238,8 +253,7 @@ public class NotationHistory implements DeepClone {
     // find in last notation drive to switch
     NotationDrive variantToSwitch = null;
     if (currentNotationDrive != null) {
-      currentNotationDrive.getVariants()
-          .forEach(v -> v.setCurrent(false));
+      resetCurrentAndSetPresious(currentNotationDrive);
       variantToSwitch = variantNotationDrive;
     }
 
@@ -247,8 +261,7 @@ public class NotationHistory implements DeepClone {
 
     // add varint's to switch notation to main notation drives
     if (variantToSwitch != null) {
-      toSwitchDrive.getVariants().forEach(v -> v.setCurrent(false));
-//      variantHasContinue(toSwitchDrive, variantToSwitch).ifPresent(v -> v.setCurrent(true));
+      resetCurrentAndSetPresious(toSwitchDrive);
       addAllVariantsInHistoryAndNotation(variantToSwitch);
     } else if (!switchVariants.isEmpty()) {
       // switch sequentially to drive with min variants
@@ -256,7 +269,7 @@ public class NotationHistory implements DeepClone {
           .stream()
           .filter(NotationDrive::isCurrent)
           .findFirst();
-      toSwitchDrive.getVariants().forEach(v -> v.setCurrent(false));
+      resetCurrentAndSetPresious(toSwitchDrive);
       withMinVariants.ifPresent(this::addAllVariantsInHistoryAndNotation);
     } else {
       return false;
@@ -313,17 +326,24 @@ public class NotationHistory implements DeepClone {
 
   private void addAllVariantsInHistoryAndNotation(NotationDrive variant) {
     NotationDrive lastHist = history.getLast();
+    setCurrentNotation(variant, lastHist);
+    resetMovesCursor(lastHist);
+    NotationDrive lastNot = notation.getLast();
+    resetMovesCursor(lastNot);
+    history.addAll(variant.getVariants());
+    notation.addAll(variant.getVariants());
+  }
+
+  private void resetMovesCursor(NotationDrive lastHist) {
+    lastHist.getMoves().forEach(m -> m.setCursor(false));
+  }
+
+  private void setCurrentNotation(NotationDrive variant, NotationDrive lastHist) {
     lastHist.getVariants()
         .stream()
         .filter(h -> variantHasContinuePair(h, variant))
         .findFirst()
         .ifPresent(v -> v.setCurrent(true));
-    lastHist.getMoves().forEach(m -> m.setCursor(false));
-    NotationDrive lastNot = notation.getLast();
-    lastNot.setCurrent(true);
-    lastNot.getMoves().forEach(m -> m.setCursor(false));
-    history.addAll(variant.getVariants());
-    notation.addAll(variant.getVariants());
   }
 
   private NotationMoves switchToMoves(NotationDrive currentNotationDrive, NotationDrive variantNotationDrive) {
