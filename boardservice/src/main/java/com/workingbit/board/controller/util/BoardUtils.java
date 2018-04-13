@@ -525,7 +525,8 @@ public class BoardUtils {
     replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
   }
 
-  private static void markCapturedDraught(List<Square> capturedSquares, Board board, Square sourceSquare, Square targetSquare) {
+  private static void markCapturedDraught(List<Square> capturedSquares, Board board,
+                                          Square sourceSquare, Square targetSquare) {
     if (!capturedSquares.isEmpty()) {
       List<Square> toBeatSquares = findCapturedSquare(sourceSquare, targetSquare);
       if (toBeatSquares.isEmpty()) {

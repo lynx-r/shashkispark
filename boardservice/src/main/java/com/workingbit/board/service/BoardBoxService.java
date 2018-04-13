@@ -1,6 +1,7 @@
 package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BoardUtils;
+import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
@@ -122,9 +123,7 @@ public class BoardBoxService {
           boolean isInUndo = board.getNextBoards().size() > 0;
           if (hasWhiteMoves ||
               hasBlackMoves ||
-              isInUndo &&
-                  isMoveMode(boardBox) &&
-                  isNotEditMode(boardBox)) {
+              isInUndo && isNotEditMode(boardBox)) {
             return null;
           }
           BoardUtils.updateMoveSquaresHighlightAndDraught(boardUpdated, board);
@@ -138,7 +137,12 @@ public class BoardBoxService {
           boardUpdated.setNotationHistory(notationDrivesInBoardBox);
           boardUpdated.setDriveCount(notationDrivesInBoardBox.size() - 1);
 
-          boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated);
+          try {
+            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated);
+          } catch (BoardServiceException e) {
+            logger.error("Error while moving", e);
+            return null;
+          }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
 

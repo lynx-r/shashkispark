@@ -99,6 +99,7 @@ public class BoardService {
     Utils.setBoardIdAndCreatedAt(nextBoard, boardBoxId);
 
     String boardId = currentBoard.getId();
+    // MOVE DRAUGHT
     nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId);
     String notation = selectedSquare.getNotation();
     String nextNotation = nextSquare.getNotation();
