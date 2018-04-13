@@ -53,11 +53,19 @@ public class BaseDao<T extends BaseDomain> {
   }
 
   public void save(final T entity, DynamoDBSaveExpression saveExpression) {
+    if (entity == null) {
+      logger.error("Entity is null");
+      return;
+    }
     entity.setUpdatedAt(LocalDateTime.now());
     dynamoDBMapper.save(entity, saveExpression);
   }
 
   public void save(final T entity) {
+    if (entity == null) {
+      logger.error("Entity is null");
+      return;
+    }
     logger.info("Saving entity " + entity);
     entity.setUpdatedAt(LocalDateTime.now());
     dynamoDBMapper.save(entity);

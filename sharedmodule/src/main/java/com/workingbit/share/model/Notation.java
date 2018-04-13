@@ -36,6 +36,7 @@ public class Notation implements ToPdn {
       put("Дата", "");
       put("Результат", "");
       put("Тип игры", "");
+      put("#tag", "");
     }};
     notationHistory = NotationHistory.createWithRoot();
   }
