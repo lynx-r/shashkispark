@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.workingbit.board.BoardApplication.boardBoxDao;
+import static com.workingbit.board.BoardApplication.boardBoxService;
 import static com.workingbit.board.BoardApplication.boardDao;
 
 /**
@@ -48,13 +49,13 @@ public class BoardBoxService {
     fromNotation.setNotationHistory(notationHistory);
 
     // switch boardBox to the first board
-    if (!notationHistory.get(1).getMoves().isEmpty()) {
+    if (notationHistory.size() > 1
+        && !notationHistory.get(1).getMoves().isEmpty()) {
       String firstBoardId = notationHistory.get(1).getMoves().getFirst().getMove().getFirst().getBoardId();
       return boardDao.findById(firstBoardId)
           .map(firstBoard -> {
-            String f_boardId = firstBoard.getId();
             boardBox.setNotation(fromNotation.deepClone());
-            boardBox.setBoardId(f_boardId);
+            boardBox.setBoardId(firstBoardId);
             boardBox.setBoard(firstBoard);
             return boardBox;
           })
@@ -125,17 +126,18 @@ public class BoardBoxService {
               isNotEditMode(boardBox)) {
             return null;
           }
-          BoardUtils.updateMoveSquaresHighlightAndDraught(boardUpdated, board);
+//          BoardUtils.updateMoveSquaresHighlightAndDraught(boardUpdated, board);
           Square nextSquare = boardUpdated.getNextSquare();
           Square selectedSquare = boardUpdated.getSelectedSquare();
-          if (isValidMove(nextSquare, selectedSquare)) {
-            logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
-            return null;
-          }
+//          if (isValidMove(nextSquare, selectedSquare)) {
+//            logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
+//            return null;
+//          }
           if (updatedBox.getNotation().getId() == null) {
             createNewNotation(updatedBox, board);
           }
-          NotationHistory notationBoardBox = updatedBox.getNotation().getNotationHistory();
+          Notation notation = updatedBox.getNotation();
+          NotationHistory notationBoardBox = notation.getNotationHistory();
           boardUpdated.setDriveCount(notationBoardBox.size() - 1);
 
           try {
@@ -146,8 +148,9 @@ public class BoardBoxService {
           }
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
+          notationService.save(notation);
 
-          logger.info("Notation after move: " + updatedBox.getNotation().getNotationHistory().pdnString());
+          logger.info("Notation after move: " + notation.getNotationHistory().pdnString());
 
           boardBoxDao.save(updatedBox);
           return updatedBox;
@@ -256,7 +259,7 @@ public class BoardBoxService {
   }
 
   private Optional<BoardBox> switchNotationTo(BoardBox boardBox, NotationDrive currentNotationDrive, NotationDrive variantNotationDrive) {
-    return boardBoxDao.find(boardBox)
+    return boardBoxService.find(boardBox)
         .map(bb -> switchNotationToVariant(bb, currentNotationDrive, variantNotationDrive));
   }
 
@@ -272,7 +275,7 @@ public class BoardBoxService {
     return notationDrives
         .getLastNotationBoardId()
         .map(boardId ->
-            setBoardForBoardBox(boardBox, boardId))
+            saveBoardBoxAfterSwitchFork(boardBox, boardId))
         .orElse(null);
   }
 
@@ -284,13 +287,13 @@ public class BoardBoxService {
     if (success) {
       return notationDrives
           .getLastNotationBoardId()
-          .map(boardId -> setBoardForBoardBox(boardBox, boardId))
+          .map(boardId -> saveBoardBoxAfterSwitchFork(boardBox, boardId))
           .orElse(null);
     }
     return null;
   }
 
-  private BoardBox setBoardForBoardBox(BoardBox boardBox, String boardId) {
+  private BoardBox saveBoardBoxAfterSwitchFork(BoardBox boardBox, String boardId) {
     return boardDao.findById(boardId)
         .map(board -> {
           board = boardService.resetHighlightAndUpdate(board);
@@ -298,6 +301,7 @@ public class BoardBoxService {
           boardBox.setBoard(board);
           boardBox.setBoardId(board.getId());
           boardBoxDao.save(boardBox);
+          notationService.save(boardBox.getNotation());
           return boardBox;
         })
         .orElse(null);
