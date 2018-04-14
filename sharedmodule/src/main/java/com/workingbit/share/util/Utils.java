@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.impl.Article;
-import com.workingbit.share.domain.impl.Board;
-import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.ToPdn;
@@ -171,17 +169,6 @@ public class Utils {
   public static void setArticleIdAndCreatedAt(Article article, boolean present) {
     article.setId(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString() : ""));
     article.setCreatedAt(LocalDateTime.now());
-  }
-
-  public static void setBoardIdAndCreatedAt(Board board, String boardBoxId) {
-    board.setBoardBoxId(boardBoxId);
-    board.setId(getRandomUUID());
-    board.setCreatedAt(LocalDateTime.now());
-  }
-
-  public static void setBoardBoxIdAndCreatedAt(BoardBox boardBox) {
-    boardBox.setId(getRandomUUID());
-    boardBox.setCreatedAt(LocalDateTime.now());
   }
 
   public static ObjectMapper configureObjectMapper(ObjectMapper mapper) {

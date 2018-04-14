@@ -24,14 +24,16 @@ public class BoardService {
   Board createBoard(CreateBoardPayload newBoardRequest) {
     Board board = initBoard(newBoardRequest.getFillBoard(), newBoardRequest.getBlack(),
         newBoardRequest.getRules());
-    Utils.setBoardIdAndCreatedAt(board, newBoardRequest.getBoardBoxId());
+    board.setBoardBoxId(board.getBoardBoxId());
+    Utils.setRandomIdAndCreatedAt(board);
     save(board);
     return board;
   }
 
   public void createBoardFromNotation(NotationHistory genNotationHistory, NotationHistory fillNotationHistory, String boardBoxId, EnumRules rules) {
     Board board = initBoard(true, false, rules);
-    Utils.setBoardIdAndCreatedAt(board, boardBoxId);
+    board.setBoardBoxId(board.getBoardBoxId());
+    Utils.setRandomIdAndCreatedAt(board);
     syncBoardWithNotation(board, genNotationHistory, fillNotationHistory);
   }
 
@@ -96,7 +98,8 @@ public class BoardService {
 
     // should be there because in move draught, I set boardId in notation
     String boardBoxId = nextBoard.getBoardBoxId();
-    Utils.setBoardIdAndCreatedAt(nextBoard, boardBoxId);
+    nextBoard.setBoardBoxId(currentBoard.getBoardBoxId());
+    Utils.setRandomIdAndCreatedAt(nextBoard);
 
     String boardId = currentBoard.getId();
     // MOVE DRAUGHT
@@ -115,7 +118,8 @@ public class BoardService {
 
   Board addDraught(String articleId, Board currentBoard, String notation, Draught draught) {
     Board deepClone = currentBoard.deepClone();
-    Utils.setBoardIdAndCreatedAt(deepClone, currentBoard.getBoardBoxId());
+    deepClone.setBoardBoxId(currentBoard.getBoardBoxId());
+    Utils.setRandomIdAndCreatedAt(deepClone);
     BoardUtils.addDraught(deepClone, notation, draught);
     boardDao.save(deepClone);
     return deepClone;

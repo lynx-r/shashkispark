@@ -8,12 +8,9 @@ import com.workingbit.share.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.workingbit.board.BoardApplication.boardBoxDao;
-import static com.workingbit.board.BoardApplication.boardBoxService;
-import static com.workingbit.board.BoardApplication.boardDao;
+import static com.workingbit.board.BoardApplication.*;
 
 /**
  * Created by Aleksey Popryaduhin on 07:00 22/09/2017.
@@ -28,9 +25,11 @@ public class BoardBoxService {
     Board board = boardService.createBoard(createBoardPayload);
 
     BoardBox boardBox = new BoardBox(board);
-    boardBox.setArticleId(createBoardPayload.getArticleId());
-    Utils.setBoardBoxIdAndCreatedAt(boardBox);
-    boardBox.setCreatedAt(LocalDateTime.now());
+    String articleId = createBoardPayload.getArticleId();
+    boardBox.setArticleId(articleId);
+    Utils.setRandomIdAndCreatedAt(boardBox);
+
+    createNewNotation(boardBox, board);
     saveAndFillBoard(boardBox);
 
     board.setBoardBoxId(boardBox.getId());
@@ -41,7 +40,7 @@ public class BoardBoxService {
   public Optional<BoardBox> createBoardBoxFromNotation(String articleId, String boardBoxId, Notation fromNotation) {
     BoardBox boardBox = new BoardBox();
     boardBox.setArticleId(articleId);
-    Utils.setBoardBoxIdAndCreatedAt(boardBox);
+    Utils.setRandomIdAndCreatedAt(boardBox);
 
     NotationHistory notationHistory = new NotationHistory();
     boardService.createBoardFromNotation(fromNotation.getNotationHistory(),
@@ -120,22 +119,14 @@ public class BoardBoxService {
           boolean isBlackTurn = board.isBlackTurn();
           boolean hasWhiteMoves = isWhiteTurn && hasFirstMoveInDrive;
           boolean hasBlackMoves = isBlackTurn && hasSecondMoveInDrive;
-//          boolean isInUndo = board.getNextBoards().size() > 0;
           if (hasWhiteMoves ||
               hasBlackMoves ||
               isNotEditMode(boardBox)) {
             return null;
           }
-//          BoardUtils.updateMoveSquaresHighlightAndDraught(boardUpdated, board);
           Square nextSquare = boardUpdated.getNextSquare();
           Square selectedSquare = boardUpdated.getSelectedSquare();
-//          if (isValidMove(nextSquare, selectedSquare)) {
-//            logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
-//            return null;
-//          }
-          if (updatedBox.getNotation().getId() == null) {
-            createNewNotation(updatedBox, board);
-          }
+
           Notation notation = updatedBox.getNotation();
           NotationHistory notationBoardBox = notation.getNotationHistory();
           boardUpdated.setDriveCount(notationBoardBox.size() - 1);
@@ -157,14 +148,13 @@ public class BoardBoxService {
         });
   }
 
-  public void createNewNotation(BoardBox updatedBox, Board board) {
+  private void createNewNotation(BoardBox boardBox, Board board) {
     Notation notation = new Notation();
     Utils.setRandomIdAndCreatedAt(notation);
-    notation.setBoardBoxId(updatedBox.getId());
+    notation.setBoardBoxId(boardBox.getId());
     notation.setRules(board.getRules());
-    notationService.save(notation);
-    updatedBox.setNotationId(notation.getId());
-    updatedBox.setNotation(notation);
+    boardBox.setNotationId(notation.getId());
+    boardBox.setNotation(notation);
   }
 
   public Optional<BoardBox> changeTurn(BoardBox boardBox) {
@@ -344,7 +334,10 @@ public class BoardBoxService {
     return boardOptional
         .map(board -> {
           boardBox.setBoard(board);
-          notationOptional.ifPresent(boardBox::setNotation);
+          notationOptional.ifPresent(notation -> {
+            boardBox.setNotation(notation);
+            boardBox.setNotationId(notation.getId());
+          });
           return boardBox;
         })
         .orElse(null);
@@ -352,6 +345,7 @@ public class BoardBoxService {
 
   private BoardBox saveAndFillBoard(BoardBox boardBox) {
     boardBoxDao.save(boardBox);
+    notationService.save(boardBox.getNotation());
     boardBox = updateBoardBox(boardBox);
     return boardBox;
   }
