@@ -8,6 +8,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.Select;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.util.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,19 +105,23 @@ public class BaseDao<T extends BaseDomain> {
     return result;
   }
 
-  public Optional<T> findById(String entityId) {
-    logger.info("Find by id: " + entityId);
-    if (isBlank(entityId)) {
+//  public Optional<T> findById(String entityId) {
+//    logger.info("Find by id: " + entityId);
+//    if (isBlank(entityId)) {
+//      return Optional.empty();
+//    }
+//    T entity = dynamoDBMapper.load(clazz, entityId);
+//    if (entity != null) {
+//      return Optional.of(entity);
+//    }
+//    return Optional.empty();
+//  }
+
+  public Optional<T> findById(String entityKey) {
+    if (StringUtils.isBlank(entityKey)) {
+      logger.info("Entity key is null");
       return Optional.empty();
     }
-    T entity = dynamoDBMapper.load(clazz, entityId);
-    if (entity != null) {
-      return Optional.of(entity);
-    }
-    return Optional.empty();
-  }
-
-  public Optional<T> findByKey(String entityKey) {
     logger.info("Find by key: " + entityKey);
 
     Map<String, AttributeValue> eav = new HashMap<>();
@@ -137,7 +142,7 @@ public class BaseDao<T extends BaseDomain> {
     if (isBlank(entityId)) {
       return;
     }
-    findByKey(entityId)
+    findById(entityId)
         .ifPresent(dynamoDBMapper::delete);
   }
 
@@ -155,6 +160,6 @@ public class BaseDao<T extends BaseDomain> {
   }
 
   public Optional<T> find(T obj) {
-    return findByKey(obj.getId());
+    return findById(obj.getId());
   }
 }

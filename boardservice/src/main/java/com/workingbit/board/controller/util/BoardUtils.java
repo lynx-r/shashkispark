@@ -249,13 +249,12 @@ public class BoardUtils {
     return board;
   }
 
-  private static void updateNotationMiddle(Board board, String prevBoardId, NotationHistory notationDrives) {
-
+  private static void updateNotationMiddle(Board board, String prevBoardId, NotationHistory notationHistory) {
     String previousNotation = board.getPreviousSquare().getNotation();
-    boolean isContinueCapture = isContinueCapture(notationDrives, previousNotation);
+    boolean isContinueCapture = isContinueCapture(notationHistory, previousNotation);
     NotationMove move;
     if (isContinueCapture) {
-      move = notationDrives.getLastMove().orElseThrow(BoardServiceException::new);
+      move = notationHistory.getLastMove().orElseThrow(BoardServiceException::new);
     } else {
       move = NotationMove.create(EnumNotation.CAPTURE, true);
       Square selectedSquare = board.getSelectedSquare();
@@ -268,24 +267,24 @@ public class BoardUtils {
     boolean isBlackTurn = board.isBlackTurn();
     if (isContinueCapture) {
       String currentNotation = board.getSelectedSquare().getNotation();
-      NotationMove lastMove = notationDrives.getLastMove().orElseThrow(BoardServiceException::new);
+      NotationMove lastMove = notationHistory.getLastMove().orElseThrow(BoardServiceException::new);
       String currentBoardId = board.getId();
       lastMove.getMove().add(new NotationSimpleMove(currentNotation, currentBoardId));
     } else {
       if (!isBlackTurn) {
-        int notationNumber = notationDrives.getLast().getNotationNumberInt() + 1;
+        int notationNumber = notationHistory.getLast().getNotationNumberInt() + 1;
         NotationMoves moves = NotationMoves.Builder.getInstance()
             .add(move)
             .build();
         NotationDrive lastNotationDrive = NotationDrive.create(moves);
         lastNotationDrive.setNotationNumberInt(notationNumber);
-        notationDrives.add(lastNotationDrive);
+        notationHistory.add(lastNotationDrive);
       } else {
-        NotationDrive lastNotationDrive = notationDrives.getLast();
+        NotationDrive lastNotationDrive = notationHistory.getLast();
         lastNotationDrive.getMoves().add(move);
       }
     }
-    notationDrives.syncLastDrive();
+    notationHistory.syncLastDrive();
   }
 
   private static void updateNotationEnd(Board board, String prevBoardId, NotationHistory notationHistory,

@@ -403,10 +403,7 @@ public class NotationHistory implements DeepClone {
         return Optional.empty();
       }
       NotationMoves moves = notationLast.getMoves();
-      return Optional.of(
-          moves
-              .getLast()
-              .getLastMoveBoardId());
+      return moves.getLast().getLastMoveBoardId();
     } catch (Exception e) {
       e.printStackTrace();
       return Optional.empty();

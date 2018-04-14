@@ -8,7 +8,6 @@ import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -30,10 +29,10 @@ public class BoardService {
     return board;
   }
 
-  public Board createBoardFromNotation(Notation notation, String boardBoxId) {
-    Board board = initBoard(true, false, notation.getRules());
+  public void createBoardFromNotation(NotationHistory genNotationHistory, NotationHistory fillNotationHistory, String boardBoxId, EnumRules rules) {
+    Board board = initBoard(true, false, rules);
     Utils.setBoardIdAndCreatedAt(board, boardBoxId);
-    return syncBoardWithStrokes(board, notation.getNotationHistory());
+    syncBoardWithNotation(board, genNotationHistory, fillNotationHistory);
   }
 
   public Optional<Board> find(Board board) {
@@ -42,7 +41,7 @@ public class BoardService {
   }
 
   public Optional<Board> findById(String boardId) {
-    Optional<Board> boardOptional = boardDao.findByKey(boardId);
+    Optional<Board> boardOptional = boardDao.findById(boardId);
     return boardOptional.map(this::updateBoard);
   }
 
@@ -104,7 +103,7 @@ public class BoardService {
     nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId, notationHistory);
     String notation = selectedSquare.getNotation();
     String nextNotation = nextSquare.getNotation();
-    nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
+//    nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
 
     boardDao.save(nextBoard);
     return nextBoard;
@@ -122,58 +121,57 @@ public class BoardService {
     return deepClone;
   }
 
-  Optional<Board> undo(Board currentBoard) {
-    String previousId = currentBoard.popPreviousBoard();
-    if (StringUtils.isBlank(previousId)) {
-      return Optional.empty();
-    }
-    boardDao.save(currentBoard);
-    return findById(previousId).map(undoneBoard -> {
-      String selectedMove = currentBoard.getPreviousSquare().getNotation();
-      String possibleMove = currentBoard.getSelectedSquare().getNotation();
-      undoneBoard.pushNextBoard(currentBoard.getId(), selectedMove, possibleMove);
+//  Optional<Board> undo(Board currentBoard) {
+//    String previousId = currentBoard.popPreviousBoard();
+//    if (StringUtils.isBlank(previousId)) {
+//      return Optional.empty();
+//    }
+//    boardDao.save(currentBoard);
+//    return findById(previousId).map(undoneBoard -> {
+//      String selectedMove = currentBoard.getPreviousSquare().getNotation();
+//      String possibleMove = currentBoard.getSelectedSquare().getNotation();
+//      undoneBoard.pushNextBoard(currentBoard.getId(), selectedMove, possibleMove);
+//
+//      // reset highlights
+//      undoneBoard.getSelectedSquare().getDraught().setHighlight(false);
+//      undoneBoard.getNextSquare().setHighlight(false);
+//
+//      return undoneBoard;
+//    });
+//  }
 
-      // reset highlights
-      undoneBoard.getSelectedSquare().getDraught().setHighlight(false);
-      undoneBoard.getNextSquare().setHighlight(false);
+//  Optional<Board> redo(Board currentBoard) {
+//    String nextId = currentBoard.popNextBoard();
+//    if (StringUtils.isBlank(nextId)) {
+//      return Optional.empty();
+//    }
+//    boardDao.save(currentBoard);
+//    return findById(nextId).map(redoneBoard -> {
+//      Square square = getNextOrPrevSquare(currentBoard);
+//      String notation = square != null ? square.getNotation() : null;
+//      redoneBoard.pushPreviousBoard(currentBoard.getId(),
+//          notation,
+//          currentBoard.getSelectedSquare().getNotation());
+//      return redoneBoard;
+//    });
+//  }
 
-      return undoneBoard;
-    });
-  }
-
-  Optional<Board> redo(Board currentBoard) {
-    String nextId = currentBoard.popNextBoard();
-    if (StringUtils.isBlank(nextId)) {
-      return Optional.empty();
-    }
-    boardDao.save(currentBoard);
-    return findById(nextId).map(redoneBoard -> {
-      Square square = getNextOrPrevSquare(currentBoard);
-      String notation = square != null ? square.getNotation() : null;
-      redoneBoard.pushPreviousBoard(currentBoard.getId(),
-          notation,
-          currentBoard.getSelectedSquare().getNotation());
-      return redoneBoard;
-    });
-  }
-
-  private Square getNextOrPrevSquare(Board currentBoard) {
-    return currentBoard.getNextSquare() == null
-        ? currentBoard.getPreviousSquare() : currentBoard.getNextSquare();
-  }
+//  private Square getNextOrPrevSquare(Board currentBoard) {
+//    return currentBoard.getNextSquare() == null
+//        ? currentBoard.getPreviousSquare() : currentBoard.getNextSquare();
+//  }
 
   public Board updateBoard(Board board) {
     return BoardUtils.updateBoard(board);
   }
 
-  private Board syncBoardWithStrokes(Board board, NotationHistory notationDrives) {
-    for (NotationDrive notationDrive : notationDrives.getNotation()) {
+  private void syncBoardWithNotation(Board board, NotationHistory genNotationHistory, NotationHistory fillNotationHistory) {
+    for (NotationDrive notationDrive : genNotationHistory.getNotation()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
-        board = emulateMove(drive, board, notationDrives);
+        board = emulateMove(drive, board, fillNotationHistory);
       }
     }
-    return board;
   }
 
   private Board emulateMove(NotationMove notationMove, Board board, NotationHistory notationHistory) {

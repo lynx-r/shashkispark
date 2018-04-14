@@ -1,15 +1,18 @@
-package com.workingbit.share.model;
+package com.workingbit.share.domain.impl;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConvertedEnum;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.common.DBConstants;
+import com.workingbit.share.converter.ListOrderedMapConverter;
+import com.workingbit.share.converter.LocalDateTimeConverter;
+import com.workingbit.share.domain.BaseDomain;
+import com.workingbit.share.model.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.collections4.map.ListOrderedMap;
+
+import java.time.LocalDateTime;
 
 /**
  * Created by Aleksey Popryaduhin on 21:30 03/10/2017.
@@ -19,10 +22,18 @@ import org.apache.commons.collections4.map.ListOrderedMap;
 @Setter
 @ToString
 @DynamoDBTable(tableName = DBConstants.NOTATION_TABLE)
-public class Notation implements ToPdn {
+public class Notation extends BaseDomain implements Payload, ToPdn {
 
   @DynamoDBHashKey(attributeName = "id")
   private String id;
+
+  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
+  @DynamoDBRangeKey(attributeName = "createdAt")
+  private LocalDateTime createdAt;
+
+  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
+  @DynamoDBAttribute(attributeName = "updatedAt")
+  private LocalDateTime updatedAt;
 
   @DynamoDBAttribute(attributeName = "boardBoxId")
   private String boardBoxId;
@@ -39,6 +50,7 @@ public class Notation implements ToPdn {
    * "Тип игры"
    * "#tag"
    */
+  @DynamoDBTypeConverted(converter = ListOrderedMapConverter.class)
   @DynamoDBAttribute(attributeName = "tags")
   private ListOrderedMap<String, String> tags;
 
@@ -46,6 +58,8 @@ public class Notation implements ToPdn {
   @DynamoDBAttribute(attributeName = "rules")
   private EnumRules rules;
 
+  @DynamoDBTypeConvertedJson(targetType = NotationHistory.class)
+  @DynamoDBAttribute(attributeName = "notationHistory")
   private NotationHistory notationHistory;
 
   public Notation() {

@@ -1,7 +1,7 @@
 package com.workingbit.board.service;
 
 import com.workingbit.board.grammar.NotationParser;
-import com.workingbit.share.model.Notation;
+import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.NotationHistory;

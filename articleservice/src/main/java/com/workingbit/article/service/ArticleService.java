@@ -57,6 +57,6 @@ public class ArticleService {
   }
 
   public Optional<Article> findById(String articleId) {
-    return articleDao.findByKey(articleId);
+    return articleDao.findById(articleId);
   }
 }

@@ -41,9 +41,9 @@ public class Board extends BaseDomain implements Payload {
   /**
    * Next boards map. Key next square notation, value board id
    */
-  @DynamoDBTypeConverted(converter = BoardIdNotationConverter.class)
-  @DynamoDBAttribute(attributeName = "previousBoards")
-  private LinkedList<BoardIdNotation> previousBoards = new LinkedList<>();
+//  @DynamoDBTypeConverted(converter = BoardIdNotationConverter.class)
+//  @DynamoDBAttribute(attributeName = "previousBoards")
+//  private LinkedList<BoardIdNotation> previousBoards = new LinkedList<>();
 
   @DynamoDBTypeConverted(converter = BoardIdNotationConverter.class)
   @DynamoDBAttribute(attributeName = "nextBoards")
@@ -126,23 +126,24 @@ public class Board extends BaseDomain implements Payload {
   public Board(boolean black, EnumRules rules) {
     this();
     this.black = black;
+    this.rules = rules;
   }
 
-  public String popPreviousBoard() {
-    return previousBoards.isEmpty() ? null : previousBoards.pop().getBoardId();
-  }
+//  public String popPreviousBoard() {
+//    return previousBoards.isEmpty() ? null : previousBoards.pop().getBoardId();
+//  }
+//
+//  public void pushPreviousBoard(String boardId, String anchorNotation, String possibleNotation) {
+//    this.previousBoards.push(new BoardIdNotation(boardId, anchorNotation, possibleNotation));
+//  }
 
-  public void pushPreviousBoard(String boardId, String anchorNotation, String possibleNotation) {
-    this.previousBoards.push(new BoardIdNotation(boardId, anchorNotation, possibleNotation));
-  }
-
-  public String popNextBoard() {
-    return nextBoards.isEmpty() ? null : nextBoards.pop().getBoardId();
-  }
-
-  public void pushNextBoard(String boardId, String anchorNotation, String possibleNotation) {
-    nextBoards.push(new BoardIdNotation(boardId, anchorNotation, possibleNotation));
-  }
+//  public String popNextBoard() {
+//    return nextBoards.isEmpty() ? null : nextBoards.pop().getBoardId();
+//  }
+//
+//  public void pushNextBoard(String boardId, String anchorNotation, String possibleNotation) {
+//    nextBoards.push(new BoardIdNotation(boardId, anchorNotation, possibleNotation));
+//  }
 
   public void addBlackDraughts(String notation, Draught draught) {
     blackDraughts.put(notation, draught);

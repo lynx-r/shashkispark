@@ -8,7 +8,6 @@ import com.workingbit.share.converter.EnumEditBoardBoxModeConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.EnumEditBoardBoxMode;
-import com.workingbit.share.model.Notation;
 import com.workingbit.share.model.Payload;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,10 +45,13 @@ public class BoardBox extends BaseDomain implements Payload {
   private String boardId;
 
   @DynamoDBIgnore
-  private Notation notation;
+  private Board board;
+
+  @DynamoDBAttribute(attributeName = "notationId")
+  private String notationId;
 
   @DynamoDBIgnore
-  private Board board;
+  private Notation notation;
 
   @JsonDeserialize(using = EnumEditBoardBoxModeConverter.class)
   @DynamoDBTypeConvertedEnum

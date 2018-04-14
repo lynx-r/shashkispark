@@ -12,10 +12,7 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.model.CreateBoardPayload;
-import com.workingbit.share.model.EnumEditBoardBoxMode;
-import com.workingbit.share.model.EnumRules;
-import com.workingbit.share.model.MovesList;
+import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import junit.framework.TestCase;
 
@@ -58,15 +55,11 @@ public class BaseServiceTest {
     boardBox.setId(getRandomString());
     boardBox.setCreatedAt(LocalDateTime.now());
     boardBox.setArticleId(getRandomString());
-    return boardBoxService.save(boardBox, authenticated).get();
+    return boardBoxService.save(boardBox).get();
   }
 
   protected Board getBoard() {
     return BoardUtils.initBoard(false, false, EnumRules.RUSSIAN);
-  }
-
-  protected BoardService boardService() {
-    return boardService;
   }
 
   protected BoardBoxService boardBoxService() {
@@ -151,13 +144,13 @@ public class BaseServiceTest {
     return BoardUtils.findSquareByNotation(notation, board);
   }
 
-  protected Board move(Board board, Square selectedSquare) {
+  protected Board move(Board board, Square selectedSquare, NotationHistory notationHistory) {
     boolean blackTurn = board.isBlackTurn();
     MovesList capturedSquares = highlightedBoard(blackTurn, selectedSquare, board);
-    return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getId(), notationDrives);
+    return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getId(), notationHistory);
   }
 
-  protected Board move(Board board, String fromNotation, String toNotation, boolean blackTurn) {
+  protected Board move(Board board, String fromNotation, String toNotation, boolean blackTurn, NotationHistory notationHistory) {
     Square from = BoardUtils.findSquareByNotation(fromNotation, board);
     Square to = BoardUtils.findSquareByNotation(toNotation, board);
     to.setHighlight(true);
@@ -165,7 +158,7 @@ public class BaseServiceTest {
     board.setNextSquare(to);
     board.setBlackTurn(blackTurn);
 
-    board = move(board, from);
+    board = move(board, from, notationHistory);
 
     from = BoardUtils.findSquareByNotation(fromNotation, board);
     to = BoardUtils.findSquareByNotation(toNotation, board);

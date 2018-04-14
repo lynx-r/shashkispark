@@ -3,6 +3,7 @@ package com.workingbit.board.service;
 import com.workingbit.board.controller.util.BaseServiceTest;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
@@ -443,7 +444,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     NotationSimpleMove[] move = notationMove.getMove().toArray(new NotationSimpleMove[0]);
     for (int i = 0; i < move.length - 1; i++) {
 //      String boardId = notationMove.getBoardId();
-      Board board = boardBoxCurrent.getBoard(); /*boardService.find(boardId).get();*/
+      Board board = boardBoxCurrent.getBoard(); /*boardBoxService.find(boardId).get();*/
 
       String selMove = move[i].getNotation();
       Square selected = findSquareByNotation(selMove, board);
@@ -575,9 +576,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
 
 //      String firstBoardId = boardBox.getNotation().getNotationHistory().get(1).getMoves().getFirst().getBoardId();
-//      Board board = boardDao.findByKey(firstBoardId).get();
+//      Board board = boardDao.findById(firstBoardId).get();
 //      String initBoardId = board.getPreviousBoards().getLastOrCreateIfRoot().getBoardId();
-//      board = boardDao.findByKey(initBoardId).get();
+//      board = boardDao.findById(initBoardId).get();
 //      board.setNotationHistory(NotationHistory.createWithRoot());
 //      boardBox.setBoard(board);
 //      boardBox.getNotation().setNotationHistory(board.getNotationHistory());
@@ -737,6 +738,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     // Parse Notation
     Notation notation = notationParserService.parse(bufferedReader);
     notation.setRules(RUSSIAN);
+    notation.getNotationHistory().printPdn();
 
     String articleId = Utils.getRandomString();
     String boardBoxId = Utils.getRandomString();
@@ -747,9 +749,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     BoardBox boardBoxOrig = boardBox.deepClone();
 
     NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
+    notationDrives.printPdn();
 
-    boardBox.getNotation().setNotationHistory(NotationHistory.createWithRoot());
-    boardBoxDao.save(boardBox);
+
     for (NotationDrive notationDrive : notationDrives.getNotation()) {
       for (NotationMove notationMove : notationDrive.getMoves()) {
         boardBox = moveStrokes(boardBox, notationMove);

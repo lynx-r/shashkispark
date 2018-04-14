@@ -133,8 +133,8 @@ public class NotationMove implements DeepClone, ToPdn {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public String getLastMoveBoardId() {
-    return move.getLast().getBoardId();
+  public Optional<String> getLastMoveBoardId() {
+    return Optional.ofNullable(move.getLast().getBoardId());
   }
 
   public void addMove(String previousNotation, String prevBoardId, String currentNotation, String currentBoardId) {

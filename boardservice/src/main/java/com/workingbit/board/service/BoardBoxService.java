@@ -2,17 +2,13 @@ package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
-import com.workingbit.share.domain.impl.Board;
-import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.domain.impl.Draught;
-import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.Optional;
 
 import static com.workingbit.board.BoardApplication.boardBoxDao;
@@ -25,6 +21,7 @@ public class BoardBoxService {
 
   private final Logger logger = LoggerFactory.getLogger(BoardBoxService.class);
   private final static BoardService boardService = new BoardService();
+  private final static NotationService notationService = new NotationService();
 
   public Optional<BoardBox> createBoardBox(CreateBoardPayload createBoardPayload) {
     Board board = boardService.createBoard(createBoardPayload);
@@ -45,22 +42,25 @@ public class BoardBoxService {
     boardBox.setArticleId(articleId);
     Utils.setBoardBoxIdAndCreatedAt(boardBox);
 
-    Board board = boardService.createBoardFromNotation(fromNotation, boardBoxId);
-    Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), fromNotation.getNotationHistory());
-    boardBox.setNotation(notation);
+    NotationHistory notationHistory = new NotationHistory();
+    boardService.createBoardFromNotation(fromNotation.getNotationHistory(),
+        notationHistory, boardBoxId, fromNotation.getRules());
+    fromNotation.setNotationHistory(notationHistory);
 
     // switch boardBox to the first board
-    LinkedList<BoardIdNotation> previousBoards = board.getPreviousBoards();
-    String firstBoardId = previousBoards.getLast().getBoardId();
-    return boardDao.findByKey(firstBoardId)
-        .map(firstBoard -> {
-          String f_boardId = firstBoard.getId();
-          boardBox.setNotation(notation);
-          boardBox.setBoardId(f_boardId);
-          boardBox.setBoard(firstBoard);
-          return boardBox;
-        })
-        .map(this::saveAndFillBoard);
+    if (!notationHistory.get(1).getMoves().isEmpty()) {
+      String firstBoardId = notationHistory.get(1).getMoves().getFirst().getMove().getFirst().getBoardId();
+      return boardDao.findById(firstBoardId)
+          .map(firstBoard -> {
+            String f_boardId = firstBoard.getId();
+            boardBox.setNotation(fromNotation.deepClone());
+            boardBox.setBoardId(f_boardId);
+            boardBox.setBoard(firstBoard);
+            return boardBox;
+          })
+          .map(this::saveAndFillBoard);
+    }
+    return Optional.empty();
   }
 
   public Optional<BoardBox> find(BoardBox boardBox) {
@@ -69,12 +69,12 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> findById(String boardBoxId) {
-    return boardBoxDao.findByKey(boardBoxId)
+    return boardBoxDao.findById(boardBoxId)
         .map(this::updateBoardBox);
   }
 
   void delete(String boardBoxId) {
-    boardBoxDao.findByKey(boardBoxId)
+    boardBoxDao.findById(boardBoxId)
         .map(boardBox -> {
           boardService.delete(boardBox.getBoardId());
           boardBoxDao.delete(boardBox.getId());
@@ -119,10 +119,10 @@ public class BoardBoxService {
           boolean isBlackTurn = board.isBlackTurn();
           boolean hasWhiteMoves = isWhiteTurn && hasFirstMoveInDrive;
           boolean hasBlackMoves = isBlackTurn && hasSecondMoveInDrive;
-          boolean isInUndo = board.getNextBoards().size() > 0;
+//          boolean isInUndo = board.getNextBoards().size() > 0;
           if (hasWhiteMoves ||
               hasBlackMoves ||
-              isInUndo && isNotEditMode(boardBox)) {
+              isNotEditMode(boardBox)) {
             return null;
           }
           BoardUtils.updateMoveSquaresHighlightAndDraught(boardUpdated, board);
@@ -131,6 +131,9 @@ public class BoardBoxService {
           if (isValidMove(nextSquare, selectedSquare)) {
             logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
             return null;
+          }
+          if (updatedBox.getNotation().getId() == null) {
+            createNewNotation(updatedBox, board);
           }
           NotationHistory notationBoardBox = updatedBox.getNotation().getNotationHistory();
           boardUpdated.setDriveCount(notationBoardBox.size() - 1);
@@ -144,12 +147,21 @@ public class BoardBoxService {
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
 
-//          updatedBox.getNotation().setNotationHistory(boardUpdated.getNotationHistory());
           logger.info("Notation after move: " + updatedBox.getNotation().getNotationHistory().pdnString());
 
           boardBoxDao.save(updatedBox);
           return updatedBox;
         });
+  }
+
+  public void createNewNotation(BoardBox updatedBox, Board board) {
+    Notation notation = new Notation();
+    Utils.setRandomIdAndCreatedAt(notation);
+    notation.setBoardBoxId(updatedBox.getId());
+    notation.setRules(board.getRules());
+    notationService.save(notation);
+    updatedBox.setNotationId(notation.getId());
+    updatedBox.setNotation(notation);
   }
 
   public Optional<BoardBox> changeTurn(BoardBox boardBox) {
@@ -279,7 +291,7 @@ public class BoardBoxService {
   }
 
   private BoardBox setBoardForBoardBox(BoardBox boardBox, String boardId) {
-    return boardDao.findByKey(boardId)
+    return boardDao.findById(boardId)
         .map(board -> {
           board = boardService.resetHighlightAndUpdate(board);
           boardDao.save(board);
@@ -310,7 +322,10 @@ public class BoardBoxService {
     NotationDrives variants = boardBox.getNotation().getNotationHistory().getNotation();
     NotationMoves moves = variants.getLast().getMoves();
     boolean isMovesEmpty = moves.isEmpty();
-    boolean isHighlightLastMove = !isMovesEmpty && !moves.getLast().getLastMoveBoardId().equals(boardBox.getBoardId());
+    boolean isHighlightLastMove = !isMovesEmpty
+        && !moves.getLast().getLastMoveBoardId()
+        .orElse(boardBox.getBoardId())
+        .equals(boardBox.getBoardId());
     if (isHighlightLastMove) {
       Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
       boardBox.setBoard(noHighlight);
@@ -321,9 +336,11 @@ public class BoardBoxService {
 
   private BoardBox updateBoardBox(BoardBox boardBox) {
     Optional<Board> boardOptional = boardService.findById(boardBox.getBoardId());
+    Optional<Notation> notationOptional = notationService.findById(boardBox.getNotationId());
     return boardOptional
         .map(board -> {
           boardBox.setBoard(board);
+          notationOptional.ifPresent(boardBox::setNotation);
           return boardBox;
         })
         .orElse(null);

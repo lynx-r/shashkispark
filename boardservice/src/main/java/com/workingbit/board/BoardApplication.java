@@ -4,6 +4,7 @@ import com.workingbit.board.config.AppProperties;
 import com.workingbit.board.controller.BoardBoxController;
 import com.workingbit.board.dao.BoardBoxDao;
 import com.workingbit.board.dao.BoardDao;
+import com.workingbit.board.dao.NotationDao;
 import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.board.util.Path;
 import com.workingbit.share.util.Filters;
@@ -23,6 +24,7 @@ public class BoardApplication {
   public static BoardBoxService boardBoxService;
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
+  public static NotationDao notationDao;
 
   private static AppProperties appProperties;
 
@@ -32,6 +34,7 @@ public class BoardApplication {
     boardBoxService = new BoardBoxService();
     boardBoxDao = new BoardBoxDao(appProperties);
     boardDao = new BoardDao(appProperties);
+    notationDao = new NotationDao(appProperties);
   }
 
   public static void main(String[] args) {

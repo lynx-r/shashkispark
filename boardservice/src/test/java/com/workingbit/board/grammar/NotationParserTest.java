@@ -1,7 +1,7 @@
 package com.workingbit.board.grammar;
 
 import com.workingbit.board.service.NotationParserService;
-import com.workingbit.share.model.Notation;
+import com.workingbit.share.domain.impl.Notation;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
 import org.junit.Test;

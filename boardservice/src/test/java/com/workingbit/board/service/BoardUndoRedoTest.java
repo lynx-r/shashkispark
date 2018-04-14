@@ -31,13 +31,13 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    board = boardService().move(squareC3, squareD4, board, notationDrives);
+    board = move(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertFalse(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
     assertTrue(squareD4.isOccupied());
 
-    board = boardService().undo(board).get();
+    board = undo(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertTrue(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
@@ -57,7 +57,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    board = boardService().move(squareC3, squareD4, board, notationDrives);
+    board = move(boardBox);
     squareC3 = BoardUtils.findSquareByNotation(c3, board);
     assertFalse(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByNotation(d4, board);
@@ -69,19 +69,19 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     board.setSelectedSquare(squareD4);
     board.setNextSquare(squareE5);
 
-    board = boardService().move(squareD4, squareE5, board, notationDrives);
+    board = move(boardBox);
     squareE5 = BoardUtils.findSquareByNotation(squareE5.getNotation(), board);
     assertTrue(squareE5.isOccupied());
     squareD4 = BoardUtils.findSquareByNotation(squareD4.getNotation(), board);
     assertFalse(squareD4.isOccupied());
 
-    board = boardService().undo(board).get();
+    board = undo(boardBox);
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
     assertTrue(squareD4.isOccupied());
     squareE5 = BoardUtils.findSquareByLink(squareE5, board);
     assertFalse(squareE5.isOccupied());
 
-    board = boardService().undo(board).get();
+    board = undo(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertTrue(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
@@ -100,7 +100,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    board = boardService().move(squareC3, squareD4, board, notationDrives);
+    board = move(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertFalse(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
@@ -112,19 +112,19 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     board.setSelectedSquare(squareD4);
     board.setNextSquare(squareE5);
 
-    board = boardService().move(squareD4, squareE5, board, notationDrives);
+    board = move(boardBox);
     squareE5 = BoardUtils.findSquareByLink(squareE5, board);
     assertTrue(squareE5.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
     assertFalse(squareD4.isOccupied());
 
-    board = boardService().undo(board).get();
+    board = undo(boardBox);
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
     assertTrue(squareD4.isOccupied());
     squareE5 = BoardUtils.findSquareByLink(squareE5, board);
     assertFalse(squareE5.isOccupied());
 
-    board = boardService().undo(board).get();
+    board = undo(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertTrue(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
@@ -144,19 +144,19 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    board = boardService().move(squareC3, squareD4, board, notationDrives);
+    board = move(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertFalse(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
     assertTrue(squareD4.isOccupied());
 
-    board = boardService().undo(board).get();
+    board = undo(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertTrue(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
     assertFalse(squareD4.isOccupied());
 
-    board = boardService().redo(board).get();
+    board = move(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertFalse(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
@@ -175,27 +175,38 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    board = boardService().move(squareC3, squareD4, board, notationDrives);
+    board = move(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertFalse(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
     assertTrue(squareD4.isOccupied());
 
-    board = boardService().undo(board).get();
+    board = undo(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertTrue(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
     assertFalse(squareD4.isOccupied());
 
-    board = boardService().redo(board).get();
+    board = move(boardBox);
     squareC3 = BoardUtils.findSquareByLink(squareC3, board);
     assertFalse(squareC3.isOccupied());
     squareD4 = BoardUtils.findSquareByLink(squareD4, board);
     assertTrue(squareD4.isOccupied());
   }
 
+  public Board undo(BoardBox boardBox) {
+    return boardBoxService().undo(boardBox).get().getBoard();
+  }
+
+  public Board move(BoardBox boardBox) {
+    Board board;
+    boardBox = boardBoxService().move(boardBox).get();
+    board = boardBox.getBoard();
+    return board;
+  }
+
 //  @Test
-//  public void should_save_history() throws Exception, boardService()Error {
+//  public void should_save_history() throws Exception, boardBoxService()Error {
 //    BoardBox board = getBoardBox();
 ////    boardHistoryService.addBoardAndSave(board);
 //    Optional<BoardHistory> boardHistory = boardHistoryService.getHistory(board.getId());
@@ -204,7 +215,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 //  }
 //
 //  @Test
-//  public void should_save_two_history() throws Exception, boardService()Error {
+//  public void should_save_two_history() throws Exception, boardBoxService()Error {
 //    BoardBox board = getBoardBox();
 ////    boardHistoryService.addBoardAndSave(board);
 //    Optional<BoardHistory> boardHistory = boardHistoryService.getHistory(board.getId());
