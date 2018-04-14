@@ -37,7 +37,7 @@ public class BoardBoxService {
     return Optional.of(boardBox);
   }
 
-  Optional<BoardBox> createBoardBoxFromNotation(String articleId, String boardBoxId, Notation fromNotation) {
+  Optional<BoardBox> createBoardBoxFromNotation(String articleId, Notation fromNotation) {
     BoardBox boardBox = new BoardBox();
     boardBox.setArticleId(articleId);
     Utils.setRandomIdAndCreatedAt(boardBox);
@@ -53,7 +53,10 @@ public class BoardBoxService {
       String firstBoardId = notationHistory.get(1).getMoves().getFirst().getMove().getFirst().getBoardId();
       return boardDao.findById(firstBoardId)
           .map(firstBoard -> {
+            Utils.setRandomIdAndCreatedAt(fromNotation);
+            boardBox.setNotationId(fromNotation.getId());
             boardBox.setNotation(fromNotation.deepClone());
+            notationService.save(fromNotation);
             boardBox.setBoardId(firstBoardId);
             boardBox.setBoard(firstBoard);
             return boardBox;

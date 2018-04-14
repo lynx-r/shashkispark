@@ -135,7 +135,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
       // Test create BoardBox moving draughts
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
@@ -166,7 +166,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
 
@@ -197,7 +197,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
@@ -231,7 +231,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
@@ -275,7 +275,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
@@ -329,7 +329,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
@@ -406,7 +406,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
       // forkNumber notation by index from test file
       int forkDriveIndex = Integer.parseInt(startVariantDriveMove);
@@ -574,7 +574,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
 //      String firstBoardId = boardBox.getNotation().getNotationHistory().get(1).getMoves().getFirst().getBoardId();
 //      Board board = boardDao.findById(firstBoardId).get();
@@ -631,7 +631,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
 
@@ -675,7 +675,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     String boardBoxId = Utils.getRandomString();
 
     // Create BoardBox from Notation
-    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
     BoardBox boardBoxOrig = boardBox.deepClone();
 
@@ -745,7 +745,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     String boardBoxId = Utils.getRandomString();
 
     // Create BoardBox from Notation
-    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, boardBoxId, notation).get();
+    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation).get();
 
     BoardBox boardBoxOrig = boardBox.deepClone();
 
