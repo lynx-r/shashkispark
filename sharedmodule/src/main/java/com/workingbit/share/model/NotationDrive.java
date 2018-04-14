@@ -40,6 +40,11 @@ public class NotationDrive implements DeepClone, ToPdn {
   private boolean root;
 
   /**
+   * is selected notation drive
+   */
+  private boolean selected;
+
+  /**
    * is current variant
    */
   private boolean current;

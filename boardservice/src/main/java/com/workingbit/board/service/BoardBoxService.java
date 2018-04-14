@@ -86,11 +86,13 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> highlight(BoardBox boardBox) {
-    if (resetHighlightIfNotLastBoard(boardBox)) {
-      return Optional.of(boardBox);
-    }
     return find(boardBox)
         .map(updated -> {
+          if (resetHighlightIfNotLastBoard(updated)) {
+            Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
+            boardBox.setBoard(noHighlight);
+            return boardBox;
+          }
           Board currentBoard = updated.getBoard();
           Square selectedSquare = boardBox.getBoard().getSelectedSquare();
           if (!selectedSquare.isOccupied()) {
@@ -113,20 +115,12 @@ public class BoardBoxService {
         .map(updatedBox -> {
           Board boardUpdated = updatedBox.getBoard();
           Board board = boardBox.getBoard();
-          NotationHistory boardHistory = boardBox.getNotation().getNotationHistory();
-          boolean hasFirstMoveInDrive = boardHistory.size() > 0
-              && boardHistory.getLast().getMoves().size() == 1;
-          boolean hasSecondMoveInDrive = boardHistory.size() > 0
-              && boardHistory.getLast().getMoves().size() == 2;
-          boolean isWhiteTurn = !board.isBlackTurn();
-          boolean isBlackTurn = board.isBlackTurn();
-          boolean hasWhiteMoves = isWhiteTurn && hasFirstMoveInDrive;
-          boolean hasBlackMoves = isBlackTurn && hasSecondMoveInDrive;
-          if (hasWhiteMoves ||
-              hasBlackMoves ||
-              isNotEditMode(boardBox)) {
+          if (isNotEditMode(boardBox)) {
             return null;
           }
+          boardUpdated.setSelectedSquare(board.getSelectedSquare());
+          boardUpdated.setNextSquare(board.getNextSquare());
+
           Notation notation = updatedBox.getNotation();
           NotationHistory notationBoardBox = notation.getNotationHistory();
           boardUpdated.setDriveCount(notationBoardBox.size() - 1);
@@ -180,6 +174,8 @@ public class BoardBoxService {
     updateBoardBox(boardBox);
     Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
     boardBox.setBoard(noHighlight);
+    Notation notation = boardBox.getNotation();
+    notationService.setSelectedNotationDrive(notation, noHighlight);
     return Optional.of(boardBox);
   }
 
@@ -302,19 +298,9 @@ public class BoardBoxService {
   }
 
   private boolean resetHighlightIfNotLastBoard(BoardBox boardBox) {
-    NotationDrives variants = boardBox.getNotation().getNotationHistory().getNotation();
-    NotationMoves moves = variants.getLast().getMoves();
-    boolean isMovesEmpty = moves.isEmpty();
-    boolean isHighlightLastMove = !isMovesEmpty
-        && !moves.getLast().getLastMoveBoardId()
-        .orElse(boardBox.getBoardId())
-        .equals(boardBox.getBoardId());
-    if (isHighlightLastMove) {
-      Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
-      boardBox.setBoard(noHighlight);
-      return true;
-    }
-    return false;
+    NotationDrives notationDrives = boardBox.getNotation().getNotationHistory().getNotation();
+    boolean isLastSelected = notationDrives.getLast().isSelected();
+    return !isLastSelected;
   }
 
   private BoardBox updateBoardBox(BoardBox boardBox) {

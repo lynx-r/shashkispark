@@ -4,12 +4,14 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.common.DBConstants;
-import com.workingbit.share.converter.BoardIdNotationConverter;
 import com.workingbit.share.converter.DraughtMapConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.model.*;
-import lombok.*;
+import com.workingbit.share.model.EnumRules;
+import com.workingbit.share.model.Payload;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -37,17 +39,6 @@ public class Board extends BaseDomain implements Payload {
 
   @DynamoDBAttribute(attributeName = "boardBoxId")
   private String boardBoxId;
-
-  /**
-   * Next boards map. Key next square notation, value board id
-   */
-//  @DynamoDBTypeConverted(converter = BoardIdNotationConverter.class)
-//  @DynamoDBAttribute(attributeName = "previousBoards")
-//  private LinkedList<BoardIdNotation> previousBoards = new LinkedList<>();
-
-  @DynamoDBTypeConverted(converter = BoardIdNotationConverter.class)
-  @DynamoDBAttribute(attributeName = "nextBoards")
-  private LinkedList<BoardIdNotation> nextBoards = new LinkedList<>();
 
   /**
    * Black draughts associated with owner square

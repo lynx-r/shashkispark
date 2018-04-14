@@ -233,6 +233,7 @@ public class BoardUtils {
 
   public static Board moveDraught(Board board, List<Square> capturedSquares, String prevBoardId,
                                   NotationHistory notationHistory) {
+    notationHistory.getNotation().getLast().setSelected(false);
     performMoveDraught(board, capturedSquares);
     Board newBoard = board.deepClone();
     boolean blackTurn = board.isBlackTurn();
@@ -245,6 +246,7 @@ public class BoardUtils {
     }
     updateNotationEnd(board, prevBoardId, notationHistory, previousCaptured);
     resetBoardHighlight(board);
+    notationHistory.getNotation().getLast().setSelected(true);
     return board;
   }
 
@@ -328,31 +330,31 @@ public class BoardUtils {
     if (!isContinueCapture && isBlackTurn) {
       lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE, true);
       // take previous square notation
-      // and put it in last moves
+      // and put it in selected moves
       lastCapturedMove.getMove().add(new NotationSimpleMove(previousNotation, prevBoardId));
       LinkedList<NotationSimpleMove> lastMove = lastCapturedMove.getMove();
       // take current notation
       String currentNotation = board.getSelectedSquare().getNotation();
       String currentBoardId = board.getId();
-      // and put it in last moves
+      // and put it in selected moves
       lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId));
       lastCapturedMove.setMove(lastMove);
       lastCapturedMove.setCursor(true);
-      // put last moves in last drive
+      // put selected moves in selected drive
       moves.add(lastCapturedMove);
     } else {
       if (moves.isEmpty()) {
         lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE, true);
-        // put it in last moves
+        // put it in selected moves
         lastCapturedMove.getMove().add(new NotationSimpleMove(previousNotation, prevBoardId));
         moves.add(lastCapturedMove);
       }
       lastCapturedMove = moves.getLast();
-      // take last move
+      // take selected move
       LinkedList<NotationSimpleMove> lastMove = lastCapturedMove.getMove();
       String currentNotation = board.getSelectedSquare().getNotation();
       String currentBoardId = board.getId();
-      // add last move to last drive
+      // add selected move to selected drive
       lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId));
       lastCapturedMove.setCursor(true);
     }

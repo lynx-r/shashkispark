@@ -77,6 +77,7 @@ public class BoardService {
    */
   public Board move(Board board, NotationHistory notationHistory) {
     boolean blackTurn = board.isBlackTurn();
+    board = updateBoard(board);
     MovesList movesList = highlightedBoard(blackTurn, board);
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();

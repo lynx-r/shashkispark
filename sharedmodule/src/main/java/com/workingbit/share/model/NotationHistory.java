@@ -239,7 +239,7 @@ public class NotationHistory implements DeepClone {
       continueDrive.ifPresent(d -> d.setCurrent(true));
     }
 
-    // find in last notation drive to switch
+    // find in selected notation drive to switch
     NotationDrive variantToSwitch = null;
     if (currentNotationDrive != null) {
       resetCurrentAndSetPresious(currentNotationDrive);

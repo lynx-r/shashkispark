@@ -31,4 +31,4 @@ TimeElement   = MOVES_SECONDS | INCREMENTAL | SUDDENDEATH | SANDCLOCK ;
 CompositeTime = TimeElement (COLON TimeElement)* ;
 
 // Additional checks need to be done to make sure that SUDDENDEATH,
-// SANDCLOCK and INCREMENTAL are the last values of the range.
+// SANDCLOCK and INCREMENTAL are the selected values of the range.
