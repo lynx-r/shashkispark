@@ -256,6 +256,7 @@ public class BoardUtils {
     NotationMove move;
     if (isContinueCapture) {
       move = notationHistory.getLastMove().orElseThrow(BoardServiceException::new);
+      move.setCursor(false);
     } else {
       move = NotationMove.create(EnumNotation.CAPTURE, true);
       Square selectedSquare = board.getSelectedSquare();
@@ -279,6 +280,9 @@ public class BoardUtils {
             .build();
         NotationDrive lastNotationDrive = NotationDrive.create(moves);
         lastNotationDrive.setNotationNumberInt(notationNumber);
+
+        notationHistory.getLastMove()
+            .ifPresent(m -> m.setCursor(false));
         notationHistory.add(lastNotationDrive);
       } else {
         NotationDrive lastNotationDrive = notationHistory.getLast();
@@ -373,7 +377,7 @@ public class BoardUtils {
       return false;
     }
     return move.getLast()
-            .getNotation().equals(previousNotation);
+        .getNotation().equals(previousNotation);
   }
 
   private static void pushSimpleMove(Board board, NotationHistory notationHistory,

@@ -162,6 +162,7 @@ public class NotationHistory implements DeepClone {
         .build();
 
     notation.removeAll(cutNotationDrives);
+    notation.getLast().setSelected(true);
     removeVariantsFromLastNotation();
 
     history.removeAll(cutNotationDrives);
@@ -318,7 +319,10 @@ public class NotationHistory implements DeepClone {
     setCurrentMarkerForNotationDrive(variant, lastHist);
 
     history.addAll(variant.getVariants());
+
+    notation.getLast().setSelected(false);
     notation.addAll(variant.getVariants());
+    notation.getLast().setSelected(true);
 
     notation.forEach(this::resetMovesCursor);
     history.forEach(this::resetMovesCursor);
