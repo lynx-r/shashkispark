@@ -1,5 +1,6 @@
 package com.workingbit.share.handler;
 
+import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.Payload;
 import org.apache.commons.lang3.StringUtils;
@@ -16,16 +17,17 @@ import static com.workingbit.share.util.JsonUtils.jsonToData;
 public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
 
   default String handleRequest(Request request, Response response, Class<T> clazz) {
-    String check = checkSign(request);
+    String check = preprocess(request, response);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }
     String json = request.body();
     T data = jsonToData(json, clazz);
-    Answer processed = process(data);
+    String authenticated = request.headers(RequestConstants.AUTHENTICATED);
+    Answer processed = process(data, authenticated);
     response.status(processed.getStatusCode());
     return dataToJson(processed);
   }
 
-  Answer process(T data);
+  Answer process(T data, String token);
 }

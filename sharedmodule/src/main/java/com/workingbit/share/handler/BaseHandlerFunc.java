@@ -5,6 +5,7 @@ import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.model.Answer;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
+import spark.Response;
 
 import static com.workingbit.share.common.ApiConstants.VK_API_KEY_ENV;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
@@ -16,9 +17,15 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
  */
 public interface BaseHandlerFunc {
 
-  default String checkSign(Request request) {
+  String _JSESSIONID = "JSESSIONID";
+
+  default String preprocess(Request request, Response response) {
     String sign = request.headers(RequestConstants.SIGN);
     String signRequest = request.headers(RequestConstants.SIGN_REQUEST);
+    String jsessionid = request.cookie(_JSESSIONID);
+    if (StringUtils.isBlank(jsessionid) && request.session().isNew()) {
+      response.cookie(_JSESSIONID, request.session(true).id());
+    }
     try {
       String vkApiKeyEnv = System.getenv(VK_API_KEY_ENV);
       if (StringUtils.isBlank(vkApiKeyEnv)) {

@@ -12,10 +12,10 @@ import static com.workingbit.share.util.JsonUtils.dataToJson;
  * Created by Aleksey Popryaduhin on 16:27 01/10/2017.
  */
 @FunctionalInterface
-public interface QueryParamsHandlerFunc  extends BaseHandlerFunc{
+public interface QueryParamsHandlerFunc extends BaseHandlerFunc {
 
   default String handleRequest(Request request, Response response) {
-    String check = checkSign(request);
+    String check = preprocess(request, response);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }

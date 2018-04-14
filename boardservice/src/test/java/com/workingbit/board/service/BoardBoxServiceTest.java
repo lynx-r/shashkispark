@@ -432,7 +432,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   private BoardBox undoMove(BoardBox boardBoxCurrent, NotationMove notationMove) {
     LinkedList<NotationSimpleMove> move = notationMove.getMove();
     for (NotationSimpleMove m : move) {
-      boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.save(boardBoxCurrent, authenticated).get();
       boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.undo(boardBoxCurrent).get();
     }
@@ -459,7 +459,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       boardBoxCurrent.setBoard(board);
 //      boardBoxCurrent.setBoardId(boardId);
 
-      boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.save(boardBoxCurrent, authenticated).get();
       boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.move(boardBoxCurrent).get();
     }
@@ -504,7 +504,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public void test_add_draught_in_place_mode() {
     BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
     boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
-    boardBox = boardBoxService.save(boardBox).get();
+    boardBox = boardBoxService.save(boardBox, authenticated).get();
 
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
@@ -517,7 +517,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public void test_capture_on_placed_board() {
     BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
     boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
-    boardBox = boardBoxService.save(boardBox).get();
+    boardBox = boardBoxService.save(boardBox, authenticated).get();
 
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
@@ -534,7 +534,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     assertFalse(isPresent);
 
     boardBox.setEditMode(EnumEditBoardBoxMode.MOVE);
-    boardBox = boardBoxService.save(boardBox).get();
+    boardBox = boardBoxService.save(boardBox, authenticated).get();
 
     board = boardBox.getBoard();
 

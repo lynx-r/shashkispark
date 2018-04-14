@@ -34,14 +34,14 @@ public class ArticleController {
       ).handleRequest(req, res);
 
   public static Route createArticleAndBoard = (req, res) ->
-      ((ModelHandlerFunc<CreateArticlePayload>) articlePayload ->
-          articleService.createArticleResponse(articlePayload)
+      ((ModelHandlerFunc<CreateArticlePayload>) (data, token) ->
+          articleService.createArticleResponse(data)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_ARTICLE))
       ).handleRequest(req, res, CreateArticlePayload.class);
 
   public static Route saveArticle = (req, res) ->
-      ((ModelHandlerFunc<Article>) article ->
+      ((ModelHandlerFunc<Article>) (article, token) ->
           articleService.save((Article) article)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_ARTICLE))

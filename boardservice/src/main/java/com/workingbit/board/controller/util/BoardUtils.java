@@ -255,7 +255,7 @@ public class BoardUtils {
     boolean isContinueCapture = isContinueCapture(notationDrives, previousNotation);
     NotationMove move;
     if (isContinueCapture) {
-      move = notationDrives.getLastMove();
+      move = notationDrives.getLastMove().orElseThrow(BoardServiceException::new);
     } else {
       move = NotationMove.create(EnumNotation.CAPTURE, true);
       Square selectedSquare = board.getSelectedSquare();
@@ -268,7 +268,7 @@ public class BoardUtils {
     boolean isBlackTurn = board.isBlackTurn();
     if (isContinueCapture) {
       String currentNotation = board.getSelectedSquare().getNotation();
-      NotationMove lastMove = notationDrives.getLastMove();
+      NotationMove lastMove = notationDrives.getLastMove().orElseThrow(BoardServiceException::new);
       String currentBoardId = board.getId();
       lastMove.getMove().add(new NotationSimpleMove(currentNotation, currentBoardId));
     } else {
@@ -391,6 +391,8 @@ public class BoardUtils {
 
     moves.add(notationMove);
 
+    notationDrives.getLastMove()
+        .ifPresent(move -> move.setCursor(false));
     boolean isWhiteTurn = notationNumber != 0;
     if (isWhiteTurn) {
       NotationDrive notationDrive = NotationDrive.create(moves);

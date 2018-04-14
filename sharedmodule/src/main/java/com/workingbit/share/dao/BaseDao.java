@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.Select;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.util.Utils;
 import org.slf4j.Logger;
@@ -81,6 +82,7 @@ public class BaseDao<T extends BaseDomain> {
 
     DynamoDBScanExpression dynamoDBQueryExpression = new DynamoDBScanExpression();
     dynamoDBQueryExpression
+        .withSelect(Select.ALL_ATTRIBUTES)
         .withLimit(limit);
     try {
       DynamoDBIndexHashKey indexAnnotation = clazz.getDeclaredField("id").getAnnotation(DynamoDBIndexHashKey.class);

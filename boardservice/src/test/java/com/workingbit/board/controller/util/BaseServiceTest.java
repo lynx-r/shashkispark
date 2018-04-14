@@ -58,7 +58,7 @@ public class BaseServiceTest {
     boardBox.setId(getRandomString());
     boardBox.setCreatedAt(LocalDateTime.now());
     boardBox.setArticleId(getRandomString());
-    return boardBoxService.save(boardBox).get();
+    return boardBoxService.save(boardBox, authenticated).get();
   }
 
   protected Board getBoard() {

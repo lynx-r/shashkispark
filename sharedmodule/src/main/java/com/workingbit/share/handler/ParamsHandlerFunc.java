@@ -16,7 +16,7 @@ import static com.workingbit.share.util.JsonUtils.dataToJson;
 public interface ParamsHandlerFunc extends BaseHandlerFunc {
 
   default String handleRequest(Request request, Response response) {
-    String check = checkSign(request);
+    String check = preprocess(request, response);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }

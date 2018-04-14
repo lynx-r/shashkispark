@@ -19,25 +19,25 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 public class BoardBoxController {
 
   public static Route createBoard = (req, res) ->
-      ((ModelHandlerFunc<CreateBoardPayload>) boardRequest ->
+      ((ModelHandlerFunc<CreateBoardPayload>) (data, token) ->
           boardBoxService
-              .createBoardBox(boardRequest)
+              .createBoardBox(data)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
       ).handleRequest(req, res, CreateBoardPayload.class);
 
   public static Route saveBoard = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) boardRequest ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
-              .save(boardRequest)
+              .save(data)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_BOARD))
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route loadPreviewBoard = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) boardRequest ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
-              .loadPreviewBoard(boardRequest)
+              .loadPreviewBoard(data)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_LOAD_BOARD))
       ).handleRequest(req, res, BoardBox.class);
@@ -51,7 +51,7 @@ public class BoardBoxController {
       ).handleRequest(req, res);
 
   public static Route addDraught = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) data ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
               .addDraught((BoardBox) data)
               .map(Answer::created)
@@ -59,7 +59,7 @@ public class BoardBoxController {
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route highlightBoard = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) data ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
               .highlight((BoardBox) data)
               .map(Answer::created)
@@ -67,7 +67,7 @@ public class BoardBoxController {
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route move = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) data ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
               .move((BoardBox) data)
               .map(Answer::created)
@@ -75,7 +75,7 @@ public class BoardBoxController {
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route redo = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) data ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
               .redo((BoardBox) data)
               .map(Answer::created)
@@ -83,7 +83,7 @@ public class BoardBoxController {
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route undo = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) data ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
               .undo((BoardBox) data)
               .map(Answer::created)
@@ -91,7 +91,7 @@ public class BoardBoxController {
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route switchNotation = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) data ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
               .switchNotation((BoardBox) data)
               .map(Answer::created)
@@ -99,7 +99,7 @@ public class BoardBoxController {
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route forkNotation = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) data ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
               .forkNotation((BoardBox) data)
               .map(Answer::created)
@@ -107,7 +107,7 @@ public class BoardBoxController {
       ).handleRequest(req, res, BoardBox.class);
 
   public static Route changeTurn = (req, res) ->
-      ((ModelHandlerFunc<BoardBox>) data ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService
               .changeTurn((BoardBox) data)
               .map(Answer::created)

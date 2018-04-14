@@ -35,6 +35,7 @@ public class CorsConfig {
       response.header("Access-Control-Allow-Origin", origin);
       response.header("Access-Control-Request-Method", methods);
       response.header("Access-Control-Allow-Headers", headers);
+      response.header("Access-Control-Allow-Credentials", "true");
       response.header("Vary", "Origin");
       // Note: this may or may not be necessary in your particular application
       response.type("application/json");

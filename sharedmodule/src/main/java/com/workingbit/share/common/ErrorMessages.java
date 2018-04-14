@@ -5,7 +5,7 @@ package com.workingbit.share.common;
  */
 public class ErrorMessages {
   public static final String UNABLE_TO_GET_ARTICLES = "Не удалось загрузить статьи";
-  public static final String UNABLE_TO_CREATE_ARTICLE = "Не удалось создать статью";
+  public static final String UNABLE_TO_CREATE_ARTICLE = "Не удалось добавить статью";
   public static final String ARTICLE_WITH_ID_NOT_FOUND = "Запрашиваемая статья не найдена";
   public static final String UNABLE_TO_SAVE_ARTICLE = "Не удалось сохранить статью";
   public static final String UNABLE_TO_CREATE_BOARD = "Не удалось создать доску";

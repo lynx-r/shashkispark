@@ -22,6 +22,7 @@ public class BaseTest {
     article.setAuthor(Utils.getRandomString());
     article.setBoardBoxId(Utils.getRandomString());
     article.setContent(Utils.getRandomString());
+    article.setTitle(Utils.getRandomString());
     articleDao.save(article);
     return article;
   }

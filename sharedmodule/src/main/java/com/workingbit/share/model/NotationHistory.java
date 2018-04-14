@@ -420,8 +420,12 @@ public class NotationHistory implements DeepClone {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public NotationMove getLastMove() {
-    return notation.getLast().getMoves().getLast();
+  public Optional<NotationMove> getLastMove() {
+    NotationDrive last = notation.getLast();
+    if (!last.getMoves().isEmpty()) {
+      return Optional.of(last.getMoves().getLast());
+    }
+    return Optional.empty();
   }
 
   public String pdnString() {
