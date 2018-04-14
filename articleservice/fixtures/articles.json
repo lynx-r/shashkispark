@@ -1,0 +1,12 @@
+{
+  "tableName": "Article",
+  "entries": [
+    {
+      "id": "Новая статья",
+      "createdAt": "2018-03-26T10:34:23.586Z",
+      "title": "Новая статья",
+      "boardBoxId": "cd3c1ca1-0ace-4b7a-8576-3584c067ced3",
+      "state": "newadded"
+    }
+  ]
+}
