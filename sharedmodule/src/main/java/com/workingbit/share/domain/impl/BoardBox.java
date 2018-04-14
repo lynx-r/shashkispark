@@ -45,8 +45,7 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "boardId")
   private String boardId;
 
-  @DynamoDBTypeConvertedJson(targetType = Notation.class)
-  @DynamoDBAttribute(attributeName = "notation")
+  @DynamoDBIgnore
   private Notation notation;
 
   @DynamoDBIgnore

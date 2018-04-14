@@ -46,7 +46,7 @@ public class BoardBoxService {
     Utils.setBoardBoxIdAndCreatedAt(boardBox);
 
     Board board = boardService.createBoardFromNotation(fromNotation, boardBoxId);
-    Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), board.getNotationHistory());
+    Notation notation = new Notation(fromNotation.getTags(), fromNotation.getRules(), fromNotation.getNotationHistory());
     boardBox.setNotation(notation);
 
     // switch boardBox to the first board
@@ -55,8 +55,7 @@ public class BoardBoxService {
     return boardDao.findByKey(firstBoardId)
         .map(firstBoard -> {
           String f_boardId = firstBoard.getId();
-          firstBoard.setNotationHistory(notation.getNotationHistory());
-          boardDao.save(firstBoard);
+          boardBox.setNotation(notation);
           boardBox.setBoardId(f_boardId);
           boardBox.setBoard(firstBoard);
           return boardBox;
@@ -111,7 +110,7 @@ public class BoardBoxService {
         .map(updatedBox -> {
           Board boardUpdated = updatedBox.getBoard();
           Board board = boardBox.getBoard();
-          NotationHistory boardHistory = board.getNotationHistory();
+          NotationHistory boardHistory = boardBox.getNotation().getNotationHistory();
           boolean hasFirstMoveInDrive = boardHistory.size() > 0
               && boardHistory.getLast().getMoves().size() == 1;
           boolean hasSecondMoveInDrive = boardHistory.size() > 0
@@ -133,12 +132,11 @@ public class BoardBoxService {
             logger.error(String.format("Invalid move Next: %s, Selected: %s", nextSquare, selectedSquare));
             return null;
           }
-          NotationHistory notationDrivesInBoardBox = updatedBox.getNotation().getNotationHistory();
-          boardUpdated.setNotationHistory(notationDrivesInBoardBox);
-          boardUpdated.setDriveCount(notationDrivesInBoardBox.size() - 1);
+          NotationHistory notationBoardBox = updatedBox.getNotation().getNotationHistory();
+          boardUpdated.setDriveCount(notationBoardBox.size() - 1);
 
           try {
-            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated);
+            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, notationBoardBox);
           } catch (BoardServiceException e) {
             logger.error("Error while moving", e);
             return null;
@@ -146,7 +144,7 @@ public class BoardBoxService {
           updatedBox.setBoard(boardUpdated);
           updatedBox.setBoardId(boardUpdated.getId());
 
-          updatedBox.getNotation().setNotationHistory(boardUpdated.getNotationHistory());
+//          updatedBox.getNotation().setNotationHistory(boardUpdated.getNotationHistory());
           logger.info("Notation after move: " + updatedBox.getNotation().getNotationHistory().pdnString());
 
           boardBoxDao.save(updatedBox);

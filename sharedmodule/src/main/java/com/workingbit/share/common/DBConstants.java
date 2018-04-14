@@ -7,5 +7,6 @@ public class DBConstants {
   public static final String BOARD_BOX_TABLE = "BoardBox";
   public static final String ARTICLE_TABLE = "Article";
   public static final String BOARD_TABLE = "Board";
+  public static final String NOTATION_TABLE = "Notation";
   public static final String DEFAULT_DATE_FORMAT = "yyyy.MM.dd";
 }

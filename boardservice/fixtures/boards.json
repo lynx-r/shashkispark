@@ -1,2910 +1,329 @@
 {
-  "tableName": "BoardBox",
+  "tableName": "Board",
   "entries": [
     {
-      "id": "cd3c1ca1-0ace-4b7a-8576-3584c067ced3",
-      "createdAt": "2018-04-14T11:59:33.386",
-      "updatedAt": "2018-04-14T12:10:07.163",
-      "articleId": "Новая статья",
-      "boardId": "1071e320-eab9-4e64-bf55-93bca08fde47",
-      "notation": {
-        "tags": {
+      "id": "f941274a-31c2-4fab-aa39-8ab7b4e6ca1a",
+      "createdAt": "2018-04-14T13:04:50.355",
+      "updatedAt": "2018-04-14T13:04:50.36",
+      "boardBoxId": "d9e4276d-d8f9-4d40-9f4d-43235452eff5",
+      "previousBoards": [
+        {
+          "boardId": "af392674-ac73-40a4-9fd6-5f06a1912d1b",
+          "anchorNotation": "a3",
+          "possibleNotation": "c5"
         },
-        "rules": null,
-        "notationHistory": {
-          "history": [
-            {
-              "notationNumber": "0. ",
-              "moves": [],
-              "variants": [
-                {
-                  "notationNumber": "1. ",
-                  "moves": [
-                    {
-                      "type": "SIMPLE",
-                      "move": [
-                        {
-                          "notation": "g3",
-                          "boardId": "5f4ddd51-ee95-4040-96eb-3c09de7d85d4"
-                        },
-                        {
-                          "notation": "h4",
-                          "boardId": "3bcb667f-8739-4967-9580-8b88b7361821"
-                        }
-                      ],
-                      "cursor": false,
-                      "moveStrength": null
-                    },
-                    {
-                      "type": "SIMPLE",
-                      "move": [
-                        {
-                          "notation": "f6",
-                          "boardId": "3bcb667f-8739-4967-9580-8b88b7361821"
-                        },
-                        {
-                          "notation": "g5",
-                          "boardId": "6e2254ab-cf60-44c4-bf92-5c8909d34333"
-                        }
-                      ],
-                      "cursor": true,
-                      "moveStrength": null
-                    }
-                  ],
-                  "variants": [
-                    {
-                      "notationNumber": "1. ",
-                      "moves": [
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "g3",
-                              "boardId": "5f4ddd51-ee95-4040-96eb-3c09de7d85d4"
-                            },
-                            {
-                              "notation": "h4",
-                              "boardId": "3bcb667f-8739-4967-9580-8b88b7361821"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "f6",
-                              "boardId": "3bcb667f-8739-4967-9580-8b88b7361821"
-                            },
-                            {
-                              "notation": "g5",
-                              "boardId": "6e2254ab-cf60-44c4-bf92-5c8909d34333"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 1
-                    },
-                    {
-                      "notationNumber": "2. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "h4",
-                              "boardId": "6e2254ab-cf60-44c4-bf92-5c8909d34333"
-                            },
-                            {
-                              "notation": "f6",
-                              "boardId": "899b980f-72ff-41dc-80a4-5e9222275862"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 2
-                    }
-                  ],
-                  "ellipses": false,
-                  "numeric": false,
-                  "comment": null,
-                  "root": false,
-                  "current": false,
-                  "previous": true,
-                  "notationNumberInt": 1
-                },
-                {
-                  "notationNumber": "1. ",
-                  "moves": [
-                    {
-                      "type": "SIMPLE",
-                      "move": [
-                        {
-                          "notation": "c3",
-                          "boardId": "5f4ddd51-ee95-4040-96eb-3c09de7d85d4"
-                        },
-                        {
-                          "notation": "b4",
-                          "boardId": "477026bc-8402-4ba2-a165-c54cd0a7630e"
-                        }
-                      ],
-                      "cursor": false,
-                      "moveStrength": null
-                    },
-                    {
-                      "type": "SIMPLE",
-                      "move": [
-                        {
-                          "notation": "d6",
-                          "boardId": "477026bc-8402-4ba2-a165-c54cd0a7630e"
-                        },
-                        {
-                          "notation": "c5",
-                          "boardId": "c9a04f38-97e6-4c3c-83f4-f6dcc2c2ca65"
-                        }
-                      ],
-                      "cursor": true,
-                      "moveStrength": null
-                    }
-                  ],
-                  "variants": [
-                    {
-                      "notationNumber": "1. ",
-                      "moves": [
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "c3",
-                              "boardId": "5f4ddd51-ee95-4040-96eb-3c09de7d85d4"
-                            },
-                            {
-                              "notation": "b4",
-                              "boardId": "477026bc-8402-4ba2-a165-c54cd0a7630e"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "d6",
-                              "boardId": "477026bc-8402-4ba2-a165-c54cd0a7630e"
-                            },
-                            {
-                              "notation": "c5",
-                              "boardId": "c9a04f38-97e6-4c3c-83f4-f6dcc2c2ca65"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 1
-                    },
-                    {
-                      "notationNumber": "2. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "b4",
-                              "boardId": "c9a04f38-97e6-4c3c-83f4-f6dcc2c2ca65"
-                            },
-                            {
-                              "notation": "d6",
-                              "boardId": "01b074ec-1c66-414f-8bcd-262da696a5c8"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "e7",
-                              "boardId": "01b074ec-1c66-414f-8bcd-262da696a5c8"
-                            },
-                            {
-                              "notation": "c5",
-                              "boardId": "c9b150ee-9d3b-47ba-8fc0-25f95d069717"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 2
-                    },
-                    {
-                      "notationNumber": "3. ",
-                      "moves": [
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "e3",
-                              "boardId": "c9b150ee-9d3b-47ba-8fc0-25f95d069717"
-                            },
-                            {
-                              "notation": "d4",
-                              "boardId": "dd227457-6344-4566-87b1-cce0e5bb0d4d"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "c5",
-                              "boardId": "dd227457-6344-4566-87b1-cce0e5bb0d4d"
-                            },
-                            {
-                              "notation": "e3",
-                              "boardId": "b162ec9e-20ab-496c-824f-4535cc55c2f6"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 3
-                    },
-                    {
-                      "notationNumber": "4. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "f2",
-                              "boardId": "b162ec9e-20ab-496c-824f-4535cc55c2f6"
-                            },
-                            {
-                              "notation": "d4",
-                              "boardId": "8d33cbe9-6ab7-4402-b8fa-1a560105781a"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "f6",
-                              "boardId": "8d33cbe9-6ab7-4402-b8fa-1a560105781a"
-                            },
-                            {
-                              "notation": "e5",
-                              "boardId": "572e30a9-c79c-4e9f-bdd5-0d3eae0d199d"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 4
-                    },
-                    {
-                      "notationNumber": "5. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "d4",
-                              "boardId": "572e30a9-c79c-4e9f-bdd5-0d3eae0d199d"
-                            },
-                            {
-                              "notation": "f6",
-                              "boardId": "ed50c2ad-010d-4b74-9d1f-cc2b64e94a3f"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "g7",
-                              "boardId": "ed50c2ad-010d-4b74-9d1f-cc2b64e94a3f"
-                            },
-                            {
-                              "notation": "e5",
-                              "boardId": "c0c738a1-9c17-4a3f-99f7-c6ea86870b22"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 5
-                    },
-                    {
-                      "notationNumber": "6. ",
-                      "moves": [
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "g3",
-                              "boardId": "c0c738a1-9c17-4a3f-99f7-c6ea86870b22"
-                            },
-                            {
-                              "notation": "f4",
-                              "boardId": "a6f7c538-ef9b-4315-b19f-edaba2940eb7"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "e5",
-                              "boardId": "a6f7c538-ef9b-4315-b19f-edaba2940eb7"
-                            },
-                            {
-                              "notation": "g3",
-                              "boardId": "b26007b5-246d-4698-8b61-6dd08add6d3d"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 6
-                    },
-                    {
-                      "notationNumber": "7. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "h2",
-                              "boardId": "b26007b5-246d-4698-8b61-6dd08add6d3d"
-                            },
-                            {
-                              "notation": "f4",
-                              "boardId": "34e5424d-6469-45a6-8665-4ce44080eb37"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "h6",
-                              "boardId": "34e5424d-6469-45a6-8665-4ce44080eb37"
-                            },
-                            {
-                              "notation": "g5",
-                              "boardId": "cad906bf-b749-4647-ac89-aacdc4a06175"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 7
-                    },
-                    {
-                      "notationNumber": "8. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "f4",
-                              "boardId": "cad906bf-b749-4647-ac89-aacdc4a06175"
-                            },
-                            {
-                              "notation": "h6",
-                              "boardId": "7abde41f-e7c5-4396-b7bb-6cdb2859d91d"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "f8",
-                              "boardId": "7abde41f-e7c5-4396-b7bb-6cdb2859d91d"
-                            },
-                            {
-                              "notation": "g7",
-                              "boardId": "7da7610c-66d9-4b3f-8c5b-daf998bea28d"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 8
-                    },
-                    {
-                      "notationNumber": "9. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "h6",
-                              "boardId": "7da7610c-66d9-4b3f-8c5b-daf998bea28d"
-                            },
-                            {
-                              "notation": "f8",
-                              "boardId": "0235b20e-2586-4f1d-9d9a-8b935edb8d6b"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "c7",
-                              "boardId": "0235b20e-2586-4f1d-9d9a-8b935edb8d6b"
-                            },
-                            {
-                              "notation": "d6",
-                              "boardId": "db79d996-bdc9-4ce5-b9b6-520b30cebc86"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 9
-                    },
-                    {
-                      "notationNumber": "10. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "f8",
-                              "boardId": "db79d996-bdc9-4ce5-b9b6-520b30cebc86"
-                            },
-                            {
-                              "notation": "b4",
-                              "boardId": "6acbf203-630a-4ca1-97b4-b18080f84ced"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "b6",
-                              "boardId": "6acbf203-630a-4ca1-97b4-b18080f84ced"
-                            },
-                            {
-                              "notation": "c5",
-                              "boardId": "987121ef-ac8e-498c-b03b-b9bc880e0616"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 10
-                    },
-                    {
-                      "notationNumber": "11. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "b4",
-                              "boardId": "987121ef-ac8e-498c-b03b-b9bc880e0616"
-                            },
-                            {
-                              "notation": "f8",
-                              "boardId": "990acee1-2138-4828-b638-112bd1ae2d8c"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "d8",
-                              "boardId": "990acee1-2138-4828-b638-112bd1ae2d8c"
-                            },
-                            {
-                              "notation": "e7",
-                              "boardId": "726bb214-2462-44fb-814a-8626b51ac774"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 11
-                    },
-                    {
-                      "notationNumber": "12. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "f8",
-                              "boardId": "726bb214-2462-44fb-814a-8626b51ac774"
-                            },
-                            {
-                              "notation": "b4",
-                              "boardId": "e9b4b763-84a2-435d-b145-f9c8d7734727"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "b8",
-                              "boardId": "e9b4b763-84a2-435d-b145-f9c8d7734727"
-                            },
-                            {
-                              "notation": "c7",
-                              "boardId": "9e11f7c9-84e5-4914-a1b2-0b5aa9d25ff8"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 12
-                    },
-                    {
-                      "notationNumber": "13. ",
-                      "moves": [
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "b4",
-                              "boardId": "9e11f7c9-84e5-4914-a1b2-0b5aa9d25ff8"
-                            },
-                            {
-                              "notation": "f8",
-                              "boardId": "76ad885c-d25b-428b-aa8d-2927443b9791"
-                            }
-                          ],
-                          "cursor": false,
-                          "moveStrength": null
-                        },
-                        {
-                          "type": "SIMPLE",
-                          "move": [
-                            {
-                              "notation": "c7",
-                              "boardId": "76ad885c-d25b-428b-aa8d-2927443b9791"
-                            },
-                            {
-                              "notation": "d6",
-                              "boardId": "d713e13b-50c6-4bcb-a2ea-e1790e59219b"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 13
-                    },
-                    {
-                      "notationNumber": "14. ",
-                      "moves": [
-                        {
-                          "type": "CAPTURE",
-                          "move": [
-                            {
-                              "notation": "f8",
-                              "boardId": "d713e13b-50c6-4bcb-a2ea-e1790e59219b"
-                            },
-                            {
-                              "notation": "b4",
-                              "boardId": "61dee63c-3d26-4ae7-85e0-4b3627b775b8"
-                            }
-                          ],
-                          "cursor": true,
-                          "moveStrength": null
-                        }
-                      ],
-                      "variants": [],
-                      "ellipses": false,
-                      "numeric": false,
-                      "comment": null,
-                      "root": false,
-                      "current": false,
-                      "previous": false,
-                      "notationNumberInt": 14
-                    }
-                  ],
-                  "ellipses": false,
-                  "numeric": false,
-                  "comment": null,
-                  "root": false,
-                  "current": true,
-                  "previous": false,
-                  "notationNumberInt": 1
-                }
-              ],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": true,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 0
-            },
-            {
-              "notationNumber": "1. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "c3",
-                      "boardId": "5f4ddd51-ee95-4040-96eb-3c09de7d85d4"
-                    },
-                    {
-                      "notation": "b4",
-                      "boardId": "477026bc-8402-4ba2-a165-c54cd0a7630e"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "d6",
-                      "boardId": "477026bc-8402-4ba2-a165-c54cd0a7630e"
-                    },
-                    {
-                      "notation": "c5",
-                      "boardId": "c9a04f38-97e6-4c3c-83f4-f6dcc2c2ca65"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 1
-            },
-            {
-              "notationNumber": "2. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "b4",
-                      "boardId": "c9a04f38-97e6-4c3c-83f4-f6dcc2c2ca65"
-                    },
-                    {
-                      "notation": "d6",
-                      "boardId": "01b074ec-1c66-414f-8bcd-262da696a5c8"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "e7",
-                      "boardId": "01b074ec-1c66-414f-8bcd-262da696a5c8"
-                    },
-                    {
-                      "notation": "c5",
-                      "boardId": "c9b150ee-9d3b-47ba-8fc0-25f95d069717"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 2
-            },
-            {
-              "notationNumber": "3. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "e3",
-                      "boardId": "c9b150ee-9d3b-47ba-8fc0-25f95d069717"
-                    },
-                    {
-                      "notation": "d4",
-                      "boardId": "dd227457-6344-4566-87b1-cce0e5bb0d4d"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "c5",
-                      "boardId": "dd227457-6344-4566-87b1-cce0e5bb0d4d"
-                    },
-                    {
-                      "notation": "e3",
-                      "boardId": "b162ec9e-20ab-496c-824f-4535cc55c2f6"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 3
-            },
-            {
-              "notationNumber": "4. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f2",
-                      "boardId": "b162ec9e-20ab-496c-824f-4535cc55c2f6"
-                    },
-                    {
-                      "notation": "d4",
-                      "boardId": "8d33cbe9-6ab7-4402-b8fa-1a560105781a"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "f6",
-                      "boardId": "8d33cbe9-6ab7-4402-b8fa-1a560105781a"
-                    },
-                    {
-                      "notation": "e5",
-                      "boardId": "572e30a9-c79c-4e9f-bdd5-0d3eae0d199d"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 4
-            },
-            {
-              "notationNumber": "5. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "d4",
-                      "boardId": "572e30a9-c79c-4e9f-bdd5-0d3eae0d199d"
-                    },
-                    {
-                      "notation": "f6",
-                      "boardId": "ed50c2ad-010d-4b74-9d1f-cc2b64e94a3f"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "g7",
-                      "boardId": "ed50c2ad-010d-4b74-9d1f-cc2b64e94a3f"
-                    },
-                    {
-                      "notation": "e5",
-                      "boardId": "c0c738a1-9c17-4a3f-99f7-c6ea86870b22"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 5
-            },
-            {
-              "notationNumber": "6. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "g3",
-                      "boardId": "c0c738a1-9c17-4a3f-99f7-c6ea86870b22"
-                    },
-                    {
-                      "notation": "f4",
-                      "boardId": "a6f7c538-ef9b-4315-b19f-edaba2940eb7"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "e5",
-                      "boardId": "a6f7c538-ef9b-4315-b19f-edaba2940eb7"
-                    },
-                    {
-                      "notation": "g3",
-                      "boardId": "b26007b5-246d-4698-8b61-6dd08add6d3d"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 6
-            },
-            {
-              "notationNumber": "7. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "h2",
-                      "boardId": "b26007b5-246d-4698-8b61-6dd08add6d3d"
-                    },
-                    {
-                      "notation": "f4",
-                      "boardId": "34e5424d-6469-45a6-8665-4ce44080eb37"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "h6",
-                      "boardId": "34e5424d-6469-45a6-8665-4ce44080eb37"
-                    },
-                    {
-                      "notation": "g5",
-                      "boardId": "cad906bf-b749-4647-ac89-aacdc4a06175"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 7
-            },
-            {
-              "notationNumber": "8. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f4",
-                      "boardId": "cad906bf-b749-4647-ac89-aacdc4a06175"
-                    },
-                    {
-                      "notation": "h6",
-                      "boardId": "7abde41f-e7c5-4396-b7bb-6cdb2859d91d"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "f8",
-                      "boardId": "7abde41f-e7c5-4396-b7bb-6cdb2859d91d"
-                    },
-                    {
-                      "notation": "g7",
-                      "boardId": "7da7610c-66d9-4b3f-8c5b-daf998bea28d"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 8
-            },
-            {
-              "notationNumber": "9. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "h6",
-                      "boardId": "7da7610c-66d9-4b3f-8c5b-daf998bea28d"
-                    },
-                    {
-                      "notation": "f8",
-                      "boardId": "0235b20e-2586-4f1d-9d9a-8b935edb8d6b"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "c7",
-                      "boardId": "0235b20e-2586-4f1d-9d9a-8b935edb8d6b"
-                    },
-                    {
-                      "notation": "d6",
-                      "boardId": "db79d996-bdc9-4ce5-b9b6-520b30cebc86"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 9
-            },
-            {
-              "notationNumber": "10. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f8",
-                      "boardId": "db79d996-bdc9-4ce5-b9b6-520b30cebc86"
-                    },
-                    {
-                      "notation": "b4",
-                      "boardId": "6acbf203-630a-4ca1-97b4-b18080f84ced"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "b6",
-                      "boardId": "6acbf203-630a-4ca1-97b4-b18080f84ced"
-                    },
-                    {
-                      "notation": "c5",
-                      "boardId": "987121ef-ac8e-498c-b03b-b9bc880e0616"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 10
-            },
-            {
-              "notationNumber": "11. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "b4",
-                      "boardId": "987121ef-ac8e-498c-b03b-b9bc880e0616"
-                    },
-                    {
-                      "notation": "f8",
-                      "boardId": "990acee1-2138-4828-b638-112bd1ae2d8c"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "d8",
-                      "boardId": "990acee1-2138-4828-b638-112bd1ae2d8c"
-                    },
-                    {
-                      "notation": "e7",
-                      "boardId": "726bb214-2462-44fb-814a-8626b51ac774"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 11
-            },
-            {
-              "notationNumber": "12. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f8",
-                      "boardId": "726bb214-2462-44fb-814a-8626b51ac774"
-                    },
-                    {
-                      "notation": "b4",
-                      "boardId": "e9b4b763-84a2-435d-b145-f9c8d7734727"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "b8",
-                      "boardId": "e9b4b763-84a2-435d-b145-f9c8d7734727"
-                    },
-                    {
-                      "notation": "c7",
-                      "boardId": "9e11f7c9-84e5-4914-a1b2-0b5aa9d25ff8"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 12
-            },
-            {
-              "notationNumber": "13. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "b4",
-                      "boardId": "9e11f7c9-84e5-4914-a1b2-0b5aa9d25ff8"
-                    },
-                    {
-                      "notation": "f8",
-                      "boardId": "76ad885c-d25b-428b-aa8d-2927443b9791"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "c7",
-                      "boardId": "76ad885c-d25b-428b-aa8d-2927443b9791"
-                    },
-                    {
-                      "notation": "d6",
-                      "boardId": "d713e13b-50c6-4bcb-a2ea-e1790e59219b"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 13
-            },
-            {
-              "notationNumber": "14. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f8",
-                      "boardId": "d713e13b-50c6-4bcb-a2ea-e1790e59219b"
-                    },
-                    {
-                      "notation": "b4",
-                      "boardId": "61dee63c-3d26-4ae7-85e0-4b3627b775b8"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "h8",
-                      "boardId": "61dee63c-3d26-4ae7-85e0-4b3627b775b8"
-                    },
-                    {
-                      "notation": "g7",
-                      "boardId": "c57fa085-3f07-45fa-a4dc-70fc0518f855"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 14
-            },
-            {
-              "notationNumber": "15. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "b4",
-                      "boardId": "c57fa085-3f07-45fa-a4dc-70fc0518f855"
-                    },
-                    {
-                      "notation": "c5",
-                      "boardId": "0600059c-e4ba-4634-8a1d-803b7c1650ef"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "g7",
-                      "boardId": "0600059c-e4ba-4634-8a1d-803b7c1650ef"
-                    },
-                    {
-                      "notation": "h6",
-                      "boardId": "8dfcd73b-64c5-4718-bfa3-bd9364e73096"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 15
-            },
-            {
-              "notationNumber": "16. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "c5",
-                      "boardId": "8dfcd73b-64c5-4718-bfa3-bd9364e73096"
-                    },
-                    {
-                      "notation": "d6",
-                      "boardId": "1071e320-eab9-4e64-bf55-93bca08fde47"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 16
-            }
-          ],
-          "notation": [
-            {
-              "notationNumber": "0. ",
-              "moves": [],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": true,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 0
-            },
-            {
-              "notationNumber": "1. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "c3",
-                      "boardId": "5f4ddd51-ee95-4040-96eb-3c09de7d85d4"
-                    },
-                    {
-                      "notation": "b4",
-                      "boardId": "477026bc-8402-4ba2-a165-c54cd0a7630e"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "d6",
-                      "boardId": "477026bc-8402-4ba2-a165-c54cd0a7630e"
-                    },
-                    {
-                      "notation": "c5",
-                      "boardId": "c9a04f38-97e6-4c3c-83f4-f6dcc2c2ca65"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 1
-            },
-            {
-              "notationNumber": "2. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "b4",
-                      "boardId": "c9a04f38-97e6-4c3c-83f4-f6dcc2c2ca65"
-                    },
-                    {
-                      "notation": "d6",
-                      "boardId": "01b074ec-1c66-414f-8bcd-262da696a5c8"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "e7",
-                      "boardId": "01b074ec-1c66-414f-8bcd-262da696a5c8"
-                    },
-                    {
-                      "notation": "c5",
-                      "boardId": "c9b150ee-9d3b-47ba-8fc0-25f95d069717"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 2
-            },
-            {
-              "notationNumber": "3. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "e3",
-                      "boardId": "c9b150ee-9d3b-47ba-8fc0-25f95d069717"
-                    },
-                    {
-                      "notation": "d4",
-                      "boardId": "dd227457-6344-4566-87b1-cce0e5bb0d4d"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "c5",
-                      "boardId": "dd227457-6344-4566-87b1-cce0e5bb0d4d"
-                    },
-                    {
-                      "notation": "e3",
-                      "boardId": "b162ec9e-20ab-496c-824f-4535cc55c2f6"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 3
-            },
-            {
-              "notationNumber": "4. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f2",
-                      "boardId": "b162ec9e-20ab-496c-824f-4535cc55c2f6"
-                    },
-                    {
-                      "notation": "d4",
-                      "boardId": "8d33cbe9-6ab7-4402-b8fa-1a560105781a"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "f6",
-                      "boardId": "8d33cbe9-6ab7-4402-b8fa-1a560105781a"
-                    },
-                    {
-                      "notation": "e5",
-                      "boardId": "572e30a9-c79c-4e9f-bdd5-0d3eae0d199d"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 4
-            },
-            {
-              "notationNumber": "5. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "d4",
-                      "boardId": "572e30a9-c79c-4e9f-bdd5-0d3eae0d199d"
-                    },
-                    {
-                      "notation": "f6",
-                      "boardId": "ed50c2ad-010d-4b74-9d1f-cc2b64e94a3f"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "g7",
-                      "boardId": "ed50c2ad-010d-4b74-9d1f-cc2b64e94a3f"
-                    },
-                    {
-                      "notation": "e5",
-                      "boardId": "c0c738a1-9c17-4a3f-99f7-c6ea86870b22"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 5
-            },
-            {
-              "notationNumber": "6. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "g3",
-                      "boardId": "c0c738a1-9c17-4a3f-99f7-c6ea86870b22"
-                    },
-                    {
-                      "notation": "f4",
-                      "boardId": "a6f7c538-ef9b-4315-b19f-edaba2940eb7"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "e5",
-                      "boardId": "a6f7c538-ef9b-4315-b19f-edaba2940eb7"
-                    },
-                    {
-                      "notation": "g3",
-                      "boardId": "b26007b5-246d-4698-8b61-6dd08add6d3d"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 6
-            },
-            {
-              "notationNumber": "7. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "h2",
-                      "boardId": "b26007b5-246d-4698-8b61-6dd08add6d3d"
-                    },
-                    {
-                      "notation": "f4",
-                      "boardId": "34e5424d-6469-45a6-8665-4ce44080eb37"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "h6",
-                      "boardId": "34e5424d-6469-45a6-8665-4ce44080eb37"
-                    },
-                    {
-                      "notation": "g5",
-                      "boardId": "cad906bf-b749-4647-ac89-aacdc4a06175"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 7
-            },
-            {
-              "notationNumber": "8. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f4",
-                      "boardId": "cad906bf-b749-4647-ac89-aacdc4a06175"
-                    },
-                    {
-                      "notation": "h6",
-                      "boardId": "7abde41f-e7c5-4396-b7bb-6cdb2859d91d"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "f8",
-                      "boardId": "7abde41f-e7c5-4396-b7bb-6cdb2859d91d"
-                    },
-                    {
-                      "notation": "g7",
-                      "boardId": "7da7610c-66d9-4b3f-8c5b-daf998bea28d"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 8
-            },
-            {
-              "notationNumber": "9. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "h6",
-                      "boardId": "7da7610c-66d9-4b3f-8c5b-daf998bea28d"
-                    },
-                    {
-                      "notation": "f8",
-                      "boardId": "0235b20e-2586-4f1d-9d9a-8b935edb8d6b"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "c7",
-                      "boardId": "0235b20e-2586-4f1d-9d9a-8b935edb8d6b"
-                    },
-                    {
-                      "notation": "d6",
-                      "boardId": "db79d996-bdc9-4ce5-b9b6-520b30cebc86"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 9
-            },
-            {
-              "notationNumber": "10. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f8",
-                      "boardId": "db79d996-bdc9-4ce5-b9b6-520b30cebc86"
-                    },
-                    {
-                      "notation": "b4",
-                      "boardId": "6acbf203-630a-4ca1-97b4-b18080f84ced"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "b6",
-                      "boardId": "6acbf203-630a-4ca1-97b4-b18080f84ced"
-                    },
-                    {
-                      "notation": "c5",
-                      "boardId": "987121ef-ac8e-498c-b03b-b9bc880e0616"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 10
-            },
-            {
-              "notationNumber": "11. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "b4",
-                      "boardId": "987121ef-ac8e-498c-b03b-b9bc880e0616"
-                    },
-                    {
-                      "notation": "f8",
-                      "boardId": "990acee1-2138-4828-b638-112bd1ae2d8c"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "d8",
-                      "boardId": "990acee1-2138-4828-b638-112bd1ae2d8c"
-                    },
-                    {
-                      "notation": "e7",
-                      "boardId": "726bb214-2462-44fb-814a-8626b51ac774"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 11
-            },
-            {
-              "notationNumber": "12. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f8",
-                      "boardId": "726bb214-2462-44fb-814a-8626b51ac774"
-                    },
-                    {
-                      "notation": "b4",
-                      "boardId": "e9b4b763-84a2-435d-b145-f9c8d7734727"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "b8",
-                      "boardId": "e9b4b763-84a2-435d-b145-f9c8d7734727"
-                    },
-                    {
-                      "notation": "c7",
-                      "boardId": "9e11f7c9-84e5-4914-a1b2-0b5aa9d25ff8"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 12
-            },
-            {
-              "notationNumber": "13. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "b4",
-                      "boardId": "9e11f7c9-84e5-4914-a1b2-0b5aa9d25ff8"
-                    },
-                    {
-                      "notation": "f8",
-                      "boardId": "76ad885c-d25b-428b-aa8d-2927443b9791"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "c7",
-                      "boardId": "76ad885c-d25b-428b-aa8d-2927443b9791"
-                    },
-                    {
-                      "notation": "d6",
-                      "boardId": "d713e13b-50c6-4bcb-a2ea-e1790e59219b"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 13
-            },
-            {
-              "notationNumber": "14. ",
-              "moves": [
-                {
-                  "type": "CAPTURE",
-                  "move": [
-                    {
-                      "notation": "f8",
-                      "boardId": "d713e13b-50c6-4bcb-a2ea-e1790e59219b"
-                    },
-                    {
-                      "notation": "b4",
-                      "boardId": "61dee63c-3d26-4ae7-85e0-4b3627b775b8"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "h8",
-                      "boardId": "61dee63c-3d26-4ae7-85e0-4b3627b775b8"
-                    },
-                    {
-                      "notation": "g7",
-                      "boardId": "c57fa085-3f07-45fa-a4dc-70fc0518f855"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 14
-            },
-            {
-              "notationNumber": "15. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "b4",
-                      "boardId": "c57fa085-3f07-45fa-a4dc-70fc0518f855"
-                    },
-                    {
-                      "notation": "c5",
-                      "boardId": "0600059c-e4ba-4634-8a1d-803b7c1650ef"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                },
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "g7",
-                      "boardId": "0600059c-e4ba-4634-8a1d-803b7c1650ef"
-                    },
-                    {
-                      "notation": "h6",
-                      "boardId": "8dfcd73b-64c5-4718-bfa3-bd9364e73096"
-                    }
-                  ],
-                  "cursor": false,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 15
-            },
-            {
-              "notationNumber": "16. ",
-              "moves": [
-                {
-                  "type": "SIMPLE",
-                  "move": [
-                    {
-                      "notation": "c5",
-                      "boardId": "8dfcd73b-64c5-4718-bfa3-bd9364e73096"
-                    },
-                    {
-                      "notation": "d6",
-                      "boardId": "1071e320-eab9-4e64-bf55-93bca08fde47"
-                    }
-                  ],
-                  "cursor": true,
-                  "moveStrength": null
-                }
-              ],
-              "variants": [],
-              "ellipses": false,
-              "numeric": false,
-              "comment": null,
-              "root": false,
-              "current": false,
-              "previous": false,
-              "notationNumberInt": 16
-            }
-          ],
-          "currentNotationDrive": null,
-          "variantNotationDrive": null
+        {
+          "boardId": "5e9096a7-84eb-4ee7-8055-b808768ab19a",
+          "anchorNotation": "c1",
+          "possibleNotation": "a3"
+        },
+        {
+          "boardId": "a85209b8-1612-42ae-8bed-447f937100bc",
+          "anchorNotation": "a3",
+          "possibleNotation": "b4"
+        },
+        {
+          "boardId": "e7ccb3ea-d10a-4038-abd0-664d6bdd75ce",
+          "anchorNotation": "c7",
+          "possibleNotation": "d6"
+        },
+        {
+          "boardId": "bb968994-7c85-45d6-a226-0991d75d6d19",
+          "anchorNotation": "a1",
+          "possibleNotation": "b2"
+        },
+        {
+          "boardId": "5f12322c-e17e-457a-8b65-e9f792bee168",
+          "anchorNotation": "e3",
+          "possibleNotation": "c1"
+        },
+        {
+          "boardId": "d02c4cf6-fb70-4e46-b5e3-f4de61ca9303",
+          "anchorNotation": "c1",
+          "possibleNotation": "d2"
+        },
+        {
+          "boardId": "07613358-e29a-4850-89f6-91585e839613",
+          "anchorNotation": "d4",
+          "possibleNotation": "e3"
+        },
+        {
+          "boardId": "4aaf4382-43d2-4a4f-82d1-ca221d3fbdf7",
+          "anchorNotation": "e5",
+          "possibleNotation": "g3"
+        },
+        {
+          "boardId": "8863bc83-658d-413e-a23f-1d3d7e440492",
+          "anchorNotation": "c3",
+          "possibleNotation": "e5"
+        },
+        {
+          "boardId": "052a6d90-3348-44e1-a50d-f1867645dec8",
+          "anchorNotation": "c5",
+          "possibleNotation": "d4"
+        },
+        {
+          "boardId": "25162a77-0cb1-418d-99d1-d3ad7f9203f0",
+          "anchorNotation": "b2",
+          "possibleNotation": "c3"
+        },
+        {
+          "boardId": "06663e73-9bbe-4ac0-be84-150c8c3e9d6f",
+          "anchorNotation": "h2",
+          "possibleNotation": "f4"
+        },
+        {
+          "boardId": "04f17a7e-e19b-456f-ae36-f65bc01bd8c4",
+          "anchorNotation": "f2",
+          "possibleNotation": "g3"
+        },
+        {
+          "boardId": "a837a7a3-e093-480b-b229-03287ac76242",
+          "anchorNotation": "b6",
+          "possibleNotation": "c5"
+        },
+        {
+          "boardId": "9d2b85b0-fcba-4949-90e7-d36b6759d1dd",
+          "anchorNotation": "e1",
+          "possibleNotation": "f2"
+        },
+        {
+          "boardId": "da0449b2-b9bf-4fc5-905d-775ca2c544c2",
+          "anchorNotation": "f4",
+          "possibleNotation": "h2"
+        },
+        {
+          "boardId": "e12ebbb7-46b5-484e-8364-b9eea62b94c7",
+          "anchorNotation": "h2",
+          "possibleNotation": "g3"
+        },
+        {
+          "boardId": "c765ab81-b648-4d53-bba6-72645d96b9a6",
+          "anchorNotation": "h6",
+          "possibleNotation": "f4"
+        },
+        {
+          "boardId": "60732377-b711-461d-bded-063c3ea47343",
+          "anchorNotation": "e3",
+          "possibleNotation": "g5"
+        },
+        {
+          "boardId": "5224e892-5c63-4fe3-a614-cb28fe2403ee",
+          "anchorNotation": "e5",
+          "possibleNotation": "f4"
+        },
+        {
+          "boardId": "9644e9d5-ade1-4cfd-a1e2-63d5ba490976",
+          "anchorNotation": "d2",
+          "possibleNotation": "e3"
+        },
+        {
+          "boardId": "aacba062-0486-4b30-a637-fed5b89cc396",
+          "anchorNotation": "g7",
+          "possibleNotation": "e5"
+        },
+        {
+          "boardId": "7036812e-a482-4bb2-b82b-08f484c1fc69",
+          "anchorNotation": "d4",
+          "possibleNotation": "f6"
+        },
+        {
+          "boardId": "7443510a-d2dc-4700-9ecc-f4e6699d1ba8",
+          "anchorNotation": "d6",
+          "possibleNotation": "e5"
+        },
+        {
+          "boardId": "73d47c2e-00b9-443f-9e97-7babb6a574f0",
+          "anchorNotation": "f2",
+          "possibleNotation": "d4"
+        },
+        {
+          "boardId": "146de213-4cee-4435-9925-96593603c9eb",
+          "anchorNotation": "c5",
+          "possibleNotation": "e3"
+        },
+        {
+          "boardId": "b54736df-bebd-4a50-845e-724d55d2d3a4",
+          "anchorNotation": "c3",
+          "possibleNotation": "d4"
+        },
+        {
+          "boardId": "dac802a4-f2d7-44ff-a9d4-ea2e557f0026",
+          "anchorNotation": "e3",
+          "possibleNotation": "c5"
+        },
+        {
+          "boardId": "fb19480a-a3f0-4261-b704-9f5244240745",
+          "anchorNotation": "g5",
+          "possibleNotation": "e3"
+        },
+        {
+          "boardId": "6f395af0-761a-4a91-9c74-07a2e0fd461e",
+          "anchorNotation": "e3",
+          "possibleNotation": "d4"
+        },
+        {
+          "boardId": "2b0d628c-40c3-4788-acac-a22462ad9589",
+          "anchorNotation": "f6",
+          "possibleNotation": "g5"
+        },
+        {
+          "boardId": "a6e87047-2b4b-48dc-965f-4016b1178abd",
+          "anchorNotation": "g3",
+          "possibleNotation": "f4"
         }
-      },
-      "board": {
-        "id": "1071e320-eab9-4e64-bf55-93bca08fde47",
-        "createdAt": "2018-04-14T12:10:07.109",
-        "updatedAt": "2018-04-14T12:10:07.124",
-        "boardBoxId": "cd3c1ca1-0ace-4b7a-8576-3584c067ced3",
-        "previousBoards": [
-          {
-            "boardId": "8dfcd73b-64c5-4718-bfa3-bd9364e73096",
-            "anchorNotation": "c5",
-            "possibleNotation": "d6"
-          },
-          {
-            "boardId": "0600059c-e4ba-4634-8a1d-803b7c1650ef",
-            "anchorNotation": "g7",
-            "possibleNotation": "h6"
-          },
-          {
-            "boardId": "c57fa085-3f07-45fa-a4dc-70fc0518f855",
-            "anchorNotation": "b4",
-            "possibleNotation": "c5"
-          },
-          {
-            "boardId": "61dee63c-3d26-4ae7-85e0-4b3627b775b8",
-            "anchorNotation": "h8",
-            "possibleNotation": "g7"
-          },
-          {
-            "boardId": "d713e13b-50c6-4bcb-a2ea-e1790e59219b",
-            "anchorNotation": "f8",
-            "possibleNotation": "b4"
-          },
-          {
-            "boardId": "76ad885c-d25b-428b-aa8d-2927443b9791",
-            "anchorNotation": "c7",
-            "possibleNotation": "d6"
-          },
-          {
-            "boardId": "9e11f7c9-84e5-4914-a1b2-0b5aa9d25ff8",
-            "anchorNotation": "b4",
-            "possibleNotation": "f8"
-          },
-          {
-            "boardId": "e9b4b763-84a2-435d-b145-f9c8d7734727",
-            "anchorNotation": "b8",
-            "possibleNotation": "c7"
-          },
-          {
-            "boardId": "726bb214-2462-44fb-814a-8626b51ac774",
-            "anchorNotation": "f8",
-            "possibleNotation": "b4"
-          },
-          {
-            "boardId": "990acee1-2138-4828-b638-112bd1ae2d8c",
-            "anchorNotation": "d8",
-            "possibleNotation": "e7"
-          },
-          {
-            "boardId": "987121ef-ac8e-498c-b03b-b9bc880e0616",
-            "anchorNotation": "b4",
-            "possibleNotation": "f8"
-          },
-          {
-            "boardId": "6acbf203-630a-4ca1-97b4-b18080f84ced",
-            "anchorNotation": "b6",
-            "possibleNotation": "c5"
-          },
-          {
-            "boardId": "db79d996-bdc9-4ce5-b9b6-520b30cebc86",
-            "anchorNotation": "f8",
-            "possibleNotation": "b4"
-          },
-          {
-            "boardId": "0235b20e-2586-4f1d-9d9a-8b935edb8d6b",
-            "anchorNotation": "c7",
-            "possibleNotation": "d6"
-          },
-          {
-            "boardId": "7da7610c-66d9-4b3f-8c5b-daf998bea28d",
-            "anchorNotation": "h6",
-            "possibleNotation": "f8"
-          },
-          {
-            "boardId": "7abde41f-e7c5-4396-b7bb-6cdb2859d91d",
-            "anchorNotation": "f8",
-            "possibleNotation": "g7"
-          },
-          {
-            "boardId": "cad906bf-b749-4647-ac89-aacdc4a06175",
-            "anchorNotation": "f4",
-            "possibleNotation": "h6"
-          },
-          {
-            "boardId": "34e5424d-6469-45a6-8665-4ce44080eb37",
-            "anchorNotation": "h6",
-            "possibleNotation": "g5"
-          },
-          {
-            "boardId": "b26007b5-246d-4698-8b61-6dd08add6d3d",
-            "anchorNotation": "h2",
-            "possibleNotation": "f4"
-          },
-          {
-            "boardId": "a6f7c538-ef9b-4315-b19f-edaba2940eb7",
-            "anchorNotation": "e5",
-            "possibleNotation": "g3"
-          },
-          {
-            "boardId": "c0c738a1-9c17-4a3f-99f7-c6ea86870b22",
-            "anchorNotation": "g3",
-            "possibleNotation": "f4"
-          },
-          {
-            "boardId": "ed50c2ad-010d-4b74-9d1f-cc2b64e94a3f",
-            "anchorNotation": "g7",
-            "possibleNotation": "e5"
-          },
-          {
-            "boardId": "572e30a9-c79c-4e9f-bdd5-0d3eae0d199d",
-            "anchorNotation": "d4",
-            "possibleNotation": "f6"
-          },
-          {
-            "boardId": "8d33cbe9-6ab7-4402-b8fa-1a560105781a",
-            "anchorNotation": "f6",
-            "possibleNotation": "e5"
-          },
-          {
-            "boardId": "b162ec9e-20ab-496c-824f-4535cc55c2f6",
-            "anchorNotation": "f2",
-            "possibleNotation": "d4"
-          },
-          {
-            "boardId": "dd227457-6344-4566-87b1-cce0e5bb0d4d",
-            "anchorNotation": "c5",
-            "possibleNotation": "e3"
-          },
-          {
-            "boardId": "c9b150ee-9d3b-47ba-8fc0-25f95d069717",
-            "anchorNotation": "e3",
-            "possibleNotation": "d4"
-          },
-          {
-            "boardId": "01b074ec-1c66-414f-8bcd-262da696a5c8",
-            "anchorNotation": "e7",
-            "possibleNotation": "c5"
-          },
-          {
-            "boardId": "c9a04f38-97e6-4c3c-83f4-f6dcc2c2ca65",
-            "anchorNotation": "b4",
-            "possibleNotation": "d6"
-          },
-          {
-            "boardId": "477026bc-8402-4ba2-a165-c54cd0a7630e",
-            "anchorNotation": "d6",
-            "possibleNotation": "c5"
-          },
-          {
-            "boardId": "5f4ddd51-ee95-4040-96eb-3c09de7d85d4",
-            "anchorNotation": "c3",
-            "possibleNotation": "b4"
-          }
-        ],
-        "nextBoards": [],
-        "blackDraughts": {
-          "a7": {
-            "v": 1,
-            "h": 0,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "a-1"
-          },
-          "h6": {
-            "v": 2,
-            "h": 7,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "h-2"
-          }
+      ],
+      "nextBoards": [],
+      "blackDraughts": {
+        "h8": {
+          "v": 0,
+          "h": 7,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlight": false,
+          "updatedAt": null,
+          "notation": "h0"
         },
-        "whiteDraughts": {
-          "b2": {
-            "v": 6,
-            "h": 1,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "b-6"
-          },
-          "a1": {
-            "v": 7,
-            "h": 0,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "a-7"
-          },
-          "a3": {
-            "v": 5,
-            "h": 0,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "a-5"
-          },
-          "d6": {
-            "v": 2,
-            "h": 3,
-            "black": false,
-            "queen": true,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "d-2"
-          },
-          "g1": {
-            "v": 7,
-            "h": 6,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "g-7"
-          },
-          "e1": {
-            "v": 7,
-            "h": 4,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "e-7"
-          },
-          "d2": {
-            "v": 6,
-            "h": 3,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "d-6"
-          },
-          "c1": {
-            "v": 7,
-            "h": 2,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "c-7"
-          }
+        "f8": {
+          "v": 0,
+          "h": 5,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlight": false,
+          "updatedAt": null,
+          "notation": "f0"
         },
-        "selectedSquare": {
+        "e7": {
+          "v": 1,
+          "h": 4,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlight": false,
+          "updatedAt": null,
+          "notation": "e-1"
+        },
+        "d6": {
           "v": 2,
           "h": 3,
-          "main": false,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
           "highlight": false,
-          "draught": {
-            "v": 2,
-            "h": 3,
-            "black": false,
-            "queen": true,
-            "captured": false,
-            "markCaptured": false,
-            "highlight": false,
-            "updatedAt": null,
-            "notation": "d6"
-          },
-          "occupied": true,
           "updatedAt": null,
-          "notation": "d6"
+          "notation": "d-2"
         },
-        "nextSquare": null,
-        "previousSquare": {
+        "c5": {
           "v": 3,
           "h": 2,
-          "main": false,
+          "black": true,
+          "queen": true,
+          "captured": false,
+          "markCaptured": false,
           "highlight": false,
-          "draught": null,
-          "occupied": false,
           "updatedAt": null,
-          "notation": "c5"
+          "notation": "c-3"
         },
-        "squares": [
-          null,
-          {
-            "v": 0,
-            "h": 1,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "b8"
-          },
-          null,
-          {
-            "v": 0,
-            "h": 3,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "d8"
-          },
-          null,
-          {
-            "v": 0,
-            "h": 5,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "f8"
-          },
-          null,
-          {
-            "v": 0,
-            "h": 7,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "h8"
-          },
-          {
-            "v": 1,
-            "h": 0,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 1,
-              "h": 0,
-              "black": true,
-              "queen": false,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "a-1"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "a7"
-          },
-          null,
-          {
-            "v": 1,
-            "h": 2,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "c7"
-          },
-          null,
-          {
-            "v": 1,
-            "h": 4,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "e7"
-          },
-          null,
-          {
-            "v": 1,
-            "h": 6,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "g7"
-          },
-          null,
-          null,
-          {
-            "v": 2,
-            "h": 1,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "b6"
-          },
-          null,
-          {
-            "v": 2,
-            "h": 3,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 2,
-              "h": 3,
-              "black": false,
-              "queen": true,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "d6"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "d6"
-          },
-          null,
-          {
-            "v": 2,
-            "h": 5,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "f6"
-          },
-          null,
-          {
-            "v": 2,
-            "h": 7,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 2,
-              "h": 7,
-              "black": true,
-              "queen": false,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "h-2"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "h6"
-          },
-          {
-            "v": 3,
-            "h": 0,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "a5"
-          },
-          null,
-          {
-            "v": 3,
-            "h": 2,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "c5"
-          },
-          null,
-          {
-            "v": 3,
-            "h": 4,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "e5"
-          },
-          null,
-          {
-            "v": 3,
-            "h": 6,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "g5"
-          },
-          null,
-          null,
-          {
-            "v": 4,
-            "h": 1,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "b4"
-          },
-          null,
-          {
-            "v": 4,
-            "h": 3,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "d4"
-          },
-          null,
-          {
-            "v": 4,
-            "h": 5,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "f4"
-          },
-          null,
-          {
-            "v": 4,
-            "h": 7,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "h4"
-          },
-          {
-            "v": 5,
-            "h": 0,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 5,
-              "h": 0,
-              "black": false,
-              "queen": false,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "a-5"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "a3"
-          },
-          null,
-          {
-            "v": 5,
-            "h": 2,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "c3"
-          },
-          null,
-          {
-            "v": 5,
-            "h": 4,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "e3"
-          },
-          null,
-          {
-            "v": 5,
-            "h": 6,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "g3"
-          },
-          null,
-          null,
-          {
-            "v": 6,
-            "h": 1,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 6,
-              "h": 1,
-              "black": false,
-              "queen": false,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "b-6"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "b2"
-          },
-          null,
-          {
-            "v": 6,
-            "h": 3,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 6,
-              "h": 3,
-              "black": false,
-              "queen": false,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "d-6"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "d2"
-          },
-          null,
-          {
-            "v": 6,
-            "h": 5,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "f2"
-          },
-          null,
-          {
-            "v": 6,
-            "h": 7,
-            "main": false,
-            "highlight": false,
-            "draught": null,
-            "occupied": false,
-            "updatedAt": null,
-            "notation": "h2"
-          },
-          {
-            "v": 7,
-            "h": 0,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 7,
-              "h": 0,
-              "black": false,
-              "queen": false,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "a-7"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "a1"
-          },
-          null,
-          {
-            "v": 7,
-            "h": 2,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 7,
-              "h": 2,
-              "black": false,
-              "queen": false,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "c-7"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "c1"
-          },
-          null,
-          {
-            "v": 7,
-            "h": 4,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 7,
-              "h": 4,
-              "black": false,
-              "queen": false,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "e-7"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "e1"
-          },
-          null,
-          {
-            "v": 7,
-            "h": 6,
-            "main": false,
-            "highlight": false,
-            "draught": {
-              "v": 7,
-              "h": 6,
-              "black": false,
-              "queen": false,
-              "captured": false,
-              "markCaptured": false,
-              "highlight": false,
-              "updatedAt": null,
-              "notation": "g-7"
-            },
-            "occupied": true,
-            "updatedAt": null,
-            "notation": "g1"
-          },
-          null
-        ],
-        "black": false,
-        "rules": "RUSSIAN",
-        "blackTurn": true,
-        "driveCount": 16
+        "d8": {
+          "v": 0,
+          "h": 3,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlight": false,
+          "updatedAt": null,
+          "notation": "d0"
+        },
+        "b8": {
+          "v": 0,
+          "h": 1,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlight": false,
+          "updatedAt": null,
+          "notation": "b0"
+        },
+        "a7": {
+          "v": 1,
+          "h": 0,
+          "black": true,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlight": false,
+          "updatedAt": null,
+          "notation": "a-1"
+        }
       },
-      "editMode": "EDIT"
+      "whiteDraughts": {
+        "g1": {
+          "v": 7,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlight": false,
+          "updatedAt": null,
+          "notation": "g-7"
+        },
+        "g3": {
+          "v": 5,
+          "h": 6,
+          "black": false,
+          "queen": false,
+          "captured": false,
+          "markCaptured": false,
+          "highlight": false,
+          "updatedAt": null,
+          "notation": "g-5"
+        }
+      },
+      "selectedSquare": {
+        "v": 3,
+        "h": 2,
+        "main": false,
+        "highlight": false,
+        "draught": {
+          "v": 3,
+          "h": 2,
+          "black": true,
+          "queen": true,
+          "captured": false,
+          "markCaptured": false,
+          "highlight": false,
+          "updatedAt": null,
+          "notation": "c-3"
+        },
+        "occupied": true,
+        "updatedAt": null,
+        "notation": "c-3"
+      },
+      "nextSquare": null,
+      "previousSquare": {
+        "v": 5,
+        "h": 0,
+        "main": false,
+        "highlight": false,
+        "draught": null,
+        "occupied": false,
+        "updatedAt": null,
+        "notation": "a-5"
+      },
+      "squares": [],
+      "black": false,
+      "rules": "RUSSIAN",
+      "blackTurn": false,
+      "driveCount": 15
     }
   ]
 }

@@ -2,11 +2,15 @@
   "tableName": "Article",
   "entries": [
     {
-      "id": "Новая статья",
-      "createdAt": "2018-03-26T10:34:23.586Z",
+      "type": "article",
+      "id": "Новая статья-Ntgw2JpBQD",
+      "createdAt": "2018-04-14T12:55:35.944",
+      "author": null,
       "title": "Новая статья",
-      "boardBoxId": "cd3c1ca1-0ace-4b7a-8576-3584c067ced3",
-      "state": "newadded"
+      "content": null,
+      "boardBoxId": "d9e4276d-d8f9-4d40-9f4d-43235452eff5",
+      "state": "newadded",
+      "updatedAt": "2018-04-14T12:55:36.083"
     }
   ]
 }

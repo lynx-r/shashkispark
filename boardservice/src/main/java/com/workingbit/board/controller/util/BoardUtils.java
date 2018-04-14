@@ -231,7 +231,8 @@ public class BoardUtils {
     addDraught(board, notation, black, false, true);
   }
 
-  public static Board moveDraught(Board board, List<Square> capturedSquares, String prevBoardId) {
+  public static Board moveDraught(Board board, List<Square> capturedSquares, String prevBoardId,
+                                  NotationHistory notationHistory) {
     performMoveDraught(board, capturedSquares);
     Board newBoard = board.deepClone();
     boolean blackTurn = board.isBlackTurn();
@@ -240,16 +241,15 @@ public class BoardUtils {
     boolean previousCaptured = !capturedSquares.isEmpty();
     boolean nextCaptured = !nextMovesSquares.getCaptured().isEmpty();
     if (previousCaptured && nextCaptured) {
-      updateNotationMiddle(newBoard, prevBoardId);
+      updateNotationMiddle(newBoard, prevBoardId, notationHistory);
       return newBoard;
     }
-    updateNotationEnd(board, prevBoardId, previousCaptured);
+    updateNotationEnd(board, prevBoardId, notationHistory, previousCaptured);
     resetBoardHighlight(board);
     return board;
   }
 
-  private static void updateNotationMiddle(Board board, String prevBoardId) {
-    NotationHistory notationDrives = board.getNotationHistory();
+  private static void updateNotationMiddle(Board board, String prevBoardId, NotationHistory notationDrives) {
 
     String previousNotation = board.getPreviousSquare().getNotation();
     boolean isContinueCapture = isContinueCapture(notationDrives, previousNotation);
@@ -288,7 +288,8 @@ public class BoardUtils {
     notationDrives.syncLastDrive();
   }
 
-  private static void updateNotationEnd(Board board, String prevBoardId, boolean previousCaptured) {
+  private static void updateNotationEnd(Board board, String prevBoardId, NotationHistory notationHistory,
+                                        boolean previousCaptured) {
     boolean blackTurn = board.isBlackTurn();
     int notationNumber = 0;
     if (!blackTurn) { // white move
@@ -297,32 +298,31 @@ public class BoardUtils {
     }
 
     if (previousCaptured) {
-      pushCaptureMove(board, prevBoardId, notationNumber);
+      pushCaptureMove(board, prevBoardId, notationNumber, notationHistory);
     } else {
-      pushSimpleMove(board, prevBoardId, notationNumber);
+      pushSimpleMove(board, notationHistory, prevBoardId, notationNumber);
     }
     board.setBlackTurn(!blackTurn);
   }
 
-  private static void pushCaptureMove(Board board, String prevBoardId, int notationNumber) {
-    NotationHistory notationDrives = board.getNotationHistory();
-    resetBoardNotationCursor(notationDrives);
+  private static void pushCaptureMove(Board board, String prevBoardId, int notationNumber, NotationHistory notationHistory) {
+    resetBoardNotationCursor(notationHistory);
 
     NotationDrive notationDrive;
     String previousNotation = board.getPreviousSquare().getNotation();
     boolean isBlackTurn = board.isBlackTurn();
-    boolean isContinueCapture = isContinueCapture(notationDrives, previousNotation);
+    boolean isContinueCapture = isContinueCapture(notationHistory, previousNotation);
     if (isBlackTurn) {
-      notationDrive = notationDrives.getLast();
+      notationDrive = notationHistory.getLast();
     } else {
       if (!isContinueCapture) {
         notationDrive = new NotationDrive();
-        NotationDrive.copyMetaOf(notationDrives.getLast(), notationDrive);
+        NotationDrive.copyMetaOf(notationHistory.getLast(), notationDrive);
         notationDrive.setNotationNumberInt(notationNumber);
-        notationDrives.add(notationDrive);
-        notationDrive = notationDrives.getLast();
+        notationHistory.add(notationDrive);
+        notationDrive = notationHistory.getLast();
       } else {
-        notationDrive = notationDrives.getLast();
+        notationDrive = notationHistory.getLast();
       }
     }
     NotationMoves moves = notationDrive.getMoves();
@@ -358,7 +358,7 @@ public class BoardUtils {
       lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId));
       lastCapturedMove.setCursor(true);
     }
-    notationDrives.syncLastDrive();
+    notationHistory.syncLastDrive();
   }
 
   private static boolean isContinueCapture(NotationHistory notationDrives, String previousNotation) {
@@ -376,9 +376,9 @@ public class BoardUtils {
             .getNotation().equals(previousNotation);
   }
 
-  private static void pushSimpleMove(Board board, String prevBoardId, int notationNumber) {
-    resetBoardNotationCursor(board.getNotationHistory());
-    NotationHistory notationDrives = board.getNotationHistory();
+  private static void pushSimpleMove(Board board, NotationHistory notationHistory,
+                                     String prevBoardId, int notationNumber) {
+    resetBoardNotationCursor(notationHistory);
 
     NotationMoves moves = new NotationMoves();
 
@@ -391,18 +391,18 @@ public class BoardUtils {
 
     moves.add(notationMove);
 
-    notationDrives.getLastMove()
+    notationHistory.getLastMove()
         .ifPresent(move -> move.setCursor(false));
     boolean isWhiteTurn = notationNumber != 0;
     if (isWhiteTurn) {
       NotationDrive notationDrive = NotationDrive.create(moves);
 
       notationDrive.setNotationNumberInt(notationNumber);
-      notationDrives.add(notationDrive);
+      notationHistory.add(notationDrive);
     } else {
-      notationDrives.getLast().getMoves().addAll(moves);
+      notationHistory.getLast().getMoves().addAll(moves);
     }
-    notationDrives.syncLastDrive();
+    notationHistory.syncLastDrive();
   }
 
   private static void resetBoardNotationCursor(NotationHistory notationDrives) {
@@ -512,7 +512,8 @@ public class BoardUtils {
     draught.setV(targetSquare.getV());
     draught.setH(targetSquare.getH());
 
-    checkQueen(board, draught);
+    EnumRules rules = board.getRules();
+    checkQueen(rules, draught);
 
     BoardUtils.addDraught(board, targetSquare.getNotation(), draught);
     targetSquare = BoardUtils.findSquareByNotation(targetSquare.getNotation(), board);
@@ -538,9 +539,9 @@ public class BoardUtils {
     }
   }
 
-  private static void checkQueen(Board board, Draught draught) {
+  private static void checkQueen(EnumRules rules, Draught draught) {
     if (!draught.isQueen()) {
-      if (draught.isBlack() && board.getRules().getDimension() == draught.getV() + 1) {
+      if (draught.isBlack() && rules.getDimension() == draught.getV() + 1) {
         draught.setQueen(true);
       } else if (!draught.isBlack() && draught.getV() == 0) {
         draught.setQueen(true);

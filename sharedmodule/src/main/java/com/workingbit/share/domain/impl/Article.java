@@ -47,7 +47,7 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "content")
   private String content;
 
-  @DynamoDBAttribute(attributeName = "boardId")
+  @DynamoDBAttribute(attributeName = "boardBoxId")
   private String boardBoxId;
 
   @DynamoDBTypeConvertedEnum

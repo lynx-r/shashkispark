@@ -154,7 +154,7 @@ public class BaseServiceTest {
   protected Board move(Board board, Square selectedSquare) {
     boolean blackTurn = board.isBlackTurn();
     MovesList capturedSquares = highlightedBoard(blackTurn, selectedSquare, board);
-    return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getId());
+    return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getId(), notationDrives);
   }
 
   protected Board move(Board board, String fromNotation, String toNotation, boolean blackTurn) {

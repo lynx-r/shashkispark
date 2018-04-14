@@ -97,10 +97,6 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "black")
   private boolean black;
 
-  @DynamoDBTypeConvertedEnum
-  @DynamoDBAttribute(attributeName = "rules")
-  private EnumRules rules;
-
   @DynamoDBAttribute(attributeName = "blackTurn")
   private boolean blackTurn;
 
@@ -110,19 +106,26 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "driveCount")
   private int driveCount;
 
-  @JsonIgnore
-  @DynamoDBTypeConvertedJson(targetType = NotationHistory.class)
-  @DynamoDBAttribute(attributeName = "notationHistory")
-  private NotationHistory notationHistory;
+  @DynamoDBTypeConvertedEnum
+  @DynamoDBAttribute(attributeName = "rules")
+  private EnumRules rules;
+
+//  @JsonIgnore
+//  @DynamoDBTypeConvertedJson(targetType = NotationHistory.class)
+//  @DynamoDBAttribute(attributeName = "notationHistory")
+//  private NotationHistory notationHistory;
+
+//  public Board() {
+//    notationHistory = NotationHistory.createWithRoot();
+//  }
+
 
   public Board() {
-    notationHistory = NotationHistory.createWithRoot();
   }
 
   public Board(boolean black, EnumRules rules) {
     this();
     this.black = black;
-    this.rules = rules;
   }
 
   public String popPreviousBoard() {

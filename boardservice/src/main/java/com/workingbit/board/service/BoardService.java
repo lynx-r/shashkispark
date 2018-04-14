@@ -78,8 +78,9 @@ public class BoardService {
    * @param currentBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
+   * @param notationHistory
    */
-  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard) {
+  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, NotationHistory notationHistory) {
     boolean blackTurn = currentBoard.isBlackTurn();
     MovesList movesList = highlightedBoard(blackTurn, selectedSquare, currentBoard);
     List<Square> allowed = movesList.getAllowed();
@@ -100,7 +101,7 @@ public class BoardService {
 
     String boardId = currentBoard.getId();
     // MOVE DRAUGHT
-    nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId);
+    nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId, notationHistory);
     String notation = selectedSquare.getNotation();
     String nextNotation = nextSquare.getNotation();
     nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
@@ -169,13 +170,13 @@ public class BoardService {
     for (NotationDrive notationDrive : notationDrives.getNotation()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
-        board = emulateMove(drive, board);
+        board = emulateMove(drive, board, notationDrives);
       }
     }
     return board;
   }
 
-  private Board emulateMove(NotationMove notationMove, Board board) {
+  private Board emulateMove(NotationMove notationMove, Board board, NotationHistory notationHistory) {
     if (notationMove == null) {
       return board;
     }
@@ -188,7 +189,7 @@ public class BoardService {
       Square next = findSquareByNotation(move, board).deepClone();
       next.setHighlight(true);
       board.setNextSquare(next);
-      board = move(selected, next, board);
+      board = move(selected, next, board, notationHistory);
       if (!iterator.hasNext()) {
         break;
       }

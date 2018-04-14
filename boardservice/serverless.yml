@@ -170,8 +170,8 @@ resources:
           Projection:
             ProjectionType: KEYS_ONLY
           ProvisionedThroughput:
-            ReadCapacityUnits: '1'
-            WriteCapacityUnits: '1'
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
 
     DynamoDbTableBoard:
       Type: AWS::DynamoDB::Table
@@ -188,8 +188,23 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    DynamoDbTableNotation:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Notation
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
     DynamoDBIamPolicyBoardBox:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableBoardBox
@@ -200,15 +215,16 @@ resources:
           Statement:
             - Effect: Allow
               Action:
-                - dynamodb:*
-#                - dynamodb:GetItem
-#                - dynamodb:PutItem
-#                - dynamodb:UpdateItem
-#                - dynamodb:Scan
-#                - dynamodb:Query
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+                - dynamodb:Query
               Resource: arn:aws:dynamodb:*:*:table/BoardBox
         Roles:
           - Ref: IamRoleLambdaExecution
+
     DynamoDBIamPolicyBoard:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableBoard
@@ -226,6 +242,26 @@ resources:
                 - dynamodb:Scan
                 - dynamodb:Query
               Resource: arn:aws:dynamodb:*:*:table/Board
+        Roles:
+          - Ref: IamRoleLambdaExecution
+
+    DynamoDBIamPolicyBoard:
+      Type: AWS::IAM::Policy
+      DependsOn: DynamoDbTableNotation
+      Properties:
+        PolicyName: lambda-dynamodb-notation
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+                - dynamodb:Query
+              Resource: arn:aws:dynamodb:*:*:table/Notation
         Roles:
           - Ref: IamRoleLambdaExecution
 
