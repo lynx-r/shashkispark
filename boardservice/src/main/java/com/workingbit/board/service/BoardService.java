@@ -30,24 +30,19 @@ public class BoardService {
     return board;
   }
 
-  public void createBoardFromNotation(NotationHistory genNotationHistory, NotationHistory fillNotationHistory, String boardBoxId, EnumRules rules) {
+  void createBoardFromNotation(NotationHistory genNotationHistory, NotationHistory fillNotationHistory, EnumRules rules) {
     Board board = initBoard(true, false, rules);
     board.setBoardBoxId(board.getBoardBoxId());
     Utils.setRandomIdAndCreatedAt(board);
     syncBoardWithNotation(board, genNotationHistory, fillNotationHistory);
   }
 
-  public Optional<Board> find(Board board) {
-    Optional<Board> boardOptional = boardDao.find(board);
-    return boardOptional.map(this::updateBoard);
-  }
-
-  public Optional<Board> findById(String boardId) {
+  Optional<Board> findById(String boardId) {
     Optional<Board> boardOptional = boardDao.findById(boardId);
     return boardOptional.map(this::updateBoard);
   }
 
-  public Board resetHighlightAndUpdate(Board board) {
+  Board resetHighlightAndUpdate(Board board) {
     board = updateBoard(board);
     resetBoardHighlight(board);
     return board;
@@ -66,7 +61,7 @@ public class BoardService {
     if (isValidHighlight(selectedSquare)) {
       throw new BoardServiceException("Invalid highlight square");
     }
-    highlightedBoard(boardHighlight.isBlackTurn(), selectedSquare, boardHighlight);
+    highlightedBoard(boardHighlight.isBlackTurn(), boardHighlight);
     return boardHighlight;
   }
 
@@ -76,37 +71,32 @@ public class BoardService {
   }
 
   /**
-   * @param currentBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
+   * @param board map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
-   * @param notationHistory
    */
-  public Board move(Square selectedSquare, Square nextSquare, Board currentBoard, NotationHistory notationHistory) {
-    boolean blackTurn = currentBoard.isBlackTurn();
-    MovesList movesList = highlightedBoard(blackTurn, selectedSquare, currentBoard);
+  public Board move(Board board, NotationHistory notationHistory) {
+    boolean blackTurn = board.isBlackTurn();
+    MovesList movesList = highlightedBoard(blackTurn, board);
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();
     if (allowed.isEmpty()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
-    currentBoard.getSelectedSquare().getDraught().setHighlight(false);
-    boardDao.save(currentBoard);
+    board.getSelectedSquare().getDraught().setHighlight(false);
+    boardDao.save(board);
 
-    Board nextBoard = currentBoard.deepClone();
-    nextBoard.setSelectedSquare(selectedSquare);
-    nextBoard.setNextSquare(nextSquare);
+    Board nextBoard = board.deepClone();
+    nextBoard.setSelectedSquare(board.getSelectedSquare());
+    nextBoard.setNextSquare(board.getNextSquare());
 
     // should be there because in move draught, I set boardId in notation
-    String boardBoxId = nextBoard.getBoardBoxId();
-    nextBoard.setBoardBoxId(currentBoard.getBoardBoxId());
+    nextBoard.setBoardBoxId(board.getBoardBoxId());
     Utils.setRandomIdAndCreatedAt(nextBoard);
 
-    String boardId = currentBoard.getId();
+    String boardId = board.getId();
     // MOVE DRAUGHT
     nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId, notationHistory);
-    String notation = selectedSquare.getNotation();
-    String nextNotation = nextSquare.getNotation();
-//    nextBoard.pushPreviousBoard(boardId, notation, nextNotation);
 
     boardDao.save(nextBoard);
     return nextBoard;
@@ -116,7 +106,7 @@ public class BoardService {
     boardDao.save(board);
   }
 
-  Board addDraught(String articleId, Board currentBoard, String notation, Draught draught) {
+  Board addDraught(Board currentBoard, String notation, Draught draught) {
     Board deepClone = currentBoard.deepClone();
     deepClone.setBoardBoxId(currentBoard.getBoardBoxId());
     Utils.setRandomIdAndCreatedAt(deepClone);
@@ -165,7 +155,7 @@ public class BoardService {
 //        ? currentBoard.getPreviousSquare() : currentBoard.getNextSquare();
 //  }
 
-  public Board updateBoard(Board board) {
+  Board updateBoard(Board board) {
     return BoardUtils.updateBoard(board);
   }
 
@@ -191,7 +181,7 @@ public class BoardService {
       Square next = findSquareByNotation(move, board).deepClone();
       next.setHighlight(true);
       board.setNextSquare(next);
-      board = move(selected, next, board, notationHistory);
+      board = move(board, notationHistory);
       if (!iterator.hasNext()) {
         break;
       }

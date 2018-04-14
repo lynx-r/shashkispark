@@ -79,7 +79,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "c3", "d4", false, boardBox.getNotation().getNotationHistory());
     board = move(board, "f6", "e5", true, boardBox.getNotation().getNotationHistory());
     Square d4 = findSquareByNotation("d4", board);
-    MovesList movesList = highlightedBoard(board.isBlackTurn(), d4, board);
+    MovesList movesList = highlightedBoard(board.isBlackTurn(), board);
     assertTrue(!movesList.getCaptured().isEmpty());
     Square from = BoardUtils.findSquareByNotation("a1", board);
     Square to = BoardUtils.findSquareByNotation("f6", board);

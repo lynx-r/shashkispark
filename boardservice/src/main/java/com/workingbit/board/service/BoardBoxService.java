@@ -37,14 +37,14 @@ public class BoardBoxService {
     return Optional.of(boardBox);
   }
 
-  public Optional<BoardBox> createBoardBoxFromNotation(String articleId, String boardBoxId, Notation fromNotation) {
+  Optional<BoardBox> createBoardBoxFromNotation(String articleId, String boardBoxId, Notation fromNotation) {
     BoardBox boardBox = new BoardBox();
     boardBox.setArticleId(articleId);
     Utils.setRandomIdAndCreatedAt(boardBox);
 
     NotationHistory notationHistory = new NotationHistory();
     boardService.createBoardFromNotation(fromNotation.getNotationHistory(),
-        notationHistory, boardBoxId, fromNotation.getRules());
+        notationHistory, fromNotation.getRules());
     fromNotation.setNotationHistory(notationHistory);
 
     // switch boardBox to the first board
@@ -63,7 +63,7 @@ public class BoardBoxService {
     return Optional.empty();
   }
 
-  public Optional<BoardBox> find(BoardBox boardBox) {
+  Optional<BoardBox> find(BoardBox boardBox) {
     return boardBoxDao.find(boardBox)
         .map(this::updateBoardBox);
   }
@@ -124,15 +124,12 @@ public class BoardBoxService {
               isNotEditMode(boardBox)) {
             return null;
           }
-          Square nextSquare = boardUpdated.getNextSquare();
-          Square selectedSquare = boardUpdated.getSelectedSquare();
-
           Notation notation = updatedBox.getNotation();
           NotationHistory notationBoardBox = notation.getNotationHistory();
           boardUpdated.setDriveCount(notationBoardBox.size() - 1);
 
           try {
-            boardUpdated = boardService.move(selectedSquare, nextSquare, boardUpdated, notationBoardBox);
+            boardUpdated = boardService.move(boardUpdated, notationBoardBox);
           } catch (BoardServiceException e) {
             logger.error("Error while moving", e);
             return null;
@@ -200,7 +197,7 @@ public class BoardBoxService {
             return null;
           }
           try {
-            currentBoard = boardService.addDraught(boardBox.getArticleId(), currentBoard, squareLink.getNotation(), draught);
+            currentBoard = boardService.addDraught(currentBoard, squareLink.getNotation(), draught);
           } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -301,17 +298,6 @@ public class BoardBoxService {
     return !boardBox.getEditMode().equals(EnumEditBoardBoxMode.EDIT);
   }
 
-  private boolean isMoveMode(BoardBox boardBox) {
-    return boardBox.getEditMode().equals(EnumEditBoardBoxMode.MOVE);
-  }
-
-  private boolean isValidMove(Square nextSquare, Square selectedSquare) {
-    return nextSquare == null
-        || selectedSquare == null
-        || !selectedSquare.isOccupied()
-        || !nextSquare.isHighlight();
-  }
-
   private boolean resetHighlightIfNotLastBoard(BoardBox boardBox) {
     NotationDrives variants = boardBox.getNotation().getNotationHistory().getNotation();
     NotationMoves moves = variants.getLast().getMoves();
@@ -348,9 +334,5 @@ public class BoardBoxService {
     notationService.save(boardBox.getNotation());
     boardBox = updateBoardBox(boardBox);
     return boardBox;
-  }
-
-  private BoardBox saveInCacheAndFillBoard(BoardBox boardBox) {
-    return null;
   }
 }

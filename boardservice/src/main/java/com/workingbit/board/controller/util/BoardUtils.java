@@ -111,7 +111,7 @@ public class BoardUtils {
   }
 
   static boolean isSubDiagonal(List<Square> subDiagonal, List<Square> diagonal) {
-    return subDiagonal.stream().allMatch(diagonal::contains);
+    return diagonal.containsAll(subDiagonal);
   }
 
   /**
@@ -236,8 +236,7 @@ public class BoardUtils {
     performMoveDraught(board, capturedSquares);
     Board newBoard = board.deepClone();
     boolean blackTurn = board.isBlackTurn();
-    Square selectedSquareNew = newBoard.getSelectedSquare();
-    MovesList nextMovesSquares = highlightedBoard(blackTurn, selectedSquareNew, newBoard);
+    MovesList nextMovesSquares = highlightedBoard(blackTurn, newBoard);
     boolean previousCaptured = !capturedSquares.isEmpty();
     boolean nextCaptured = !nextMovesSquares.getCaptured().isEmpty();
     if (previousCaptured && nextCaptured) {
@@ -425,21 +424,20 @@ public class BoardUtils {
    *
    * @return is next move allowed
    */
-  public static MovesList highlightedBoard(boolean blackTurn, Square selectedSquare, Board board) {
-    MovesList movesList = highlightedAssignedMoves(selectedSquare);
+  public static MovesList highlightedBoard(boolean blackTurn, Board board) {
+    MovesList movesList = highlightedAssignedMoves(board.getSelectedSquare());
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();
     boolean isCapturedFound = !captured.isEmpty();
     if (isCapturedFound) {
-      highlightCaptured(selectedSquare, board, allowed, captured);
+      highlightCaptured(board, allowed, captured);
       return movesList;
     } else {
-      return highlightSimple(blackTurn, selectedSquare, board, movesList, allowed);
+      return highlightSimple(board, movesList, allowed, blackTurn);
     }
   }
 
-  private static MovesList highlightSimple(boolean blackTurn, Square selectedSquare, Board board, MovesList movesList,
-                                           List<Square> allowed) {
+  private static MovesList highlightSimple(Board board, MovesList movesList, List<Square> allowed, boolean blackTurn) {
     Set<String> draughtsNotations;
     if (blackTurn) {
       draughtsNotations = board.getBlackDraughts().keySet();
@@ -449,7 +447,7 @@ public class BoardUtils {
     // find squares occupied by current user
     List<Square> draughtsSquares = board.getAssignedSquares()
         .stream()
-        .filter(square -> !square.equals(selectedSquare))
+        .filter(square -> !square.equals(board.getSelectedSquare()))
         .filter(square -> draughtsNotations.contains(square.getAlphanumericNotation64()))
         .collect(Collectors.toList());
     // find all squares captured by current user
@@ -467,7 +465,7 @@ public class BoardUtils {
           .stream()
           .peek((square -> {
             // highlight selected draught
-            if (square.isOccupied() && square.equals(selectedSquare)) {
+            if (square.isOccupied() && square.equals(board.getSelectedSquare())) {
               square.getDraught().setHighlight(true);
             }
           }))
@@ -477,13 +475,13 @@ public class BoardUtils {
     return movesList;
   }
 
-  private static void highlightCaptured(Square selectedSquare, Board board, List<Square> allowed, List<Square> captured) {
+  private static void highlightCaptured(Board board, List<Square> allowed, List<Square> captured) {
     board.getAssignedSquares().forEach((Square square) -> {
       square.setHighlight(false);
       if (square.isOccupied()) {
         square.getDraught().setMarkCaptured(false);
       }
-      if (square.isOccupied() && square.equals(selectedSquare)) {
+      if (square.isOccupied() && square.equals(board.getSelectedSquare())) {
         square.getDraught().setHighlight(true);
       }
       if (allowed.contains(square)) {
@@ -640,7 +638,7 @@ public class BoardUtils {
     return null;
   }
 
-  public static String printBoardNotation(NotationHistory notationDrives) {
+  static String printBoardNotation(NotationHistory notationDrives) {
     ObjectMapper mapper = new ObjectMapper();
     try {
       return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(notationDrives);

@@ -146,7 +146,7 @@ public class BaseServiceTest {
 
   protected Board move(Board board, Square selectedSquare, NotationHistory notationHistory) {
     boolean blackTurn = board.isBlackTurn();
-    MovesList capturedSquares = highlightedBoard(blackTurn, selectedSquare, board);
+    MovesList capturedSquares = highlightedBoard(blackTurn, board);
     return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getId(), notationHistory);
   }
 
