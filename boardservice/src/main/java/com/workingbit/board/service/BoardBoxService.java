@@ -56,7 +56,6 @@ public class BoardBoxService {
             Utils.setRandomIdAndCreatedAt(fromNotation);
             boardBox.setNotationId(fromNotation.getId());
             boardBox.setNotation(fromNotation.deepClone());
-            notationService.save(fromNotation);
             boardBox.setBoardId(firstBoardId);
             boardBox.setBoard(firstBoard);
             return boardBox;

@@ -283,7 +283,7 @@ public class BoardUtils {
 
         notationHistory.getLastMove()
             .ifPresent(m -> m.setCursor(false));
-        notationHistory.add(lastNotationDrive);
+        notationHistory.addInHistoryAndNotation(lastNotationDrive);
       } else {
         NotationDrive lastNotationDrive = notationHistory.getLast();
         lastNotationDrive.getMoves().add(move);
@@ -323,7 +323,7 @@ public class BoardUtils {
         notationDrive = new NotationDrive();
         NotationDrive.copyMetaOf(notationHistory.getLast(), notationDrive);
         notationDrive.setNotationNumberInt(notationNumber);
-        notationHistory.add(notationDrive);
+        notationHistory.addInHistoryAndNotation(notationDrive);
         notationDrive = notationHistory.getLast();
       } else {
         notationDrive = notationHistory.getLast();
@@ -402,7 +402,7 @@ public class BoardUtils {
       NotationDrive notationDrive = NotationDrive.create(moves);
 
       notationDrive.setNotationNumberInt(notationNumber);
-      notationHistory.add(notationDrive);
+      notationHistory.addInHistoryAndNotation(notationDrive);
     } else {
       notationHistory.getLast().getMoves().addAll(moves);
     }

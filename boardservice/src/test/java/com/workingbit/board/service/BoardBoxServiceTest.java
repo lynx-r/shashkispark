@@ -805,6 +805,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     boardBox = undo(boardBox);
 
     boardBox = redo(boardBox);
+
+    System.out.println("***");
+    BoardBox orig1 = boardBox.deepClone();
     boardBox = redo(boardBox);
 
     boardBox = undo(boardBox);
@@ -814,7 +817,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     boardBox = redo(boardBox);
     boardBox = redo(boardBox);
     boardBox = redo(boardBox);
-    BoardBox orig = boardBox.deepClone();
+    BoardBox orig2 = boardBox.deepClone();
+    System.out.println("---");
 
     boardBox = undo(boardBox);
     boardBox = undo(boardBox);
@@ -824,7 +828,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     boardBox = redo(boardBox);
     boardBox = redo(boardBox);
 
-    assertEquals(orig.getNotation().getNotationHistory().pdnString(),
+    assertEquals(orig2.getNotation().getNotationHistory().pdnString(),
         boardBox.getNotation().getNotationHistory().pdnString());
   }
 

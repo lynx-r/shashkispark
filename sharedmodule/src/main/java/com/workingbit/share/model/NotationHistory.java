@@ -17,7 +17,13 @@ public class NotationHistory implements DeepClone {
 
   private NotationDrives history;
   private NotationDrives notation;
+  /**
+   * using for fork and switch
+   */
   private NotationDrive currentNotationDrive;
+  /**
+   * using for fork and switch
+   */
   private NotationDrive variantNotationDrive;
 
   public NotationHistory() {
@@ -35,6 +41,14 @@ public class NotationHistory implements DeepClone {
       notation = NotationDrives.create();
       history = NotationDrives.create();
     }
+  }
+
+  public NotationDrives getHistory() {
+    return history;
+  }
+
+  public void setHistory(NotationDrives history) {
+    this.history = history;
   }
 
   public NotationDrives getNotation() {
@@ -61,50 +75,19 @@ public class NotationHistory implements DeepClone {
     this.variantNotationDrive = variantNotationDrive;
   }
 
-  public NotationDrives getHistory() {
-    return history;
-  }
-
-  public void setHistory(NotationDrives history) {
-    this.history = history;
-  }
-
-  public void add(NotationDrive notationDrive) {
-    add(size(), notationDrive);
-  }
-
-  public void addAllEverywhere(Collection<? extends NotationDrive> c) {
-    c.forEach(this::add);
-  }
-
-  public void add(int index, NotationDrive element) {
-    history.add(index, element);
-    notation.add(index, element);
-    syncAdd(index);
-  }
-
-  public void addFirst(NotationDrive notationDrive) {
-    add(1, notationDrive);
-  }
-
-  public void addLast(NotationDrive notationDrive) {
-    add(notationDrive);
+  public void addInHistoryAndNotation(NotationDrive element) {
+    history.add(element);
+    notation.add(element);
   }
 
   @DynamoDBIgnore
   @JsonIgnore
-  public NotationDrive getFirst() {
-    return notation.getFirst();
-  }
-
-  @DynamoDBIgnore
-  @JsonIgnore
-  public NotationDrive getLastSafeHistory() {
+  private NotationDrive getLastSafeHistory() {
     boolean isRootDrive = history.getLast().isRoot();
     if (isRootDrive) {
       NotationDrive notationDrive = new NotationDrive();
       notationDrive.setNotationNumberInt(1);
-      add(notationDrive);
+      addInHistoryAndNotation(notationDrive);
       return notationDrive;
     } else {
       return history.getLast();
@@ -117,34 +100,15 @@ public class NotationHistory implements DeepClone {
     return notation.getLast();
   }
 
-  public boolean remove(NotationDrive o) {
-//    history.remove(o);
-    return notation.remove(o);
-  }
-
-  public void removeAll(NotationDrives c) {
-    c.forEach(this::remove);
-  }
-
-  public NotationDrive removeFirst() {
-    history.removeFirst();
-    return notation.removeFirst();
-  }
-
-  public NotationDrive removeLast() {
-    history.removeLast();
-    return notation.removeLast();
-  }
-
   public int size() {
     return notation.size();
   }
 
-  public int indexOf(NotationDrive o) {
+  private int indexOf(NotationDrive o) {
     return notation.indexOf(o);
   }
 
-  public NotationDrives subListHistory(int fromIndex, int toIndex) {
+  private NotationDrives subListHistory(int fromIndex, int toIndex) {
     List<NotationDrive> subList = history.subList(fromIndex, toIndex);
     NotationDrives nd = new NotationDrives();
     nd.addAll(subList);
@@ -164,7 +128,6 @@ public class NotationHistory implements DeepClone {
     notation.removeAll(cutNotationDrives);
     resetNotationSelected(notation);
     notation.getLast().setSelected(true);
-    removeVariantsFromLastNotation();
 
     history.removeAll(cutNotationDrives);
 
@@ -196,14 +159,14 @@ public class NotationHistory implements DeepClone {
     notation.forEach(notationDrive -> notationDrive.setSelected(false));
   }
 
-  public void resetCurrentAndSetPresious(NotationDrive lastHist) {
+  private void resetCurrentAndSetPresious(NotationDrive lastHist) {
     lastHist.getVariants().forEach(v -> {
       setPreviousNotation(v);
       v.setCurrent(false);
     });
   }
 
-  public void setPreviousNotation(NotationDrive v) {
+  private void setPreviousNotation(NotationDrive v) {
     if (v.isCurrent()) {
       v.setPrevious(true);
     } else {
@@ -252,7 +215,7 @@ public class NotationHistory implements DeepClone {
       variantToSwitch = variantNotationDrive;
     }
 
-    removeVariantsFromLastNotation();
+//    removeVariantsFromLastNotation();
 
     // add varint's to switch notation to main notation drives
     if (variantToSwitch != null) {
@@ -309,24 +272,14 @@ public class NotationHistory implements DeepClone {
     return currentDrive.getMoves().equals(variant.getMoves());
   }
 
-  private void removeVariantsFromLastNotation() {
-    if (!notation.isEmpty()) {
-      NotationDrive last = notation.getLast();
-      NotationDrives variants = last.getVariants();
-      if (!variants.isEmpty()) {
-        variants.removeLast();
-      }
-    }
-  }
-
   private void addAllVariantsInHistoryAndNotation(NotationDrive variant) {
     NotationDrive lastHist = history.getLast();
     setCurrentMarkerForNotationDrive(variant, lastHist);
 
     history.addAll(variant.getVariants());
 
-    resetNotationSelected(notation);
     notation.addAll(variant.getVariants());
+    resetNotationSelected(notation);
     notation.getLast().setSelected(true);
 
     notation.forEach(this::resetMovesCursor);
@@ -348,13 +301,6 @@ public class NotationHistory implements DeepClone {
         .filter(h -> variantHasContinuePair(h, variant))
         .findFirst()
         .ifPresent(v -> v.setCurrent(true));
-  }
-
-  private NotationMoves switchToMoves(NotationDrive currentNotationDrive, NotationDrive variantNotationDrive) {
-    return variantNotationDrive != null
-        ? variantNotationDrive.getVariants().get(0).getMoves()
-        : (currentNotationDrive.getVariants().isEmpty() ? null
-        : currentNotationDrive.getVariants().get(0).getMoves());
   }
 
   @JsonIgnore
@@ -381,14 +327,6 @@ public class NotationHistory implements DeepClone {
     System.out.println("HISTORY: " + history.toPdn());
     System.out.print("VARIANTS: ");
     return notation.toPdn();
-  }
-
-  private void syncAdd(int index) {
-    NotationDrive historyDirve = history.get(index);
-    NotationDrive variantsDrive = notation.get(index);
-    if (historyDirve.getMoves().size() != variantsDrive.getMoves().size()) {
-      historyDirve.setMoves(variantsDrive.getMoves());
-    }
   }
 
   public void printPdn() {
