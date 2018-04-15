@@ -145,6 +145,7 @@ public class BoardBoxService {
   private void createNewNotation(BoardBox boardBox, Board board) {
     Notation notation = new Notation();
     Utils.setRandomIdAndCreatedAt(notation);
+    notation.getNotationHistory().getLast().setSelected(true);
     notation.setBoardBoxId(boardBox.getId());
     notation.setRules(board.getRules());
     boardBox.setNotationId(notation.getId());
@@ -171,11 +172,10 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> loadPreviewBoard(BoardBox boardBox) {
+    notationService.save(boardBox.getNotation());
     updateBoardBox(boardBox);
     Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
     boardBox.setBoard(noHighlight);
-    Notation notation = boardBox.getNotation();
-    notationService.setSelectedNotationDrive(notation, noHighlight);
     return Optional.of(boardBox);
   }
 

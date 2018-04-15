@@ -162,6 +162,7 @@ public class NotationHistory implements DeepClone {
         .build();
 
     notation.removeAll(cutNotationDrives);
+    resetNotationSelected(notation);
     notation.getLast().setSelected(true);
     removeVariantsFromLastNotation();
 
@@ -189,6 +190,10 @@ public class NotationHistory implements DeepClone {
 
     logger.info("Notation after fork: " + pdnString());
     return true;
+  }
+
+  private void resetNotationSelected(NotationDrives notation) {
+    notation.forEach(notationDrive -> notationDrive.setSelected(false));
   }
 
   public void resetCurrentAndSetPresious(NotationDrive lastHist) {
@@ -320,7 +325,7 @@ public class NotationHistory implements DeepClone {
 
     history.addAll(variant.getVariants());
 
-    notation.getLast().setSelected(false);
+    resetNotationSelected(notation);
     notation.addAll(variant.getVariants());
     notation.getLast().setSelected(true);
 
