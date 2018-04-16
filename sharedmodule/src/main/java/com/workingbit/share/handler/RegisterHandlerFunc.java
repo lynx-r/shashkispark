@@ -24,10 +24,15 @@ public interface RegisterHandlerFunc<T extends Payload> extends BaseHandlerFunc 
     if (StringUtils.isNotBlank(check)) {
       return check;
     }
+    String clientSession = request.headers(JSESSIONID);
+    String newSession = clientSession;
+    if (StringUtils.isBlank(clientSession)) {
+      newSession = request.session(true).id();
+      response.cookie(JSESSIONID, newSession);
+    }
     String json = request.body();
     T data = jsonToData(json, clazz);
-    String session = request.cookies().get(JSESSIONID);
-    AuthUser authUser = new AuthUser("", session);
+    AuthUser authUser = new AuthUser("", newSession);
     Answer answer = process(data, Optional.of(authUser));
     response.status(answer.getStatusCode());
     return dataToJson(answer);

@@ -50,17 +50,18 @@ public class SecurityApplication {
   }
 
   private static void establishRoutes() {
-    path("/api", () -> {
-      path("/secure", () -> {
-        post(Path.REGISTER, SecurityController.register);
-        post(Path.AUTHORIZE, SecurityController.authorize);
+    path("/api", () ->
+        path("/security", () -> {
+          post(Path.REGISTER, SecurityController.register);
+          post(Path.AUTHORIZE, SecurityController.authorize);
+          post(Path.AUTHENTICATE, SecurityController.authenticate);
 
-        notFound((req, res) -> "Not found");
-        internalServerError((req, res) -> "Internal server message");
+          notFound((req, res) -> "Not found");
+          internalServerError((req, res) -> "Internal server message");
 
-        after(Filters.addJsonHeader);
-        after(Filters.addGzipHeader);
-      });
-    });
+          after(Filters.addJsonHeader);
+          after(Filters.addGzipHeader);
+        })
+    );
   }
 }

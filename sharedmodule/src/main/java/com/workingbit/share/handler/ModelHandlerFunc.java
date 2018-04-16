@@ -13,7 +13,7 @@ import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
 import static com.workingbit.share.common.RequestConstants.JSESSIONID;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 /**
  * Created by Aleksey Popryaduhin on 10:52 29/09/2017.
@@ -45,7 +45,7 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
     if (authUser.isPresent()) {
       return process(data, authUser);
     } else {
-      return Answer.error(HTTP_FORBIDDEN, "Вы не авторизованы");
+      return Answer.error(HTTP_UNAUTHORIZED, "Вы не авторизованы");
     }
   }
 

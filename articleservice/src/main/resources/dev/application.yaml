@@ -6,6 +6,10 @@ app:
   headers: requested-api,api-article,x-api-key,content-type,sign,sign-request,access-control-allow-credentials
   methods: GET,POST,PUT,OPTIONS,HEADER,DELETE
   origin: http://localhost:4200
+
   boardResource: http://localhost:24567/api/v1/board
+  registerResource: http://localhost:34567/api/security/register
+  authorizeResource: http://localhost:34567/api/security/authorize
+  authenticateResource: http://localhost:34567/api/security/authenticate
+
   articlesFetchLimit: 50
-  encodeTokenKey: 123

@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by Aleksey Popryaduhin on 00:19 28/09/2017.
@@ -23,7 +23,7 @@ public class Config4j {
 
   public static ConfigurationProvider configurationProvider() {
     // Specify which files to load. Configuration from both files will be merged.
-    ConfigFilesProvider configFilesProvider = () -> Arrays.asList(Paths.get("application.yaml"));
+    ConfigFilesProvider configFilesProvider = () -> Collections.singletonList(Paths.get("application.yaml"));
 
     // Use classpath repository as configuration store
     ConfigurationSource source = new ClasspathConfigurationSource(configFilesProvider);

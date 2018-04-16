@@ -7,12 +7,8 @@ import com.workingbit.share.model.RegisterUser;
 import com.workingbit.share.util.Utils;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.JSESSIONID;
 import static org.junit.Assert.*;
 
 /**
@@ -28,14 +24,9 @@ public class ArticleServiceTest extends BaseTest {
     RegisterUser registerUser = new RegisterUser(username, password);
     Optional<AuthUser> register = SecurityRemoteClient.getInstance().register(registerUser);
     assertTrue(register.isPresent());
-    System.out.println(register.get());
     AuthUser registered = register.get();
 
-    Map<String, String> headers = new HashMap<String, String>() {{
-      put(ACCESS_TOKEN, registered.getAccessToken());
-      put(JSESSIONID, registered.getSession());
-    }};
-    Optional<AuthUser> authenticatedOpt = SecurityRemoteClient.getInstance().authenticate( registered, headers);
+    Optional<AuthUser> authenticatedOpt = SecurityRemoteClient.getInstance().authenticate(registered);
     assertTrue(authenticatedOpt.isPresent());
     AuthUser authenticated = authenticatedOpt.get();
     assertEquals(registered, authenticated);
