@@ -10,6 +10,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Encryptor {
+
   public static String encrypt(String key, String initVector, String value) {
     try {
       IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
@@ -33,6 +34,7 @@ public class Encryptor {
 
   public static String decrypt(String key, String initVector, String encrypted) {
     try {
+      System.out.println(key + " " + initVector + " " + encrypted);
       IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
       SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 

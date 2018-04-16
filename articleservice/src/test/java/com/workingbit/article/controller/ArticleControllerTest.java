@@ -43,7 +43,7 @@ public class ArticleControllerTest {
   @ClassRule
   public static SparkServer<BoardBoxControllerTestSparkApplication> testServer = new SparkServer<>(BoardBoxControllerTestSparkApplication.class, randomPort);
 
-  public Map<String, String> register() throws Exception {
+  private Map<String, String> register() throws Exception {
     String username = Utils.getRandomString();
     String password = Utils.getRandomString();
     RegisterUser registerUser = new RegisterUser(username, password);
