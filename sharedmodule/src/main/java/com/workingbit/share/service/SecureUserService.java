@@ -1,21 +1,32 @@
-package com.workingbit.share.util;
+package com.workingbit.share.service;
 
+import com.workingbit.share.common.ShareProperties;
 import com.workingbit.share.dao.SecureUserDao;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.RegisterUser;
 import com.workingbit.share.model.SecureUser;
+import com.workingbit.share.util.Encryptor;
+import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
+import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.util.Utils.getRandomString;
 
 /**
  * Created by Aleksey Popryadukhin on 16/04/2018.
  */
-public class SecureUtils {
+public class SecureUserService {
 
-  public static Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
+  private static SecureUserDao secureUserDao;
+
+  static {
+    ShareProperties shareProperties = configurationProvider().bind("app", ShareProperties.class);
+    secureUserDao = new SecureUserDao(shareProperties);
+  }
+
+  public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
     return token.map(t -> {
       try {
         String tokenLength = System.getenv("TOKEN_LENGTH");
@@ -49,7 +60,7 @@ public class SecureUtils {
         // save encrypted token and userSession
         secureUser.setAccessToken(accessToken);
         secureUser.setUserSession(t.getSession());
-        SecureUserDao.getInstance().save(secureUser);
+        secureUserDao.save(secureUser);
 
         // send access token and userSession
         return new AuthUser(accessToken, t.getSession());
@@ -60,9 +71,9 @@ public class SecureUtils {
     });
   }
 
-  public static Optional<AuthUser> authorize(RegisterUser registerUser, Optional<AuthUser> token) {
+  public Optional<AuthUser> authorize(RegisterUser registerUser, Optional<AuthUser> token) {
     return token.map(t ->
-        SecureUserDao.getInstance().findByUsername(registerUser.getUsername())
+        secureUserDao.findByUsername(registerUser.getUsername())
             .map(secureUser -> {
               try {
                 int tokenLengthInt = secureUser.getTokenLength();
@@ -85,7 +96,7 @@ public class SecureUtils {
                   // save encrypted token and userSession
                   secureUser.setAccessToken(accessToken);
                   secureUser.setUserSession(t.getSession());
-                  SecureUserDao.getInstance().save(secureUser);
+                  secureUserDao.save(secureUser);
 
                   // send access token and userSession
                   return new AuthUser(accessToken, t.getSession());
@@ -98,10 +109,10 @@ public class SecureUtils {
             .orElse(null));
   }
 
-  public static Optional<AuthUser> authenticate(AuthUser authUser) {
+  public Optional<AuthUser> authenticate(AuthUser authUser) {
     String session = authUser.getSession();
     String accessToken = authUser.getAccessToken();
-    Optional<SecureUser> secureUserOptional = SecureUserDao.getInstance().findBySession(session);
+    Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
     return secureUserOptional.map((secureUser) -> {
       String key = secureUser.getKey();
       String initVector = secureUser.getInitVector();
@@ -113,5 +124,4 @@ public class SecureUtils {
       return null;
     });
   }
-
 }

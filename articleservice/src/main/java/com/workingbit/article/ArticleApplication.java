@@ -5,6 +5,7 @@ import com.workingbit.article.controller.ArticleController;
 import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.service.ArticleService;
 import com.workingbit.article.util.Path;
+import com.workingbit.share.service.SecureUserService;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import com.workingbit.share.util.UnirestUtil;
@@ -23,12 +24,14 @@ public class ArticleApplication {
   public static ArticleDao articleDao;
   public static AppProperties appProperties;
   public static ArticleService articleService;
+  public static SecureUserService secureUserService;
 
   static {
     appProperties = configurationProvider().bind("app", AppProperties.class);
 
     articleDao = new ArticleDao(appProperties);
     articleService = new ArticleService();
+    secureUserService = new SecureUserService();
   }
 
   public static void main(String[] args) {
@@ -51,7 +54,9 @@ public class ArticleApplication {
   private static void establishRoutes() {
     path("/api", () ->
         path("/v1", () -> {
-          get(Path.AUTHENTICATE, ArticleController.register);
+          get(Path.REGISTER, ArticleController.register);
+          get(Path.AUTHORIZE, ArticleController.authorize);
+          get(Path.AUTHENTICATE, ArticleController.authenticate);
           get(Path.ARTICLES, ArticleController.findAllArticles);
           get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
           post(Path.ARTICLE, ArticleController.createArticleAndBoard);

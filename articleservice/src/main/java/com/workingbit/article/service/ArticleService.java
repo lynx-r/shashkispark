@@ -4,7 +4,6 @@ import com.workingbit.article.client.BoardRemoteClient;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.*;
-import com.workingbit.share.util.SecureUtils;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -13,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 import static com.workingbit.article.ArticleApplication.articleDao;
+import static com.workingbit.article.ArticleApplication.secureUserService;
 import static com.workingbit.share.util.Utils.getRandomString;
 
 /**
@@ -66,6 +66,17 @@ public class ArticleService {
   }
 
   public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
-    return SecureUtils.register(registerUser, token);
+    return secureUserService.register(registerUser, token);
+  }
+
+  public Optional<AuthUser> authorize(RegisterUser registerUser, Optional<AuthUser> token) {
+    return secureUserService.authorize(registerUser, token);
+  }
+
+  public Optional<AuthUser> authenticate(Optional<AuthUser> authUser) {
+    if (authUser.isPresent()) {
+      return secureUserService.authenticate(authUser.get());
+    }
+    return Optional.empty();
   }
 }

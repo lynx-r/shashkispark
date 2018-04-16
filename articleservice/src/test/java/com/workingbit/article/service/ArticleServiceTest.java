@@ -28,19 +28,19 @@ public class ArticleServiceTest extends BaseTest {
     AuthUser authUser = new AuthUser("", session);
     Optional<AuthUser> authUserOptional = Optional.of(authUser);
 
-    Optional<AuthUser> register = SecureUtils.register(registerUser, authUserOptional);
+    Optional<AuthUser> register = SecureUtils.register(secureUserDao, registerUser, authUserOptional);
     assertTrue(register.isPresent());
     System.out.println(register.get());
     AuthUser registered = register.get();
 
-    Optional<AuthUser> authenticatedOpt = SecureUtils.authenticate(registered);
+    Optional<AuthUser> authenticatedOpt = SecureUtils.authenticate(secureUserDao, registered);
     assertTrue(authenticatedOpt.isPresent());
     AuthUser authenticated = authenticatedOpt.get();
     assertEquals(registered, authenticated);
 
     session = Utils.getRandomString();
     authUser = new AuthUser("", session);
-    Optional<AuthUser> authorizedOpt = SecureUtils.authorize(registerUser, Optional.of(authUser));
+    Optional<AuthUser> authorizedOpt = SecureUtils.authorize(secureUserDao, registerUser, Optional.of(authUser));
     assertTrue(authorizedOpt.isPresent());
     AuthUser authorized = authorizedOpt.get();
 

@@ -8,6 +8,7 @@ import com.workingbit.share.handler.ParamsHandlerFunc;
 import com.workingbit.share.handler.QueryParamsHandlerFunc;
 import com.workingbit.share.handler.RegisterHandlerFunc;
 import com.workingbit.share.model.Answer;
+import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.CreateArticlePayload;
 import com.workingbit.share.model.RegisterUser;
 import spark.Route;
@@ -27,6 +28,20 @@ public class ArticleController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_REGISTER))
       ).handleRequest(req, res, RegisterUser.class);
+
+  public static Route authorize = (req, res) ->
+      ((ModelHandlerFunc<RegisterUser>) (data, token) ->
+          articleService.authorize((RegisterUser) data, token)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHORIZE))
+      ).handleRequest(req, res, RegisterUser.class);
+
+  public static Route authenticate = (req, res) ->
+      ((ModelHandlerFunc<AuthUser>) (data, token) ->
+          articleService.authenticate(token)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
+      ).handleRequest(req, res, AuthUser.class);
 
   public static Route findAllArticles = (req, res) ->
       ((QueryParamsHandlerFunc) params ->

@@ -46,6 +46,6 @@ public interface BaseHandlerFunc {
 
   default Optional<AuthUser> isAuthenticated(String accessToken, String session) {
     AuthUser authUser = new AuthUser(accessToken, session);
-    return SecureUtils.authenticate(authUser);
+    return SecureUtils.authenticate(secureUserDao, authUser);
   }
 }

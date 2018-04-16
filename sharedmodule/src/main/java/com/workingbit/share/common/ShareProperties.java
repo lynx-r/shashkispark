@@ -5,7 +5,7 @@ import java.net.URL;
 /**
  * Created by Aleksey Popryaduhin on 14:17 27/09/2017.
  */
-public interface AppProperties {
+public interface ShareProperties {
 
   String regionDynamoDB();
 
