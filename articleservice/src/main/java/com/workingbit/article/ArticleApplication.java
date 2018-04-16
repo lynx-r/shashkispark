@@ -25,7 +25,7 @@ public class ArticleApplication {
   public static ArticleService articleService;
 
   static {
-    appProperties = configurationProvider().bind("app", AppProperties.class);
+    appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     articleDao = new ArticleDao(appProperties);
     articleService = new ArticleService();

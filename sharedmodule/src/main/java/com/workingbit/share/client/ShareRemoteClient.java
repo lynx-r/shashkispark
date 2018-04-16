@@ -4,10 +4,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.workingbit.share.common.ShareProperties;
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.Payload;
-import com.workingbit.share.model.RegisterUser;
+import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.model.*;
 import com.workingbit.share.util.UnirestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,28 +18,32 @@ import java.util.Optional;
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
 import static com.workingbit.share.common.RequestConstants.JSESSIONID;
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
  * Created by Aleksey Popryaduhin on 23:59 27/09/2017.
  */
-public class SecurityRemoteClient {
+public class ShareRemoteClient {
 
-  private static final Logger logger = LoggerFactory.getLogger(SecurityRemoteClient.class);
+  private static final Logger logger = LoggerFactory.getLogger(ShareRemoteClient.class);
 
   private static String register;
   private static String authorize;
   private static String authenticate;
+  private static String boardbox;
 
   static {
-    ShareProperties shareProperties = configurationProvider().bind("app", ShareProperties.class);
+    ShareProperties shareProperties = configurationProvider("shareconfig.yaml").bind("app", ShareProperties.class);
     register = shareProperties.registerResource();
     authorize = shareProperties.authorizeResource();
     authenticate = shareProperties.authenticateResource();
+    boardbox = shareProperties.boardboxResource();
     UnirestUtil.configureSerialization();
   }
 
-  public static SecurityRemoteClient getInstance() {
-    return new SecurityRemoteClient();
+  public static ShareRemoteClient getInstance() {
+    return new ShareRemoteClient();
   }
 
   public Optional<AuthUser> register(RegisterUser registerUser) {
@@ -61,10 +63,7 @@ public class SecurityRemoteClient {
   }
 
   public Optional<AuthUser> authenticate(AuthUser authUser) {
-    Map<String, String> headers = new HashMap<String, String>() {{
-      put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(JSESSIONID, authUser.getSession());
-    }};
+    Map<String, String> headers = createAuthHeaders(authUser);
     return authenticate(authUser, headers);
   }
 
@@ -72,15 +71,32 @@ public class SecurityRemoteClient {
     return post(authenticate, headers, authUser);
   }
 
-  private Optional<AuthUser> post(String resource, Map<String, String> headers, Payload registerUser) {
+  public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, AuthUser authUser) {
+    Map<String, String> headers = createAuthHeaders(authUser);
+    return post(boardbox, headers, boardRequest);
+  }
+
+  public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, Map<String, String> headers) {
+    return post(boardbox, headers, boardRequest);
+  }
+
+  private Map<String, String> createAuthHeaders(AuthUser authUser) {
+    return new HashMap<String, String>() {{
+      put(ACCESS_TOKEN, authUser.getAccessToken());
+      put(JSESSIONID, authUser.getSession());
+    }};
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> Optional<T> post(String resource, Map<String, String> headers, Payload registerUser) {
     try {
       HttpResponse<Answer> response = Unirest.post(resource)
           .headers(headers)
           .body(registerUser)
           .asObject(Answer.class);
-      if (response.getStatus() == 200) {
+      if (response.getStatus() == HTTP_OK || response.getStatus() == HTTP_CREATED) {
         Answer body = response.getBody();
-        return Optional.of((AuthUser) body.getBody());
+        return Optional.of((T) body.getBody());
       }
       logger.error("Invalid status " + response.getStatus());
     } catch (UnirestException e) {

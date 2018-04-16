@@ -13,7 +13,7 @@ import static com.workingbit.share.common.Config4j.configurationProvider;
  */
 public class BaseTest {
 
-  private static AppProperties appProperties = configurationProvider().bind("app", AppProperties.class);
+  private static AppProperties appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
   protected ArticleDao articleDao = new ArticleDao(appProperties);
 

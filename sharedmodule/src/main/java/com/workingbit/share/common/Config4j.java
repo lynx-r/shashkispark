@@ -21,9 +21,9 @@ public class Config4j {
 
   private static Logger logger = LoggerFactory.getLogger(Config4j.class);
 
-  public static ConfigurationProvider configurationProvider() {
+  public static ConfigurationProvider configurationProvider(String config) {
     // Specify which files to load. Configuration from both files will be merged.
-    ConfigFilesProvider configFilesProvider = () -> Collections.singletonList(Paths.get("application.yaml"));
+    ConfigFilesProvider configFilesProvider = () -> Collections.singletonList(Paths.get(config));
 
     // Use classpath repository as configuration store
     ConfigurationSource source = new ClasspathConfigurationSource(configFilesProvider);

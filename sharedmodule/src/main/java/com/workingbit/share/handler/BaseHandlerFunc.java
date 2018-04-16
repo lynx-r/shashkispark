@@ -1,7 +1,8 @@
 package com.workingbit.share.handler;
 
-import com.workingbit.share.client.SecurityRemoteClient;
+import com.workingbit.share.client.ShareRemoteClient;
 import com.workingbit.share.model.AuthUser;
+import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 
@@ -17,7 +18,10 @@ public interface BaseHandlerFunc {
   }
 
   default Optional<AuthUser> isAuthenticated(String accessToken, String session) {
+    if (StringUtils.isBlank(accessToken) || StringUtils.isBlank(session)) {
+      return Optional.empty();
+    }
     AuthUser authUser = new AuthUser(accessToken, session);
-    return SecurityRemoteClient.getInstance().authenticate(authUser);
+    return ShareRemoteClient.getInstance().authenticate(authUser);
   }
 }

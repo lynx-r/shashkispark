@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class BaseServiceTest {
 
-  private static AppProperties appProperties = configurationProvider().bind("app", AppProperties.class);
+  private static AppProperties appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
   protected BoardService boardService = new BoardService();
   protected BoardBoxService boardBoxService = new BoardBoxService();

@@ -6,6 +6,10 @@ package com.workingbit.share.common;
 public interface ShareProperties {
 
   String registerResource();
+
   String authorizeResource();
+
   String authenticateResource();
+
+  String boardboxResource();
 }

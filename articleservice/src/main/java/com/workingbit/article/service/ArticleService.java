@@ -1,6 +1,6 @@
 package com.workingbit.article.service;
 
-import com.workingbit.article.client.BoardRemoteClient;
+import com.workingbit.share.client.ShareRemoteClient;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.*;
@@ -19,11 +19,14 @@ import static com.workingbit.share.util.Utils.getRandomString;
  */
 public class ArticleService {
 
-  private final static BoardRemoteClient boardRemoteClient = new BoardRemoteClient();
+  private final static ShareRemoteClient shareRemoteClient = new ShareRemoteClient();
 
   private final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
   public Optional<CreateArticleResponse> createArticleResponse(CreateArticlePayload articleAndBoard, Optional<AuthUser> token) {
+    if (!token.isPresent()) {
+      return Optional.empty();
+    }
     Article article = articleAndBoard.getArticle();
     boolean present = findById(article.getTitle()).isPresent();
     Utils.setArticleIdAndCreatedAt(article, present);
@@ -33,7 +36,7 @@ public class ArticleService {
     boardRequest.setBoardBoxId(article.getBoardBoxId());
     CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();
     boardRequest.setArticleId(article.getId());
-    Optional<BoardBox> boardBoxOptional = boardRemoteClient.createBoardBox(boardRequest);
+    Optional<BoardBox> boardBoxOptional = shareRemoteClient.createBoardBox(boardRequest, token.get());
     if (boardBoxOptional.isPresent()) {
       article.setBoardBoxId(boardBoxOptional.get().getId());
       createArticleResponse.setArticle(article);

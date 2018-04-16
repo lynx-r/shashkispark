@@ -25,7 +25,7 @@ public class SecurityApplication {
   public static SecureUserDao secureUserDao;
 
   static {
-    appProperties = configurationProvider().bind("app", AppProperties.class);
+    appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     secureUserDao = new SecureUserDao(appProperties);
 

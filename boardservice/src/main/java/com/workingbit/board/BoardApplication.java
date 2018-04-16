@@ -29,7 +29,7 @@ public class BoardApplication {
   private static AppProperties appProperties;
 
   static {
-    appProperties = configurationProvider().bind("app", AppProperties.class);
+    appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     boardBoxService = new BoardBoxService();
     boardBoxDao = new BoardBoxDao(appProperties);
