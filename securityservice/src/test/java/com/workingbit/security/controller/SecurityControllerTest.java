@@ -1,9 +1,9 @@
-package com.workingbit.article.controller;
+package com.workingbit.security.controller;
 
 import com.despegar.http.client.*;
 import com.despegar.sparkjava.test.SparkServer;
-import com.workingbit.article.ArticleApplication;
-import com.workingbit.share.client.SecurityRemoteClient;
+import com.workingbit.security.SecurityApplication;
+import com.workingbit.security.config.Path;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.*;
@@ -28,18 +28,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Created by Aleksey Popryaduhin on 17:47 01/10/2017.
+ * Created by Aleksey Popryadukhin on 16/04/2018.
  */
-public class ArticleControllerTest {
+public class SecurityControllerTest {
 
-  private static String boardUrl = "/api/v1/article";
+  private static String secureUrl = "/api/secure";
+  private static String articleUrl = "/api/v1/article";
   private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
 
   public static class BoardBoxControllerTestSparkApplication implements SparkApplication {
 
     @Override
     public void init() {
-      ArticleApplication.start();
+      SecurityApplication.start();
     }
   }
 
@@ -51,7 +52,7 @@ public class ArticleControllerTest {
     String username = Utils.getRandomString();
     String password = Utils.getRandomString();
     RegisterUser registerUser = new RegisterUser(username, password);
-    AuthUser registered = SecurityRemoteClient.getInstance().register(registerUser, headers).get();
+    AuthUser registered = (AuthUser) post(secureUrl + Path.REGISTER, registerUser).getBody();
     assertNotNull(registered);
 
     Map<String, String> headers = new HashMap<String, String>() {{
@@ -60,7 +61,7 @@ public class ArticleControllerTest {
     }};
 
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload).getBody();
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post(articleUrl, createArticlePayload, headers).getBody();
 
     Article article = articleResponse.getArticle();
     BoardBox board = articleResponse.getBoard();
@@ -130,20 +131,27 @@ public class ArticleControllerTest {
     return createArticlePayload;
   }
 
-  private Answer post(String path, Object payload) throws HttpClientException {
-    PostMethod resp = testServer.post(boardUrl + path, dataToJson(payload), false);
+  private Answer post(String path, Object payloed) throws HttpClientException {
+    return post(path, payloed, null);
+  }
+
+  private Answer post(String path, Object payload, Map<String, String> headers) throws HttpClientException {
+    PostMethod resp = testServer.post(path, dataToJson(payload), false);
+    if (headers != null) {
+      headers.forEach(resp::addHeader);
+    }
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);
   }
 
   private Answer put(String path, Object payload) throws HttpClientException {
-    PutMethod resp = testServer.put(boardUrl + path, dataToJson(payload), false);
+    PutMethod resp = testServer.put(path, dataToJson(payload), false);
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);
   }
 
   private Answer get(String params) throws HttpClientException {
-    GetMethod resp = testServer.get(boardUrl + params, false);
+    GetMethod resp = testServer.get(params, false);
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);
   }

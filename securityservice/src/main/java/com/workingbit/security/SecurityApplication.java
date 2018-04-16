@@ -52,8 +52,8 @@ public class SecurityApplication {
   private static void establishRoutes() {
     path("/api", () -> {
       path("/secure", () -> {
-        get(Path.REGISTER, SecurityController.register);
-        get(Path.AUTHORIZE, SecurityController.authorize);
+        post(Path.REGISTER, SecurityController.register);
+        post(Path.AUTHORIZE, SecurityController.authorize);
 
         notFound((req, res) -> "Not found");
         internalServerError((req, res) -> "Internal server message");

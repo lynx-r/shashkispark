@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 import static com.workingbit.article.ArticleApplication.articleDao;
-import static com.workingbit.article.ArticleApplication.secureUserService;
 import static com.workingbit.share.util.Utils.getRandomString;
 
 /**
@@ -63,13 +62,5 @@ public class ArticleService {
 
   public Optional<Article> findById(String articleId) {
     return articleDao.findById(articleId);
-  }
-
-  public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
-    return secureUserService.register(registerUser, token);
-  }
-
-  public Optional<AuthUser> authorize(RegisterUser registerUser, Optional<AuthUser> token) {
-    return secureUserService.authorize(registerUser, token);
   }
 }

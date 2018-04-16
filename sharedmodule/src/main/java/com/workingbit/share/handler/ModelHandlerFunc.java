@@ -9,7 +9,7 @@ import spark.Response;
 
 import java.util.Optional;
 
-import static com.workingbit.share.common.RequestConstants.AUTH_TOKEN;
+import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
 import static com.workingbit.share.common.RequestConstants.JSESSIONID;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
@@ -28,8 +28,8 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
     }
     String json = request.body();
     T data = jsonToData(json, clazz);
-    String token = request.headers(AUTH_TOKEN);
-    String session = request.cookies().get(JSESSIONID);
+    String token = request.headers(ACCESS_TOKEN);
+    String session = request.headers(JSESSIONID);
     Answer answer;
     if (secure) {
       answer = secureCheck(data, token, session);
