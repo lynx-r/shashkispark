@@ -21,7 +21,7 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 @FunctionalInterface
 public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
 
-  default String handleRequest(Request request, Response response, Class<T> clazz) {
+  default String handleRequest(Request request, Response response, boolean secure, Class<T> clazz) {
     String check = preprocess(request, response);
     if (StringUtils.isNotBlank(check)) {
       return check;
@@ -31,14 +31,22 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
     String token = request.headers(AUTH_TOKEN);
     String session = request.cookies().get(JSESSIONID);
     Answer answer;
-    Optional<AuthUser> authUser = isAuthenticated(token, session);
-    if (authUser.isPresent()) {
-      answer = process(data, authUser);
+    if (secure) {
+      answer = secureCheck(data, token, session);
     } else {
-      answer = Answer.error(HTTP_FORBIDDEN, "Вы не авторизованы");
+      answer = process(data, Optional.of(new AuthUser("", session)));
     }
     response.status(answer.getStatusCode());
     return dataToJson(answer);
+  }
+
+  default Answer secureCheck(T data, String token, String session) {
+    Optional<AuthUser> authUser = isAuthenticated(token, session);
+    if (authUser.isPresent()) {
+      return process(data, authUser);
+    } else {
+      return Answer.error(HTTP_FORBIDDEN, "Вы не авторизованы");
+    }
   }
 
   Answer process(T data, Optional<AuthUser> token);

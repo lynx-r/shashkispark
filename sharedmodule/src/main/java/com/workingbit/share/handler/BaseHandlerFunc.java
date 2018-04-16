@@ -4,7 +4,7 @@ import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.util.SecureUtils;
+import com.workingbit.share.service.SecureUserService;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
@@ -46,6 +46,6 @@ public interface BaseHandlerFunc {
 
   default Optional<AuthUser> isAuthenticated(String accessToken, String session) {
     AuthUser authUser = new AuthUser(accessToken, session);
-    return SecureUtils.authenticate(secureUserDao, authUser);
+    return SecureUserService.getInstance().authenticate(authUser);
   }
 }

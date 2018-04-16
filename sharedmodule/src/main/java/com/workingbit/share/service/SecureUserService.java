@@ -26,6 +26,10 @@ public class SecureUserService {
     secureUserDao = new SecureUserDao(shareProperties);
   }
 
+  public static SecureUserService getInstance() {
+    return new SecureUserService();
+  }
+
   public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
     return token.map(t -> {
       try {

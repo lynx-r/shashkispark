@@ -24,7 +24,7 @@ public class BoardBoxController {
               .createBoardBox(data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
-      ).handleRequest(req, res, CreateBoardPayload.class);
+      ).handleRequest(req, res, true, CreateBoardPayload.class);
 
   public static Route saveBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -32,7 +32,7 @@ public class BoardBoxController {
               .save(data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_BOARD))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 
   public static Route loadPreviewBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -40,7 +40,7 @@ public class BoardBoxController {
               .loadPreviewBoard(data, token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_LOAD_BOARD))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 
   public static Route findBoardById = (req, res) ->
       ((ParamsHandlerFunc) params ->
@@ -56,7 +56,7 @@ public class BoardBoxController {
               .addDraught((BoardBox) data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_ADD_DRAUGHT))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 
   public static Route highlightBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -64,7 +64,7 @@ public class BoardBoxController {
               .highlight((BoardBox) data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_HIGHLIGHT_BOARD))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 
   public static Route move = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -72,7 +72,7 @@ public class BoardBoxController {
               .move((BoardBox) data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_MOVE))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 
   public static Route redo = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -80,7 +80,7 @@ public class BoardBoxController {
               .redo((BoardBox) data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_REDO))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 
   public static Route undo = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -88,7 +88,7 @@ public class BoardBoxController {
               .undo((BoardBox) data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_UNDO))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 
   public static Route switchNotation = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -96,7 +96,7 @@ public class BoardBoxController {
               .switchNotation((BoardBox) data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SWITCH))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 
   public static Route forkNotation = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -104,7 +104,7 @@ public class BoardBoxController {
               .forkNotation((BoardBox) data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_FORK))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 
   public static Route changeTurn = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -112,5 +112,5 @@ public class BoardBoxController {
               .changeTurn((BoardBox) data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CHANGE_TURN))
-      ).handleRequest(req, res, BoardBox.class);
+      ).handleRequest(req, res, true, BoardBox.class);
 }

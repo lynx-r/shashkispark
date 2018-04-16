@@ -52,21 +52,30 @@ public class ArticleApplication {
   }
 
   private static void establishRoutes() {
-    path("/api", () ->
-        path("/v1", () -> {
-          get(Path.REGISTER, ArticleController.register);
-          get(Path.AUTHORIZE, ArticleController.authorize);
-          get(Path.AUTHENTICATE, ArticleController.authenticate);
-          get(Path.ARTICLES, ArticleController.findAllArticles);
-          get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
-          post(Path.ARTICLE, ArticleController.createArticleAndBoard);
-          put(Path.ARTICLE, ArticleController.saveArticle);
+    path("/api", () -> {
+      path("/v1", () -> {
+        get(Path.ARTICLES, ArticleController.findAllArticles);
+        get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
+        post(Path.ARTICLE, ArticleController.createArticleAndBoard);
+        put(Path.ARTICLE, ArticleController.saveArticle);
 
-          notFound((req, res) -> "Not found");
-          internalServerError((req, res) -> "Internal server message");
+        configure();
+      });
+      path("/secure", () -> {
+        get(Path.REGISTER, ArticleController.register);
+        get(Path.AUTHORIZE, ArticleController.authorize);
+        get(Path.AUTHENTICATE, ArticleController.authenticate);
 
-          after(Filters.addJsonHeader);
-          after(Filters.addGzipHeader);
-        }));
+        configure();
+      });
+    });
+  }
+
+  private static void configure() {
+    notFound((req, res) -> "Not found");
+    internalServerError((req, res) -> "Internal server message");
+
+    after(Filters.addJsonHeader);
+    after(Filters.addGzipHeader);
   }
 }

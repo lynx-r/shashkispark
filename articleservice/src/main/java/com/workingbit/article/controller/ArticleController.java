@@ -34,14 +34,14 @@ public class ArticleController {
           articleService.authorize((RegisterUser) data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHORIZE))
-      ).handleRequest(req, res, RegisterUser.class);
+      ).handleRequest(req, res, true, RegisterUser.class);
 
   public static Route authenticate = (req, res) ->
       ((ModelHandlerFunc<AuthUser>) (data, token) ->
           articleService.authenticate(token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
-      ).handleRequest(req, res, AuthUser.class);
+      ).handleRequest(req, res, true, AuthUser.class);
 
   public static Route findAllArticles = (req, res) ->
       ((QueryParamsHandlerFunc) params ->
@@ -62,12 +62,12 @@ public class ArticleController {
           articleService.createArticleResponse(data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_ARTICLE))
-      ).handleRequest(req, res, CreateArticlePayload.class);
+      ).handleRequest(req, res, true, CreateArticlePayload.class);
 
   public static Route saveArticle = (req, res) ->
       ((ModelHandlerFunc<Article>) (article, token) ->
           articleService.save((Article) article, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_ARTICLE))
-      ).handleRequest(req, res, Article.class);
+      ).handleRequest(req, res, true, Article.class);
 }
