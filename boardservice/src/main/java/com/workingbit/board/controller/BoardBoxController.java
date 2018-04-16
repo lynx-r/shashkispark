@@ -40,7 +40,7 @@ public class BoardBoxController {
               .loadPreviewBoard(data, token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_LOAD_BOARD))
-      ).handleRequest(req, res, true, BoardBox.class);
+      ).handleRequest(req, res, false, BoardBox.class);
 
   public static Route findBoardById = (req, res) ->
       ((ParamsHandlerFunc) params ->

@@ -11,6 +11,7 @@ import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
@@ -78,6 +79,12 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   private final List<String> PDN_FILE_NAME_BOARDS = new ArrayList<String>() {{
     add("/pdn/notation_error1.pdn");
   }};
+  private Optional<AuthUser> token;
+
+  @Before
+  public void setUp() throws Exception {
+    token = Optional.of(new AuthUser(Utils.getRandomString(), Utils.getRandomString()));
+  }
 
   @Test
   public void createBoard() {

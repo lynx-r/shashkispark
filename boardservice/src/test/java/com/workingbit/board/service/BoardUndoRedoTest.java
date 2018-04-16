@@ -5,7 +5,12 @@ import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.util.Utils;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Optional;
 
 import static com.workingbit.share.util.Utils.getRandomString;
 import static junit.framework.TestCase.assertFalse;
@@ -17,6 +22,12 @@ import static junit.framework.TestCase.assertTrue;
 public class BoardUndoRedoTest extends BaseServiceTest {
 
   private String articleId = getRandomString();
+  private Optional<AuthUser> token;
+
+  @Before
+  public void setUp() throws Exception {
+    token = Optional.of(new AuthUser(Utils.getRandomString(), Utils.getRandomString()));
+  }
 
   @Test
   public void should_undo() {

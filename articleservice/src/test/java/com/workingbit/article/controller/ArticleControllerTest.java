@@ -51,7 +51,7 @@ public class ArticleControllerTest {
     String username = Utils.getRandomString();
     String password = Utils.getRandomString();
     RegisterUser registerUser = new RegisterUser(username, password);
-    AuthUser registered = SecurityRemoteClient.getInstance().register(registerUser, headers).get();
+    AuthUser registered = SecurityRemoteClient.getInstance().register(registerUser).get();
     assertNotNull(registered);
 
     Map<String, String> headers = new HashMap<String, String>() {{

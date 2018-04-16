@@ -15,10 +15,12 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import junit.framework.TestCase;
+import org.junit.Before;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
@@ -43,6 +45,12 @@ public class BaseServiceTest {
   protected BoardDao boardDao = new BoardDao(appProperties);
 
   protected NotationParserService notationParserService = new NotationParserService();
+  private Optional<AuthUser> token;
+
+  @Before
+  public void setUp() throws Exception {
+    token = Optional.of(new AuthUser(Utils.getRandomString(), Utils.getRandomString()));
+  }
 
   protected BoardBox getBoardBox(boolean fillBoard) {
     Board board = BoardUtils.initBoard(fillBoard, false, EnumRules.RUSSIAN);
