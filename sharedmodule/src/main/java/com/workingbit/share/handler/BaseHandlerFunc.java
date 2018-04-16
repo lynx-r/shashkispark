@@ -4,7 +4,7 @@ import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.service.SecureUserService;
+import com.workingbit.security.service.SecureUserService;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;

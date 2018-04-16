@@ -4,8 +4,7 @@ import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.controller.ArticleController;
 import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.service.ArticleService;
-import com.workingbit.article.util.Path;
-import com.workingbit.share.service.SecureUserService;
+import com.workingbit.article.config.Path;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import com.workingbit.share.util.UnirestUtil;
@@ -24,14 +23,12 @@ public class ArticleApplication {
   public static ArticleDao articleDao;
   public static AppProperties appProperties;
   public static ArticleService articleService;
-  public static SecureUserService secureUserService;
 
   static {
     appProperties = configurationProvider().bind("app", AppProperties.class);
 
     articleDao = new ArticleDao(appProperties);
     articleService = new ArticleService();
-    secureUserService = new SecureUserService();
   }
 
   public static void main(String[] args) {
@@ -52,30 +49,18 @@ public class ArticleApplication {
   }
 
   private static void establishRoutes() {
-    path("/api", () -> {
-      path("/v1", () -> {
-        get(Path.ARTICLES, ArticleController.findAllArticles);
-        get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
-        post(Path.ARTICLE, ArticleController.createArticleAndBoard);
-        put(Path.ARTICLE, ArticleController.saveArticle);
+    path("/api", () ->
+        path("/v1", () -> {
+          get(Path.ARTICLES, ArticleController.findAllArticles);
+          get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
+          post(Path.ARTICLE, ArticleController.createArticleAndBoard);
+          put(Path.ARTICLE, ArticleController.saveArticle);
 
-        configure();
-      });
-      path("/secure", () -> {
-        get(Path.REGISTER, ArticleController.register);
-        get(Path.AUTHORIZE, ArticleController.authorize);
-        get(Path.AUTHENTICATE, ArticleController.authenticate);
+          notFound((req, res) -> "Not found");
+          internalServerError((req, res) -> "Internal server message");
 
-        configure();
-      });
-    });
-  }
-
-  private static void configure() {
-    notFound((req, res) -> "Not found");
-    internalServerError((req, res) -> "Internal server message");
-
-    after(Filters.addJsonHeader);
-    after(Filters.addGzipHeader);
+          after(Filters.addJsonHeader);
+          after(Filters.addGzipHeader);
+        }));
   }
 }

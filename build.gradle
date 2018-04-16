@@ -58,7 +58,37 @@ configure(subprojects.findAll {it.name.endsWith('service')}) {
 
         testCompile group: 'junit', name: 'junit', version: '4.+'
         testCompile "com.despegar:spark-test:1.1.4"
+        compile project(':sharedmodule')
     }
+}
+
+project(':securityservice') {
+    apply plugin: 'application'
+
+    mainClassName = 'com.workingbit.security.SecurityApplication'
+
+    dependencies {
+    }
+
+    // Task for building the zip file for upload
+    task buildZip(type: Zip) {
+        // Using the Zip API from gradle to build a zip file of all the dependencies
+        //
+        // The path to this zip file can be set in the serverless.yml file for the
+        // package/artifact setting for deployment to the S3 bucket
+        //
+        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
+
+        // set the base name of the zip file
+        baseName = "securityservice"
+        from compileJava
+        from processResources
+        into("lib") {
+            from configurations.runtime
+        }
+    }
+
+    build.dependsOn buildZip
 }
 
 project(':articleservice') {
@@ -67,7 +97,6 @@ project(':articleservice') {
     mainClassName = 'com.workingbit.article.ArticleApplication'
 
     dependencies {
-        compile project(':sharedmodule')
     }
 
     // Task for building the zip file for upload
@@ -97,8 +126,6 @@ project(':boardservice') {
     mainClassName = 'com.workingbit.board.BoardApplication'
 
     dependencies {
-        compile project(':sharedmodule')
-
         // tree
         compile 'com.github.rutledgepaulv:prune:1.3'
 

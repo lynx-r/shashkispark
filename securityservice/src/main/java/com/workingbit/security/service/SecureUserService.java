@@ -1,7 +1,5 @@
-package com.workingbit.share.service;
+package com.workingbit.security.service;
 
-import com.workingbit.share.common.ShareProperties;
-import com.workingbit.share.dao.SecureUserDao;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.RegisterUser;
 import com.workingbit.share.model.SecureUser;
@@ -11,24 +9,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
-import static com.workingbit.share.common.Config4j.configurationProvider;
+import static com.workingbit.security.SecurityApplication.secureUserDao;
 import static com.workingbit.share.util.Utils.getRandomString;
 
 /**
  * Created by Aleksey Popryadukhin on 16/04/2018.
  */
 public class SecureUserService {
-
-  private static SecureUserDao secureUserDao;
-
-  static {
-    ShareProperties shareProperties = configurationProvider().bind("app", ShareProperties.class);
-    secureUserDao = new SecureUserDao(shareProperties);
-  }
-
-  public static SecureUserService getInstance() {
-    return new SecureUserService();
-  }
 
   public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
     return token.map(t -> {

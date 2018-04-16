@@ -6,7 +6,7 @@ import com.workingbit.board.dao.BoardBoxDao;
 import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.dao.NotationDao;
 import com.workingbit.board.service.BoardBoxService;
-import com.workingbit.board.util.Path;
+import com.workingbit.board.config.Path;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import org.slf4j.Logger;

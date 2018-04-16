@@ -2,4 +2,4 @@ rootProject.name = 'shashkispark'
 include 'sharedmodule'
 include 'articleservice'
 include 'boardservice'
-
+include 'securityservice'

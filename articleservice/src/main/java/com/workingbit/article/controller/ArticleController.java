@@ -6,11 +6,8 @@ import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.handler.ModelHandlerFunc;
 import com.workingbit.share.handler.ParamsHandlerFunc;
 import com.workingbit.share.handler.QueryParamsHandlerFunc;
-import com.workingbit.share.handler.RegisterHandlerFunc;
 import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.CreateArticlePayload;
-import com.workingbit.share.model.RegisterUser;
 import spark.Route;
 
 import static com.workingbit.article.ArticleApplication.articleService;
@@ -21,27 +18,6 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
  * Created by Aleksey Popryaduhin on 13:58 27/09/2017.
  */
 public class ArticleController {
-
-  public static Route register = (req, res) ->
-      ((RegisterHandlerFunc<RegisterUser>) (data, token) ->
-          articleService.register((RegisterUser) data, token)
-              .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_REGISTER))
-      ).handleRequest(req, res, RegisterUser.class);
-
-  public static Route authorize = (req, res) ->
-      ((ModelHandlerFunc<RegisterUser>) (data, token) ->
-          articleService.authorize((RegisterUser) data, token)
-              .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHORIZE))
-      ).handleRequest(req, res, true, RegisterUser.class);
-
-  public static Route authenticate = (req, res) ->
-      ((ModelHandlerFunc<AuthUser>) (data, token) ->
-          articleService.authenticate(token)
-              .map(Answer::created)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
-      ).handleRequest(req, res, true, AuthUser.class);
 
   public static Route findAllArticles = (req, res) ->
       ((QueryParamsHandlerFunc) params ->

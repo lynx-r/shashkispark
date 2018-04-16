@@ -1,4 +1,4 @@
-package com.workingbit.article.util;
+package com.workingbit.board.config;
 
 import java.text.MessageFormat;
 import java.util.Locale;

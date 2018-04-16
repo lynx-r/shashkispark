@@ -72,11 +72,4 @@ public class ArticleService {
   public Optional<AuthUser> authorize(RegisterUser registerUser, Optional<AuthUser> token) {
     return secureUserService.authorize(registerUser, token);
   }
-
-  public Optional<AuthUser> authenticate(Optional<AuthUser> authUser) {
-    if (authUser.isPresent()) {
-      return secureUserService.authenticate(authUser.get());
-    }
-    return Optional.empty();
-  }
 }

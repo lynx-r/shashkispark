@@ -1,9 +1,10 @@
-package com.workingbit.share.dao;
+package com.workingbit.security.dao;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.workingbit.share.common.ShareProperties;
+import com.workingbit.security.config.AppProperties;
+import com.workingbit.share.dao.BaseDao;
 import com.workingbit.share.model.SecureUser;
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,7 +17,7 @@ import java.util.Optional;
  */
 public class SecureUserDao extends BaseDao<SecureUser> {
 
-  public SecureUserDao(ShareProperties properties) {
+  public SecureUserDao(AppProperties properties) {
     super(SecureUser.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
   }
 

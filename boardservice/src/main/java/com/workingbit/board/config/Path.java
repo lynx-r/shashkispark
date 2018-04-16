@@ -1,4 +1,4 @@
-package com.workingbit.board.util;
+package com.workingbit.board.config;
 
 public class Path {
 
