@@ -32,19 +32,27 @@ public class SecureUserDao extends BaseDao<SecureUser> {
   }
 
   public Optional<SecureUser> findBySession(String session) {
-    if (StringUtils.isBlank(session)) {
-      logger.info("Session is null");
+    return findByAttributeIndex(session, "userSession","userSessionIndex");
+  }
+
+  public Optional<SecureUser> findByUsername(String username) {
+    return findByAttributeIndex(username, "username","usernameIndex");
+  }
+
+  private Optional<SecureUser> findByAttributeIndex(String attribute, String attributeName, String indexName) {
+    if (StringUtils.isBlank(attribute)) {
+      logger.info(attribute + " is null");
       return Optional.empty();
     }
-    logger.info("Find by userSession: " + session);
+    logger.info("Find by " + attributeName + ": " + attribute);
 
     Map<String, AttributeValue> eav = new HashMap<>();
-    eav.put(":userSession", new AttributeValue().withS(session));
+    eav.put(":attribute", new AttributeValue().withS(attribute));
 
     DynamoDBQueryExpression<SecureUser> queryExpression = new DynamoDBQueryExpression<SecureUser>()
-        .withIndexName("userSessionIndex")
+        .withIndexName(indexName)
         .withConsistentRead(false)
-        .withKeyConditionExpression("userSession = :userSession")
+        .withKeyConditionExpression(attributeName + " = :attribute")
         .withExpressionAttributeValues(eav);
 
     PaginatedQueryList<SecureUser> queryList = getDynamoDBMapper().query(SecureUser.class, queryExpression);

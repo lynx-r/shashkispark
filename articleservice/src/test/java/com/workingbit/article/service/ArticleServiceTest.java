@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -24,14 +25,27 @@ public class ArticleServiceTest extends BaseTest {
     String password = Utils.getRandomString();
     RegisterUser registerUser = new RegisterUser(username, password);
     String session = Utils.getRandomString();
-    Optional<AuthUser> authUserOptional = Optional.of(new AuthUser("", session));
+    AuthUser authUser = new AuthUser("", session);
+    Optional<AuthUser> authUserOptional = Optional.of(authUser);
+
     Optional<AuthUser> register = SecureUtils.register(registerUser, authUserOptional);
     assertTrue(register.isPresent());
     System.out.println(register.get());
     AuthUser registered = register.get();
+
     Optional<AuthUser> authenticatedOpt = SecureUtils.authenticate(registered);
     assertTrue(authenticatedOpt.isPresent());
     AuthUser authenticated = authenticatedOpt.get();
     assertEquals(registered, authenticated);
+
+    session = Utils.getRandomString();
+    authUser = new AuthUser("", session);
+    Optional<AuthUser> authorizedOpt = SecureUtils.authorize(registerUser, Optional.of(authUser));
+    assertTrue(authorizedOpt.isPresent());
+    AuthUser authorized = authorizedOpt.get();
+
+    assertNotEquals(registered, authorized);
+    assertNotEquals(registered.getAccessToken(), authorized.getAccessToken());
+    assertEquals(session, authorized.getSession());
   }
 }

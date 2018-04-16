@@ -30,6 +30,13 @@ public class SecureUser extends BaseDomain {
   private LocalDateTime updatedAt;
 
   /**
+   * user name
+   */
+  @DynamoDBIndexHashKey(globalSecondaryIndexName = "usernameIndex")
+  @DynamoDBAttribute(attributeName = "username")
+  private String username;
+
+  /**
    * hash of user:password:salt
    */
   @DynamoDBAttribute(attributeName = "digest")
