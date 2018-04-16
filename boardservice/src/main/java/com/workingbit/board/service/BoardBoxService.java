@@ -21,7 +21,10 @@ public class BoardBoxService {
   private final static BoardService boardService = new BoardService();
   private final static NotationService notationService = new NotationService();
 
-  public Optional<BoardBox> createBoardBox(CreateBoardPayload createBoardPayload) {
+  public Optional<BoardBox> createBoardBox(CreateBoardPayload createBoardPayload, Optional<String> token) {
+    if (!token.isPresent()) {
+      return Optional.empty();
+    }
     Board board = boardService.createBoard(createBoardPayload);
 
     BoardBox boardBox = new BoardBox(board);
@@ -84,7 +87,7 @@ public class BoardBoxService {
         });
   }
 
-  public Optional<BoardBox> highlight(BoardBox boardBox) {
+  public Optional<BoardBox> highlight(BoardBox boardBox, Optional<String> token) {
     return find(boardBox)
         .map(updated -> {
           if (resetHighlightIfNotLastBoard(updated)) {
@@ -109,7 +112,7 @@ public class BoardBoxService {
         });
   }
 
-  public Optional<BoardBox> move(BoardBox boardBox) {
+  public Optional<BoardBox> move(BoardBox boardBox, Optional<String> token) {
     return find(boardBox)
         .map(updatedBox -> {
           Board boardUpdated = updatedBox.getBoard();
@@ -151,7 +154,7 @@ public class BoardBoxService {
     boardBox.setNotation(notation);
   }
 
-  public Optional<BoardBox> changeTurn(BoardBox boardBox) {
+  public Optional<BoardBox> changeTurn(BoardBox boardBox, Optional<String> token) {
     return find(boardBox)
         .map(updatedBox -> {
           Board inverted = boardBox.getBoard();
@@ -166,11 +169,11 @@ public class BoardBoxService {
         });
   }
 
-  public  Optional<BoardBox> save(BoardBox boardBox) {
+  public  Optional<BoardBox> save(BoardBox boardBox, Optional<String> token) {
     return Optional.of(saveAndFillBoard(boardBox));
   }
 
-  public Optional<BoardBox> loadPreviewBoard(BoardBox boardBox) {
+  public Optional<BoardBox> loadPreviewBoard(BoardBox boardBox, Optional<String> token) {
     notationService.save(boardBox.getNotation());
     updateBoardBox(boardBox);
     Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
@@ -178,7 +181,7 @@ public class BoardBoxService {
     return Optional.of(boardBox);
   }
 
-  public Optional<BoardBox> addDraught(BoardBox boardBox) {
+  public Optional<BoardBox> addDraught(BoardBox boardBox, Optional<String> token) {
     Square selectedSquare = boardBox.getBoard().getSelectedSquare();
     if (selectedSquare == null
         || !selectedSquare.isOccupied()
@@ -207,7 +210,7 @@ public class BoardBoxService {
         });
   }
 
-  public Optional<BoardBox> undo(BoardBox boardBox) {
+  public Optional<BoardBox> undo(BoardBox boardBox, Optional<String> token) {
     return find(boardBox)
         .map(filledBoardBox -> {
           NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
@@ -217,7 +220,7 @@ public class BoardBoxService {
         .orElse(null);
   }
 
-  public Optional<BoardBox> redo(BoardBox boardBox) {
+  public Optional<BoardBox> redo(BoardBox boardBox, Optional<String> token) {
     return find(boardBox)
         .map(filledBoardBox -> {
           NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
@@ -227,12 +230,12 @@ public class BoardBoxService {
         .orElse(null);
   }
 
-  public Optional<BoardBox> forkNotation(BoardBox boardBox) {
+  public Optional<BoardBox> forkNotation(BoardBox boardBox, Optional<String> token) {
     NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
     return forkNotationFor(boardBox, currentNotationDrive);
   }
 
-  public Optional<BoardBox> switchNotation(BoardBox boardBox) {
+  public Optional<BoardBox> switchNotation(BoardBox boardBox, Optional<String> token) {
     NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
     NotationDrive variantNotationDrive = boardBox.getNotation().getNotationHistory().getVariantNotationDrive();
     return switchNotationTo(boardBox, currentNotationDrive, variantNotationDrive);

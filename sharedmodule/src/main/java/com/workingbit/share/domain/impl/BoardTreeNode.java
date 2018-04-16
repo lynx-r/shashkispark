@@ -77,6 +77,6 @@
 //
 //  @Override
 //  public int hashCode() {
-//    return Objects.hash(super.hashCode(), data);
+//    return Objects.digest(super.hashCode(), data);
 //  }
 //}

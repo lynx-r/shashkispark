@@ -51,6 +51,7 @@ public class ArticleApplication {
   private static void establishRoutes() {
     path("/api", () ->
         path("/v1", () -> {
+          get(Path.AUTHENTICATE, ArticleController.register);
           get(Path.ARTICLES, ArticleController.findAllArticles);
           get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
           post(Path.ARTICLE, ArticleController.createArticleAndBoard);

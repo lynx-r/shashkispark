@@ -1,901 +1,1833 @@
 {
-  "body": {
-    "type": "boardBox",
-    "id": "Новая статья-MzPW7y3GSn-SyJ1KjXKSU",
-    "createdAt": "2018-04-02T15:51:52.695",
-    "updatedAt": "2018-04-02T15:51:52.699",
-    "articleId": "Новая статья-MzPW7y3GSn",
-    "boardId": "Новая статья-MzPW7y3GSn-SyJ1KjXKSU-8p4KaX7iXf",
-    "board": {
-      "type": "board",
-      "id": "Новая статья-MzPW7y3GSn-SyJ1KjXKSU-8p4KaX7iXf",
-      "createdAt": "2018-04-02T15:51:51.931",
-      "updatedAt": "2018-04-02T15:51:51.935",
-      "boardBoxId": "SyJ1KjXKSU",
-      "previousBoards": [],
-      "nextBoards": [],
-      "blackDraughts": {
-        "h6": {
-          "v": 2,
-          "h": 7,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "h-2"
-        },
-        "h8": {
-          "v": 0,
-          "h": 7,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "h0"
-        },
-        "g7": {
-          "v": 1,
-          "h": 6,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "g-1"
-        },
-        "f6": {
-          "v": 2,
-          "h": 5,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "f-2"
-        },
-        "f8": {
-          "v": 0,
-          "h": 5,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "f0"
-        },
-        "e7": {
-          "v": 1,
-          "h": 4,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "e-1"
-        },
-        "d6": {
-          "v": 2,
-          "h": 3,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "d-2"
-        },
-        "d8": {
-          "v": 0,
-          "h": 3,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "d0"
-        },
-        "c7": {
-          "v": 1,
-          "h": 2,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "c-1"
-        },
-        "b6": {
-          "v": 2,
-          "h": 1,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "b-2"
-        },
-        "b8": {
-          "v": 0,
-          "h": 1,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "b0"
-        },
-        "a7": {
-          "v": 1,
-          "h": 0,
-          "black": true,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "a-1"
-        }
+  "type": "boardBox",
+  "id": "99702bdd-7990-48f4-9bd7-56b63916b181",
+  "createdAt": "2018-04-15T11:59:30.038",
+  "updatedAt": "2018-04-15T12:25:19.596",
+  "articleId": "Новая статья",
+  "boardId": "bb9ef5d9-9b3b-4e62-bbef-a03ccc4085b9",
+  "board": {
+    "type": "board",
+    "id": "bb9ef5d9-9b3b-4e62-bbef-a03ccc4085b9",
+    "createdAt": "2018-04-15T12:04:04.19",
+    "updatedAt": "2018-04-15T12:04:04.193",
+    "boardBoxId": "99702bdd-7990-48f4-9bd7-56b63916b181",
+    "blackDraughts": {
+      "h8": {
+        "v": 0,
+        "h": 7,
+        "black": true,
+        "queen": false,
+        "captured": false,
+        "markCaptured": false,
+        "highlight": false,
+        "updatedAt": null,
+        "notation": "h0"
       },
-      "whiteDraughts": {
-        "h2": {
-          "v": 6,
-          "h": 7,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "h-6"
-        },
-        "g1": {
-          "v": 7,
-          "h": 6,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "g-7"
-        },
-        "g3": {
-          "v": 5,
-          "h": 6,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "g-5"
-        },
-        "f2": {
-          "v": 6,
-          "h": 5,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "f-6"
-        },
-        "e1": {
-          "v": 7,
-          "h": 4,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "e-7"
-        },
-        "e3": {
-          "v": 5,
-          "h": 4,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "e-5"
-        },
-        "d2": {
-          "v": 6,
-          "h": 3,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "d-6"
-        },
-        "c1": {
-          "v": 7,
-          "h": 2,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "c-7"
-        },
-        "c3": {
-          "v": 5,
-          "h": 2,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "c-5"
-        },
-        "b2": {
-          "v": 6,
-          "h": 1,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "b-6"
-        },
-        "a1": {
-          "v": 7,
-          "h": 0,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "a-7"
-        },
-        "a3": {
-          "v": 5,
-          "h": 0,
-          "black": false,
-          "queen": false,
-          "captured": false,
-          "markCaptured": false,
-          "highlighted": false,
-          "updatedAt": null,
-          "notation": "a-5"
-        }
+      "f8": {
+        "v": 0,
+        "h": 5,
+        "black": true,
+        "queen": false,
+        "captured": false,
+        "markCaptured": false,
+        "highlight": false,
+        "updatedAt": null,
+        "notation": "f0"
       },
-      "selectedSquare": null,
-      "nextSquare": null,
-      "previousSquare": null,
-      "squares": [
-        null,
-        {
-          "v": 0,
-          "h": 1,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 0,
-            "h": 1,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "b0"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "b8"
-        },
-        null,
-        {
-          "v": 0,
-          "h": 3,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 0,
-            "h": 3,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "d0"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "d8"
-        },
-        null,
-        {
-          "v": 0,
-          "h": 5,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 0,
-            "h": 5,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "f0"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "f8"
-        },
-        null,
-        {
-          "v": 0,
-          "h": 7,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 0,
-            "h": 7,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "h0"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "h8"
-        },
-        {
-          "v": 1,
-          "h": 0,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 1,
-            "h": 0,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "a-1"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "a7"
-        },
-        null,
-        {
-          "v": 1,
-          "h": 2,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 1,
-            "h": 2,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "c-1"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "c7"
-        },
-        null,
-        {
-          "v": 1,
-          "h": 4,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 1,
-            "h": 4,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "e-1"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "e7"
-        },
-        null,
-        {
-          "v": 1,
-          "h": 6,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 1,
-            "h": 6,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "g-1"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "g7"
-        },
-        null,
-        null,
-        {
-          "v": 2,
-          "h": 1,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 2,
-            "h": 1,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "b-2"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "b6"
-        },
-        null,
-        {
-          "v": 2,
-          "h": 3,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 2,
-            "h": 3,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "d-2"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "d6"
-        },
-        null,
-        {
-          "v": 2,
-          "h": 5,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 2,
-            "h": 5,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "f-2"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "f6"
-        },
-        null,
-        {
-          "v": 2,
-          "h": 7,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 2,
-            "h": 7,
-            "black": true,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "h-2"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "h6"
-        },
-        {
-          "v": 3,
-          "h": 0,
-          "main": false,
-          "highlighted": false,
-          "draught": null,
-          "updatedAt": null,
-          "occupied": false,
-          "notation": "a5"
-        },
-        null,
-        {
-          "v": 3,
-          "h": 2,
-          "main": false,
-          "highlighted": false,
-          "draught": null,
-          "updatedAt": null,
-          "occupied": false,
-          "notation": "c5"
-        },
-        null,
-        {
-          "v": 3,
-          "h": 4,
-          "main": false,
-          "highlighted": false,
-          "draught": null,
-          "updatedAt": null,
-          "occupied": false,
-          "notation": "e5"
-        },
-        null,
-        {
-          "v": 3,
-          "h": 6,
-          "main": false,
-          "highlighted": false,
-          "draught": null,
-          "updatedAt": null,
-          "occupied": false,
-          "notation": "g5"
-        },
-        null,
-        null,
-        {
-          "v": 4,
-          "h": 1,
-          "main": false,
-          "highlighted": false,
-          "draught": null,
-          "updatedAt": null,
-          "occupied": false,
-          "notation": "b4"
-        },
-        null,
-        {
-          "v": 4,
-          "h": 3,
-          "main": false,
-          "highlighted": false,
-          "draught": null,
-          "updatedAt": null,
-          "occupied": false,
-          "notation": "d4"
-        },
-        null,
-        {
-          "v": 4,
-          "h": 5,
-          "main": false,
-          "highlighted": false,
-          "draught": null,
-          "updatedAt": null,
-          "occupied": false,
-          "notation": "f4"
-        },
-        null,
-        {
-          "v": 4,
-          "h": 7,
-          "main": false,
-          "highlighted": false,
-          "draught": null,
-          "updatedAt": null,
-          "occupied": false,
-          "notation": "h4"
-        },
-        {
-          "v": 5,
-          "h": 0,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 5,
-            "h": 0,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "a-5"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "a3"
-        },
-        null,
-        {
-          "v": 5,
-          "h": 2,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 5,
-            "h": 2,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "c-5"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "c3"
-        },
-        null,
-        {
-          "v": 5,
-          "h": 4,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 5,
-            "h": 4,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "e-5"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "e3"
-        },
-        null,
-        {
-          "v": 5,
-          "h": 6,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 5,
-            "h": 6,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "g-5"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "g3"
-        },
-        null,
-        null,
-        {
-          "v": 6,
-          "h": 1,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 6,
-            "h": 1,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "b-6"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "b2"
-        },
-        null,
-        {
-          "v": 6,
-          "h": 3,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 6,
-            "h": 3,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "d-6"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "d2"
-        },
-        null,
-        {
-          "v": 6,
-          "h": 5,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 6,
-            "h": 5,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "f-6"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "f2"
-        },
-        null,
-        {
-          "v": 6,
-          "h": 7,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 6,
-            "h": 7,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "h-6"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "h2"
-        },
-        {
-          "v": 7,
-          "h": 0,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 7,
-            "h": 0,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "a-7"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "a1"
-        },
-        null,
-        {
-          "v": 7,
-          "h": 2,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 7,
-            "h": 2,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "c-7"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "c1"
-        },
-        null,
-        {
-          "v": 7,
-          "h": 4,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 7,
-            "h": 4,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "e-7"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "e1"
-        },
-        null,
-        {
-          "v": 7,
-          "h": 6,
-          "main": false,
-          "highlighted": false,
-          "draught": {
-            "v": 7,
-            "h": 6,
-            "black": false,
-            "queen": false,
-            "captured": false,
-            "markCaptured": false,
-            "highlighted": false,
-            "updatedAt": null,
-            "notation": "g-7"
-          },
-          "updatedAt": null,
-          "occupied": true,
-          "notation": "g1"
-        },
-        null
-      ],
-      "black": false,
-      "rules": "RUSSIAN",
-      "blackTurn": false,
-      "driveCount": 0
-    },
-    "notation": {
-      "rules": null,
-      "notationDrivesContainer": {
-        "empty": false
+      "d8": {
+        "v": 0,
+        "h": 3,
+        "black": true,
+        "queen": false,
+        "captured": false,
+        "markCaptured": false,
+        "highlight": false,
+        "updatedAt": null,
+        "notation": "d0"
+      },
+      "b8": {
+        "v": 0,
+        "h": 1,
+        "black": true,
+        "queen": false,
+        "captured": false,
+        "markCaptured": false,
+        "highlight": false,
+        "updatedAt": null,
+        "notation": "b0"
       }
     },
-    "editMode": "EDIT"
+    "whiteDraughts": {
+      "c3": {
+        "v": 5,
+        "h": 2,
+        "black": false,
+        "queen": false,
+        "captured": false,
+        "markCaptured": false,
+        "highlight": false,
+        "updatedAt": null,
+        "notation": "c-5"
+      },
+      "c5": {
+        "v": 3,
+        "h": 2,
+        "black": false,
+        "queen": false,
+        "captured": false,
+        "markCaptured": false,
+        "highlight": false,
+        "updatedAt": null,
+        "notation": "c-3"
+      },
+      "g1": {
+        "v": 7,
+        "h": 6,
+        "black": false,
+        "queen": false,
+        "captured": false,
+        "markCaptured": false,
+        "highlight": false,
+        "updatedAt": null,
+        "notation": "g-7"
+      },
+      "h6": {
+        "v": 2,
+        "h": 7,
+        "black": false,
+        "queen": false,
+        "captured": false,
+        "markCaptured": false,
+        "highlight": false,
+        "updatedAt": null,
+        "notation": "h-2"
+      }
+    },
+    "selectedSquare": {
+      "v": 2,
+      "h": 7,
+      "main": false,
+      "highlight": false,
+      "draught": {
+        "v": 2,
+        "h": 7,
+        "black": false,
+        "queen": false,
+        "captured": false,
+        "markCaptured": false,
+        "highlight": false,
+        "updatedAt": null,
+        "notation": "h6"
+      },
+      "occupied": true,
+      "updatedAt": null,
+      "notation": "h6"
+    },
+    "nextSquare": null,
+    "previousSquare": {
+      "v": 4,
+      "h": 5,
+      "main": false,
+      "highlight": false,
+      "draught": null,
+      "occupied": false,
+      "updatedAt": null,
+      "notation": "f4"
+    },
+    "squares": null,
+    "black": false,
+    "blackTurn": true,
+    "driveCount": 17,
+    "rules": "RUSSIAN"
   },
-  "message": {
-    "type": "message",
-    "code": 201,
-    "message": "Object created"
+  "notationId": "202c32d9-4cd7-40eb-9b0b-9b6486d34120",
+  "notation": {
+    "type": "notation",
+    "id": "202c32d9-4cd7-40eb-9b0b-9b6486d34120",
+    "createdAt": "2018-04-15T11:59:30.038",
+    "updatedAt": "2018-04-15T12:25:19.665",
+    "boardBoxId": "99702bdd-7990-48f4-9bd7-56b63916b181",
+    "tags": {},
+    "rules": "RUSSIAN",
+    "notationHistory": {
+      "history": [
+        {
+          "notationNumber": "0. ",
+          "moves": [],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": true,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 0
+        },
+        {
+          "notationNumber": "1. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "g3",
+                  "boardId": "187536a3-13d8-4abb-a430-da6ba7e27584"
+                },
+                {
+                  "notation": "h4",
+                  "boardId": "ef545afe-2388-4b32-8e6d-cbc55b876724"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "f6",
+                  "boardId": "ef545afe-2388-4b32-8e6d-cbc55b876724"
+                },
+                {
+                  "notation": "g5",
+                  "boardId": "7de6cc27-73ef-4bfc-a003-84143208e02d"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 1
+        },
+        {
+          "notationNumber": "2. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "h4",
+                  "boardId": "7de6cc27-73ef-4bfc-a003-84143208e02d"
+                },
+                {
+                  "notation": "f6",
+                  "boardId": "75fa1b42-1927-4665-86b1-8cfde96817b2"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "e7",
+                  "boardId": "75fa1b42-1927-4665-86b1-8cfde96817b2"
+                },
+                {
+                  "notation": "g5",
+                  "boardId": "727c81a7-d157-43f2-b265-eb59b5c02715"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [
+            {
+              "notationNumber": "3. ",
+              "moves": [
+                {
+                  "type": "SIMPLE",
+                  "move": [
+                    {
+                      "notation": "e3",
+                      "boardId": "727c81a7-d157-43f2-b265-eb59b5c02715"
+                    },
+                    {
+                      "notation": "f4",
+                      "boardId": "1e69446d-d29b-45b2-9a0d-9d89dc2f0fe6"
+                    }
+                  ],
+                  "cursor": false,
+                  "moveStrength": null
+                },
+                {
+                  "type": "CAPTURE",
+                  "move": [
+                    {
+                      "notation": "g5",
+                      "boardId": "1e69446d-d29b-45b2-9a0d-9d89dc2f0fe6"
+                    },
+                    {
+                      "notation": "e3",
+                      "boardId": "acdf3efb-9dbc-4577-9778-edfcbf44f10f"
+                    }
+                  ],
+                  "cursor": true,
+                  "moveStrength": null
+                }
+              ],
+              "variants": [
+                {
+                  "notationNumber": "3. ",
+                  "moves": [
+                    {
+                      "type": "SIMPLE",
+                      "move": [
+                        {
+                          "notation": "e3",
+                          "boardId": "727c81a7-d157-43f2-b265-eb59b5c02715"
+                        },
+                        {
+                          "notation": "f4",
+                          "boardId": "1e69446d-d29b-45b2-9a0d-9d89dc2f0fe6"
+                        }
+                      ],
+                      "cursor": false,
+                      "moveStrength": null
+                    },
+                    {
+                      "type": "CAPTURE",
+                      "move": [
+                        {
+                          "notation": "g5",
+                          "boardId": "1e69446d-d29b-45b2-9a0d-9d89dc2f0fe6"
+                        },
+                        {
+                          "notation": "e3",
+                          "boardId": "acdf3efb-9dbc-4577-9778-edfcbf44f10f"
+                        }
+                      ],
+                      "cursor": true,
+                      "moveStrength": null
+                    }
+                  ],
+                  "variants": [],
+                  "ellipses": false,
+                  "numeric": false,
+                  "comment": null,
+                  "root": false,
+                  "selected": true,
+                  "current": false,
+                  "previous": false,
+                  "notationNumberInt": 3
+                },
+                {
+                  "notationNumber": "4. ",
+                  "moves": [
+                    {
+                      "type": "CAPTURE",
+                      "move": [
+                        {
+                          "notation": "d2",
+                          "boardId": "acdf3efb-9dbc-4577-9778-edfcbf44f10f"
+                        },
+                        {
+                          "notation": "f4",
+                          "boardId": "bdfd6594-8e49-4e03-bc36-b832bf184996"
+                        }
+                      ],
+                      "cursor": false,
+                      "moveStrength": null
+                    },
+                    {
+                      "type": "SIMPLE",
+                      "move": [
+                        {
+                          "notation": "d6",
+                          "boardId": "bdfd6594-8e49-4e03-bc36-b832bf184996"
+                        },
+                        {
+                          "notation": "e5",
+                          "boardId": "271069cf-a1f0-44bc-857a-cbe128c115bf"
+                        }
+                      ],
+                      "cursor": true,
+                      "moveStrength": null
+                    }
+                  ],
+                  "variants": [],
+                  "ellipses": false,
+                  "numeric": false,
+                  "comment": null,
+                  "root": false,
+                  "selected": true,
+                  "current": false,
+                  "previous": false,
+                  "notationNumberInt": 4
+                },
+                {
+                  "notationNumber": "5. ",
+                  "moves": [
+                    {
+                      "type": "CAPTURE",
+                      "move": [
+                        {
+                          "notation": "f4",
+                          "boardId": "271069cf-a1f0-44bc-857a-cbe128c115bf"
+                        },
+                        {
+                          "notation": "d6",
+                          "boardId": "2b5de80f-d58e-4a5c-9c35-eec518bb4723"
+                        }
+                      ],
+                      "cursor": false,
+                      "moveStrength": null
+                    },
+                    {
+                      "type": "CAPTURE",
+                      "move": [
+                        {
+                          "notation": "c7",
+                          "boardId": "2b5de80f-d58e-4a5c-9c35-eec518bb4723"
+                        },
+                        {
+                          "notation": "e5",
+                          "boardId": "3663f0bc-fa06-4b83-9d36-d5928b8ef138"
+                        }
+                      ],
+                      "cursor": true,
+                      "moveStrength": null
+                    }
+                  ],
+                  "variants": [],
+                  "ellipses": false,
+                  "numeric": false,
+                  "comment": null,
+                  "root": false,
+                  "selected": true,
+                  "current": false,
+                  "previous": false,
+                  "notationNumberInt": 5
+                }
+              ],
+              "ellipses": false,
+              "numeric": false,
+              "comment": null,
+              "root": false,
+              "selected": true,
+              "current": true,
+              "previous": true,
+              "notationNumberInt": 3
+            }
+          ],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 2
+        },
+        {
+          "notationNumber": "3. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "e3",
+                  "boardId": "727c81a7-d157-43f2-b265-eb59b5c02715"
+                },
+                {
+                  "notation": "f4",
+                  "boardId": "1e69446d-d29b-45b2-9a0d-9d89dc2f0fe6"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "g5",
+                  "boardId": "1e69446d-d29b-45b2-9a0d-9d89dc2f0fe6"
+                },
+                {
+                  "notation": "e3",
+                  "boardId": "acdf3efb-9dbc-4577-9778-edfcbf44f10f"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 3
+        },
+        {
+          "notationNumber": "4. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "d2",
+                  "boardId": "acdf3efb-9dbc-4577-9778-edfcbf44f10f"
+                },
+                {
+                  "notation": "f4",
+                  "boardId": "bdfd6594-8e49-4e03-bc36-b832bf184996"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "d6",
+                  "boardId": "bdfd6594-8e49-4e03-bc36-b832bf184996"
+                },
+                {
+                  "notation": "e5",
+                  "boardId": "271069cf-a1f0-44bc-857a-cbe128c115bf"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 4
+        },
+        {
+          "notationNumber": "5. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "f4",
+                  "boardId": "271069cf-a1f0-44bc-857a-cbe128c115bf"
+                },
+                {
+                  "notation": "d6",
+                  "boardId": "2b5de80f-d58e-4a5c-9c35-eec518bb4723"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "c7",
+                  "boardId": "2b5de80f-d58e-4a5c-9c35-eec518bb4723"
+                },
+                {
+                  "notation": "e5",
+                  "boardId": "3663f0bc-fa06-4b83-9d36-d5928b8ef138"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 5
+        },
+        {
+          "notationNumber": "6. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "c3",
+                  "boardId": "3663f0bc-fa06-4b83-9d36-d5928b8ef138"
+                },
+                {
+                  "notation": "d4",
+                  "boardId": "0dbd4211-b7db-427c-ac22-1028480829ca"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "e5",
+                  "boardId": "0dbd4211-b7db-427c-ac22-1028480829ca"
+                },
+                {
+                  "notation": "c3",
+                  "boardId": "6a37e1b7-05af-4288-9658-a32fd6341a30"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 6
+        },
+        {
+          "notationNumber": "7. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "b2",
+                  "boardId": "6a37e1b7-05af-4288-9658-a32fd6341a30"
+                },
+                {
+                  "notation": "d4",
+                  "boardId": "0287a2d3-1e94-422a-856c-14bc7f178490"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "b6",
+                  "boardId": "0287a2d3-1e94-422a-856c-14bc7f178490"
+                },
+                {
+                  "notation": "c5",
+                  "boardId": "107055c5-dddc-46d8-ae58-4c7c392ed9de"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 7
+        },
+        {
+          "notationNumber": "8. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "d4",
+                  "boardId": "107055c5-dddc-46d8-ae58-4c7c392ed9de"
+                },
+                {
+                  "notation": "b6",
+                  "boardId": "7c24eb5a-b25c-461c-bac9-222884bfc467"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "a7",
+                  "boardId": "7c24eb5a-b25c-461c-bac9-222884bfc467"
+                },
+                {
+                  "notation": "c5",
+                  "boardId": "239eaa96-df33-42fa-be72-7b17a835a6d5"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 8
+        },
+        {
+          "notationNumber": "9. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "a3",
+                  "boardId": "239eaa96-df33-42fa-be72-7b17a835a6d5"
+                },
+                {
+                  "notation": "b4",
+                  "boardId": "fd45a795-7f06-4025-99b6-03ca96e9147c"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "c5",
+                  "boardId": "fd45a795-7f06-4025-99b6-03ca96e9147c"
+                },
+                {
+                  "notation": "a3",
+                  "boardId": "f028397e-b030-4596-afd3-96888e4509f1"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 9
+        },
+        {
+          "notationNumber": "10. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "c1",
+                  "boardId": "f028397e-b030-4596-afd3-96888e4509f1"
+                },
+                {
+                  "notation": "b2",
+                  "boardId": "de069b5d-277b-45d9-b648-3c8f38549094"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "a3",
+                  "boardId": "de069b5d-277b-45d9-b648-3c8f38549094"
+                },
+                {
+                  "notation": "c1",
+                  "boardId": "39b3901c-416c-4c42-b0f4-dd5a096f7c3b"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 10
+        },
+        {
+          "notationNumber": "11. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "e1",
+                  "boardId": "39b3901c-416c-4c42-b0f4-dd5a096f7c3b"
+                },
+                {
+                  "notation": "d2",
+                  "boardId": "9091451d-c81e-44b4-8673-46ecc63339d9"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "c1",
+                  "boardId": "9091451d-c81e-44b4-8673-46ecc63339d9"
+                },
+                {
+                  "notation": "e3",
+                  "boardId": "a08bb6d2-467e-4925-aec1-971f846ec4f7"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 11
+        },
+        {
+          "notationNumber": "12. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "f2",
+                  "boardId": "a08bb6d2-467e-4925-aec1-971f846ec4f7"
+                },
+                {
+                  "notation": "d4",
+                  "boardId": "cd425f4c-6b35-40fd-bbd1-f91dfb1ccc09"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "g7",
+                  "boardId": "cd425f4c-6b35-40fd-bbd1-f91dfb1ccc09"
+                },
+                {
+                  "notation": "f6",
+                  "boardId": "951e8659-929f-4121-bf72-c9b400709050"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 12
+        },
+        {
+          "notationNumber": "13. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "a1",
+                  "boardId": "951e8659-929f-4121-bf72-c9b400709050"
+                },
+                {
+                  "notation": "b2",
+                  "boardId": "c1376d96-3cf1-4ed1-9cdd-56cdcd50fdbe"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "f6",
+                  "boardId": "c1376d96-3cf1-4ed1-9cdd-56cdcd50fdbe"
+                },
+                {
+                  "notation": "g5",
+                  "boardId": "b4c983e2-dddc-4399-af0b-85187bc48c28"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 13
+        },
+        {
+          "notationNumber": "14. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "d4",
+                  "boardId": "b4c983e2-dddc-4399-af0b-85187bc48c28"
+                },
+                {
+                  "notation": "c5",
+                  "boardId": "c50a25e9-18d5-41cc-9971-0f8be06da8f0"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "g5",
+                  "boardId": "c50a25e9-18d5-41cc-9971-0f8be06da8f0"
+                },
+                {
+                  "notation": "f4",
+                  "boardId": "2bfef4f0-6fa2-4363-bcbf-a2f798b2a694"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 14
+        },
+        {
+          "notationNumber": "15. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "b2",
+                  "boardId": "2bfef4f0-6fa2-4363-bcbf-a2f798b2a694"
+                },
+                {
+                  "notation": "c3",
+                  "boardId": "b36c96c0-7c02-48bf-8fe7-98c15c8ebe73"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "f4",
+                  "boardId": "b36c96c0-7c02-48bf-8fe7-98c15c8ebe73"
+                },
+                {
+                  "notation": "g3",
+                  "boardId": "24681829-f6ec-4d15-9ea5-25dcdfaa4889"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 15
+        },
+        {
+          "notationNumber": "16. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "h2",
+                  "boardId": "24681829-f6ec-4d15-9ea5-25dcdfaa4889"
+                },
+                {
+                  "notation": "f4",
+                  "boardId": "f2467a88-7ad3-4b35-951f-59b0d6bc18c8"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "h6",
+                  "boardId": "f2467a88-7ad3-4b35-951f-59b0d6bc18c8"
+                },
+                {
+                  "notation": "g5",
+                  "boardId": "869c913c-89a2-4eb1-866f-2cf722ba5f87"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 16
+        },
+        {
+          "notationNumber": "17. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "f4",
+                  "boardId": "869c913c-89a2-4eb1-866f-2cf722ba5f87"
+                },
+                {
+                  "notation": "h6",
+                  "boardId": "bb9ef5d9-9b3b-4e62-bbef-a03ccc4085b9"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 17
+        }
+      ],
+      "notation": [
+        {
+          "notationNumber": "0. ",
+          "moves": [],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": true,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 0
+        },
+        {
+          "notationNumber": "1. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "g3",
+                  "boardId": "187536a3-13d8-4abb-a430-da6ba7e27584"
+                },
+                {
+                  "notation": "h4",
+                  "boardId": "ef545afe-2388-4b32-8e6d-cbc55b876724"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "f6",
+                  "boardId": "ef545afe-2388-4b32-8e6d-cbc55b876724"
+                },
+                {
+                  "notation": "g5",
+                  "boardId": "7de6cc27-73ef-4bfc-a003-84143208e02d"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 1
+        },
+        {
+          "notationNumber": "2. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "h4",
+                  "boardId": "7de6cc27-73ef-4bfc-a003-84143208e02d"
+                },
+                {
+                  "notation": "f6",
+                  "boardId": "75fa1b42-1927-4665-86b1-8cfde96817b2"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "e7",
+                  "boardId": "75fa1b42-1927-4665-86b1-8cfde96817b2"
+                },
+                {
+                  "notation": "g5",
+                  "boardId": "727c81a7-d157-43f2-b265-eb59b5c02715"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": "ffff",
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 2
+        },
+        {
+          "notationNumber": "3. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "e3",
+                  "boardId": "727c81a7-d157-43f2-b265-eb59b5c02715"
+                },
+                {
+                  "notation": "f4",
+                  "boardId": "1e69446d-d29b-45b2-9a0d-9d89dc2f0fe6"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "g5",
+                  "boardId": "1e69446d-d29b-45b2-9a0d-9d89dc2f0fe6"
+                },
+                {
+                  "notation": "e3",
+                  "boardId": "acdf3efb-9dbc-4577-9778-edfcbf44f10f"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 3
+        },
+        {
+          "notationNumber": "4. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "d2",
+                  "boardId": "acdf3efb-9dbc-4577-9778-edfcbf44f10f"
+                },
+                {
+                  "notation": "f4",
+                  "boardId": "bdfd6594-8e49-4e03-bc36-b832bf184996"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "d6",
+                  "boardId": "bdfd6594-8e49-4e03-bc36-b832bf184996"
+                },
+                {
+                  "notation": "e5",
+                  "boardId": "271069cf-a1f0-44bc-857a-cbe128c115bf"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 4
+        },
+        {
+          "notationNumber": "5. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "f4",
+                  "boardId": "271069cf-a1f0-44bc-857a-cbe128c115bf"
+                },
+                {
+                  "notation": "d6",
+                  "boardId": "2b5de80f-d58e-4a5c-9c35-eec518bb4723"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "c7",
+                  "boardId": "2b5de80f-d58e-4a5c-9c35-eec518bb4723"
+                },
+                {
+                  "notation": "e5",
+                  "boardId": "3663f0bc-fa06-4b83-9d36-d5928b8ef138"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 5
+        },
+        {
+          "notationNumber": "6. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "c3",
+                  "boardId": "3663f0bc-fa06-4b83-9d36-d5928b8ef138"
+                },
+                {
+                  "notation": "d4",
+                  "boardId": "0dbd4211-b7db-427c-ac22-1028480829ca"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "e5",
+                  "boardId": "0dbd4211-b7db-427c-ac22-1028480829ca"
+                },
+                {
+                  "notation": "c3",
+                  "boardId": "6a37e1b7-05af-4288-9658-a32fd6341a30"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 6
+        },
+        {
+          "notationNumber": "7. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "b2",
+                  "boardId": "6a37e1b7-05af-4288-9658-a32fd6341a30"
+                },
+                {
+                  "notation": "d4",
+                  "boardId": "0287a2d3-1e94-422a-856c-14bc7f178490"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "b6",
+                  "boardId": "0287a2d3-1e94-422a-856c-14bc7f178490"
+                },
+                {
+                  "notation": "c5",
+                  "boardId": "107055c5-dddc-46d8-ae58-4c7c392ed9de"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 7
+        },
+        {
+          "notationNumber": "8. ",
+          "moves": {
+            "0": {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "d4",
+                  "boardId": "107055c5-dddc-46d8-ae58-4c7c392ed9de"
+                },
+                {
+                  "notation": "b6",
+                  "boardId": "7c24eb5a-b25c-461c-bac9-222884bfc467"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            "1": {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "a7",
+                  "boardId": "7c24eb5a-b25c-461c-bac9-222884bfc467"
+                },
+                {
+                  "notation": "c5",
+                  "boardId": "239eaa96-df33-42fa-be72-7b17a835a6d5"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            "moveStrength": "!"
+          },
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": "11",
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 8
+        },
+        {
+          "notationNumber": "9. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "a3",
+                  "boardId": "239eaa96-df33-42fa-be72-7b17a835a6d5"
+                },
+                {
+                  "notation": "b4",
+                  "boardId": "fd45a795-7f06-4025-99b6-03ca96e9147c"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "c5",
+                  "boardId": "fd45a795-7f06-4025-99b6-03ca96e9147c"
+                },
+                {
+                  "notation": "a3",
+                  "boardId": "f028397e-b030-4596-afd3-96888e4509f1"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 9
+        },
+        {
+          "notationNumber": "10. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "c1",
+                  "boardId": "f028397e-b030-4596-afd3-96888e4509f1"
+                },
+                {
+                  "notation": "b2",
+                  "boardId": "de069b5d-277b-45d9-b648-3c8f38549094"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "a3",
+                  "boardId": "de069b5d-277b-45d9-b648-3c8f38549094"
+                },
+                {
+                  "notation": "c1",
+                  "boardId": "39b3901c-416c-4c42-b0f4-dd5a096f7c3b"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 10
+        },
+        {
+          "notationNumber": "11. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "e1",
+                  "boardId": "39b3901c-416c-4c42-b0f4-dd5a096f7c3b"
+                },
+                {
+                  "notation": "d2",
+                  "boardId": "9091451d-c81e-44b4-8673-46ecc63339d9"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "c1",
+                  "boardId": "9091451d-c81e-44b4-8673-46ecc63339d9"
+                },
+                {
+                  "notation": "e3",
+                  "boardId": "a08bb6d2-467e-4925-aec1-971f846ec4f7"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 11
+        },
+        {
+          "notationNumber": "12. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "f2",
+                  "boardId": "a08bb6d2-467e-4925-aec1-971f846ec4f7"
+                },
+                {
+                  "notation": "d4",
+                  "boardId": "cd425f4c-6b35-40fd-bbd1-f91dfb1ccc09"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "g7",
+                  "boardId": "cd425f4c-6b35-40fd-bbd1-f91dfb1ccc09"
+                },
+                {
+                  "notation": "f6",
+                  "boardId": "951e8659-929f-4121-bf72-c9b400709050"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 12
+        },
+        {
+          "notationNumber": "13. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "a1",
+                  "boardId": "951e8659-929f-4121-bf72-c9b400709050"
+                },
+                {
+                  "notation": "b2",
+                  "boardId": "c1376d96-3cf1-4ed1-9cdd-56cdcd50fdbe"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "f6",
+                  "boardId": "c1376d96-3cf1-4ed1-9cdd-56cdcd50fdbe"
+                },
+                {
+                  "notation": "g5",
+                  "boardId": "b4c983e2-dddc-4399-af0b-85187bc48c28"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 13
+        },
+        {
+          "notationNumber": "14. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "d4",
+                  "boardId": "b4c983e2-dddc-4399-af0b-85187bc48c28"
+                },
+                {
+                  "notation": "c5",
+                  "boardId": "c50a25e9-18d5-41cc-9971-0f8be06da8f0"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "g5",
+                  "boardId": "c50a25e9-18d5-41cc-9971-0f8be06da8f0"
+                },
+                {
+                  "notation": "f4",
+                  "boardId": "2bfef4f0-6fa2-4363-bcbf-a2f798b2a694"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 14
+        },
+        {
+          "notationNumber": "15. ",
+          "moves": [
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "b2",
+                  "boardId": "2bfef4f0-6fa2-4363-bcbf-a2f798b2a694"
+                },
+                {
+                  "notation": "c3",
+                  "boardId": "b36c96c0-7c02-48bf-8fe7-98c15c8ebe73"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "f4",
+                  "boardId": "b36c96c0-7c02-48bf-8fe7-98c15c8ebe73"
+                },
+                {
+                  "notation": "g3",
+                  "boardId": "24681829-f6ec-4d15-9ea5-25dcdfaa4889"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 15
+        },
+        {
+          "notationNumber": "16. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "h2",
+                  "boardId": "24681829-f6ec-4d15-9ea5-25dcdfaa4889"
+                },
+                {
+                  "notation": "f4",
+                  "boardId": "f2467a88-7ad3-4b35-951f-59b0d6bc18c8"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            },
+            {
+              "type": "SIMPLE",
+              "move": [
+                {
+                  "notation": "h6",
+                  "boardId": "f2467a88-7ad3-4b35-951f-59b0d6bc18c8"
+                },
+                {
+                  "notation": "g5",
+                  "boardId": "869c913c-89a2-4eb1-866f-2cf722ba5f87"
+                }
+              ],
+              "cursor": false,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": null,
+          "root": false,
+          "selected": false,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 16
+        },
+        {
+          "notationNumber": "17. ",
+          "moves": [
+            {
+              "type": "CAPTURE",
+              "move": [
+                {
+                  "notation": "f4",
+                  "boardId": "869c913c-89a2-4eb1-866f-2cf722ba5f87"
+                },
+                {
+                  "notation": "h6",
+                  "boardId": "bb9ef5d9-9b3b-4e62-bbef-a03ccc4085b9"
+                }
+              ],
+              "cursor": true,
+              "moveStrength": null
+            }
+          ],
+          "variants": [],
+          "ellipses": false,
+          "numeric": false,
+          "comment": "aaa",
+          "root": false,
+          "selected": true,
+          "current": false,
+          "previous": false,
+          "notationNumberInt": 17
+        }
+      ],
+      "currentNotationDrive": null,
+      "variantNotationDrive": null
+    }
   },
-  "statusCode": 201
+  "editMode": "EDIT"
 }

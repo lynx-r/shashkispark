@@ -3,11 +3,16 @@ package com.workingbit.share.handler;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.model.Answer;
+import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.util.SecureUtils;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 
+import java.util.Optional;
+
 import static com.workingbit.share.common.ApiConstants.VK_API_KEY_ENV;
+import static com.workingbit.share.common.RequestConstants.JSESSIONID;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.Utils.encode;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -17,18 +22,16 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
  */
 public interface BaseHandlerFunc {
 
-  String _JSESSIONID = "JSESSIONID";
-
   default String preprocess(Request request, Response response) {
     String sign = request.headers(RequestConstants.SIGN);
     String signRequest = request.headers(RequestConstants.SIGN_REQUEST);
-    String jsessionid = request.cookie(_JSESSIONID);
+    String jsessionid = request.cookie(JSESSIONID);
     if (StringUtils.isBlank(jsessionid) && request.session().isNew()) {
-      response.cookie(_JSESSIONID, request.session(true).id());
+      response.cookie(JSESSIONID, request.session(true).id());
     }
     try {
-      String vkApiKeyEnv = System.getenv(VK_API_KEY_ENV);
-      if (StringUtils.isBlank(vkApiKeyEnv)) {
+      byte[] vkApiKeyEnv = System.getenv(VK_API_KEY_ENV).getBytes("UTF-8");
+      if (vkApiKeyEnv.length == 0) {
         return null;
       }
       String sig = encode(vkApiKeyEnv, signRequest);
@@ -39,5 +42,10 @@ public interface BaseHandlerFunc {
       return dataToJson(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.MALFORMED_REQUEST));
     }
     return null;
+  }
+
+  default Optional<AuthUser> isAuthenticated(String accessToken, String session) {
+    AuthUser authUser = new AuthUser(accessToken, session);
+    return SecureUtils.authenticate(authUser);
   }
 }

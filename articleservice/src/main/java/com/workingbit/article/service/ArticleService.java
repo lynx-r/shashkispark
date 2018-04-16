@@ -4,8 +4,11 @@ import com.workingbit.article.client.BoardRemoteClient;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.*;
+import com.workingbit.share.util.SecureUtils;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -19,7 +22,9 @@ public class ArticleService {
 
   private final static BoardRemoteClient boardRemoteClient = new BoardRemoteClient();
 
-  public Optional<CreateArticleResponse> createArticleResponse(CreateArticlePayload articleAndBoard) {
+  private final Logger logger = LoggerFactory.getLogger(ArticleService.class);
+
+  public Optional<CreateArticleResponse> createArticleResponse(CreateArticlePayload articleAndBoard, Optional<AuthUser> token) {
     Article article = articleAndBoard.getArticle();
     boolean present = findById(article.getTitle()).isPresent();
     Utils.setArticleIdAndCreatedAt(article, present);
@@ -37,11 +42,11 @@ public class ArticleService {
     } else {
       return Optional.empty();
     }
-    save(article);
+    save(article, token);
     return Optional.of(createArticleResponse);
   }
 
-  public Optional<Article> save(Article article) {
+  public Optional<Article> save(Article article, Optional<AuthUser> token) {
     articleDao.save(article);
     return Optional.of(article);
   }
@@ -58,5 +63,9 @@ public class ArticleService {
 
   public Optional<Article> findById(String articleId) {
     return articleDao.findById(articleId);
+  }
+
+  public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
+    return SecureUtils.register(registerUser, token);
   }
 }

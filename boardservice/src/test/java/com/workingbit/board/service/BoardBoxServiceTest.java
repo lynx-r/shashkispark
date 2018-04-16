@@ -82,7 +82,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void createBoard() {
     BoardBox boardBox = boardBoxService().createBoardBox(
-        getCreateBoardRequest(false, false, RUSSIAN, EnumEditBoardBoxMode.EDIT)).get();
+        getCreateBoardRequest(false, false, RUSSIAN, EnumEditBoardBoxMode.EDIT), token).get();
     toDelete(boardBox);
     assertNotNull(boardBox.getId());
   }
@@ -172,7 +172,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       NotationDrive forkDrive = notationDrives.get(forkNumber);
 
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox).get();
+      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
 
       NotationHistory nds = boardBoxVariant.getNotation().getNotationHistory();
       NotationDrive nd = nds.get(forkNumber - 1);
@@ -202,14 +202,14 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox).get();
+      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
 
       // get previous drive
       NotationHistory nds = boardBoxVariant.getNotation().getNotationHistory();
       NotationDrive nd = nds.get(forkNumber - 1);
 
       // switch
-      BoardBox switched = boardBoxService.switchNotation(boardBoxVariant).get();
+      BoardBox switched = boardBoxService.switchNotation(boardBoxVariant, token).get();
       switched.getNotation().print();
       System.out.println(switched.getNotation().toPdn());
     }
@@ -236,7 +236,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox).get();
+      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
 
       System.out.println(boardBoxVariant.getNotation().getNotationHistory().variantsToPdn());
 
@@ -280,7 +280,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox).get();
+      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
 
       Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
       NotationDrive forwardDrive = forwardNotation.getNotationHistory().get(1);
@@ -297,7 +297,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       NotationDrive nd = nds.get(forkNumber - 1);
 
       boardBox = current.deepClone();
-      BoardBox switched = boardBoxService.switchNotation(current).get();
+      BoardBox switched = boardBoxService.switchNotation(current, token).get();
 
       System.out.println(switched.getNotation().getNotationHistory().variantsToPdn());
 
@@ -334,7 +334,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
-      BoardBox fork1 = boardBoxService.forkNotation(boardBox).get();
+      BoardBox fork1 = boardBoxService.forkNotation(boardBox, token).get();
 
       Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
       NotationDrive forwardDrive = forwardNotation.getNotationHistory().get(1);
@@ -351,7 +351,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       NotationDrive nd = nds.get(forkNumber - 1);
 
       boardBox = current.deepClone();
-      BoardBox switch1 = boardBoxService.switchNotation(current).get();
+      BoardBox switch1 = boardBoxService.switchNotation(current, token).get();
 
       System.out.println(switch1.getNotation().getNotationHistory().variantsToPdn());
 
@@ -361,7 +361,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // forkNumber notation by index from test file
       notationDrives = boardBox.getNotation().getNotationHistory();
       forkDrive = notationDrives.get(forkNumber);
-      BoardBox fork2 = boardBoxService.forkNotation(boardBox).get();
+      BoardBox fork2 = boardBoxService.forkNotation(boardBox, token).get();
 
       forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
       forwardDrive = forwardNotation.getNotationHistory().get(1);
@@ -375,7 +375,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       nds = current.getNotation().getNotationHistory();
       nd = nds.get(forkNumber - 1);
 
-      BoardBox switched2 = boardBoxService.switchNotation(current).get();
+      BoardBox switched2 = boardBoxService.switchNotation(current, token).get();
 
       System.out.println(switched2.getNotation().getNotationHistory().variantsToPdn());
 
@@ -412,7 +412,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       int forkDriveIndex = Integer.parseInt(startVariantDriveMove);
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkDriveIndex);
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox).get();
+      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
       String firstForkPdn = boardBoxVariant.getNotation().toPdn();
 
       // get previous drive
@@ -420,9 +420,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       NotationDrive nd = nds.get(forkDriveIndex - 1);
 
       // switch
-      BoardBox switched = boardBoxService.switchNotation(boardBoxVariant).get();
+      BoardBox switched = boardBoxService.switchNotation(boardBoxVariant, token).get();
 
-      BoardBox doubleFork = boardBoxService.forkNotation(switched).get();
+      BoardBox doubleFork = boardBoxService.forkNotation(switched, token).get();
       String secondForkPdn = doubleFork.getNotation().toPdn();
       doubleFork.getNotation().print();
       System.out.println(doubleFork.getNotation().toPdn());
@@ -433,9 +433,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   private BoardBox undoMove(BoardBox boardBoxCurrent, NotationMove notationMove) {
     LinkedList<NotationSimpleMove> move = notationMove.getMove();
     for (NotationSimpleMove m : move) {
-      boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
-      boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
-      boardBoxCurrent = boardBoxService.undo(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.save(boardBoxCurrent, token).get();
+      boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent, token).get();
+      boardBoxCurrent = boardBoxService.undo(boardBoxCurrent, token).get();
     }
     return boardBoxCurrent;
   }
@@ -463,7 +463,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
 //      boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
 //      boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
-      boardBoxCurrent = boardBoxService.move(boardBoxCurrent).get();
+      boardBoxCurrent = boardBoxService.move(boardBoxCurrent, token).get();
     }
     return boardBoxCurrent;
   }
@@ -498,7 +498,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
     boardBox.setBoard(board);
-    boolean isPresent = boardBoxService.addDraught(boardBox).isPresent();
+    boolean isPresent = boardBoxService.addDraught(boardBox, token).isPresent();
     assertFalse(isPresent);
   }
 
@@ -506,12 +506,12 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public void test_add_draught_in_place_mode() {
     BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
     boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
-    boardBox = boardBoxService.save(boardBox).get();
+    boardBox = boardBoxService.save(boardBox, token).get();
 
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
     boardBox.setBoard(board);
-    boolean isPresent = boardBoxService.addDraught(boardBox).isPresent();
+    boolean isPresent = boardBoxService.addDraught(boardBox, token).isPresent();
     assertTrue(isPresent);
   }
 
@@ -519,24 +519,24 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public void test_capture_on_placed_board() {
     BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
     boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
-    boardBox = boardBoxService.save(boardBox).get();
+    boardBox = boardBoxService.save(boardBox, token).get();
 
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
     boardBox.setBoard(board);
-    boardBox = boardBoxService.addDraught(boardBox).get();
+    boardBox = boardBoxService.addDraught(boardBox, token).get();
 
     board = boardBox.getBoard();
     board = addBlackDraught(board, "d4");
     boardBox.setBoard(board);
-    boardBox = boardBoxService.addDraught(boardBox).get();
+    boardBox = boardBoxService.addDraught(boardBox, token).get();
 
     // because place mode
-    boolean isPresent = boardBoxService.move(boardBox).isPresent();
+    boolean isPresent = boardBoxService.move(boardBox, token).isPresent();
     assertFalse(isPresent);
 
     boardBox.setEditMode(EnumEditBoardBoxMode.MOVE);
-    boardBox = boardBoxService.save(boardBox).get();
+    boardBox = boardBoxService.save(boardBox, token).get();
 
     board = boardBox.getBoard();
 
@@ -547,7 +547,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     board.setNextSquare(e5);
     boardBox.setBoard(board);
 
-    boardBox = boardBoxService.move(boardBox).get();
+    boardBox = boardBoxService.move(boardBox, token).get();
     board = boardBox.getBoard();
     Square e5n = getSquare(board, "e5");
     Square c3n = getSquare(board, "c3");
@@ -605,10 +605,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
         }
       }
 
-      boardBox = boardBoxService.undo(boardBox).get();
+      boardBox = boardBoxService.undo(boardBox, token).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
       assertEquals(0, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
-      boolean undoNotPossible = !boardBoxService.undo(boardBox).isPresent();
+      boolean undoNotPossible = !boardBoxService.undo(boardBox, token).isPresent();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
       assertTrue(undoNotPossible);
       break;
@@ -643,17 +643,17 @@ public class BoardBoxServiceTest extends BaseServiceTest {
         }
       }
 
-      boardBox = boardBoxService.undo(boardBox).get();
+      boardBox = boardBoxService.undo(boardBox, token).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
       assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
-      boardBox = boardBoxService.undo(boardBox).get();
+      boardBox = boardBoxService.undo(boardBox, token).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
       assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
 
-      boardBox = boardBoxService.redo(boardBox).get();
+      boardBox = boardBoxService.redo(boardBox, token).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
       assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
-      boardBox = boardBoxService.redo(boardBox).get();
+      boardBox = boardBoxService.redo(boardBox, token).get();
       System.out.println("UNDO: " + boardBox.getNotation().toPdn());
       assertEquals(0, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
       break;
@@ -691,10 +691,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
     boardBox.getNotation().getNotationHistory().printPdn();
 
-    boardBox = boardBoxService.undo(boardBox).get();
+    boardBox = boardBoxService.undo(boardBox, token).get();
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
-    boardBox = boardBoxService.undo(boardBox).get();
+    boardBox = boardBoxService.undo(boardBox, token).get();
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
 
@@ -716,10 +716,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
     boardBoxOrig = current.deepClone();
 
-    boardBox = boardBoxService.undo(boardBox).get();
+    boardBox = boardBoxService.undo(boardBox, token).get();
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
-    boardBox = boardBoxService.undo(boardBox).get();
+    boardBox = boardBoxService.undo(boardBox, token).get();
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
 
@@ -833,14 +833,14 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   }
 
   public BoardBox redo(BoardBox boardBox) {
-    boardBox = boardBoxService.redo(boardBox).get();
+    boardBox = boardBoxService.redo(boardBox, token).get();
     System.out.println("REDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
     return boardBox;
   }
 
   public BoardBox undo(BoardBox boardBox) {
-    boardBox = boardBoxService.undo(boardBox).get();
+    boardBox = boardBoxService.undo(boardBox, token).get();
     System.out.println("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
     return boardBox;
@@ -859,7 +859,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   protected BoardBox getBoardBox(boolean black, boolean fillBoard, EnumRules rules, EnumEditBoardBoxMode editMode) {
     CreateBoardPayload createBoardPayload = getCreateBoardRequest(black, fillBoard, rules, editMode);
-    return boardBoxService().createBoardBox(createBoardPayload).get();
+    return boardBoxService().createBoardBox(createBoardPayload, token).get();
   }
 
   private class LoadNotationForkNumberAndForwardMoves {

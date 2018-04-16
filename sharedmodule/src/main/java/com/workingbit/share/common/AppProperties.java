@@ -1,4 +1,4 @@
-package com.workingbit.article.config;
+package com.workingbit.share.common;
 
 import java.net.URL;
 
@@ -13,17 +13,5 @@ public interface AppProperties {
 
   Boolean test();
 
-  Integer articlesFetchLimit();
-
-  URL origin();
-
-  String methods();
-
-  String headers();
-
-  String boardResource();
-
   int port();
-
-//  String encodeTokenKey();
 }

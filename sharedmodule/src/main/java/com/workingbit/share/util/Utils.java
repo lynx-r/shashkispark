@@ -14,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -158,9 +160,24 @@ public class Utils {
     return RandomStringUtils.randomAlphanumeric(COUNT_RANDOM_STR);
   }
 
-  public static String encode(String key, String data) throws Exception {
+  public static String getRandomString(int length) {
+    return RandomStringUtils.randomAlphanumeric(length);
+  }
+
+  public static byte[] getSecureRandom(int length) {
+    SecureRandom random = new SecureRandom();
+    byte[] data = new byte[length];
+    random.nextBytes(data);
+    return data;
+  }
+
+  public static String getSecureRandomString(int length) {
+    return new String(getSecureRandom(length), Charset.forName("UTF-8"));
+  }
+
+  public static String encode(byte[] key, String data) throws Exception {
     Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-    SecretKeySpec secret_key = new SecretKeySpec(key.getBytes("UTF-8"), "HmacSHA256");
+    SecretKeySpec secret_key = new SecretKeySpec(key, "HmacSHA256");
     sha256_HMAC.init(secret_key);
 
     return Hex.encodeHexString(sha256_HMAC.doFinal(data.getBytes("UTF-8")));

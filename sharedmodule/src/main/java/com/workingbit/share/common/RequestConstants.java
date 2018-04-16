@@ -9,4 +9,6 @@ public class RequestConstants {
   public static final String SIGN = "sign";
   public static final String SIGN_REQUEST = "sign-request";
   public static final String AUTHENTICATED = "Authenticated";
+  public static final String JSESSIONID = "JSESSIONID";
+  public static final String AUTH_TOKEN = "auth-token";
 }

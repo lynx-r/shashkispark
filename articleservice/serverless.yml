@@ -98,7 +98,7 @@ functions:
 
 resources:
   Resources:
-    DynamoDbTable:
+    DynamoDbTableArticle:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: Article
@@ -125,20 +125,13 @@ resources:
           Projection:
             ProjectionType: KEYS_ONLY
           ProvisionedThroughput:
-            ReadCapacityUnits: '1'
-            WriteCapacityUnits: '1'
-#        LocalSecondaryIndexes:
-#        - IndexName: articleIndex
-#          KeySchema:
-#          - AttributeName: id
-#            KeyType: HASH
-#          - AttributeName: createdAt
-#            KeyType: RANGE
-    DynamoDBIamPolicy:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+    DynamoDBIamPolicyArticle:
       Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTable
+      DependsOn: DynamoDbTableArticle
       Properties:
-        PolicyName: lambda-dynamodb
+        PolicyName: lambda-dynamodb-article
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -151,6 +144,69 @@ resources:
                 - dynamodb:Scan
                 - dynamodb:Query
               Resource: arn:aws:dynamodb:*:*:table/Article
+        Roles:
+          - Ref: IamRoleLambdaExecution
+    DynamoDbTableSecureUser:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: SecureUser
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: userSession
+            AttributeType: S
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+        - IndexName: userSessionIndex
+          KeySchema:
+          - AttributeName: userSession
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+        - IndexName: usernameIndex
+          KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+    DynamoDBIamPolicySecureUser:
+      Type: AWS::IAM::Policy
+      DependsOn: DynamoDbTableSecureUser
+      Properties:
+        PolicyName: lambda-dynamodb-SecureUser
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+                - dynamodb:Query
+              Resource: arn:aws:dynamodb:*:*:table/SecureUser
         Roles:
           - Ref: IamRoleLambdaExecution
 

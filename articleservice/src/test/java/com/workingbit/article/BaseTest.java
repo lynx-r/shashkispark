@@ -2,6 +2,7 @@ package com.workingbit.article;
 
 import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.dao.ArticleDao;
+import com.workingbit.article.service.ArticleService;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.util.Utils;
 
@@ -15,6 +16,8 @@ public class BaseTest {
   private static AppProperties appProperties = configurationProvider().bind("app", AppProperties.class);
 
   protected ArticleDao articleDao = new ArticleDao(appProperties);
+
+  protected ArticleService articleService = new ArticleService();
 
   protected Article createArticle() {
     Article article = new Article();

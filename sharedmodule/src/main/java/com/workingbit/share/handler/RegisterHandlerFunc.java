@@ -9,17 +9,15 @@ import spark.Response;
 
 import java.util.Optional;
 
-import static com.workingbit.share.common.RequestConstants.AUTH_TOKEN;
 import static com.workingbit.share.common.RequestConstants.JSESSIONID;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 
 /**
  * Created by Aleksey Popryaduhin on 10:52 29/09/2017.
  */
 @FunctionalInterface
-public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
+public interface RegisterHandlerFunc<T extends Payload> extends BaseHandlerFunc {
 
   default String handleRequest(Request request, Response response, Class<T> clazz) {
     String check = preprocess(request, response);
@@ -28,15 +26,9 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
     }
     String json = request.body();
     T data = jsonToData(json, clazz);
-    String token = request.headers(AUTH_TOKEN);
     String session = request.cookies().get(JSESSIONID);
-    Answer answer;
-    Optional<AuthUser> authUser = isAuthenticated(token, session);
-    if (authUser.isPresent()) {
-      answer = process(data, authUser);
-    } else {
-      answer = Answer.error(HTTP_FORBIDDEN, "Вы не авторизованы");
-    }
+    AuthUser authUser = new AuthUser("", session);
+    Answer answer = process(data, Optional.of(authUser));
     response.status(answer.getStatusCode());
     return dataToJson(answer);
   }

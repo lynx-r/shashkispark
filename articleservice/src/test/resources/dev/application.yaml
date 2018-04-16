@@ -8,3 +8,5 @@ app:
   origin: http://localhost:4200
   boardResource: http://localhost:24567/api/v1/board
   articlesFetchLimit: 50
+  # should be 16 symbols length
+#  ecnodeTokenKey: 1234567891234567
