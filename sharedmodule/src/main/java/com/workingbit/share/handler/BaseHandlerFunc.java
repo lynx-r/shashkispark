@@ -52,10 +52,10 @@ public interface BaseHandlerFunc<T extends Payload> {
 
   default String getOrCreateSession(Request request, Response response) {
     // take user session which user got after login
-    String userSession = request.headers(USER_SESSION);
+    String accessToken = request.headers(ACCESS_TOKEN);
     String logoutHeader = request.headers(LOGOUT_HEADER);
     if (StringUtils.isBlank(logoutHeader)) {
-      if (StringUtils.isBlank(userSession)) {
+      if (StringUtils.isBlank(accessToken)) {
         // if anonymous user
         String anonymousSession = request.cookie(ANONYMOUS_SESSION);
         if (StringUtils.isBlank(anonymousSession)) {
@@ -67,7 +67,7 @@ public interface BaseHandlerFunc<T extends Payload> {
         return anonymousSession;
       }
       // return transfer session
-      return userSession;
+      return request.headers(USER_SESSION);
     }
     return "";
   }

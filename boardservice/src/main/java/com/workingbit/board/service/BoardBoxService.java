@@ -86,9 +86,14 @@ public class BoardBoxService {
 
   public Optional<BoardBox> findById(String boardBoxId, Optional<AuthUser> token) {
     return token.map(authUser ->
-        boardBoxDao.findById(boardBoxId)
+        boardStoreService.get(authUser.getUserSession())
+            .filter((boardBox) -> boardBox.getId().equals(boardBoxId))
             .map(boardBox -> updateBoardBox(authUser, boardBox))
-            .orElse(null)
+            .orElseGet(() ->
+                boardBoxDao.findById(boardBoxId)
+                    .map(boardBox -> updateBoardBox(authUser, boardBox))
+                    .orElseThrow(BoardServiceException::new)
+            )
     );
   }
 
@@ -357,10 +362,10 @@ public class BoardBoxService {
           board.setReadonly(boardBox.isReadonly());
           boardBox.setBoard(board);
           notationOptional.ifPresent(notation -> {
-            notation.setReadonly(boardBox.isReadonly());
             boardBox.setNotation(notation);
             boardBox.setNotationId(notation.getId());
           });
+          boardStoreService.put(authUser.getUserSession(), boardBox);
           return boardBox;
         })
         .orElse(null);

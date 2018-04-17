@@ -47,8 +47,10 @@ public class NotationService {
     return notationStoreService.get(authUser.getUserSession())
         .orElseGet(() -> {
           if (notationOptional.isPresent()) {
-            notationStoreService.put(authUser.getUserSession(), notationOptional.get());
-            return notationOptional.get();
+            Notation notation = notationOptional.get();
+            notation.setReadonly(true);
+            notationStoreService.put(authUser.getUserSession(), notation);
+            return notation;
           }
           return null;
         });

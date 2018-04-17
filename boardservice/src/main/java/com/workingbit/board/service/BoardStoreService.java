@@ -17,13 +17,14 @@ public class BoardStoreService {
   private Cache<String, BoardBox> store;
 
   public BoardStoreService() {
+    String board = "board";
     CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
-        .withCache("preConfigured",
+        .withCache(board,
             CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BoardBox.class, ResourcePoolsBuilder.heap(10)))
         .build();
     cacheManager.init();
 
-    store = cacheManager.getCache("preConfigured", String.class, BoardBox.class);
+    store = cacheManager.getCache(board, String.class, BoardBox.class);
   }
 
   public Optional<BoardBox> get(String key) {

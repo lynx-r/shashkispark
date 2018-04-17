@@ -17,20 +17,21 @@ public class NotationStoreService {
   private Cache<String, Notation> store;
 
   public NotationStoreService() {
+    String notation = "notation";
     CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
-        .withCache("preConfigured",
+        .withCache(notation,
             CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Notation.class, ResourcePoolsBuilder.heap(10)))
         .build();
     cacheManager.init();
 
-    store = cacheManager.getCache("preConfigured", String.class, Notation.class);
+    store = cacheManager.getCache(notation, String.class, Notation.class);
   }
 
   public Optional<Notation> get(String key) {
     return Optional.ofNullable(store.get(key));
   }
 
-  public void put(String key, Notation board) {
-    store.put(key, board);
+  public void put(String key, Notation notation) {
+    store.put(key, notation);
   }
 }
