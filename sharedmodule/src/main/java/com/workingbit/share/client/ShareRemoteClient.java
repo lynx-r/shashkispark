@@ -122,7 +122,7 @@ public class ShareRemoteClient {
 
   public Optional<UserInfo> userInfo(AuthUser authUser) {
     Map<String, String> authHeaders = createAuthHeaders(authUser);
-    return get(userInfo, authHeaders);
+    return post(userInfo, authUser, authHeaders);
   }
 
   @SuppressWarnings("unchecked")
