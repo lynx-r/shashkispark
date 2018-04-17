@@ -34,8 +34,8 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
       String token = request.headers(ACCESS_TOKEN);
       answer = secureCheck(data, token, session);
     } else {
-      String session = getOrCreateSession(request, response);
-      answer = process(data, Optional.of(new AuthUser("", session)));
+      String userSession = getOrCreateSession(request, response);
+      answer = process(data, Optional.of(new AuthUser(userSession)));
     }
     response.status(answer.getStatusCode());
     return dataToJson(answer);

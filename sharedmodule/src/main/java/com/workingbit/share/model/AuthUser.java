@@ -14,6 +14,22 @@ import lombok.NoArgsConstructor;
 @Data
 public class AuthUser implements Payload {
 
+  private String userId;
   private String accessToken;
   private String userSession;
+  private SecureRole role;
+
+  public AuthUser(String session) {
+    this.userSession = session;
+  }
+
+  public AuthUser(String accessToken, String userSession) {
+    this.accessToken = accessToken;
+    this.userSession = userSession;
+  }
+
+  public AuthUser role(SecureRole role) {
+    this.role = role;
+    return this;
+  }
 }

@@ -101,7 +101,7 @@ public class BaseDao<T extends BaseDomain> {
     if (limit != null && limit < result.size()) {
       result = result.subList(0, limit);
     }
-    result.sort((s1, s2)-> s2.getCreatedAt().compareTo(s1.getCreatedAt()));
+    result.sort((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()));
     return result;
   }
 

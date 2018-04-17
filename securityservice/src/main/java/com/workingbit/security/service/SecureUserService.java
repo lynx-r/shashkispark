@@ -2,6 +2,7 @@ package com.workingbit.security.service;
 
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.RegisterUser;
+import com.workingbit.share.model.SecureRole;
 import com.workingbit.share.model.SecureUser;
 import com.workingbit.share.util.SecureUtils;
 import com.workingbit.share.util.Utils;
@@ -21,6 +22,11 @@ public class SecureUserService {
   public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
     return token.map(t -> {
       try {
+        String username = registerUser.getUsername();
+        boolean duplicateName = secureUserDao.findByUsername(username).isPresent();
+        if (duplicateName) {
+          return null;
+        }
         SecureUser secureUser = new SecureUser();
         Utils.setRandomIdAndCreatedAt(secureUser);
         secureUser.setUsername(registerUser.getUsername());
@@ -40,7 +46,7 @@ public class SecureUserService {
         secureUserDao.save(secureUser);
 
         // send access token and userSession
-        return new AuthUser(accessToken, t.getUserSession());
+        return new AuthUser(secureUser.getId(), accessToken, t.getUserSession(), SecureRole.EDITOR);
       } catch (Exception e) {
         e.printStackTrace();
         return null;
@@ -69,7 +75,7 @@ public class SecureUserService {
                   secureUserDao.save(secureUser);
 
                   // send access token and userSession
-                  return new AuthUser(accessToken, t.getUserSession());
+                  return new AuthUser(secureUser.getId(), accessToken, t.getUserSession(), secureUser.getRole());
                 }
               } catch (Exception e) {
                 e.printStackTrace();
@@ -93,6 +99,14 @@ public class SecureUserService {
       }
       return null;
     });
+  }
+
+  public Optional<AuthUser> role(AuthUser authUser) {
+    Optional<SecureUser> byId = secureUserDao.findById(authUser.getUserId());
+    if (byId.isPresent()) {
+      return byId.map(secureUser -> authUser.role(secureUser.getRole()));
+    }
+    return Optional.of(authUser.role(SecureRole.ANONYMOUSE));
   }
 
   private int getTokenLength() {

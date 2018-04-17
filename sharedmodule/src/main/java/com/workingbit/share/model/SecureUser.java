@@ -36,6 +36,10 @@ public class SecureUser extends BaseDomain {
   @DynamoDBAttribute(attributeName = "username")
   private String username;
 
+  @DynamoDBTypeConvertedEnum
+  @DynamoDBAttribute(attributeName = "role")
+  private SecureRole role;
+
   /**
    * hash of user:password:salt
    */

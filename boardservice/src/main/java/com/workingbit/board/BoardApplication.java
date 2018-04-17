@@ -7,6 +7,7 @@ import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.dao.NotationDao;
 import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.board.config.Path;
+import com.workingbit.board.service.StoreService;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ public class BoardApplication {
 
   // Declare dependencies
   public static BoardBoxService boardBoxService;
+  public static StoreService storeService;
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
   public static NotationDao notationDao;
@@ -32,6 +34,8 @@ public class BoardApplication {
     appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     boardBoxService = new BoardBoxService();
+    storeService = new StoreService();
+
     boardBoxDao = new BoardBoxDao(appProperties);
     boardDao = new BoardDao(appProperties);
     notationDao = new NotationDao(appProperties);

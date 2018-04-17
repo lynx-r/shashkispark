@@ -55,6 +55,7 @@ public class SecurityApplication {
           post(Path.REGISTER, SecurityController.register);
           post(Path.AUTHORIZE, SecurityController.authorize);
           post(Path.AUTHENTICATE, SecurityController.authenticate);
+          post(Path.ROLE, SecurityController.role);
           get(Path.LOGOUT, SecurityController.logout);
 
           notFound((req, res) -> "Not found");

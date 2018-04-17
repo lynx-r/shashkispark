@@ -3,7 +3,7 @@ app:
   regionDynamoDB: eu-west-1
   endpointDynamoDB: http://localhost:8081
   test: true
-  headers: requested-api,api-article,x-api-key,content-type,sign,sign-request,user-session,access-token,access-control-allow-credentials
+  headers: requested-api,api-article,x-api-key,content-type,sign,sign-request,user-session,user-id,access-token,access-control-allow-credentials
   methods: GET,POST,PUT,OPTIONS,HEADER,DELETE
   origin: http://localhost:4200
   boardResource: http://localhost:24567/api/v1/board

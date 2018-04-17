@@ -25,11 +25,13 @@ public class BoardBoxService {
     if (!token.isPresent()) {
       return Optional.empty();
     }
+    AuthUser authUser = token.get();
     Board board = boardService.createBoard(createBoardPayload);
 
     BoardBox boardBox = new BoardBox(board);
     String articleId = createBoardPayload.getArticleId();
     boardBox.setArticleId(articleId);
+    boardBox.setUserId(authUser.getUserId());
     Utils.setRandomIdAndCreatedAt(boardBox);
 
     createNewNotation(boardBox, board);
@@ -68,7 +70,7 @@ public class BoardBoxService {
     return Optional.empty();
   }
 
-  Optional<BoardBox> find(BoardBox boardBox) {
+  Optional<BoardBox> find(BoardBox boardBox, AuthUser token) {
     return boardBoxDao.find(boardBox)
         .map(this::updateBoardBox);
   }
@@ -88,60 +90,68 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> highlight(BoardBox boardBox, Optional<AuthUser> token) {
-    return find(boardBox)
-        .map(updated -> {
-          if (resetHighlightIfNotLastBoard(updated)) {
-            Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
-            boardBox.setBoard(noHighlight);
-            return boardBox;
-          }
-          Board currentBoard = updated.getBoard();
-          Square selectedSquare = boardBox.getBoard().getSelectedSquare();
-          if (!selectedSquare.isOccupied()) {
-            return updated;
-          }
-          BoardUtils.updateMoveSquaresHighlightAndDraught(currentBoard, boardBox.getBoard());
-          try {
-            currentBoard = boardService.highlight(currentBoard);
-          } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return null;
-          }
-          updated.setBoard(currentBoard);
-          return updated;
-        });
+    return token.map(authUser ->
+        find(boardBox, authUser)
+            .map(updatedBoardBox -> {
+                  BoardBox userBoardBox = updatedBoardBox.deepClone();
+                  if (resetHighlightIfNotLastBoard(userBoardBox)) {
+                    Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
+                    boardBox.setBoard(noHighlight);
+                    return boardBox;
+                  }
+                  Board currentBoard = userBoardBox.getBoard();
+                  Square selectedSquare = boardBox.getBoard().getSelectedSquare();
+                  if (!selectedSquare.isOccupied()) {
+                    return userBoardBox;
+                  }
+                  BoardUtils.updateMoveSquaresHighlightAndDraught(currentBoard, boardBox.getBoard());
+                  try {
+                    currentBoard = boardService.highlight(currentBoard);
+                  } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    return null;
+                  }
+                  userBoardBox.setBoard(currentBoard);
+                  storeService.put(authUser.getUserSession(), userBoardBox);
+                  return userBoardBox;
+                }
+            )
+    ).orElse(null);
   }
 
   public Optional<BoardBox> move(BoardBox boardBox, Optional<AuthUser> token) {
-    return find(boardBox)
-        .map(updatedBox -> {
-          Board boardUpdated = updatedBox.getBoard();
-          Board board = boardBox.getBoard();
-          if (isNotEditMode(boardBox)) {
-            return null;
-          }
-          boardUpdated.setSelectedSquare(board.getSelectedSquare());
-          boardUpdated.setNextSquare(board.getNextSquare());
+    return token.map(authUser -> find(boardBox, authUser)
+        .map(updatedBoxOrig -> {
+              BoardBox userBoardBox = updatedBoxOrig.deepClone();
+              Board boardUpdated = userBoardBox.getBoard();
+              Board board = boardBox.getBoard();
+              if (isNotEditMode(boardBox)) {
+                return null;
+              }
+              boardUpdated.setSelectedSquare(board.getSelectedSquare());
+              boardUpdated.setNextSquare(board.getNextSquare());
 
-          Notation notation = updatedBox.getNotation();
-          NotationHistory notationBoardBox = notation.getNotationHistory();
-          boardUpdated.setDriveCount(notationBoardBox.size() - 1);
+              Notation notation = userBoardBox.getNotation();
+              NotationHistory notationBoardBox = notation.getNotationHistory();
+              boardUpdated.setDriveCount(notationBoardBox.size() - 1);
 
-          try {
-            boardUpdated = boardService.move(boardUpdated, notationBoardBox);
-          } catch (BoardServiceException e) {
-            logger.error("Error while moving", e);
-            return null;
-          }
-          updatedBox.setBoard(boardUpdated);
-          updatedBox.setBoardId(boardUpdated.getId());
-          notationService.save(notation);
+              try {
+                boardUpdated = boardService.move(boardUpdated, notationBoardBox);
+              } catch (BoardServiceException e) {
+                logger.error("Error while moving", e);
+                return null;
+              }
+              userBoardBox.setBoard(boardUpdated);
+              userBoardBox.setBoardId(boardUpdated.getId());
+              notationService.save(notation);
 
-          logger.info("Notation after move: " + notation.getNotationHistory().pdnString());
+              logger.info("Notation after move: " + notation.getNotationHistory().pdnString());
 
-          boardBoxDao.save(updatedBox);
-          return updatedBox;
-        });
+              boardBoxDao.save(userBoardBox);
+              return userBoardBox;
+            }
+        )
+    ).orElse(null);
   }
 
   private void createNewNotation(BoardBox boardBox, Board board) {
@@ -155,21 +165,23 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> changeTurn(BoardBox boardBox, Optional<AuthUser> token) {
-    return find(boardBox)
-        .map(updatedBox -> {
-          Board inverted = boardBox.getBoard();
-          inverted.setSelectedSquare(null);
-          inverted.setBlackTurn(!inverted.isBlackTurn());
-          boardService.save(inverted);
+    return token.map(authUser ->
+        find(boardBox, authUser)
+            .map(updatedBox -> {
+              Board inverted = boardBox.getBoard();
+              inverted.setSelectedSquare(null);
+              inverted.setBlackTurn(!inverted.isBlackTurn());
+              boardService.save(inverted);
 
-          Board board = boardService.updateBoard(inverted);
-          updatedBox.setBoard(board);
-          boardBoxDao.save(updatedBox);
-          return updatedBox;
-        });
+              Board board = boardService.updateBoard(inverted);
+              updatedBox.setBoard(board);
+              boardBoxDao.save(updatedBox);
+              return updatedBox;
+            })
+    ).orElse(null);
   }
 
-  public  Optional<BoardBox> save(BoardBox boardBox, Optional<AuthUser> token) {
+  public Optional<BoardBox> save(BoardBox boardBox, Optional<AuthUser> token) {
     return Optional.of(saveAndFillBoard(boardBox));
   }
 
@@ -189,7 +201,7 @@ public class BoardBoxService {
       return Optional.empty();
     }
     Draught draught = selectedSquare.getDraught();
-    return find(boardBox)
+    return token.map(authUser -> find(boardBox, authUser)
         .map(updated -> {
           Board currentBoard = updated.getBoard();
           Square squareLink = BoardUtils.findSquareByLink(selectedSquare, currentBoard);
@@ -207,47 +219,57 @@ public class BoardBoxService {
           updated.setBoard(currentBoard);
           saveAndFillBoard(updated);
           return updated;
-        });
+        })
+    ).orElse(null);
   }
 
   public Optional<BoardBox> undo(BoardBox boardBox, Optional<AuthUser> token) {
-    return find(boardBox)
+    return token.map(authUser -> find(boardBox, authUser)
         .map(filledBoardBox -> {
           NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
           NotationDrive forkToDrive = history.getLast().deepClone();
-          return forkNotationFor(filledBoardBox, forkToDrive);
+          return forkNotationFor(filledBoardBox, forkToDrive, authUser);
         })
-        .orElse(null);
+        .orElse(null)
+    ).orElse(null);
   }
 
   public Optional<BoardBox> redo(BoardBox boardBox, Optional<AuthUser> token) {
-    return find(boardBox)
-        .map(filledBoardBox -> {
-          NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
-          NotationDrive switchToDrive = history.getLast().deepClone();
-          return switchNotationTo(filledBoardBox, switchToDrive, null);
-        })
-        .orElse(null);
+    return token.map(authUser ->
+        find(boardBox, authUser)
+            .map(filledBoardBox -> {
+              NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
+              NotationDrive switchToDrive = history.getLast().deepClone();
+              return switchNotationTo(authUser, filledBoardBox, switchToDrive, null);
+            })
+            .orElse(null)
+    ).orElse(null);
   }
 
   public Optional<BoardBox> forkNotation(BoardBox boardBox, Optional<AuthUser> token) {
     NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
-    return forkNotationFor(boardBox, currentNotationDrive);
+    return token.map(authUser -> forkNotationFor(boardBox, currentNotationDrive, authUser))
+        .orElse(null);
   }
 
   public Optional<BoardBox> switchNotation(BoardBox boardBox, Optional<AuthUser> token) {
-    NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
-    NotationDrive variantNotationDrive = boardBox.getNotation().getNotationHistory().getVariantNotationDrive();
-    return switchNotationTo(boardBox, currentNotationDrive, variantNotationDrive);
+    return token
+        .map(authUser -> {
+              NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
+              NotationDrive variantNotationDrive = boardBox.getNotation().getNotationHistory().getVariantNotationDrive();
+              return switchNotationTo(authUser, boardBox, currentNotationDrive, variantNotationDrive);
+            }
+        )
+        .orElse(null);
   }
 
-  private Optional<BoardBox> forkNotationFor(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
-    return find(boardBox)
+  private Optional<BoardBox> forkNotationFor(BoardBox boardBox, NotationDrive forkFromNotationDrive, AuthUser token) {
+    return find(boardBox, token)
         .map(bb -> forkNotationForVariants(bb, forkFromNotationDrive));
   }
 
-  private Optional<BoardBox> switchNotationTo(BoardBox boardBox, NotationDrive currentNotationDrive, NotationDrive variantNotationDrive) {
-    return boardBoxService.find(boardBox)
+  private Optional<BoardBox> switchNotationTo(AuthUser authUser, BoardBox boardBox, NotationDrive currentNotationDrive, NotationDrive variantNotationDrive) {
+    return find(boardBox, authUser)
         .map(bb -> switchNotationToVariant(bb, currentNotationDrive, variantNotationDrive));
   }
 

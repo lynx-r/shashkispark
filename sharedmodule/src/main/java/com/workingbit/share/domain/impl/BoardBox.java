@@ -38,6 +38,9 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "updatedAt")
   private LocalDateTime updatedAt;
 
+  @DynamoDBAttribute(attributeName = "userId")
+  private String userId;
+
   @DynamoDBAttribute(attributeName = "articleId")
   private String articleId;
 

@@ -308,7 +308,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       System.out.println(switched.getNotation().getNotationHistory().variantsToPdn());
 
-      boardBox = boardBoxService.find(boardBox).get();
+      boardBox = boardBoxService.find(boardBox, token).get();
       System.out.println("SWITCH: " + boardBox.getNotation().getNotationHistory().variantsToPdn());
     }
   }
@@ -362,7 +362,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
       System.out.println(switch1.getNotation().getNotationHistory().variantsToPdn());
 
-      boardBox = boardBoxService.find(boardBox).get();
+      boardBox = boardBoxService.find(boardBox, token).get();
       System.out.println("SWITCH: " + boardBox.getNotation().getNotationHistory().variantsToPdn());
 
       // forkNumber notation by index from test file
