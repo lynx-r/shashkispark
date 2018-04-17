@@ -5,14 +5,14 @@ import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.EnumSecureRole;
 import com.workingbit.share.model.Payload;
+import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 
 import java.util.Optional;
 
-import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.USER_SESSION;
+import static com.workingbit.share.common.RequestConstants.*;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 /**
@@ -51,13 +51,25 @@ public interface BaseHandlerFunc<T extends Payload> {
   }
 
   default String getOrCreateSession(Request request, Response response) {
-    String accessToken = request.headers(ACCESS_TOKEN);
-    if (StringUtils.isBlank(accessToken)) {
-      request.session().invalidate();
+    // take user session which user got after login
+    String userSession = request.headers(USER_SESSION);
+    String logoutHeader = request.headers(LOGOUT_HEADER);
+    if (StringUtils.isBlank(logoutHeader)) {
+      if (StringUtils.isBlank(userSession)) {
+        // if anonymous user
+        String anonymousSession = request.cookie(ANONYMOUS_SESSION);
+        if (StringUtils.isBlank(anonymousSession)) {
+          // if does not have session give it him
+          anonymousSession = Utils.getRandomString(SESSION_LENGTH);
+          response.cookie(ANONYMOUS_SESSION, anonymousSession, COOKIE_AGE, true, true);
+        }
+        // return anonym session
+        return anonymousSession;
+      }
+      // return transfer session
+      return userSession;
     }
-    String currentSession = request.session(true).id();
-    response.header(USER_SESSION, currentSession);
-    return currentSession;
+    return "";
   }
 
   default Optional<AuthUser> isAuthenticated(String accessToken, String session) {
