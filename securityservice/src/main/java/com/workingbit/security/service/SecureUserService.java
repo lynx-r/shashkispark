@@ -43,10 +43,11 @@ public class SecureUserService {
         // save encrypted token and userSession
         secureUser.setAccessToken(accessToken);
         secureUser.setUserSession(t.getUserSession());
+        secureUser.setRole(SecureRole.EDITOR);
         secureUserDao.save(secureUser);
 
         // send access token and userSession
-        return new AuthUser(secureUser.getId(), accessToken, t.getUserSession(), SecureRole.EDITOR);
+        return new AuthUser(secureUser.getId(), accessToken, t.getUserSession(), secureUser.getRole());
       } catch (Exception e) {
         e.printStackTrace();
         return null;
@@ -95,6 +96,7 @@ public class SecureUserService {
       String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
       boolean isAuth = secureUser.getToken().equals(tokenDecrypted);
       if (isAuth) {
+        authUser.setRole(secureUser.getRole());
         return authUser;
       }
       return null;
