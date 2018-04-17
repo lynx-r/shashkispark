@@ -397,6 +397,7 @@ public class BoardBoxService {
       throw new BoardServiceException(ErrorMessages.NOT_OWNER);
     }
 
+    boardBox.setReadonly(false);
     boardBoxDao.save(boardBox);
     notationService.save(authUser, boardBox.getNotation());
     boardBox = updateBoardBox(authUser, boardBox);

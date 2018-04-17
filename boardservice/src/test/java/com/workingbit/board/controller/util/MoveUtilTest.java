@@ -169,6 +169,46 @@ public class MoveUtilTest extends BaseServiceTest {
   }
 
   @Test
+  public void should_capture_turk_stroke2() {
+    BoardBox boardBox = getBoardBox(false);
+    Board board = boardBox.getBoard();
+    board = addWhiteDraught(board, "d4");
+    board = addBlackDraught(board, "c5");
+    board = addBlackDraught(board, "c7");
+    board = addBlackDraught(board, "e7");
+    board = addBlackDraught(board, "e3");
+    board = addBlackDraught(board, "g5");
+    board = addBlackDraught(board, "g3");
+    Square d4 = findSquareByNotation("d4", board);
+    board.setSelectedSquare(d4);
+    board = move(board, "d4", "b6", false, boardBox.getNotation().getNotationHistory());
+    MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "b6"));
+    assertTrue(testSameHighlight(board, highlight));
+
+    board = move(board, "b6", "d8", false, boardBox.getNotation().getNotationHistory());
+    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
+    assertTrue(testSameHighlight(board, highlight));
+
+    board = move(board, "d8", "f6", false, boardBox.getNotation().getNotationHistory());
+    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "f6"));
+    assertTrue(testSameHighlight(board, highlight));
+
+    board = move(board, "f6", "h4", false, boardBox.getNotation().getNotationHistory());
+    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "h4"));
+    assertTrue(testSameHighlight(board, highlight));
+
+    board = move(board, "h4", "f2", false, boardBox.getNotation().getNotationHistory());
+    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "f2"));
+    assertTrue(testSameHighlight(board, highlight));
+
+    board = move(board, "f2", "d4", false, boardBox.getNotation().getNotationHistory());
+    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d4"));
+    assertTrue(testSameHighlight(board, highlight));
+
+    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
+  }
+
+  @Test
   public void should_move_white_on_edge() {
     BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();

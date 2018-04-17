@@ -246,7 +246,6 @@ public class BoardUtils {
     }
     updateNotationEnd(board, prevBoardId, notationHistory, previousCaptured);
     resetBoardHighlight(board);
-    notationHistory.getNotation().getLast().setSelected(true);
     return board;
   }
 

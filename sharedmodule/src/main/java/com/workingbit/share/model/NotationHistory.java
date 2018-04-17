@@ -378,6 +378,7 @@ public class NotationHistory implements DeepClone {
 
   public void syncLastDrive() {
     NotationDrive lastNotation = notation.getLast();
+    lastNotation.setSelected(true);
     NotationDrive lastHistory = history.getLast();
     NotationDrive.copyOf(lastNotation, lastHistory);
   }

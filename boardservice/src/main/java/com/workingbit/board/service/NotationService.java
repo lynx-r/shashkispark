@@ -36,6 +36,7 @@ public class NotationService {
     switch (authUser.getRole()) {
       case ADMIN:
       case EDITOR:
+        notation.setReadonly(false);
         notationDao.save(notation);
         return;
       default:

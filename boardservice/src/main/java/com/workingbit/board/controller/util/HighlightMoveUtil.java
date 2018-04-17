@@ -338,7 +338,7 @@ class HighlightMoveUtil {
    */
   private boolean hasQueenWalkedThereOrMovesWithBeatInOneSquare(List<Square> walkAllowedMoves, Square previous) {
     return !walkAllowedMoves.isEmpty() && walkAllowedMoves.contains(previous)
-        || previous != null && previous.isOccupied();
+        || previous != null && (previous.isOccupied() || previous.isHighlight());
   }
 
   private boolean hasCapturedAndCanMove(Tree.Node<Square> capturedMoves, Square next) {
