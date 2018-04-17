@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static com.workingbit.board.BoardApplication.*;
 
@@ -71,16 +72,15 @@ public class BoardBoxService {
   }
 
   Optional<BoardBox> find(BoardBox boardBox, AuthUser authUser) {
-    Optional<BoardBox> board = Optional.of(boardStoreService.get(authUser.getUserSession())
-        .orElseGet(() -> boardBoxDao.find(boardBox).orElseThrow(BoardServiceException::new)));
+    Optional<BoardBox> board = findBoardAndPutInStore(boardBox, authUser);
     switch (authUser.getRole()) {
       case EDITOR:
       case ADMIN:
         return board.map(b -> b.readonly(false))
-            .map(boardBox1 -> updateBoardBox(authUser, boardBox1));
+            .map(bb -> updateBoardBox(authUser, bb));
       default:
         return board.map(b -> b.readonly(true))
-            .map(boardBox1 -> updateBoardBox(authUser, boardBox1));
+            .map(bb -> updateBoardBox(authUser, bb));
     }
   }
 
@@ -371,5 +371,18 @@ public class BoardBoxService {
     notationService.save(authUser, boardBox.getNotation());
     boardBox = updateBoardBox(authUser, boardBox);
     return boardBox;
+  }
+
+  private Optional<BoardBox> findBoardAndPutInStore(BoardBox boardBox, AuthUser authUser) {
+    Optional<BoardBox> fromStore = boardStoreService.get(authUser.getUserSession());
+    Supplier<BoardBox> fromDb = () -> {
+      Optional<BoardBox> boardBoxOptional = boardBoxDao.find(boardBox);
+      if (boardBoxOptional.isPresent()) {
+        boardStoreService.put(authUser.getUserSession(), boardBoxOptional.get());
+        return boardBoxOptional.get();
+      }
+      return null;
+    };
+    return Optional.of(fromStore.orElseGet(fromDb));
   }
 }

@@ -27,7 +27,7 @@ public class NotationStoreService {
   }
 
   public Optional<Notation> get(String key) {
-    return Optional.of(store.get(key));
+    return Optional.ofNullable(store.get(key));
   }
 
   public void put(String key, Notation board) {

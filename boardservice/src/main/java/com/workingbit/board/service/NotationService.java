@@ -2,7 +2,6 @@ package com.workingbit.board.service;
 
 import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.EnumSecureRole;
 
 import java.util.Optional;
 
@@ -15,15 +14,19 @@ import static com.workingbit.board.BoardApplication.notationStoreService;
 public class NotationService {
 
   public Optional<Notation> findById(AuthUser authUser, String notationId) {
-    if (authUser == null
-        || authUser.getRole().equals(EnumSecureRole.ADMIN)
-        || authUser.getRole().equals(EnumSecureRole.EDITOR)) {
-      return notationDao.findById(notationId);
+    if (authUser == null) {
+      return Optional.empty();
     }
-    if (authUser.getRole().equals(EnumSecureRole.ANONYMOUSE)) {
-      return notationStoreService.get(authUser.getUserSession());
+
+    Optional<Notation> notationOptional = notationDao.findById(notationId);
+    switch (authUser.getRole()) {
+      case ADMIN:
+      case EDITOR:
+        return notationOptional;
+      default:
+        Notation notation = findNotationAndPutInStore(authUser, notationOptional);
+        return Optional.ofNullable(notation);
     }
-    return Optional.empty();
   }
 
   public void save(AuthUser authUser, Notation notation) {
@@ -38,5 +41,16 @@ public class NotationService {
       default:
         notationStoreService.put(authUser.getUserSession(), notation);
     }
+  }
+
+  private Notation findNotationAndPutInStore(AuthUser authUser, Optional<Notation> notationOptional) {
+    return notationStoreService.get(authUser.getUserSession())
+        .orElseGet(() -> {
+          if (notationOptional.isPresent()) {
+            notationStoreService.put(authUser.getUserSession(), notationOptional.get());
+            return notationOptional.get();
+          }
+          return null;
+        });
   }
 }

@@ -27,7 +27,7 @@ public class BoardStoreService {
   }
 
   public Optional<BoardBox> get(String key) {
-    return Optional.of(store.get(key));
+    return Optional.ofNullable(store.get(key));
   }
 
   public void put(String key, BoardBox board) {

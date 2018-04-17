@@ -108,7 +108,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     BoardBox board = getBoardBoxWhiteNotFilledRUSSIAN();
     toDelete(board);
     assertNotNull(board.getId());
-    Optional<BoardBox> byId = boardBoxService().findById(board.getId());
+    Optional<BoardBox> byId = boardBoxService().findById(board.getId(), token);
     assertNotNull(byId.get());
   }
 
@@ -118,7 +118,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     String boardId = board.getId();
     assertNotNull(boardId);
     boardBoxService().delete(boardId);
-    Optional<BoardBox> byId = boardBoxService().findById(boardId);
+    Optional<BoardBox> byId = boardBoxService().findById(boardId, token);
     assertTrue(!byId.isPresent());
   }
 
