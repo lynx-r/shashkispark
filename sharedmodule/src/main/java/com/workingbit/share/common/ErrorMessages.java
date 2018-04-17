@@ -27,4 +27,5 @@ public class ErrorMessages {
   public static final String UNABLE_TO_AUTHORIZE = "Не удалось получить доступ";
   public static final String UNABLE_TO_AUTHENTICATE = "Не удалось определить вашу личность";
   public static final String UNABLE_TO_ASSIGN_ROLE = "Не удалось назначить роль";
+  public static final String NOT_OWNER = "Не владелец";
 }
