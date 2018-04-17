@@ -38,6 +38,11 @@ public class Answer {
         .statusCode(statusCode);
   }
 
+  public static Answer empty() {
+    return new Answer(null, null)
+        .statusCode(HTTP_OK);
+  }
+
   public int getStatusCode() {
     return statusCode;
   }
