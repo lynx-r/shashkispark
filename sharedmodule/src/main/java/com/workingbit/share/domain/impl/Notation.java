@@ -62,6 +62,9 @@ public class Notation extends BaseDomain implements Payload, ToPdn {
   @DynamoDBAttribute(attributeName = "notationHistory")
   private NotationHistory notationHistory;
 
+  @DynamoDBAttribute(attributeName = "readonly")
+  private boolean readonly;
+
   public Notation() {
     tags = new ListOrderedMap<>();
     notationHistory = NotationHistory.createWithRoot();

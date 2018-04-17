@@ -153,4 +153,10 @@ public class Draught extends BaseDomain implements ICoordinates{
   public void setUpdatedAt(LocalDateTime createdAt) {
 
   }
+
+  @JsonIgnore
+  @Override
+  public boolean isReadonly() {
+    return false;
+  }
 }

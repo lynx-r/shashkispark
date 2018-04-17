@@ -17,7 +17,7 @@ public class StoreServiceTest {
   public void test_cache() {
     BoardBox value = new BoardBox();
     store.put("1", value);
-    BoardBox boardBox = store.get("1");
+    BoardBox boardBox = store.get("1").get();
     assertEquals(value, boardBox);
   }
 }

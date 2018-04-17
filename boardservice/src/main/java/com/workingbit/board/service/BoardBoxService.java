@@ -71,8 +71,16 @@ public class BoardBoxService {
   }
 
   Optional<BoardBox> find(BoardBox boardBox, AuthUser token) {
-    return boardBoxDao.find(boardBox)
-        .map(this::updateBoardBox);
+    Optional<BoardBox> board = boardBoxDao.find(boardBox);
+    switch (token.getRole()) {
+      case EDITOR:
+      case ADMIN:
+        return board.map(b -> b.readonly(false))
+            .map(this::updateBoardBox);
+      default:
+        return board.map(b -> b.readonly(true))
+            .map(this::updateBoardBox);
+    }
   }
 
   public Optional<BoardBox> findById(String boardBoxId) {
@@ -332,8 +340,10 @@ public class BoardBoxService {
     Optional<Notation> notationOptional = notationService.findById(boardBox.getNotationId());
     return boardOptional
         .map(board -> {
+          board.setReadonly(boardBox.isReadonly());
           boardBox.setBoard(board);
           notationOptional.ifPresent(notation -> {
+            notation.setReadonly(boardBox.isReadonly());
             boardBox.setNotation(notation);
             boardBox.setNotationId(notation.getId());
           });

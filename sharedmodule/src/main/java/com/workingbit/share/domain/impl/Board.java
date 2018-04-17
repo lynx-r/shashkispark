@@ -101,6 +101,9 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "rules")
   private EnumRules rules;
 
+  @DynamoDBAttribute(attributeName = "readonly")
+  private boolean readonly;
+
 //  @JsonIgnore
 //  @DynamoDBTypeConvertedJson(targetType = NotationHistory.class)
 //  @DynamoDBAttribute(attributeName = "notationHistory")

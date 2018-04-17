@@ -180,6 +180,12 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
 
   }
 
+  @JsonIgnore
+  @Override
+  public boolean isReadonly() {
+    return false;
+  }
+
   @Override
   public int compareTo(Object o) {
     Square o1 = (Square) o;

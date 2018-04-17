@@ -61,6 +61,9 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "editMode")
   private EnumEditBoardBoxMode editMode;
 
+  @DynamoDBAttribute(attributeName = "readonly")
+  private boolean readonly;
+
   public BoardBox() {
     notation = new Notation();
     editMode = EnumEditBoardBoxMode.EDIT;
@@ -85,5 +88,10 @@ public class BoardBox extends BaseDomain implements Payload {
   public int hashCode() {
 
     return Objects.hash(super.hashCode(), id);
+  }
+
+  public BoardBox readonly(boolean readonly) {
+    this.readonly = readonly;
+    return this;
   }
 }

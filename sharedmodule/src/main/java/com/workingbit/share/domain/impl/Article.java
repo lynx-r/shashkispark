@@ -54,6 +54,9 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "state")
   private EnumArticleState state;
 
+  @DynamoDBAttribute(attributeName = "readonly")
+  private boolean readonly;
+
   public Article() {
   }
 

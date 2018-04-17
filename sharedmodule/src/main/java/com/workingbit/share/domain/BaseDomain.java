@@ -19,4 +19,6 @@ public abstract class BaseDomain implements Serializable, DeepClone, Cloneable {
   public abstract LocalDateTime getUpdatedAt();
 
   public abstract void setUpdatedAt(LocalDateTime createdAt);
+
+  public abstract boolean isReadonly();
 }

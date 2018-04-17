@@ -59,6 +59,9 @@ public class BaseDao<T extends BaseDomain> {
       logger.error("Entity is null");
       return;
     }
+    if (entity.isReadonly()) {
+      throw new RuntimeException("Unmodifiable entity " + entity);
+    }
     entity.setUpdatedAt(LocalDateTime.now());
     dynamoDBMapper.save(entity, saveExpression);
   }
@@ -68,14 +71,12 @@ public class BaseDao<T extends BaseDomain> {
       logger.error("Entity is null");
       return;
     }
+    if (entity.isReadonly()) {
+      throw new RuntimeException("Unmodifiable entity " + entity);
+    }
     logger.info("Saving entity " + entity);
     entity.setUpdatedAt(LocalDateTime.now());
     dynamoDBMapper.save(entity);
-  }
-
-  public void batchSave(final Iterable<T> entities) {
-    entities.forEach(t -> t.setUpdatedAt(LocalDateTime.now()));
-    dynamoDBMapper.batchSave(entities);
   }
 
   public List<T> findAll(Integer limit) {

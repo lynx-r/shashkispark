@@ -1,6 +1,7 @@
 package com.workingbit.share.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
@@ -88,4 +89,11 @@ public class SecureUser extends BaseDomain {
   @DynamoDBIndexHashKey(globalSecondaryIndexName = "userSessionIndex")
   @DynamoDBAttribute(attributeName = "userSession")
   private String userSession;
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  @Override
+  public boolean isReadonly() {
+    return false;
+  }
 }
