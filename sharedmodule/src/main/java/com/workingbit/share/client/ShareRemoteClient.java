@@ -96,7 +96,7 @@ public class ShareRemoteClient {
   private Map<String, String> createAuthHeaders(AuthUser authUser) {
     return new HashMap<String, String>() {{
       put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(USER_SESSION, authUser.getSession());
+      put(USER_SESSION, authUser.getUserSession());
     }};
   }
 

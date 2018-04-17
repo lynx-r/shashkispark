@@ -144,7 +144,7 @@ public class ArticleControllerTest {
   private Answer post(String path, Object payload, AuthUser authUser) throws HttpClientException {
     Map<String, String> headers = new HashMap<String, String>() {{
       put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(USER_SESSION, authUser.getSession());
+      put(USER_SESSION, authUser.getUserSession());
     }};
     return post(path, payload, headers);
   }
@@ -163,7 +163,7 @@ public class ArticleControllerTest {
   private Answer put(String path, Article payload, AuthUser authUser) throws HttpClientException {
     Map<String, String> headers = new HashMap<String, String>() {{
       put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(USER_SESSION, authUser.getSession());
+      put(USER_SESSION, authUser.getUserSession());
     }};
     PutMethod resp = testServer.put(boardUrl + path, dataToJson(payload), false);
     headers.forEach(resp::addHeader);

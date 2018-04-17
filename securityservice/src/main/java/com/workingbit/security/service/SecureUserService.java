@@ -39,12 +39,12 @@ public class SecureUserService {
 
         // save encrypted token and userSession
         secureUser.setAccessToken(accessToken);
-        secureUser.setUserSession(t.getSession());
+        secureUser.setUserSession(t.getUserSession());
         secureUserDao.save(secureUser);
         System.out.println("REGISTERED SEC USER " + secureUser);
 
         // send access token and userSession
-        return new AuthUser(accessToken, t.getSession());
+        return new AuthUser(accessToken, t.getUserSession());
       } catch (Exception e) {
         e.printStackTrace();
         return null;
@@ -72,11 +72,11 @@ public class SecureUserService {
 
                   // save encrypted token and userSession
                   secureUser.setAccessToken(accessToken);
-                  secureUser.setUserSession(t.getSession());
+                  secureUser.setUserSession(t.getUserSession());
                   secureUserDao.save(secureUser);
 
                   // send access token and userSession
-                  return new AuthUser(accessToken, t.getSession());
+                  return new AuthUser(accessToken, t.getUserSession());
                 }
               } catch (Exception e) {
                 e.printStackTrace();
@@ -88,7 +88,7 @@ public class SecureUserService {
 
   public Optional<AuthUser> authenticate(AuthUser authUser) {
     System.out.println("AUTHENTICATE USER " + authUser);
-    String session = authUser.getSession();
+    String session = authUser.getUserSession();
     String accessToken = authUser.getAccessToken();
     Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
     return secureUserOptional.map((secureUser) -> {
