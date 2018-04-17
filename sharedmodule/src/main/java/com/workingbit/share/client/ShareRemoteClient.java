@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.JSESSIONID;
+import static com.workingbit.share.common.RequestConstants.USER_SESSION;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -96,7 +96,7 @@ public class ShareRemoteClient {
   private Map<String, String> createAuthHeaders(AuthUser authUser) {
     return new HashMap<String, String>() {{
       put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(JSESSIONID, authUser.getSession());
+      put(USER_SESSION, authUser.getSession());
     }};
   }
 

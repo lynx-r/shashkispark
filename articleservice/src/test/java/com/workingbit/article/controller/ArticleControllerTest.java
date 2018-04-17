@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.JSESSIONID;
+import static com.workingbit.share.common.RequestConstants.USER_SESSION;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static com.workingbit.share.util.Utils.getRandomString;
@@ -144,7 +144,7 @@ public class ArticleControllerTest {
   private Answer post(String path, Object payload, AuthUser authUser) throws HttpClientException {
     Map<String, String> headers = new HashMap<String, String>() {{
       put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(JSESSIONID, authUser.getSession());
+      put(USER_SESSION, authUser.getSession());
     }};
     return post(path, payload, headers);
   }
@@ -163,7 +163,7 @@ public class ArticleControllerTest {
   private Answer put(String path, Article payload, AuthUser authUser) throws HttpClientException {
     Map<String, String> headers = new HashMap<String, String>() {{
       put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(JSESSIONID, authUser.getSession());
+      put(USER_SESSION, authUser.getSession());
     }};
     PutMethod resp = testServer.put(boardUrl + path, dataToJson(payload), false);
     headers.forEach(resp::addHeader);

@@ -10,7 +10,7 @@ import spark.Response;
 import java.util.Optional;
 
 import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.JSESSIONID;
+import static com.workingbit.share.common.RequestConstants.USER_SESSION;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
@@ -30,7 +30,7 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
     T data = jsonToData(json, clazz);
     Answer answer;
     if (secure) {
-      String session = request.headers(JSESSIONID);
+      String session = request.headers(USER_SESSION);
       String token = request.headers(ACCESS_TOKEN);
       answer = secureCheck(data, token, session);
     } else {

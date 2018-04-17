@@ -9,7 +9,7 @@ import spark.Response;
 import java.util.Optional;
 
 import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.JSESSIONID;
+import static com.workingbit.share.common.RequestConstants.USER_SESSION;
 
 /**
  * Created by Aleksey Popryaduhin on 16:37 01/10/2017.
@@ -26,7 +26,7 @@ public interface BaseHandlerFunc {
       request.session().invalidate();
     }
     String currentSession = request.session(true).id();
-    response.cookie(JSESSIONID, currentSession);
+    response.header(USER_SESSION, currentSession);
     return currentSession;
   }
 
