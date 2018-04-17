@@ -15,7 +15,6 @@ import spark.servlet.SparkApplication;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
 import static com.workingbit.share.common.RequestConstants.JSESSIONID;
@@ -55,26 +54,23 @@ public class ArticleControllerTest {
 
   @Test
   public void create_article() throws Exception {
-    Stream.iterate(0, i -> i + 1).limit(10).forEach((i) -> {
-      try {
-        System.out.println("Iteration " + i);
-        CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-        AuthUser headers = register();
-        Optional<CreateArticleResponse> articleResponseOpt = ShareRemoteClient.getInstance().createArticle(createArticlePayload, headers);
+    try {
+      CreateArticlePayload createArticlePayload = getCreateArticlePayload();
+      AuthUser headers = register();
+      Optional<CreateArticleResponse> articleResponseOpt = ShareRemoteClient.getInstance().createArticle(createArticlePayload, headers);
 //        CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
 
-        assertTrue(articleResponseOpt.isPresent());
-        CreateArticleResponse articleResponse = articleResponseOpt.get();
-        Article article = articleResponse.getArticle();
-        BoardBox board = articleResponse.getBoard();
-        assertNotNull(article.getId());
-        assertNotNull(article.getBoardBoxId());
-        assertNotNull(board.getId());
-      } catch (Exception e) {
-        assertFalse(e.getMessage(), false);
-        e.printStackTrace();
-      }
-    });
+      assertTrue(articleResponseOpt.isPresent());
+      CreateArticleResponse articleResponse = articleResponseOpt.get();
+      Article article = articleResponse.getArticle();
+      BoardBox board = articleResponse.getBoard();
+      assertNotNull(article.getId());
+      assertNotNull(article.getBoardBoxId());
+      assertNotNull(board.getId());
+    } catch (Exception e) {
+      assertFalse(e.getMessage(), false);
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -88,7 +84,11 @@ public class ArticleControllerTest {
     article.setTitle(title);
     String content = getRandomString();
     article.setContent(content);
-    article = (Article) put("", article).getBody();
+    Article articleNotAuthorized = (Article) put("", article).getBody();
+
+    assertNull(articleNotAuthorized);
+
+    article = (Article) put("", article, headers).getBody();
 
     article = (Article) get("/" + article.getId()).getBody();
     assertEquals(article.getTitle(), title);
@@ -158,6 +158,17 @@ public class ArticleControllerTest {
 
   private Answer post(String path, Object payload) throws HttpClientException {
     return post(path, payload, Collections.emptyMap());
+  }
+
+  private Answer put(String path, Article payload, AuthUser authUser) throws HttpClientException {
+    Map<String, String> headers = new HashMap<String, String>() {{
+      put(ACCESS_TOKEN, authUser.getAccessToken());
+      put(JSESSIONID, authUser.getSession());
+    }};
+    PutMethod resp = testServer.put(boardUrl + path, dataToJson(payload), false);
+    headers.forEach(resp::addHeader);
+    HttpResponse execute = testServer.execute(resp);
+    return jsonToData(new String(execute.body()), Answer.class);
   }
 
   private Answer put(String path, Object payload) throws HttpClientException {
