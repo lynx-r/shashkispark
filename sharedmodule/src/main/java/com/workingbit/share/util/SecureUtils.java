@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Encryptor {
+public class SecureUtils {
 
   public static String encrypt(String key, String initVector, String value) {
     try {

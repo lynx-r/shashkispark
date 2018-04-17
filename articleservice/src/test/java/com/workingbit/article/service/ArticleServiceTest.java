@@ -8,6 +8,7 @@ import com.workingbit.share.util.Utils;
 import org.junit.Test;
 
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -29,6 +30,7 @@ public class ArticleServiceTest extends BaseTest {
     Optional<AuthUser> register = ShareRemoteClient.getInstance().register(registerUser);
     assertTrue(register.isPresent());
     AuthUser registered = register.get();
+    System.out.println("REGISTERED USER " + registered);
 
     Optional<AuthUser> authenticatedOpt = ShareRemoteClient.getInstance().authenticate(registered);
     assertTrue(authenticatedOpt.isPresent());
@@ -38,6 +40,7 @@ public class ArticleServiceTest extends BaseTest {
     Optional<AuthUser> authorizedOpt = ShareRemoteClient.getInstance().authorize(registerUser);
     assertTrue(authorizedOpt.isPresent());
     AuthUser authorized = authorizedOpt.get();
+    System.out.println("AUTHORIZED USER " + authorized);
 
     assertNotEquals(registered, authorized);
     assertNotEquals(registered.getAccessToken(), authorized.getAccessToken());
@@ -47,7 +50,8 @@ public class ArticleServiceTest extends BaseTest {
   }
 
   @Test
-  public void concurrent() {
-
+  public void batch_register() {
+    IntStream.range(0, 10).parallel()
+        .forEach(i -> register_authenticate_authorize_authorize());
   }
 }

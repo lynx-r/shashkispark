@@ -8,6 +8,7 @@ import spark.Response;
 
 import java.util.Optional;
 
+import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
 import static com.workingbit.share.common.RequestConstants.JSESSIONID;
 
 /**
@@ -20,13 +21,13 @@ public interface BaseHandlerFunc {
   }
 
   default String getOrCreateSession(Request request, Response response) {
-    String clientSession = request.headers(JSESSIONID);
-    String newSession = clientSession;
-    if (StringUtils.isBlank(clientSession)) {
-      newSession = request.session(true).id();
-      response.cookie(JSESSIONID, newSession);
+    String accessToken = request.headers(ACCESS_TOKEN);
+    if (StringUtils.isBlank(accessToken)) {
+      request.session().invalidate();
     }
-    return newSession;
+    String currentSession = request.session(true).id();
+    response.cookie(JSESSIONID, currentSession);
+    return currentSession;
   }
 
   default Optional<AuthUser> isAuthenticated(String accessToken, String session) {

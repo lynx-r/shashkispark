@@ -28,10 +28,10 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
     }
     String json = request.body();
     T data = jsonToData(json, clazz);
-    String token = request.headers(ACCESS_TOKEN);
     Answer answer;
     if (secure) {
       String session = request.headers(JSESSIONID);
+      String token = request.headers(ACCESS_TOKEN);
       answer = secureCheck(data, token, session);
     } else {
       String session = getOrCreateSession(request, response);

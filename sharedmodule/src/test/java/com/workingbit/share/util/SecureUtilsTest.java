@@ -2,6 +2,7 @@ package com.workingbit.share.util;
 
 import org.junit.Test;
 
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
@@ -9,10 +10,24 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by Aleksey Popryadukhin on 16/04/2018.
  */
-public class EncryptorTest {
+public class SecureUtilsTest {
 
   @Test
   public void encrypt_test() {
+    IntStream.range(0, 10).parallel().forEach((i)->{
+      System.out.println("Iteration: " + i);
+      String key = Utils.getRandomString(16); // 128 bit key
+      String initVector = Utils.getRandomString(16); // 16 bytes IV
+
+      String text = Utils.getRandomString();
+      String enc = SecureUtils.encrypt(key, initVector, text);
+      String decr = SecureUtils.decrypt(key, initVector, enc);
+      assertEquals(text, decr);
+    });
+  }
+
+  @Test
+  public void decrypt_test() {
     String[] test = new String[] {
         "PNaejw7JLhcDdOdK hrwkPzvWF6peMZM7 q0q5UJdybEEnqhRoHQwYG6swuP2LWJNLJGcLbn9A7D1SUgCusKdLdGODSIaXlNh7/Yjq4QP0v+hKuABiDJLA70MOOmIiBVyyR/qERBh5nzcqeFyQQGBIlV5Zp5DAhZWpn5fkt4BYQdb/ug19upDwLA==",
         "PNaejw7JLhcDdOdK hrwkPzvWF6peMZM7 3gWcgadnj3crSvC/azmzn4noDrnZ6weoqv8RLGt8VTQsib2dIhm9fEjqOyHoaq4h+nVaotO8W7bekyak+NXjoMBkz6lJZbgkade/tCFRNcQChs+XE9JunX4VdJWH26TgDV7B+1BnDFSKeQ7TuvWS2w==",
@@ -29,14 +44,10 @@ public class EncryptorTest {
       String initVector = val[1]; // 16 bytes IV
 
       String text = val[2];
-      String enc = Encryptor.encrypt(key, initVector, text);
-      String decr = Encryptor.decrypt(key, initVector, enc);
-      assertEquals(text, decr);
+      String enc = SecureUtils.decrypt(key, initVector, text);
+//      String decr = Encryptor.decrypt(key, initVector, enc);
+      assertEquals(text, enc);
     });
-  }
-
-  @Test
-  public void decrypt_test() {
   }
 
   @Test
