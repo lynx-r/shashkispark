@@ -19,9 +19,6 @@ import static com.workingbit.share.util.Utils.getRandomString;
 public class SecureUserService {
 
   public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
-    System.out.println("REGISTER USER " + registerUser);
-    System.out.println("TOKEN " + token.get());
-
     return token.map(t -> {
       try {
         SecureUser secureUser = new SecureUser();
@@ -41,7 +38,6 @@ public class SecureUserService {
         secureUser.setAccessToken(accessToken);
         secureUser.setUserSession(t.getUserSession());
         secureUserDao.save(secureUser);
-        System.out.println("REGISTERED SEC USER " + secureUser);
 
         // send access token and userSession
         return new AuthUser(accessToken, t.getUserSession());
@@ -53,9 +49,6 @@ public class SecureUserService {
   }
 
   public Optional<AuthUser> authorize(RegisterUser registerUser, Optional<AuthUser> token) {
-    System.out.println("AUTHORIZE USER " + registerUser);
-    System.out.println("TOKEN " + token.get());
-
     return token.map(t ->
         secureUserDao.findByUsername(registerUser.getUsername())
             .map(secureUser -> {
@@ -87,12 +80,10 @@ public class SecureUserService {
   }
 
   public Optional<AuthUser> authenticate(AuthUser authUser) {
-    System.out.println("AUTHENTICATE USER " + authUser);
     String session = authUser.getUserSession();
     String accessToken = authUser.getAccessToken();
     Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
     return secureUserOptional.map((secureUser) -> {
-      System.out.println("FOUND SEC USER " + secureUser);
       String key = secureUser.getKey();
       String initVector = secureUser.getInitVector();
       String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
