@@ -34,6 +34,7 @@ public class ShareRemoteClient {
   private static String article;
   private static String articles;
   private static String boardbox;
+  private static String userInfo;
 
   static {
     ShareProperties shareProperties = configurationProvider("shareconfig.yaml").bind("app", ShareProperties.class);
@@ -43,6 +44,7 @@ public class ShareRemoteClient {
     article = shareProperties.articleResource();
     articles = shareProperties.articlesResource();
     boardbox = shareProperties.boardboxResource();
+    userInfo = shareProperties.userInfoResource();
     UnirestUtil.configureSerialization();
   }
 
@@ -106,6 +108,28 @@ public class ShareRemoteClient {
       HttpResponse<Answer> response = Unirest.post(resource)
           .headers(headers)
           .body(payload)
+          .asObject(Answer.class);
+      if (response.getStatus() == HTTP_OK || response.getStatus() == HTTP_CREATED) {
+        Answer body = response.getBody();
+        return Optional.of((T) body.getBody());
+      }
+      logger.error("Invalid status " + response.getStatus());
+    } catch (UnirestException e) {
+      logger.error("Unirest exception", e);
+    }
+    return Optional.empty();
+  }
+
+  public Optional<UserInfo> userInfo(AuthUser authUser) {
+    Map<String, String> authHeaders = createAuthHeaders(authUser);
+    return get(userInfo, authHeaders);
+  }
+
+  @SuppressWarnings("unchecked")
+  public  <T> Optional<T> get(String resource, Map<String, String> headers) {
+    try {
+      HttpResponse<Answer> response = Unirest.get(resource)
+          .headers(headers)
           .asObject(Answer.class);
       if (response.getStatus() == HTTP_OK || response.getStatus() == HTTP_CREATED) {
         Answer body = response.getBody();

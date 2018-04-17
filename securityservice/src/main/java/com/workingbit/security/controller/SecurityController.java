@@ -38,6 +38,13 @@ public class SecurityController {
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
       ).handleRequest(req, res, false, AuthUser.class);
 
+  public static Route userInfo = (req, res) ->
+      ((ModelHandlerFunc<AuthUser>) (data, token) ->
+          secureUserService.userInfo((AuthUser) data)
+              .map(Answer::ok)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
+      ).handleRequest(req, res, false, AuthUser.class);
+
   public static Route role = (req, res) ->
       ((ModelHandlerFunc<AuthUser>) (data, token) ->
           secureUserService.role((AuthUser) data)

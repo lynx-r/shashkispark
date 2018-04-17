@@ -53,23 +53,19 @@ public interface BaseHandlerFunc<T extends Payload> {
   default String getOrCreateSession(Request request, Response response) {
     // take user session which user got after login
     String accessToken = request.headers(ACCESS_TOKEN);
-    String logoutHeader = request.headers(LOGOUT_HEADER);
-    if (StringUtils.isBlank(logoutHeader)) {
-      if (StringUtils.isBlank(accessToken)) {
-        // if anonymous user
-        String anonymousSession = request.cookie(ANONYMOUS_SESSION);
-        if (StringUtils.isBlank(anonymousSession)) {
-          // if does not have session give it him
-          anonymousSession = Utils.getRandomString(SESSION_LENGTH);
-          response.cookie(ANONYMOUS_SESSION, anonymousSession, COOKIE_AGE, true, true);
-        }
-        // return anonym session
-        return anonymousSession;
+    if (StringUtils.isBlank(accessToken)) {
+      // if anonymous user
+      String anonymousSession = request.cookie(ANONYMOUS_SESSION);
+      if (StringUtils.isBlank(anonymousSession)) {
+        // if does not have session give it him
+        anonymousSession = Utils.getRandomString(SESSION_LENGTH);
+        response.cookie(ANONYMOUS_SESSION, anonymousSession, COOKIE_AGE, true, true);
       }
-      // return transfer session
-      return request.headers(USER_SESSION);
+      // return anonym session
+      return anonymousSession;
     }
-    return "";
+    // return transfer session
+    return request.headers(USER_SESSION);
   }
 
   default Optional<AuthUser> isAuthenticated(String accessToken, String session) {

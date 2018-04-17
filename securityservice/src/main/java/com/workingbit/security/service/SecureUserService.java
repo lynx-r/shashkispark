@@ -1,9 +1,6 @@
 package com.workingbit.security.service;
 
-import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.RegisterUser;
-import com.workingbit.share.model.EnumSecureRole;
-import com.workingbit.share.model.SecureUser;
+import com.workingbit.share.model.*;
 import com.workingbit.share.util.SecureUtils;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -96,8 +93,24 @@ public class SecureUserService {
       String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
       boolean isAuth = secureUser.getToken().equals(tokenDecrypted);
       if (isAuth) {
+        authUser.setUserId(secureUser.getId());
         authUser.setRole(secureUser.getRole());
         return authUser;
+      }
+      return null;
+    });
+  }
+
+  public Optional<UserInfo> userInfo(AuthUser authUser) {
+    String accessToken = authUser.getAccessToken();
+    Optional<SecureUser> secureUserOptional = secureUserDao.findById(authUser.getUserId());
+    return secureUserOptional.map((secureUser) -> {
+      String key = secureUser.getKey();
+      String initVector = secureUser.getInitVector();
+      String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
+      boolean isAuth = secureUser.getToken().equals(tokenDecrypted);
+      if (isAuth) {
+        return new UserInfo(secureUser.getUsername());
       }
       return null;
     });

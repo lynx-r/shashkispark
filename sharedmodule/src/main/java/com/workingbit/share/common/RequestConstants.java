@@ -13,5 +13,4 @@ public class RequestConstants {
   public static final String ANONYMOUS_SESSION = "anonymous-session";
   public static final String USER_SESSION = "user-session";
   public static final String ACCESS_TOKEN = "access-token";
-  public static final String LOGOUT_HEADER = "user-logged-out";
 }

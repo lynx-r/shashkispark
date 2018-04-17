@@ -8,15 +8,15 @@ public enum EnumArticleState {
   /**
    * New board not viewed by moderator
    */
-  newadded,
+  NEW_ADDED,
 
   /**
    * Article was removed
    */
-  removed,
+  REMOVED,
 
   /**
    * Article published
    */
-  published
+  PUBLISHED
 }

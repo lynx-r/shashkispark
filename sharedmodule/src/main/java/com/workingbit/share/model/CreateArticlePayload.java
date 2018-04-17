@@ -12,8 +12,8 @@ import lombok.Data;
 @JsonTypeName("createArticlePayload")
 @Data
 public class CreateArticlePayload implements Payload {
-  private Article article ;
-  private CreateBoardPayload boardRequest ;
+  private Article article;
+  private CreateBoardPayload boardRequest;
 
   private CreateArticlePayload() {
   }

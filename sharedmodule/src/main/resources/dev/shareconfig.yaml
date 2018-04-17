@@ -9,4 +9,5 @@ app:
   registerResource: http://localhost:34567/api/security/register
   authorizeResource: http://localhost:34567/api/security/authorize
   authenticateResource: http://localhost:34567/api/security/authenticate
+  userInfoResource: http://localhost:34567/api/security/user-info
 

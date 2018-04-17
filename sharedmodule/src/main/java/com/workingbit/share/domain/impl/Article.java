@@ -41,6 +41,9 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "author")
   private String author;
 
+  @DynamoDBAttribute(attributeName = "userId")
+  private String userId;
+
   @DynamoDBAttribute(attributeName = "title")
   private String title;
 

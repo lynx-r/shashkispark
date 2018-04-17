@@ -1,6 +1,8 @@
 package com.workingbit.article.service;
 
+import com.workingbit.article.exception.ArticleServiceException;
 import com.workingbit.share.client.ShareRemoteClient;
+import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.*;
@@ -27,16 +29,28 @@ public class ArticleService {
     if (!token.isPresent()) {
       return Optional.empty();
     }
+    AuthUser authUser = token.get();
     Article article = articleAndBoard.getArticle();
+    article.setUserId(authUser.getUserId());
+
+    ShareRemoteClient.getInstance().userInfo(authUser)
+        .ifPresent(userInfo ->
+            article.setAuthor(userInfo.getUsername())
+        );
+
     boolean present = findById(article.getTitle()).isPresent();
     Utils.setArticleIdAndCreatedAt(article, present);
-    article.setState(EnumArticleState.newadded);
+
+    article.setState(EnumArticleState.NEW_ADDED);
     article.setBoardBoxId(getRandomString());
+
     CreateBoardPayload boardRequest = articleAndBoard.getBoardRequest();
     boardRequest.setBoardBoxId(article.getBoardBoxId());
+
     CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();
     boardRequest.setArticleId(article.getId());
-    Optional<BoardBox> boardBoxOptional = shareRemoteClient.createBoardBox(boardRequest, token.get());
+
+    Optional<BoardBox> boardBoxOptional = shareRemoteClient.createBoardBox(boardRequest, authUser);
     if (boardBoxOptional.isPresent()) {
       article.setBoardBoxId(boardBoxOptional.get().getId());
       createArticleResponse.setArticle(article);
@@ -44,13 +58,19 @@ public class ArticleService {
     } else {
       return Optional.empty();
     }
-    save(article, token);
+    articleDao.save(article);
     return Optional.of(createArticleResponse);
   }
 
   public Optional<Article> save(Article article, Optional<AuthUser> token) {
-    articleDao.save(article);
-    return Optional.of(article);
+    return token.map(authUser -> {
+      if (!isOwn(authUser, article)) {
+        logger.error(ErrorMessages.NOT_OWNER);
+        throw new ArticleServiceException(ErrorMessages.NOT_OWNER);
+      }
+      articleDao.save(article);
+      return article;
+    });
   }
 
   public Optional<Articles> findAll(String limitStr, Optional<AuthUser> token) {
@@ -65,5 +85,10 @@ public class ArticleService {
 
   public Optional<Article> findById(String articleId) {
     return articleDao.findById(articleId);
+  }
+
+  private boolean isOwn(AuthUser authUser, Article article) {
+    // authUser == null when board is created from notation pdn
+    return authUser == null || authUser.getUserId().equals(article.getUserId());
   }
 }

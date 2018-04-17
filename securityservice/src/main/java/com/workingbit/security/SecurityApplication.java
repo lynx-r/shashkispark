@@ -55,6 +55,7 @@ public class SecurityApplication {
           post(Path.REGISTER, SecurityController.register);
           post(Path.AUTHORIZE, SecurityController.authorize);
           post(Path.AUTHENTICATE, SecurityController.authenticate);
+          post(Path.USER_INFO, SecurityController.userInfo);
           post(Path.ROLE, SecurityController.role);
           get(Path.LOGOUT, SecurityController.logout);
 

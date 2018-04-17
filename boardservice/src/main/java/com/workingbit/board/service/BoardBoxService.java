@@ -73,7 +73,7 @@ public class BoardBoxService {
   }
 
   Optional<BoardBox> find(BoardBox boardBox, AuthUser authUser) {
-    Optional<BoardBox> board = findBoardAndPutInStore(boardBox, authUser);
+    Optional<BoardBox> board = findBoardAndPutInStore(authUser, boardBox);
     switch (authUser.getRole()) {
       case EDITOR:
       case ADMIN:
@@ -263,7 +263,7 @@ public class BoardBoxService {
         .map(filledBoardBox -> {
           NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
           NotationDrive forkToDrive = history.getLast().deepClone();
-          return forkNotationFor(filledBoardBox, forkToDrive, authUser);
+          return forkNotationFor(authUser, filledBoardBox, forkToDrive);
         })
         .orElse(null)
     ).orElse(null);
@@ -283,7 +283,7 @@ public class BoardBoxService {
 
   public Optional<BoardBox> forkNotation(BoardBox boardBox, Optional<AuthUser> token) {
     NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
-    return token.map(authUser -> forkNotationFor(boardBox, currentNotationDrive, authUser))
+    return token.map(authUser -> forkNotationFor(authUser, boardBox, currentNotationDrive))
         .orElse(null);
   }
 
@@ -302,9 +302,9 @@ public class BoardBoxService {
         .orElse(null);
   }
 
-  private Optional<BoardBox> forkNotationFor(BoardBox boardBox, NotationDrive forkFromNotationDrive, AuthUser token) {
+  private Optional<BoardBox> forkNotationFor(AuthUser token, BoardBox boardBox, NotationDrive forkFromNotationDrive) {
     return find(boardBox, token)
-        .map(bb -> forkNotationForVariants(bb, forkFromNotationDrive));
+        .map(bb -> forkNotationForVariants(token, bb, forkFromNotationDrive));
   }
 
   private Optional<BoardBox> switchNotationTo(AuthUser authUser, BoardBox boardBox, NotationDrive currentNotationDrive, NotationDrive variantNotationDrive) {
@@ -328,7 +328,7 @@ public class BoardBoxService {
         .orElse(null);
   }
 
-  private BoardBox forkNotationForVariants(BoardBox boardBox, NotationDrive forkFromNotationDrive) {
+  private BoardBox forkNotationForVariants(AuthUser token, BoardBox boardBox, NotationDrive forkFromNotationDrive) {
     Notation notation = boardBox.getNotation();
     NotationHistory notationDrives = notation.getNotationHistory();
     boolean success = notationDrives.forkAt(forkFromNotationDrive);
@@ -336,18 +336,13 @@ public class BoardBoxService {
     if (success) {
       return notationDrives
           .getLastNotationBoardId()
-          .map(boardId -> saveBoardBoxAfterSwitchFork(null, boardBox, boardId))
+          .map(boardId -> saveBoardBoxAfterSwitchFork(token, boardBox, boardId))
           .orElse(null);
     }
     return null;
   }
 
   private BoardBox saveBoardBoxAfterSwitchFork(AuthUser authUser, BoardBox boardBox, String boardId) {
-    if (!isOwn(authUser, boardBox)) {
-      logger.error(ErrorMessages.NOT_OWNER);
-      throw new BoardServiceException(ErrorMessages.NOT_OWNER);
-    }
-
     return boardDao.findById(boardId)
         .map(board -> {
           board = boardService.resetHighlightAndUpdate(board);
@@ -357,6 +352,10 @@ public class BoardBoxService {
           if (boardBox.isReadonly() && authUser != null) {
             boardStoreService.put(authUser.getUserSession(), boardBox);
           } else {
+            if (!isOwn(authUser, boardBox)) {
+              logger.error(ErrorMessages.NOT_OWNER);
+              throw new BoardServiceException(ErrorMessages.NOT_OWNER);
+            }
             boardBoxDao.save(boardBox);
           }
           notationService.save(authUser, boardBox.getNotation());
@@ -404,7 +403,7 @@ public class BoardBoxService {
     return boardBox;
   }
 
-  private Optional<BoardBox> findBoardAndPutInStore(BoardBox boardBox, AuthUser authUser) {
+  private Optional<BoardBox> findBoardAndPutInStore(AuthUser authUser, BoardBox boardBox) {
     Optional<BoardBox> fromStore = boardStoreService.get(authUser.getUserSession());
     Supplier<BoardBox> fromDb = () -> {
       Optional<BoardBox> boardBoxOptional = boardBoxDao.find(boardBox);
@@ -414,7 +413,13 @@ public class BoardBoxService {
       }
       return null;
     };
-    return Optional.of(fromStore.orElseGet(fromDb));
+    switch (authUser.getRole()) {
+      case ADMIN:
+      case EDITOR:
+        return Optional.ofNullable(fromDb.get());
+      default:
+        return Optional.of(fromStore.orElseGet(fromDb));
+    }
   }
 
   private boolean isOwn(AuthUser authUser, BoardBox boardBox) {
