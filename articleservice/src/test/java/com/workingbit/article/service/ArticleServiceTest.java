@@ -19,6 +19,10 @@ public class ArticleServiceTest extends BaseTest {
 
   @Test
   public void auth() {
+    register_authenticate_authorize_authorize();
+  }
+
+  private void register_authenticate_authorize_authorize() {
     String username = Utils.getRandomString();
     String password = Utils.getRandomString();
     RegisterUser registerUser = new RegisterUser(username, password);
@@ -37,5 +41,13 @@ public class ArticleServiceTest extends BaseTest {
 
     assertNotEquals(registered, authorized);
     assertNotEquals(registered.getAccessToken(), authorized.getAccessToken());
+
+    Optional<AuthUser> authenticated2Opt = ShareRemoteClient.getInstance().authenticate(authorized);
+    assertTrue(authenticated2Opt.isPresent());
+  }
+
+  @Test
+  public void concurrent() {
+
   }
 }

@@ -9,7 +9,6 @@ import spark.Response;
 
 import java.util.Optional;
 
-import static com.workingbit.share.common.RequestConstants.JSESSIONID;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 
@@ -24,15 +23,10 @@ public interface RegisterHandlerFunc<T extends Payload> extends BaseHandlerFunc 
     if (StringUtils.isNotBlank(check)) {
       return check;
     }
-    String clientSession = request.headers(JSESSIONID);
-    String newSession = clientSession;
-    if (StringUtils.isBlank(clientSession)) {
-      newSession = request.session(true).id();
-      response.cookie(JSESSIONID, newSession);
-    }
+    String session = getOrCreateSession(request, response);
     String json = request.body();
     T data = jsonToData(json, clazz);
-    AuthUser authUser = new AuthUser("", newSession);
+    AuthUser authUser = new AuthUser("", session);
     Answer answer = process(data, Optional.of(authUser));
     response.status(answer.getStatusCode());
     return dataToJson(answer);

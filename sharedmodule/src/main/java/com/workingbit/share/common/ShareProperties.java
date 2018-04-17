@@ -11,5 +11,9 @@ public interface ShareProperties {
 
   String authenticateResource();
 
+  String articleResource();
+
+  String articlesResource();
+
   String boardboxResource();
 }

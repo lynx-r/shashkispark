@@ -2,7 +2,6 @@ package com.workingbit.security.controller;
 
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.handler.ModelHandlerFunc;
-import com.workingbit.share.handler.RegisterHandlerFunc;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.RegisterUser;
@@ -17,11 +16,11 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 public class SecurityController {
 
   public static Route register = (req, res) ->
-      ((RegisterHandlerFunc<RegisterUser>) (data, token) ->
+      ((ModelHandlerFunc<RegisterUser>) (data, token) ->
           secureUserService.register((RegisterUser) data, token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_REGISTER))
-      ).handleRequest(req, res, RegisterUser.class);
+      ).handleRequest(req, res, false, RegisterUser.class);
 
   public static Route authorize = (req, res) ->
       ((ModelHandlerFunc<RegisterUser>) (data, token) ->

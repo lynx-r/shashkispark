@@ -31,6 +31,8 @@ public class ShareRemoteClient {
   private static String register;
   private static String authorize;
   private static String authenticate;
+  private static String article;
+  private static String articles;
   private static String boardbox;
 
   static {
@@ -38,6 +40,8 @@ public class ShareRemoteClient {
     register = shareProperties.registerResource();
     authorize = shareProperties.authorizeResource();
     authenticate = shareProperties.authenticateResource();
+    article = shareProperties.articleResource();
+    articles = shareProperties.articlesResource();
     boardbox = shareProperties.boardboxResource();
     UnirestUtil.configureSerialization();
   }
@@ -51,7 +55,7 @@ public class ShareRemoteClient {
   }
 
   public Optional<AuthUser> register(RegisterUser registerUser, Map<String, String> headers) {
-    return post(register, headers, registerUser);
+    return post(register, registerUser, headers);
   }
 
   public Optional<AuthUser> authorize(RegisterUser registerUser) {
@@ -59,7 +63,7 @@ public class ShareRemoteClient {
   }
 
   public Optional<AuthUser> authorize(RegisterUser registerUser, Map<String, String> headers) {
-    return post(authorize, headers, registerUser);
+    return post(authorize, registerUser, headers);
   }
 
   public Optional<AuthUser> authenticate(AuthUser authUser) {
@@ -68,16 +72,25 @@ public class ShareRemoteClient {
   }
 
   public Optional<AuthUser> authenticate(AuthUser authUser, Map<String, String> headers) {
-    return post(authenticate, headers, authUser);
+    return post(authenticate, authUser, headers);
+  }
+
+  public Optional<CreateArticleResponse> createArticle(CreateArticlePayload articlePayload, AuthUser authUser) {
+    Map<String, String> headers = createAuthHeaders(authUser);
+    return post(article, articlePayload, headers);
+  }
+
+  public Optional<CreateArticleResponse> createArticle(CreateArticlePayload articlePayload, Map<String, String> headers) {
+    return post(article, articlePayload, headers);
   }
 
   public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, AuthUser authUser) {
     Map<String, String> headers = createAuthHeaders(authUser);
-    return post(boardbox, headers, boardRequest);
+    return post(boardbox, boardRequest, headers);
   }
 
   public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, Map<String, String> headers) {
-    return post(boardbox, headers, boardRequest);
+    return post(boardbox, boardRequest, headers);
   }
 
   private Map<String, String> createAuthHeaders(AuthUser authUser) {
@@ -88,11 +101,11 @@ public class ShareRemoteClient {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> Optional<T> post(String resource, Map<String, String> headers, Payload registerUser) {
+  public  <T> Optional<T> post(String resource, Payload payload, Map<String, String> headers) {
     try {
       HttpResponse<Answer> response = Unirest.post(resource)
           .headers(headers)
-          .body(registerUser)
+          .body(payload)
           .asObject(Answer.class);
       if (response.getStatus() == HTTP_OK || response.getStatus() == HTTP_CREATED) {
         Answer body = response.getBody();

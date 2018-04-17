@@ -15,14 +15,14 @@ import spark.servlet.SparkApplication;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
 import static com.workingbit.share.common.RequestConstants.JSESSIONID;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static com.workingbit.share.util.Utils.getRandomString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * Created by Aleksey Popryaduhin on 17:47 01/10/2017.
@@ -43,36 +43,44 @@ public class ArticleControllerTest {
   @ClassRule
   public static SparkServer<BoardBoxControllerTestSparkApplication> testServer = new SparkServer<>(BoardBoxControllerTestSparkApplication.class, randomPort);
 
-  private Map<String, String> register() throws Exception {
+  private AuthUser register() throws Exception {
     String username = Utils.getRandomString();
     String password = Utils.getRandomString();
     RegisterUser registerUser = new RegisterUser(username, password);
     AuthUser registered = ShareRemoteClient.getInstance().register(registerUser).get();
     assertNotNull(registered);
 
-    return new HashMap<String, String>() {{
-      put(ACCESS_TOKEN, registered.getAccessToken());
-      put(JSESSIONID, registered.getSession());
-    }};
+    return registered;
   }
 
   @Test
   public void create_article() throws Exception {
-    CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    Map<String, String> headers = register();
-    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
+    Stream.iterate(0, i -> i + 1).limit(10).forEach((i) -> {
+      try {
+        System.out.println("Iteration " + i);
+        CreateArticlePayload createArticlePayload = getCreateArticlePayload();
+        AuthUser headers = register();
+        Optional<CreateArticleResponse> articleResponseOpt = ShareRemoteClient.getInstance().createArticle(createArticlePayload, headers);
+//        CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
 
-    Article article = articleResponse.getArticle();
-    BoardBox board = articleResponse.getBoard();
-    assertNotNull(article.getId());
-    assertNotNull(article.getBoardBoxId());
-    assertNotNull(board.getId());
+        assertTrue(articleResponseOpt.isPresent());
+        CreateArticleResponse articleResponse = articleResponseOpt.get();
+        Article article = articleResponse.getArticle();
+        BoardBox board = articleResponse.getBoard();
+        assertNotNull(article.getId());
+        assertNotNull(article.getBoardBoxId());
+        assertNotNull(board.getId());
+      } catch (Exception e) {
+        assertFalse(e.getMessage(), false);
+        e.printStackTrace();
+      }
+    });
   }
 
   @Test
   public void save_article() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    Map<String, String> headers = register();
+    AuthUser headers = register();
     CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
 
     Article article = articleResponse.getArticle();
@@ -90,7 +98,7 @@ public class ArticleControllerTest {
   @Test
   public void find_article_by_id() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    Map<String, String> headers = register();
+    AuthUser headers = register();
 
     CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
     Article article = articleResponse.getArticle();
@@ -106,7 +114,7 @@ public class ArticleControllerTest {
   @Test
   public void find_all() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    Map<String, String> headers = register();
+    AuthUser headers = register();
 
     CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
     Article article = articleResponse.getArticle();
@@ -131,6 +139,14 @@ public class ArticleControllerTest {
     createBoardPayload.setFillBoard(false);
     createArticlePayload.setBoardRequest(createBoardPayload);
     return createArticlePayload;
+  }
+
+  private Answer post(String path, Object payload, AuthUser authUser) throws HttpClientException {
+    Map<String, String> headers = new HashMap<String, String>() {{
+      put(ACCESS_TOKEN, authUser.getAccessToken());
+      put(JSESSIONID, authUser.getSession());
+    }};
+    return post(path, payload, headers);
   }
 
   private Answer post(String path, Object payload, Map<String, String> headers) throws HttpClientException {
