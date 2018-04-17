@@ -2,7 +2,7 @@ package com.workingbit.security.service;
 
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.RegisterUser;
-import com.workingbit.share.model.SecureRole;
+import com.workingbit.share.model.EnumSecureRole;
 import com.workingbit.share.model.SecureUser;
 import com.workingbit.share.util.SecureUtils;
 import com.workingbit.share.util.Utils;
@@ -43,7 +43,7 @@ public class SecureUserService {
         // save encrypted token and userSession
         secureUser.setAccessToken(accessToken);
         secureUser.setUserSession(t.getUserSession());
-        secureUser.setRole(SecureRole.EDITOR);
+        secureUser.setRole(EnumSecureRole.EDITOR);
         secureUserDao.save(secureUser);
 
         // send access token and userSession
@@ -108,7 +108,7 @@ public class SecureUserService {
     if (byId.isPresent()) {
       return byId.map(secureUser -> authUser.role(secureUser.getRole()));
     }
-    return Optional.of(authUser.role(SecureRole.ANONYMOUSE));
+    return Optional.of(authUser.role(EnumSecureRole.ANONYMOUSE));
   }
 
   private int getTokenLength() {

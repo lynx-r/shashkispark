@@ -1,25 +1,19 @@
 package com.workingbit.share.handler;
 
 import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.Payload;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 
-import java.util.Optional;
-
-import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.USER_SESSION;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 /**
  * Created by Aleksey Popryaduhin on 10:52 29/09/2017.
  */
 @FunctionalInterface
-public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
+public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> {
 
   default String handleRequest(Request request, Response response, boolean secure, Class<T> clazz) {
     String check = preprocess(request, response);
@@ -28,27 +22,9 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
     }
     String json = request.body();
     T data = jsonToData(json, clazz);
-    Answer answer;
-    if (secure) {
-      String session = request.headers(USER_SESSION);
-      String token = request.headers(ACCESS_TOKEN);
-      answer = secureCheck(data, token, session);
-    } else {
-      String userSession = getOrCreateSession(request, response);
-      answer = process(data, Optional.of(new AuthUser(userSession)));
-    }
+    Answer answer = createAnswer(request, response, secure, data);
     response.status(answer.getStatusCode());
     return dataToJson(answer);
   }
 
-  default Answer secureCheck(T data, String token, String session) {
-    Optional<AuthUser> authUser = isAuthenticated(token, session);
-    if (authUser.isPresent()) {
-      return process(data, authUser);
-    } else {
-      return Answer.error(HTTP_UNAUTHORIZED, "Вы не авторизованы");
-    }
-  }
-
-  Answer process(T data, Optional<AuthUser> token);
 }

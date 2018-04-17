@@ -7,6 +7,7 @@ import com.workingbit.share.handler.ModelHandlerFunc;
 import com.workingbit.share.handler.ParamsHandlerFunc;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.CreateBoardPayload;
+import com.workingbit.share.model.ParamPayload;
 import spark.Route;
 
 import static com.workingbit.board.BoardApplication.boardBoxService;
@@ -43,8 +44,8 @@ public class BoardBoxController {
       ).handleRequest(req, res, false, BoardBox.class);
 
   public static Route findBoardById = (req, res) ->
-      ((ParamsHandlerFunc) params ->
-          boardBoxService.findById(params.get(RequestConstants.ID))
+      ((ParamsHandlerFunc<ParamPayload>) (params, token)->
+          boardBoxService.findById(params.getParam().get(RequestConstants.ID), token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND,
                   ErrorMessages.BOARD_WITH_ID_NOT_FOUND))
@@ -97,6 +98,14 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SWITCH))
       ).handleRequest(req, res, true, BoardBox.class);
+
+  public static Route viewBranch = (req, res) ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
+          boardBoxService
+              .viewBranch((BoardBox) data, token)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SWITCH))
+      ).handleRequest(req, res, false, BoardBox.class);
 
   public static Route forkNotation = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->

@@ -8,6 +8,8 @@ import com.workingbit.share.handler.ParamsHandlerFunc;
 import com.workingbit.share.handler.QueryParamsHandlerFunc;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.CreateArticlePayload;
+import com.workingbit.share.model.ParamPayload;
+import com.workingbit.share.model.QueryPayload;
 import spark.Route;
 
 import static com.workingbit.article.ArticleApplication.articleService;
@@ -20,15 +22,15 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 public class ArticleController {
 
   public static Route findAllArticles = (req, res) ->
-      ((QueryParamsHandlerFunc) params ->
-          articleService.findAll(params.value(RequestConstants.LIMIT))
+      ((QueryParamsHandlerFunc<QueryPayload>) (params, token)->
+          articleService.findAll(params.getQuery().value(RequestConstants.LIMIT), token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.UNABLE_TO_GET_ARTICLES))
       ).handleRequest(req, res);
 
   public static Route findArticleById = (req, res) ->
-      ((ParamsHandlerFunc) params ->
-          articleService.findById(params.get(RequestConstants.ID))
+      ((ParamsHandlerFunc<ParamPayload>) (params,token) ->
+          articleService.findById(params.getParam().get(RequestConstants.ID))
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.ARTICLE_WITH_ID_NOT_FOUND))
       ).handleRequest(req, res);

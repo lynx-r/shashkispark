@@ -1,6 +1,6 @@
 package com.workingbit.board.service;
 
-import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.domain.impl.Notation;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -12,25 +12,25 @@ import java.util.Optional;
 /**
  * Created by Aleksey Popryadukhin on 17/04/2018.
  */
-public class StoreService {
+public class NotationStoreService {
 
-  private Cache<String, BoardBox> store;
+  private Cache<String, Notation> store;
 
-  public StoreService() {
+  public NotationStoreService() {
     CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
         .withCache("preConfigured",
-            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BoardBox.class, ResourcePoolsBuilder.heap(10)))
+            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Notation.class, ResourcePoolsBuilder.heap(10)))
         .build();
     cacheManager.init();
 
-    store = cacheManager.getCache("preConfigured", String.class, BoardBox.class);
+    store = cacheManager.getCache("preConfigured", String.class, Notation.class);
   }
 
-  public Optional<BoardBox> get(String key) {
+  public Optional<Notation> get(String key) {
     return Optional.of(store.get(key));
   }
 
-  public void put(String key, BoardBox board) {
+  public void put(String key, Notation board) {
     store.put(key, board);
   }
 }

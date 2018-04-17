@@ -3,7 +3,7 @@ package com.workingbit.share.model;
 /**
  * Created by Aleksey Popryadukhin on 17/04/2018.
  */
-public enum  SecureRole {
+public enum EnumSecureRole {
   EDITOR,
   ADMIN,
   ANONYMOUSE

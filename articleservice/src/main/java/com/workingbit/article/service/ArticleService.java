@@ -53,7 +53,7 @@ public class ArticleService {
     return Optional.of(article);
   }
 
-  public Optional<Articles> findAll(String limitStr) {
+  public Optional<Articles> findAll(String limitStr, Optional<AuthUser> token) {
     Integer limit = null;
     if (!StringUtils.isBlank(limitStr)) {
       limit = Integer.valueOf(limitStr);

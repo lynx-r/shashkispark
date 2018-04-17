@@ -1,6 +1,8 @@
 package com.workingbit.share.handler;
 
 import com.workingbit.share.model.Answer;
+import com.workingbit.share.model.ParamPayload;
+import com.workingbit.share.model.Payload;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
@@ -13,7 +15,7 @@ import static com.workingbit.share.util.JsonUtils.dataToJson;
  * Created by Aleksey Popryaduhin on 10:52 29/09/2017.
  */
 @FunctionalInterface
-public interface ParamsHandlerFunc extends BaseHandlerFunc {
+public interface ParamsHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> {
 
   default String handleRequest(Request request, Response response) {
     String check = preprocess(request, response);
@@ -21,10 +23,9 @@ public interface ParamsHandlerFunc extends BaseHandlerFunc {
       return check;
     }
     Map<String, String> id = request.params();
-    Answer processed = process(id);
-    response.status(processed.getStatusCode());
-    return dataToJson(processed);
+    ParamPayload params = new ParamPayload(id);
+    Answer answer = createAnswer(request, response, false, (T) params);
+    response.status(answer.getStatusCode());
+    return dataToJson(answer);
   }
-
-  Answer process(Map<String, String> data);
 }

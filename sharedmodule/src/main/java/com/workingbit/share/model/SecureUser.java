@@ -39,7 +39,7 @@ public class SecureUser extends BaseDomain {
 
   @DynamoDBTypeConvertedEnum
   @DynamoDBAttribute(attributeName = "role")
-  private SecureRole role;
+  private EnumSecureRole role;
 
   /**
    * hash of user:password:salt

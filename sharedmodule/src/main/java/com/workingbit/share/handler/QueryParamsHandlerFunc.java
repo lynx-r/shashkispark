@@ -1,6 +1,8 @@
 package com.workingbit.share.handler;
 
 import com.workingbit.share.model.Answer;
+import com.workingbit.share.model.Payload;
+import com.workingbit.share.model.QueryPayload;
 import org.apache.commons.lang3.StringUtils;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -12,7 +14,7 @@ import static com.workingbit.share.util.JsonUtils.dataToJson;
  * Created by Aleksey Popryaduhin on 16:27 01/10/2017.
  */
 @FunctionalInterface
-public interface QueryParamsHandlerFunc extends BaseHandlerFunc {
+public interface QueryParamsHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> {
 
   default String handleRequest(Request request, Response response) {
     String check = preprocess(request, response);
@@ -20,10 +22,9 @@ public interface QueryParamsHandlerFunc extends BaseHandlerFunc {
       return check;
     }
     QueryParamsMap queryParamsMap = request.queryMap();
-    Answer processed = process(queryParamsMap);
-    response.status(processed.getStatusCode());
-    return dataToJson(processed);
+    QueryPayload query = new QueryPayload(queryParamsMap);
+    Answer answer = createAnswer(request, response, false, (T) query);
+    response.status(answer.getStatusCode());
+    return dataToJson(answer);
   }
-
-  Answer process(QueryParamsMap data);
 }

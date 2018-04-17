@@ -9,9 +9,9 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by Aleksey Popryadukhin on 17/04/2018.
  */
-public class StoreServiceTest {
+public class BoardStoreServiceTest {
 
-  private StoreService store = new StoreService();
+  private BoardStoreService store = new BoardStoreService();
 
   @Test
   public void test_cache() {

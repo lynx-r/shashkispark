@@ -1,13 +1,14 @@
 package com.workingbit.board;
 
 import com.workingbit.board.config.AppProperties;
+import com.workingbit.board.config.Path;
 import com.workingbit.board.controller.BoardBoxController;
 import com.workingbit.board.dao.BoardBoxDao;
 import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.dao.NotationDao;
 import com.workingbit.board.service.BoardBoxService;
-import com.workingbit.board.config.Path;
-import com.workingbit.board.service.StoreService;
+import com.workingbit.board.service.BoardStoreService;
+import com.workingbit.board.service.NotationStoreService;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import org.slf4j.Logger;
@@ -23,7 +24,8 @@ public class BoardApplication {
 
   // Declare dependencies
   public static BoardBoxService boardBoxService;
-  public static StoreService storeService;
+  public static BoardStoreService boardStoreService;
+  public static NotationStoreService notationStoreService;
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
   public static NotationDao notationDao;
@@ -34,7 +36,8 @@ public class BoardApplication {
     appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     boardBoxService = new BoardBoxService();
-    storeService = new StoreService();
+    boardStoreService = new BoardStoreService();
+    notationStoreService = new NotationStoreService();
 
     boardBoxDao = new BoardBoxDao(appProperties);
     boardDao = new BoardDao(appProperties);
@@ -74,6 +77,7 @@ public class BoardApplication {
           post(Path.BOARD_REDO, BoardBoxController.redo);
           post(Path.BOARD_UNDO, BoardBoxController.undo);
           post(Path.BOARD_SWITCH, BoardBoxController.switchNotation);
+          post(Path.BOARD_VIEW_BRANCH, BoardBoxController.viewBranch);
           post(Path.BOARD_FORK, BoardBoxController.forkNotation);
           put(Path.CHANGE_TURN, BoardBoxController.changeTurn);
 

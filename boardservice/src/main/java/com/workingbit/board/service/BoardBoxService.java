@@ -35,7 +35,7 @@ public class BoardBoxService {
     Utils.setRandomIdAndCreatedAt(boardBox);
 
     createNewNotation(boardBox, board);
-    saveAndFillBoard(boardBox);
+    saveAndFillBoard(authUser, boardBox);
 
     board.setBoardBoxId(boardBox.getId());
     boardService.save(board);
@@ -65,27 +65,31 @@ public class BoardBoxService {
             boardBox.setBoard(firstBoard);
             return boardBox;
           })
-          .map(this::saveAndFillBoard);
+          .map((b) -> saveAndFillBoard(null, b));
     }
     return Optional.empty();
   }
 
-  Optional<BoardBox> find(BoardBox boardBox, AuthUser token) {
-    Optional<BoardBox> board = boardBoxDao.find(boardBox);
-    switch (token.getRole()) {
+  Optional<BoardBox> find(BoardBox boardBox, AuthUser authUser) {
+    Optional<BoardBox> board = Optional.of(boardStoreService.get(authUser.getUserSession())
+        .orElseGet(() -> boardBoxDao.find(boardBox).orElseThrow(BoardServiceException::new)));
+    switch (authUser.getRole()) {
       case EDITOR:
       case ADMIN:
         return board.map(b -> b.readonly(false))
-            .map(this::updateBoardBox);
+            .map(boardBox1 -> updateBoardBox(authUser, boardBox1));
       default:
         return board.map(b -> b.readonly(true))
-            .map(this::updateBoardBox);
+            .map(boardBox1 -> updateBoardBox(authUser, boardBox1));
     }
   }
 
-  public Optional<BoardBox> findById(String boardBoxId) {
-    return boardBoxDao.findById(boardBoxId)
-        .map(this::updateBoardBox);
+  public Optional<BoardBox> findById(String boardBoxId, Optional<AuthUser> token) {
+    return token.map(authUser ->
+        boardBoxDao.findById(boardBoxId)
+            .map(boardBox -> updateBoardBox(authUser, boardBox))
+            .orElse(null)
+    );
   }
 
   void delete(String boardBoxId) {
@@ -120,7 +124,7 @@ public class BoardBoxService {
                     return null;
                   }
                   userBoardBox.setBoard(currentBoard);
-                  storeService.put(authUser.getUserSession(), userBoardBox);
+                  boardStoreService.put(authUser.getUserSession(), userBoardBox);
                   return userBoardBox;
                 }
             )
@@ -151,7 +155,7 @@ public class BoardBoxService {
               }
               userBoardBox.setBoard(boardUpdated);
               userBoardBox.setBoardId(boardUpdated.getId());
-              notationService.save(notation);
+              notationService.save(authUser, notation);
 
               logger.info("Notation after move: " + notation.getNotationHistory().pdnString());
 
@@ -190,15 +194,17 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> save(BoardBox boardBox, Optional<AuthUser> token) {
-    return Optional.of(saveAndFillBoard(boardBox));
+    return token.map(authUser -> saveAndFillBoard(authUser, boardBox));
   }
 
   public Optional<BoardBox> loadPreviewBoard(BoardBox boardBox, Optional<AuthUser> token) {
-    notationService.save(boardBox.getNotation());
-    updateBoardBox(boardBox);
-    Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
-    boardBox.setBoard(noHighlight);
-    return Optional.of(boardBox);
+    return token.map(authUser -> {
+      notationService.save(authUser, boardBox.getNotation());
+      updateBoardBox(authUser, boardBox);
+      Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
+      boardBox.setBoard(noHighlight);
+      return boardBox;
+    });
   }
 
   public Optional<BoardBox> addDraught(BoardBox boardBox, Optional<AuthUser> token) {
@@ -225,7 +231,7 @@ public class BoardBoxService {
           }
           updated.setBoardId(currentBoard.getId());
           updated.setBoard(currentBoard);
-          saveAndFillBoard(updated);
+          saveAndFillBoard(authUser, updated);
           return updated;
         })
     ).orElse(null);
@@ -260,6 +266,10 @@ public class BoardBoxService {
         .orElse(null);
   }
 
+  public Optional<BoardBox> viewBranch(BoardBox boardBox, Optional<AuthUser> token) {
+    return switchNotation(boardBox, token);
+  }
+
   public Optional<BoardBox> switchNotation(BoardBox boardBox, Optional<AuthUser> token) {
     return token
         .map(authUser -> {
@@ -278,10 +288,10 @@ public class BoardBoxService {
 
   private Optional<BoardBox> switchNotationTo(AuthUser authUser, BoardBox boardBox, NotationDrive currentNotationDrive, NotationDrive variantNotationDrive) {
     return find(boardBox, authUser)
-        .map(bb -> switchNotationToVariant(bb, currentNotationDrive, variantNotationDrive));
+        .map(bb -> switchNotationToVariant(authUser, bb, currentNotationDrive, variantNotationDrive));
   }
 
-  private BoardBox switchNotationToVariant(BoardBox boardBox,
+  private BoardBox switchNotationToVariant(AuthUser authUser, BoardBox boardBox,
                                            NotationDrive currentNotationDrive,
                                            NotationDrive variantNotationDrive) {
     NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
@@ -293,7 +303,7 @@ public class BoardBoxService {
     return notationDrives
         .getLastNotationBoardId()
         .map(boardId ->
-            saveBoardBoxAfterSwitchFork(boardBox, boardId))
+            saveBoardBoxAfterSwitchFork(authUser, boardBox, boardId))
         .orElse(null);
   }
 
@@ -305,21 +315,25 @@ public class BoardBoxService {
     if (success) {
       return notationDrives
           .getLastNotationBoardId()
-          .map(boardId -> saveBoardBoxAfterSwitchFork(boardBox, boardId))
+          .map(boardId -> saveBoardBoxAfterSwitchFork(null, boardBox, boardId))
           .orElse(null);
     }
     return null;
   }
 
-  private BoardBox saveBoardBoxAfterSwitchFork(BoardBox boardBox, String boardId) {
+  private BoardBox saveBoardBoxAfterSwitchFork(AuthUser authUser, BoardBox boardBox, String boardId) {
     return boardDao.findById(boardId)
         .map(board -> {
           board = boardService.resetHighlightAndUpdate(board);
           boardDao.save(board);
           boardBox.setBoard(board);
           boardBox.setBoardId(board.getId());
-          boardBoxDao.save(boardBox);
-          notationService.save(boardBox.getNotation());
+          if (boardBox.isReadonly() && authUser != null) {
+            boardStoreService.put(authUser.getUserSession(), boardBox);
+          } else {
+            boardBoxDao.save(boardBox);
+          }
+          notationService.save(authUser, boardBox.getNotation());
           return boardBox;
         })
         .orElse(null);
@@ -335,9 +349,9 @@ public class BoardBoxService {
     return !isLastSelected;
   }
 
-  private BoardBox updateBoardBox(BoardBox boardBox) {
+  private BoardBox updateBoardBox(AuthUser authUser, BoardBox boardBox) {
     Optional<Board> boardOptional = boardService.findById(boardBox.getBoardId());
-    Optional<Notation> notationOptional = notationService.findById(boardBox.getNotationId());
+    Optional<Notation> notationOptional = notationService.findById(authUser, boardBox.getNotationId());
     return boardOptional
         .map(board -> {
           board.setReadonly(boardBox.isReadonly());
@@ -352,10 +366,10 @@ public class BoardBoxService {
         .orElse(null);
   }
 
-  private BoardBox saveAndFillBoard(BoardBox boardBox) {
+  private BoardBox saveAndFillBoard(AuthUser authUser, BoardBox boardBox) {
     boardBoxDao.save(boardBox);
-    notationService.save(boardBox.getNotation());
-    boardBox = updateBoardBox(boardBox);
+    notationService.save(authUser, boardBox.getNotation());
+    boardBox = updateBoardBox(authUser, boardBox);
     return boardBox;
   }
 }

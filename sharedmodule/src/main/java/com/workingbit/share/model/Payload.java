@@ -24,7 +24,8 @@ import com.workingbit.share.domain.impl.BoardBox;
     @JsonSubTypes.Type(value = Board.class, name = "board"),
 
     @JsonSubTypes.Type(value = RegisterUser.class, name = "registerUser"),
-    @JsonSubTypes.Type(value = AuthUser.class, name = "authUser")
+    @JsonSubTypes.Type(value = AuthUser.class, name = "authUser"),
+    @JsonSubTypes.Type(value = ParamPayload.class, name = "params")
 })
 public interface Payload {
 }
