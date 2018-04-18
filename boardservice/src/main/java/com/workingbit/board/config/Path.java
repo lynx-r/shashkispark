@@ -12,12 +12,9 @@ public class Path {
   public static final String BOARD_HIGHLIGHT = "/board/highlight";
   public static final String BOARD_REDO = "/board/redo";
   public static final String BOARD_UNDO = "/board/undo";
-  public static final String BOARD_SWITCH = "/board/switch";
-  public static final String BOARD_VIEW_BRANCH = "/board/view-branch";
-  public static final String BOARD_FORK = "/board/fork";
-  public static final String CHANGE_TURN = "/board/change-turn";
-  /**
-   * save changes and return updated Board in BoardBox
-   */
   public static final String BOARD_LOAD_PREVIEW = "/board/load-board-preview";
+  public static final String BOARD_SWITCH = "/board/switch";
+  public static final String BOARD_FORK = "/board/fork";
+  public static final String BOARD_VIEW_BRANCH = "/board/view-branch";
+  public static final String CHANGE_TURN = "/board/change-turn";
 }

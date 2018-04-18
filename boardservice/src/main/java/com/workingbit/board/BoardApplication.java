@@ -71,15 +71,15 @@ public class BoardApplication {
           post(Path.BOARD_ADD_DRAUGHT, BoardBoxController.addDraught);
           post(Path.BOARD, BoardBoxController.createBoard);
           put(Path.BOARD, BoardBoxController.saveBoard);
-          post(Path.BOARD_LOAD_PREVIEW, BoardBoxController.loadPreviewBoard);
           post(Path.BOARD_MOVE, BoardBoxController.move);
           post(Path.BOARD_HIGHLIGHT, BoardBoxController.highlightBoard);
           post(Path.BOARD_REDO, BoardBoxController.redo);
           post(Path.BOARD_UNDO, BoardBoxController.undo);
+          post(Path.BOARD_LOAD_PREVIEW, BoardBoxController.loadPreviewBoard);
           post(Path.BOARD_SWITCH, BoardBoxController.switchNotation);
-          post(Path.BOARD_VIEW_BRANCH, BoardBoxController.viewBranch);
           post(Path.BOARD_FORK, BoardBoxController.forkNotation);
-          put(Path.CHANGE_TURN, BoardBoxController.changeTurn);
+          post(Path.BOARD_VIEW_BRANCH, BoardBoxController.viewBranch);
+          post(Path.CHANGE_TURN, BoardBoxController.changeTurn);
 
           notFound((req, res) -> "Not found");
           internalServerError((req, res) -> "Internal server message");

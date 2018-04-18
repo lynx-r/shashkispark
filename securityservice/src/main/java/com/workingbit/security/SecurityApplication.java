@@ -55,10 +55,8 @@ public class SecurityApplication {
           post(Path.REGISTER, SecurityController.register);
           post(Path.AUTHORIZE, SecurityController.authorize);
           post(Path.AUTHENTICATE, SecurityController.authenticate);
-          post(Path.ROLE, SecurityController.role);
           post(Path.USER_INFO, SecurityController.userInfo);
-
-          get(Path.LOGOUT, SecurityController.logout);
+          post(Path.LOGOUT, SecurityController.logout);
 
           notFound((req, res) -> "Not found");
           internalServerError((req, res) -> "Internal server message");

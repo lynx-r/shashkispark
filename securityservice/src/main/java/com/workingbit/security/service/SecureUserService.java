@@ -3,11 +3,11 @@ package com.workingbit.security.service;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.SecureUtils;
 import com.workingbit.share.util.Utils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
+import static com.workingbit.security.SecurityApplication.appProperties;
 import static com.workingbit.security.SecurityApplication.secureUserDao;
 import static com.workingbit.share.util.Utils.getRandomString;
 
@@ -17,7 +17,7 @@ import static com.workingbit.share.util.Utils.getRandomString;
 public class SecureUserService {
 
   public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
-    return token.map(t -> {
+    return token.map(authUser -> {
       try {
         String username = registerUser.getUsername();
         boolean duplicateName = secureUserDao.findByUsername(username).isPresent();
@@ -28,7 +28,7 @@ public class SecureUserService {
         Utils.setRandomIdAndCreatedAt(secureUser);
         secureUser.setUsername(registerUser.getUsername());
 
-        int tokenLengthInt = getTokenLength();
+        int tokenLengthInt = appProperties.tokenLength();
         secureUser.setTokenLength(tokenLengthInt);
 
         // hash credentials
@@ -38,13 +38,14 @@ public class SecureUserService {
         String accessToken = getAccessToken(secureUser, tokenLengthInt);
 
         // save encrypted token and userSession
+        String userSession = getUserSession();
         secureUser.setAccessToken(accessToken);
-        secureUser.setUserSession(t.getUserSession());
+        secureUser.setUserSession(userSession);
         secureUser.setRole(EnumSecureRole.AUTHOR);
         secureUserDao.save(secureUser);
 
         // send access token and userSession
-        return new AuthUser(secureUser.getId(), accessToken, t.getUserSession(), secureUser.getRole());
+        return new AuthUser(secureUser.getId(), accessToken, userSession, secureUser.getRole());
       } catch (Exception e) {
         e.printStackTrace();
         return null;
@@ -52,35 +53,34 @@ public class SecureUserService {
     });
   }
 
-  public Optional<AuthUser> authorize(RegisterUser registerUser, Optional<AuthUser> token) {
-    return token.map(t ->
-        secureUserDao.findByUsername(registerUser.getUsername())
-            .map(secureUser -> {
-              try {
-                int tokenLengthInt = secureUser.getTokenLength();
-                // hash credentials
-                String credentials = registerUser.getCredentials();
-                String salt = secureUser.getSalt();
-                String clientDigest = SecureUtils.digest(credentials + salt);
+  public Optional<AuthUser> authorize(RegisterUser registerUser) {
+    return secureUserDao.findByUsername(registerUser.getUsername())
+        .map(secureUser -> {
+          try {
+            int tokenLengthInt = secureUser.getTokenLength();
+            // hash credentials
+            String credentials = registerUser.getCredentials();
+            String salt = secureUser.getSalt();
+            String clientDigest = SecureUtils.digest(credentials + salt);
 
-                if (clientDigest.equals(secureUser.getDigest())) {
-                  // encrypt random token
-                  String accessToken = getAccessToken(secureUser, tokenLengthInt);
+            if (clientDigest.equals(secureUser.getDigest())) {
+              // encrypt random token
+              String accessToken = getAccessToken(secureUser, tokenLengthInt);
 
-                  // save encrypted token and userSession
-                  secureUser.setAccessToken(accessToken);
-                  secureUser.setUserSession(t.getUserSession());
-                  secureUserDao.save(secureUser);
+              // save encrypted token and userSession
+              String userSession = getUserSession();
+              secureUser.setAccessToken(accessToken);
+              secureUser.setUserSession(userSession);
+              secureUserDao.save(secureUser);
 
-                  // send access token and userSession
-                  return new AuthUser(secureUser.getId(), accessToken, t.getUserSession(), secureUser.getRole());
-                }
-              } catch (Exception e) {
-                e.printStackTrace();
-              }
-              return null;
-            })
-            .orElse(null));
+              // send access token and userSession
+              return new AuthUser(secureUser.getId(), accessToken, userSession, secureUser.getRole());
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          return null;
+        });
   }
 
   public Optional<AuthUser> authenticate(AuthUser authUser) {
@@ -116,21 +116,30 @@ public class SecureUserService {
     });
   }
 
-  public Optional<AuthUser> role(AuthUser authUser) {
-    Optional<SecureUser> byId = secureUserDao.findById(authUser.getUserId());
-    if (byId.isPresent()) {
-      return byId.map(secureUser -> authUser.role(secureUser.getRole()));
-    }
-    return Optional.of(authUser.role(EnumSecureRole.ANONYMOUS));
+  public Optional<AuthUser> logout(AuthUser authUser) {
+    String session = authUser.getUserSession();
+    String accessToken = authUser.getAccessToken();
+    Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
+    return secureUserOptional.map((secureUser) -> {
+      String key = secureUser.getKey();
+      String initVector = secureUser.getInitVector();
+      String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
+      boolean isAuth = secureUser.getToken().equals(tokenDecrypted);
+      if (isAuth) {
+        secureUser.setToken("");
+        secureUser.setAccessToken("");
+        secureUser.setKey("");
+        secureUser.setTokenLength(0);
+        secureUser.setInitVector("");
+        secureUser.setUserSession("");
+        secureUserDao.save(secureUser);
+      }
+      return AuthUser.anonymous();
+    });
   }
 
-  private int getTokenLength() {
-    String tokenLength = System.getenv("TOKEN_LENGTH");
-    int tokenLengthInt = 100;
-    if (StringUtils.isNotBlank(tokenLength)) {
-      tokenLengthInt = Integer.parseInt(tokenLength);
-    }
-    return tokenLengthInt;
+  private String getUserSession() {
+    return Utils.getRandomString(appProperties.sessionLength());
   }
 
   private void hashCredentials(RegisterUser registerUser, int tokenLengthInt, SecureUser secureUser) throws NoSuchAlgorithmException {

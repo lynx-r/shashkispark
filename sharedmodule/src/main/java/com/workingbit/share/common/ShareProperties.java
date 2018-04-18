@@ -18,4 +18,6 @@ public interface ShareProperties {
   String boardboxResource();
 
   String userInfoResource();
+
+  String logoutResource();
 }

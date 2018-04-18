@@ -29,6 +29,7 @@ public interface ParamsHandlerFunc<T extends Payload> extends BaseHandlerFunc<T>
       secure = false;
     }
     ParamPayload paramPayload = new ParamPayload(params);
+    @SuppressWarnings("unchecked")
     Answer answer = createAnswer(request, response, secure, (T) paramPayload);
     response.status(answer.getStatusCode());
     return dataToJson(answer);

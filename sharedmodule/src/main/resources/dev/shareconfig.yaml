@@ -1,7 +1,6 @@
 app:
   port: 14567
   regionDynamoDB: eu-west-1
-  endpointDynamoDB: http://localhost:8081
   test: true
   articleResource: http://localhost:14567/api/v1/article
   articlesResource: http://localhost:14567/api/v1/articles
@@ -10,4 +9,5 @@ app:
   authorizeResource: http://localhost:34567/api/security/authorize
   authenticateResource: http://localhost:34567/api/security/authenticate
   userInfoResource: http://localhost:34567/api/security/user-info
+  logoutResource: http://localhost:34567/api/security/logout
 

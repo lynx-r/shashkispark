@@ -23,6 +23,7 @@ public interface QueryParamsHandlerFunc<T extends Payload> extends BaseHandlerFu
     }
     QueryParamsMap queryParamsMap = request.queryMap();
     QueryPayload query = new QueryPayload(queryParamsMap);
+    @SuppressWarnings("unchecked")
     Answer answer = createAnswer(request, response, false, (T) query);
     response.status(answer.getStatusCode());
     return dataToJson(answer);

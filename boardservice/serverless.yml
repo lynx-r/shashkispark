@@ -21,7 +21,7 @@ provider:
   name: aws
   runtime: java8
   timeout: 300
-  memorySize: 1536
+  memorySize: 512
 
 # you can overwrite defaults here
   stage: dev
@@ -47,56 +47,58 @@ functions:
 #    Check the event documentation for details
     events:
       - http:
+          path: /api/v1/baord/add-draught
+          method: options
+      - http:
           path: /api/v1/board/add-draught
           method: post
 #          private: true
       - http:
-          path: /api/v1/baord/add-draught
+          path: /api/v1/board
           method: options
       - http:
           path: /api/v1/board
           method: post
 #          private: true
+#      - http:
+#          path: /api/v1/board/{boardId}/{secure}
+#          method: delete
+##          private: true
+#          request:
+#            parameters:
+#              path:
+#                boardId: true
       - http:
-          path: /api/v1/board
-          method: options
-      - http:
-          path: /api/v1/board/{boardId}
-          method: delete
-#          private: true
-          request:
-            parameters:
-              path:
-                boardId: true
-      - http:
-          path: /api/v1/board/{boardId}
+          path: /api/v1/board/{boardId}/{secure}
           method: options
           request:
             parameters:
               path:
                 boardId: true
+                secure: true
       - http:
-          path: /api/v1/board/{boardId}
+          path: /api/v1/board/{boardId}/{secure}
           method: get
 #          private: true
           request:
             parameters:
               path:
                 boardId: true
+                secure: true
+#      - http:
+#          path: /api/v1/board/{boardId}
+#          method: options
+#          request:
+#            parameters:
+#              path:
+#                boardId: true
       - http:
-          path: /api/v1/board/{boardId}
+          path: /api/v1/board/highlight
           method: options
-          request:
-            parameters:
-              path:
-                boardId: true
       - http:
           path: /api/v1/board/highlight
           method: post
 #          private: true
-      - http:
-          path: /api/v1/board/highlight
-          method: options
       - http:
           path: /api/v1/board/move
           method: post
@@ -106,39 +108,50 @@ functions:
           method: options
       - http:
           path: /api/v1/board/undo
-          method: post
-#          private: true
+          method: options
       - http:
           path: /api/v1/board/undo
-          method: options
-      - http:
-          path: /api/v1/board/redo
           method: post
 #          private: true
       - http:
           path: /api/v1/board/redo
           method: options
       - http:
-          path: /api/v1/board/load-board
+          path: /api/v1/board/redo
           method: post
 #          private: true
       - http:
-          path: /api/v1/board/load-board
+          path: /api/v1/board/load-board-preview
           method: options
       - http:
-          path: /api/v1/board/make-white-stroke
-          method: put
-#          private: true
-      - http:
-          path: /api/v1/board/make-white-stroke
-          method: options
-      - http:
-          path: /api/v1/boards
+          path: /api/v1/board/load-board-preview
           method: post
 #          private: true
       - http:
-          path: /api/v1/boards
+          path: /api/v1/board/switch
           method: options
+      - http:
+          path: /api/v1/board/switch
+          method: post
+      - http:
+          path: /api/v1/board/fork
+          method: options
+      - http:
+          path: /api/v1/board/fork
+          method: post
+      - http:
+          path: /api/v1/board/view-branch
+          method: options
+      - http:
+          path: /api/v1/board/view-branch
+          method: post
+      - http:
+          path: /api/v1/board/change-turn
+          method: options
+      - http:
+          path: /api/v1/board/change-turn
+          method: post
+#          private: true
 
 # you can add CloudFormation api templates here
 resources:

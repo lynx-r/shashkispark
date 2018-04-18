@@ -35,6 +35,7 @@ public class ShareRemoteClient {
   private static String articles;
   private static String boardbox;
   private static String userInfo;
+  private static String logout;
 
   static {
     ShareProperties shareProperties = configurationProvider("shareconfig.yaml").bind("app", ShareProperties.class);
@@ -45,6 +46,7 @@ public class ShareRemoteClient {
     articles = shareProperties.articlesResource();
     boardbox = shareProperties.boardboxResource();
     userInfo = shareProperties.userInfoResource();
+    logout = shareProperties.logoutResource();
     UnirestUtil.configureSerialization();
   }
 
@@ -69,7 +71,7 @@ public class ShareRemoteClient {
   }
 
   public Optional<AuthUser> authenticate(AuthUser authUser) {
-    Map<String, String> headers = createAuthHeaders(authUser);
+    Map<String, String> headers = getAuthHeaders(authUser);
     return authenticate(authUser, headers);
   }
 
@@ -78,7 +80,7 @@ public class ShareRemoteClient {
   }
 
   public Optional<CreateArticleResponse> createArticle(CreateArticlePayload articlePayload, AuthUser authUser) {
-    Map<String, String> headers = createAuthHeaders(authUser);
+    Map<String, String> headers = getAuthHeaders(authUser);
     return post(article, articlePayload, headers);
   }
 
@@ -87,7 +89,7 @@ public class ShareRemoteClient {
   }
 
   public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, AuthUser authUser) {
-    Map<String, String> headers = createAuthHeaders(authUser);
+    Map<String, String> headers = getAuthHeaders(authUser);
     return post(boardbox, boardRequest, headers);
   }
 
@@ -95,7 +97,7 @@ public class ShareRemoteClient {
     return post(boardbox, boardRequest, headers);
   }
 
-  private Map<String, String> createAuthHeaders(AuthUser authUser) {
+  private Map<String, String> getAuthHeaders(AuthUser authUser) {
     return new HashMap<String, String>() {{
       put(ACCESS_TOKEN, authUser.getAccessToken());
       put(USER_SESSION, authUser.getUserSession());
@@ -121,8 +123,13 @@ public class ShareRemoteClient {
   }
 
   public Optional<UserInfo> userInfo(AuthUser authUser) {
-    Map<String, String> authHeaders = createAuthHeaders(authUser);
+    Map<String, String> authHeaders = getAuthHeaders(authUser);
     return post(userInfo, authUser, authHeaders);
+  }
+
+  public Optional<AuthUser> logout(AuthUser authUser) {
+    Map<String, String> headers = getAuthHeaders(authUser);
+    return post(logout, authUser, headers);
   }
 
   @SuppressWarnings("unchecked")

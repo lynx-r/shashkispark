@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: aws-java-gradle # NOTE: update this with your service name
+service: securityservice # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -20,6 +20,11 @@ service: aws-java-gradle # NOTE: update this with your service name
 provider:
   name: aws
   runtime: java8
+  timeout: 300
+
+  stage: dev
+  region: eu-west-1
+
 
 # you can overwrite defaults here
 #  stage: dev
@@ -47,11 +52,40 @@ provider:
 
 # you can add packaging information here
 package:
-  artifact: build/distributions/hello.zip
+  artifact: build/distributions/securityservice-1.0.zip
 
 functions:
-  hello:
-    handler: com.serverless.Handler
+  security:
+    handler: com.workingbit.scurity.LambdaHandler::handleRequest
+
+    events:
+      - http:
+          path: /api/security/register
+          method: options
+      - http:
+          path: /api/v1/board/register
+          method: post
+
+      - http:
+          path: /api/security/authorize
+          method: options
+      - http:
+          path: /api/v1/board/authorize
+          method: post
+
+      - http:
+          path: /api/security/authenticate
+          method: options
+      - http:
+          path: /api/v1/board/authenticate
+          method: post
+
+      - http:
+          path: /api/security/logout
+          method: options
+      - http:
+          path: /api/v1/board/logout
+          method: post
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -87,13 +121,79 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+resources:
+  Resources:
+    DynamoDbTableSecureUser:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: SecureUser
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: userSession
+            AttributeType: S
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+        - IndexName: userSessionIndex
+          KeySchema:
+          - AttributeName: userSession
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+        - IndexName: usernameIndex
+          KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+    DynamoDBIamPolicySecureUser:
+      Type: AWS::IAM::Policy
+      DependsOn: DynamoDbTableSecureUser
+      Properties:
+        PolicyName: lambda-dynamodb-SecureUser
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+                - dynamodb:Query
+              Resource: arn:aws:dynamodb:*:*:table/SecureUser
+        Roles:
+          - Ref: IamRoleLambdaExecution
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-dynamodb-fixtures-plugin
+
+custom:
+  dynamodb:
+    start:
+      port: 8084
+      inMemory: true
+      migrate: true

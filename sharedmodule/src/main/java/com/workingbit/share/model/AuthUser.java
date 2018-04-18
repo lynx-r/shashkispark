@@ -28,6 +28,10 @@ public class AuthUser implements Payload {
     this.userSession = userSession;
   }
 
+  public static AuthUser anonymous() {
+    return new AuthUser().role(EnumSecureRole.ANONYMOUS);
+  }
+
   public AuthUser role(EnumSecureRole role) {
     this.role = role;
     return this;

@@ -13,17 +13,15 @@ public interface AppProperties {
 
   Boolean test();
 
-  Integer articlesFetchLimit();
-
   URL origin();
 
   String methods();
 
   String headers();
 
-  String boardResource();
-
   int port();
 
-//  String encodeTokenKey();
+  int sessionLength();
+
+  int tokenLength();
 }
