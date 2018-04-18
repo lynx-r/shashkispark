@@ -13,29 +13,23 @@
 
 service: articleservice
 
-# You can pin your service to only deploy with a specific Serverless version
-# Check out our docs for more details
-# frameworkVersion: "=X.X.X"
-
 provider:
   name: aws
   runtime: java8
   timeout: 300
   memorySize: 256
 
-# you can overwrite defaults here
   stage: dev
   region: eu-west-1
 
   apiKeys:
     - ARTICLE_API_KEY
 
-# you can define service wide environment variables here
+# define service wide environment variables here
   environment:
-    SPRING_PROFILES_ACTIVE: production
     CFG4J_ENV: prod
 
-# you can add packaging information here
+# packaging information here
 package:
   artifact: build/distributions/articleservice-1.0.zip
 
@@ -43,21 +37,16 @@ functions:
   article:
     handler: com.workingbit.article.LambdaHandler::handleRequest
 
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
     events:
       - http:
           path: /api/v1/articles
           method: get
-#          private: true
       - http:
           path: /api/v1/articles
           method: options
       - http:
           path: /api/v1/article/{articleId}
           method: get
-#          private: true
           request:
             parameters:
               path:
@@ -72,7 +61,6 @@ functions:
       - http:
           path: /api/v1/article/{articleId}/board
           method: get
-#          private: true
           request:
             parameters:
               path:
@@ -87,11 +75,9 @@ functions:
       - http:
           path: /api/v1/article
           method: post
-#          private: true
       - http:
           path: /api/v1/article
           method: put
-#          private: true
       - http:
           path: /api/v1/article
           method: options

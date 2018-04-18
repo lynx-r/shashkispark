@@ -58,7 +58,6 @@ public class SecureUserServiceTest {
         .forEach(i -> register_authenticate_authorize_authorize());
   }
 
-
   @Test
   public void logout_test() {
     String username = Utils.getRandomString();
