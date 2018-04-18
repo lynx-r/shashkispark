@@ -34,7 +34,7 @@ public interface BaseHandlerFunc<T extends Payload> {
       answer = secureCheck(data, token, session);
     } else {
       String userSession = getOrCreateSession(request, response);
-      AuthUser role = new AuthUser(userSession).role(EnumSecureRole.ANONYMOUSE);
+      AuthUser role = new AuthUser(userSession).role(EnumSecureRole.ANONYMOUS);
       answer = process(data, Optional.of(role));
     }
     return answer;

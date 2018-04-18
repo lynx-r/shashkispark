@@ -24,7 +24,7 @@ public interface ParamsHandlerFunc<T extends Payload> extends BaseHandlerFunc<T>
     String secureStr = params.get(":secure");
     boolean secure;
     try {
-      secure = secureStr.toUpperCase().equals(EnumSecureRole.EDITOR.name());
+      secure = secureStr.toUpperCase().equals(EnumSecureRole.AUTHOR.name());
     } catch (Exception ignore) {
       secure = false;
     }

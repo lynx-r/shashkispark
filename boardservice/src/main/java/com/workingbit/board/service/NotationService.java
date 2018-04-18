@@ -21,7 +21,7 @@ public class NotationService {
     Optional<Notation> notationOptional = notationDao.findById(notationId);
     switch (authUser.getRole()) {
       case ADMIN:
-      case EDITOR:
+      case AUTHOR:
         return notationOptional;
       default:
         Notation notation = findNotationAndPutInStore(authUser, notationOptional, notationId);
@@ -35,7 +35,7 @@ public class NotationService {
     }
     switch (authUser.getRole()) {
       case ADMIN:
-      case EDITOR:
+      case AUTHOR:
         notation.setReadonly(false);
         notationDao.save(notation);
         return;

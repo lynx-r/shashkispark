@@ -40,7 +40,7 @@ public class SecureUserService {
         // save encrypted token and userSession
         secureUser.setAccessToken(accessToken);
         secureUser.setUserSession(t.getUserSession());
-        secureUser.setRole(EnumSecureRole.EDITOR);
+        secureUser.setRole(EnumSecureRole.AUTHOR);
         secureUserDao.save(secureUser);
 
         // send access token and userSession
@@ -121,7 +121,7 @@ public class SecureUserService {
     if (byId.isPresent()) {
       return byId.map(secureUser -> authUser.role(secureUser.getRole()));
     }
-    return Optional.of(authUser.role(EnumSecureRole.ANONYMOUSE));
+    return Optional.of(authUser.role(EnumSecureRole.ANONYMOUS));
   }
 
   private int getTokenLength() {

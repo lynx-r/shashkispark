@@ -79,7 +79,7 @@ public class BoardBoxService {
   Optional<BoardBox> find(BoardBox boardBox, AuthUser authUser) {
     Optional<BoardBox> board = findBoardAndPutInStore(authUser, boardBox);
     switch (authUser.getRole()) {
-      case EDITOR:
+      case AUTHOR:
       case ADMIN:
         return board.map(b -> b.readonly(false))
             .map(bb -> updateBoardBox(authUser, bb));
@@ -419,7 +419,7 @@ public class BoardBoxService {
     };
     switch (authUser.getRole()) {
       case ADMIN:
-      case EDITOR:
+      case AUTHOR:
         return Optional.ofNullable(fromDb.get());
       default:
         return Optional.of(fromStore.orElseGet(fromDb));
