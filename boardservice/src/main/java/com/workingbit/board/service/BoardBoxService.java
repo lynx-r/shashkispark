@@ -9,6 +9,7 @@ import com.workingbit.share.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -31,10 +32,13 @@ public class BoardBoxService {
     Board board = boardService.createBoard(createBoardPayload);
 
     BoardBox boardBox = new BoardBox(board);
+    String boardBoxId = createBoardPayload.getBoardBoxId();
+    boardBox.setId(boardBoxId);
     String articleId = createBoardPayload.getArticleId();
     boardBox.setArticleId(articleId);
-    boardBox.setUserId(authUser.getUserId());
-    Utils.setRandomIdAndCreatedAt(boardBox);
+    String userId = authUser.getUserId();
+    boardBox.setUserId(userId);
+    boardBox.setCreatedAt(LocalDateTime.now());
 
     createNewNotation(boardBox, board);
     saveAndFillBoard(authUser, boardBox);
@@ -87,8 +91,7 @@ public class BoardBoxService {
 
   public Optional<BoardBox> findById(String boardBoxId, Optional<AuthUser> token) {
     return token.map(authUser ->
-        boardStoreService.get(authUser.getUserSession())
-            .filter((boardBox) -> boardBox.getId().equals(boardBoxId))
+        boardStoreService.get(authUser.getUserSession(), boardBoxId)
             .map(boardBox -> updateBoardBox(authUser, boardBox))
             .orElseGet(() ->
                 boardBoxDao.findById(boardBoxId)
@@ -405,7 +408,7 @@ public class BoardBoxService {
   }
 
   private Optional<BoardBox> findBoardAndPutInStore(AuthUser authUser, BoardBox boardBox) {
-    Optional<BoardBox> fromStore = boardStoreService.get(authUser.getUserSession());
+    Optional<BoardBox> fromStore = boardStoreService.get(authUser.getUserSession(), boardBox.getId());
     Supplier<BoardBox> fromDb = () -> {
       Optional<BoardBox> boardBoxOptional = boardBoxDao.find(boardBox);
       if (boardBoxOptional.isPresent()) {

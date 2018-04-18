@@ -24,7 +24,7 @@ public class NotationService {
       case EDITOR:
         return notationOptional;
       default:
-        Notation notation = findNotationAndPutInStore(authUser, notationOptional);
+        Notation notation = findNotationAndPutInStore(authUser, notationOptional, notationId);
         return Optional.ofNullable(notation);
     }
   }
@@ -44,8 +44,8 @@ public class NotationService {
     }
   }
 
-  private Notation findNotationAndPutInStore(AuthUser authUser, Optional<Notation> notationOptional) {
-    return notationStoreService.get(authUser.getUserSession())
+  private Notation findNotationAndPutInStore(AuthUser authUser, Optional<Notation> notationOptional, String notationId) {
+    return notationStoreService.get(authUser.getUserSession(), notationId)
         .orElseGet(() -> {
           if (notationOptional.isPresent()) {
             Notation notation = notationOptional.get();

@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /**
  * Created by Aleksey Popryadukhin on 16/04/2018.
  */
-public class ArticleServiceTest extends BaseTest {
+public class SecurityServiceTest extends BaseTest {
 
 
   @Test

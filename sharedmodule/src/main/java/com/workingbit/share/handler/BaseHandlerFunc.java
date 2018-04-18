@@ -34,8 +34,7 @@ public interface BaseHandlerFunc<T extends Payload> {
       answer = secureCheck(data, token, session);
     } else {
       String userSession = getOrCreateSession(request, response);
-      AuthUser role = new AuthUser(userSession)
-          .role(EnumSecureRole.ANONYMOUSE);
+      AuthUser role = new AuthUser(userSession).role(EnumSecureRole.ANONYMOUSE);
       answer = process(data, Optional.of(role));
     }
     return answer;
@@ -59,7 +58,7 @@ public interface BaseHandlerFunc<T extends Payload> {
       if (StringUtils.isBlank(anonymousSession)) {
         // if does not have session give it him
         anonymousSession = Utils.getRandomString(SESSION_LENGTH);
-        response.cookie(ANONYMOUS_SESSION, anonymousSession, COOKIE_AGE, true, true);
+        response.cookie(ANONYMOUS_SESSION, anonymousSession, COOKIE_AGE, false, true);
       }
       // return anonym session
       return anonymousSession;

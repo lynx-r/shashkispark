@@ -27,11 +27,15 @@ public class NotationStoreService {
     store = cacheManager.getCache(notation, String.class, Notation.class);
   }
 
-  public Optional<Notation> get(String key) {
-    return Optional.ofNullable(store.get(key));
+  public Optional<Notation> get(String key, String notationId) {
+    return Optional.ofNullable(store.get(getKey(key, notationId)));
   }
 
   public void put(String key, Notation notation) {
-    store.put(key, notation);
+    store.put(getKey(key, notation.getId()), notation);
+  }
+
+  private String getKey(String key, String boardId) {
+    return key + ":" + boardId;
   }
 }

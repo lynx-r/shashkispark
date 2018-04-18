@@ -1,8 +1,6 @@
 package com.workingbit.share.handler;
 
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.ParamPayload;
-import com.workingbit.share.model.Payload;
+import com.workingbit.share.model.*;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
@@ -22,9 +20,16 @@ public interface ParamsHandlerFunc<T extends Payload> extends BaseHandlerFunc<T>
     if (StringUtils.isNotBlank(check)) {
       return check;
     }
-    Map<String, String> id = request.params();
-    ParamPayload params = new ParamPayload(id);
-    Answer answer = createAnswer(request, response, false, (T) params);
+    Map<String, String> params = request.params();
+    String secureStr = params.get(":secure");
+    boolean secure;
+    try {
+      secure = secureStr.toUpperCase().equals(EnumSecureRole.EDITOR.name());
+    } catch (Exception ignore) {
+      secure = false;
+    }
+    ParamPayload paramPayload = new ParamPayload(params);
+    Answer answer = createAnswer(request, response, secure, (T) paramPayload);
     response.status(answer.getStatusCode());
     return dataToJson(answer);
   }
