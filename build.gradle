@@ -26,7 +26,8 @@ allprojects {
 subprojects { subproject ->
     if (subproject.name.endsWith('service')) {
         subproject.apply plugin: 'application'
-        subproject.apply plugin: "com.fieldju.aws-sam-deployer"
+        subproject.apply plugin: 'war'
+//        subproject.apply plugin: "com.fieldju.aws-sam-deployer"
     }
 
     repositories {
@@ -39,17 +40,47 @@ subprojects { subproject ->
         compile 'org.apache.commons:commons-lang3:3.5'
         compile 'org.apache.commons:commons-collections4:4.1'
 
-        compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
-        compile 'com.amazonaws.serverless:aws-serverless-java-container-spark:0.7'
-        compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
-        compile('com.amazonaws:aws-lambda-java-log4j:1.0.0') {
-            exclude group: 'log4j', module: 'log4j'
-        }
+        compile "com.sparkjava:spark-core:2.7.2"
+
+//        compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+//        compile 'com.amazonaws.serverless:aws-serverless-java-container-spark:0.7'
+//        compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+//        compile('com.amazonaws:aws-lambda-java-log4j:1.0.0') {
+//            exclude group: 'log4j', module: 'log4j'
+//        }
 
         testCompile group: 'junit', name: 'junit', version: '4.+'
     }
 
     test.onlyIf { Boolean.getBoolean('skip.tests') }
+}
+
+configure(subprojects.findAll { it.name.endsWith('module') }) {
+
+    dependencies {
+    }
+}
+
+configure(subprojects.findAll { it.name.endsWith('service') }) { p ->
+    dependencies {
+
+        compile 'io.reactivex:rxjava:1.2.2'
+
+        compile project(':sharedmodule')
+
+        testCompile "com.despegar:spark-test:1.1.4"
+    }
+
+//    'aws-sam-deployer' {
+//        region = project.ext.region
+//        s3Bucket = project.ext.s3Bucket
+//        s3Prefix = "${project.getName()}-artifact-uploads"
+//        stackName = "${project.ext.environment}-jvm-lambda-template"
+//        samTemplatePath = "${project.rootDir.absolutePath}${File.separator}application.yaml"
+//        tokenArtifactMap = [
+//                '@@CODE_URI@@': "${project.buildDir.absolutePath}${File.separator}libs${File.separator}jvm-lambda-template.jar"
+//        ]
+//    }
 }
 
 project(':securityservice') {
@@ -66,33 +97,33 @@ project(':securityservice') {
     }
 
     // Task for building the zip file for upload
-    task buildZip(type: Zip) {
-        // Using the Zip API from gradle to build a zip file of all the dependencies
-        //
-        // The path to this zip file can be set in the serverless.yml file for the
-        // package/artifact setting for deployment to the S3 bucket
-        //
-        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
+//    task buildZip(type: Zip) {
+//        // Using the Zip API from gradle to build a zip file of all the dependencies
+//        //
+//        // The path to this zip file can be set in the serverless.yml file for the
+//        // package/artifact setting for deployment to the S3 bucket
+//        //
+//        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
+//
+//        // set the base name of the zip file
+//        baseName = "securityservice"
+//        from compileJava
+//        from processResources
+//        into("lib") {
+//            from configurations.runtime
+//        }
+//    }
 
-        // set the base name of the zip file
-        baseName = "securityservice"
-        from compileJava
-        from processResources
-        into("lib") {
-            from configurations.runtime
-        }
-    }
-
-    build.dependsOn buildZip
+//    build.dependsOn buildZip
 }
 
 project(':articleservice') {
 
-    project.ext {
-        region = 'eu-west-1'
-        s3Bucket = 'articleservice'
-        environment = 'prod'
-    }
+//    project.ext {
+//        region = 'eu-west-1'
+//        s3Bucket = 'articleservice'
+//        environment = 'prod'
+//    }
 
     mainClassName = 'com.workingbit.article.ArticleApplication'
 
@@ -100,24 +131,24 @@ project(':articleservice') {
     }
 
     // Task for building the zip file for upload
-    task buildZip(type: Zip) {
-        // Using the Zip API from gradle to build a zip file of all the dependencies
-        //
-        // The path to this zip file can be set in the serverless.yml file for the
-        // package/artifact setting for deployment to the S3 bucket
-        //
-        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
-
-        // set the base name of the zip file
-        baseName = "articleservice"
-        from compileJava
-        from processResources
-        into("lib") {
-            from configurations.runtime
-        }
-    }
-
-    build.dependsOn buildZip
+//    task buildZip(type: Zip) {
+//        // Using the Zip API from gradle to build a zip file of all the dependencies
+//        //
+//        // The path to this zip file can be set in the serverless.yml file for the
+//        // package/artifact setting for deployment to the S3 bucket
+//        //
+//        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
+//
+//        // set the base name of the zip file
+//        baseName = "articleservice"
+//        from compileJava
+//        from processResources
+//        into("lib") {
+//            from configurations.runtime
+//        }
+//    }
+//
+//    build.dependsOn buildZip
 }
 
 project(':boardservice') {
@@ -188,34 +219,6 @@ project(':sharedmodule') {
 
         compile 'org.slf4j:slf4j-api:1.8.0-beta2'
         compile 'ch.qos.logback:logback-classic:1.3.0-alpha4'
-    }
-}
-
-configure(subprojects.findAll { it.name.endsWith('module') }) {
-
-    dependencies {
-    }
-}
-
-configure(subprojects.findAll { it.name.endsWith('service') }) { p ->
-    dependencies {
-        compile "com.sparkjava:spark-core:2.7.2"
-
-        compile 'io.reactivex:rxjava:1.2.2'
-
-        testCompile "com.despegar:spark-test:1.1.4"
-        compile project(':sharedmodule')
-    }
-
-    'aws-sam-deployer' {
-        region = project.ext.region
-        s3Bucket = project.ext.s3Bucket
-        s3Prefix = "${project.getName()}-artifact-uploads"
-        stackName = "${project.ext.environment}-jvm-lambda-template"
-        samTemplatePath = "${project.rootDir.absolutePath}${File.separator}application.yaml"
-        tokenArtifactMap = [
-                '@@CODE_URI@@': "${project.buildDir.absolutePath}${File.separator}libs${File.separator}jvm-lambda-template.jar"
-        ]
     }
 }
 

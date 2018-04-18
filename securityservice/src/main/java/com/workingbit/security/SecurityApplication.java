@@ -6,16 +6,16 @@ import com.workingbit.security.controller.SecurityController;
 import com.workingbit.security.dao.SecureUserDao;
 import com.workingbit.security.service.SecureUserService;
 import com.workingbit.share.util.Filters;
-import com.workingbit.share.util.SparkUtils;
 import com.workingbit.share.util.UnirestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.servlet.SparkApplication;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.common.CorsConfig.enableCors;
 import static spark.Spark.*;
 
-public class SecurityApplication {
+public class SecurityApplication implements SparkApplication {
 
   private static final Logger LOG = LoggerFactory.getLogger(SecurityApplication.class);
 
@@ -37,9 +37,15 @@ public class SecurityApplication {
     start();
   }
 
+  @Override
+  public void init() {
+    start();
+  }
+
+
   public static void start() {
-    Logger logger = LoggerFactory.getLogger(SecurityApplication.class);
-    SparkUtils.createServerWithRequestLog(logger);
+//    Logger logger = LoggerFactory.getLogger(SecurityApplication.class);
+//    SparkUtils.createServerWithRequestLog(logger);
 
     UnirestUtil.configureSerialization();
 

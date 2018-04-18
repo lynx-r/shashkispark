@@ -10,15 +10,15 @@ import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.board.service.BoardStoreService;
 import com.workingbit.board.service.NotationStoreService;
 import com.workingbit.share.util.Filters;
-import com.workingbit.share.util.SparkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.servlet.SparkApplication;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.common.CorsConfig.enableCors;
 import static spark.Spark.*;
 
-public class BoardApplication {
+public class BoardApplication implements SparkApplication {
 
   private static final Logger LOG = LoggerFactory.getLogger(BoardApplication.class);
 
@@ -54,9 +54,14 @@ public class BoardApplication {
     start();
   }
 
+  @Override
+  public void init() {
+    start();
+  }
+
   public static void start() {
-    Logger logger = LoggerFactory.getLogger(BoardApplication.class);
-    SparkUtils.createServerWithRequestLog(logger);
+//    Logger logger = LoggerFactory.getLogger(BoardApplication.class);
+//    SparkUtils.createServerWithRequestLog(logger);
 
     LOG.info("Initializing routes");
     enableCors(appProperties.origin().toString(), appProperties.methods(), appProperties.headers());

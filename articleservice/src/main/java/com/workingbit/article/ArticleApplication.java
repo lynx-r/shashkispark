@@ -1,21 +1,21 @@
 package com.workingbit.article;
 
 import com.workingbit.article.config.AppProperties;
+import com.workingbit.article.config.Path;
 import com.workingbit.article.controller.ArticleController;
 import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.service.ArticleService;
-import com.workingbit.article.config.Path;
 import com.workingbit.share.util.Filters;
-import com.workingbit.share.util.SparkUtils;
 import com.workingbit.share.util.UnirestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.servlet.SparkApplication;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.common.CorsConfig.enableCors;
 import static spark.Spark.*;
 
-public class ArticleApplication {
+public class ArticleApplication implements SparkApplication {
 
   private static final Logger LOG = LoggerFactory.getLogger(ArticleApplication.class);
 
@@ -36,9 +36,14 @@ public class ArticleApplication {
     start();
   }
 
+  @Override
+  public void init() {
+    start();
+  }
+
   public static void start() {
-    Logger logger = LoggerFactory.getLogger(ArticleApplication.class);
-    SparkUtils.createServerWithRequestLog(logger);
+//    Logger logger = LoggerFactory.getLogger(ArticleApplication.class);
+//    SparkUtils.createServerWithRequestLog(logger);
 
     UnirestUtil.configureSerialization();
 
