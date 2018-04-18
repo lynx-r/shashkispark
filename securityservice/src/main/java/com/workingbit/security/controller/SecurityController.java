@@ -10,6 +10,7 @@ import spark.Route;
 import static com.workingbit.security.SecurityApplication.secureUserService;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
@@ -35,7 +36,7 @@ public class SecurityController {
       ((ModelHandlerFunc<AuthUser>) (data, token) ->
           secureUserService.authenticate((AuthUser) data)
               .map(Answer::ok)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
+              .orElse(Answer.error(HTTP_FORBIDDEN, ErrorMessages.UNABLE_TO_AUTHENTICATE))
       ).handleRequest(req, res, false, AuthUser.class);
 
   public static Route userInfo = (req, res) ->
