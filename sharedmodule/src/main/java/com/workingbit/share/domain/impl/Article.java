@@ -19,7 +19,7 @@ import java.util.Objects;
 /**
  * Created by Aleksey Popryaduhin on 18:31 09/08/2017.
  */
-@JsonTypeName("article")
+@JsonTypeName("Article")
 @Getter
 @Setter
 @ToString

@@ -19,7 +19,7 @@ import java.util.Objects;
 /**
  * Created by Aleksey Popryaduhin on 19:54 12/08/2017.
  */
-@JsonTypeName("boardBox")
+@JsonTypeName("BoardBox")
 @Getter
 @Setter
 @ToString

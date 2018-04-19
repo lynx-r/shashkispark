@@ -8,7 +8,7 @@ import lombok.Data;
 /**
  * CreateBoardPayload
  */
-@JsonTypeName("createBoardPayload")
+@JsonTypeName("CreateBoardPayload")
 @Data
 public class CreateBoardPayload implements Payload {
   private String articleId;

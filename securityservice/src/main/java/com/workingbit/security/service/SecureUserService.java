@@ -121,7 +121,7 @@ public class SecureUserService {
         logger.info("AUTHENTICATE FAILED: " + secureUser);
         return null;
       });
-    }).orElse(null);
+    }).orElse(Optional.of(AuthUser.anonymous()));
   }
 
   public Optional<UserInfo> userInfo(AuthUser authUser) {

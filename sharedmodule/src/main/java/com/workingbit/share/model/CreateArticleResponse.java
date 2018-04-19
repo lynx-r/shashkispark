@@ -10,7 +10,7 @@ import lombok.Data;
 /**
  * CreateBoardPayload
  */
-@JsonTypeName("createArticleResponse")
+@JsonTypeName("CreateArticleResponse")
 @Data
 public class CreateArticleResponse implements Payload {
   private Article article ;

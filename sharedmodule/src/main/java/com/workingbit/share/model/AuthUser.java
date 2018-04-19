@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 /**
  * Created by Aleksey Popryadukhin on 16/04/2018.
  */
-@JsonTypeName("authUser")
+@JsonTypeName("AuthUser")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

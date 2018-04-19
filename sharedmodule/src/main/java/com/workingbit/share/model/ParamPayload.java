@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by Aleksey Popryadukhin on 17/04/2018.
  */
-@JsonTypeName("params")
+@JsonTypeName("Params")
 @AllArgsConstructor
 @Data
 public class ParamPayload implements Payload {

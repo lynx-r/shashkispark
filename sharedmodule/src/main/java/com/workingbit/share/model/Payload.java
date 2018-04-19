@@ -14,19 +14,19 @@ import com.workingbit.share.domain.impl.BoardBox;
     include = JsonTypeInfo.As.PROPERTY,
     property = "type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = CreateArticlePayload.class, name = "createArticlePayload"),
-    @JsonSubTypes.Type(value = CreateArticleResponse.class, name = "createArticleResponse"),
-    @JsonSubTypes.Type(value = CreateBoardPayload.class, name = "createBoardPayload"),
+    @JsonSubTypes.Type(value = CreateArticlePayload.class, name = "CreateArticlePayload"),
+    @JsonSubTypes.Type(value = CreateArticleResponse.class, name = "CreateArticleResponse"),
+    @JsonSubTypes.Type(value = CreateBoardPayload.class, name = "CreateBoardPayload"),
 
-    @JsonSubTypes.Type(value = Article.class, name = "article"),
-    @JsonSubTypes.Type(value = Articles.class, name = "articles"),
-    @JsonSubTypes.Type(value = BoardBox.class, name = "boardBox"),
-    @JsonSubTypes.Type(value = Board.class, name = "board"),
+    @JsonSubTypes.Type(value = Article.class, name = "Article"),
+    @JsonSubTypes.Type(value = Articles.class, name = "Articles"),
+    @JsonSubTypes.Type(value = BoardBox.class, name = "BoardBox"),
+    @JsonSubTypes.Type(value = Board.class, name = "Board"),
 
-    @JsonSubTypes.Type(value = RegisterUser.class, name = "registerUser"),
-    @JsonSubTypes.Type(value = AuthUser.class, name = "authUser"),
-    @JsonSubTypes.Type(value = UserInfo.class, name = "userInfo"),
-    @JsonSubTypes.Type(value = ParamPayload.class, name = "params")
+    @JsonSubTypes.Type(value = RegisterUser.class, name = "RegisterUser"),
+    @JsonSubTypes.Type(value = AuthUser.class, name = "AuthUser"),
+    @JsonSubTypes.Type(value = UserInfo.class, name = "UserInfo"),
+    @JsonSubTypes.Type(value = ParamPayload.class, name = "Params")
 })
 public interface Payload {
 }
