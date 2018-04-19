@@ -57,7 +57,7 @@ public class SecurityApplication implements SparkApplication {
 
   private static void establishRoutes() {
     path("/api", () ->
-        path("/security", () -> {
+        path("/v1", () -> {
           post(Path.REGISTER, SecurityController.register);
           post(Path.AUTHORIZE, SecurityController.authorize);
           post(Path.AUTHENTICATE, SecurityController.authenticate);

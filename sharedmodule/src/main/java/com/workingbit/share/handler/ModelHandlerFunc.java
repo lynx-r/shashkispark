@@ -2,7 +2,6 @@ package com.workingbit.share.handler;
 
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.Payload;
-import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 
@@ -16,14 +15,14 @@ import static com.workingbit.share.util.JsonUtils.jsonToData;
 public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> {
 
   default String handleRequest(Request request, Response response, boolean secure, Class<T> clazz) {
-    String check = preprocess(request, response);
-    if (StringUtils.isNotBlank(check)) {
-      return check;
-    }
+    logRequest(request);
+
     String json = request.body();
     T data = jsonToData(json, clazz);
-    Answer answer = createAnswer(request, response, secure, data);
+
+    Answer answer = getAnswer(request, response, secure, data);
     response.status(answer.getStatusCode());
+
     return dataToJson(answer);
   }
 

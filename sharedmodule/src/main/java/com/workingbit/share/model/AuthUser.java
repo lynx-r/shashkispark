@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class AuthUser implements Payload {
 
   private String userId;
+  private String username;
   private String accessToken;
   private String userSession;
   private EnumSecureRole role;

@@ -66,6 +66,7 @@ public class ArticleApplication implements SparkApplication {
 
           after(Filters.addJsonHeader);
           after(Filters.addGzipHeader);
-        }));
+        })
+    );
   }
 }

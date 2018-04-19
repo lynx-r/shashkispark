@@ -68,8 +68,10 @@ public class ArticleService {
         logger.error(ErrorMessages.NOT_OWNER);
         throw new ArticleServiceException(ErrorMessages.NOT_OWNER);
       }
-      article.setTitle(article.getTitle().trim());
-      article.setContent(article.getContent().trim());
+      String title = article.getTitle().trim();
+      article.setTitle(title);
+      String content = article.getContent().trim();
+      article.setContent(content);
       if (StringUtils.isBlank(article.getContent())) {
         article.setContent("Новая статья про шашки от " + article.getAuthor());
       }

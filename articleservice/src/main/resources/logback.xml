@@ -7,9 +7,7 @@
         </layout>
     </appender>
 
-    <logger name="com.workingbit" level="DEBUG"/>
-    <logger name="spark" level="ERROR"/>
-
+    <logger name="com.workingbit.article" level="DEBUG"/>
 
     <root level="error">
         <appender-ref ref="STDOUT" />

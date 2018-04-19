@@ -22,31 +22,37 @@ public interface BaseHandlerFunc<T extends Payload> {
 
   Answer process(T data, Optional<AuthUser> token);
 
-  default String preprocess(Request request, Response response) {
-    return null;
+  default void logRequest(Request request) {
+    System.out.println(String.format("%s %s", request.requestMethod(), request.url()));
   }
 
-  default Answer createAnswer(Request request, Response response, boolean secure, T data) {
-    Answer answer;
+  default Answer getAnswer(Request request, Response response, boolean secure, T data) {
+    String session = request.headers(USER_SESSION);
+    String token = request.headers(ACCESS_TOKEN);
     if (secure) {
-      String session = request.headers(USER_SESSION);
-      String token = request.headers(ACCESS_TOKEN);
-      answer = secureCheck(data, token, session);
+      return getSecureAnswer(data, token, session);
     } else {
-      String userSession = getOrCreateSession(request, response);
-      AuthUser role = new AuthUser(userSession).role(EnumSecureRole.ANONYMOUS);
-      answer = process(data, Optional.of(role));
+      return getInsecureAnswer(data, token, session);
     }
-    return answer;
   }
 
-  default Answer secureCheck(T data, String token, String session) {
+  default Answer getSecureAnswer(T data, String token, String session) {
     Optional<AuthUser> authUser = isAuthenticated(token, session);
     if (authUser.isPresent()) {
       return process(data, authUser);
     } else {
       return Answer.error(HTTP_UNAUTHORIZED, "Вы не авторизованы");
     }
+  }
+
+  default Answer getInsecureAnswer(T data, String accessToken, String userSession) {
+    Optional<AuthUser> authUser;
+    if (StringUtils.isBlank(accessToken)) {
+      authUser = isAuthenticated(accessToken, userSession);
+    } else {
+      authUser = Optional.of(new AuthUser(userSession).role(EnumSecureRole.ANONYMOUS));
+    }
+    return process(data, authUser);
   }
 
   default String getOrCreateSession(Request request, Response response) {

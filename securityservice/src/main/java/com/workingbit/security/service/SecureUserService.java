@@ -26,7 +26,7 @@ public class SecureUserService {
         }
         SecureUser secureUser = new SecureUser();
         Utils.setRandomIdAndCreatedAt(secureUser);
-        secureUser.setUsername(registerUser.getUsername());
+        secureUser.setUsername(username);
 
         int tokenLengthInt = appProperties.tokenLength();
         secureUser.setTokenLength(tokenLengthInt);
@@ -45,7 +45,7 @@ public class SecureUserService {
         secureUserDao.save(secureUser);
 
         // send access token and userSession
-        return new AuthUser(secureUser.getId(), accessToken, userSession, secureUser.getRole());
+        return new AuthUser(secureUser.getId(), username, accessToken, userSession, secureUser.getRole());
       } catch (Exception e) {
         e.printStackTrace();
         return null;
@@ -54,7 +54,8 @@ public class SecureUserService {
   }
 
   public Optional<AuthUser> authorize(RegisterUser registerUser) {
-    return secureUserDao.findByUsername(registerUser.getUsername())
+    String username = registerUser.getUsername();
+    return secureUserDao.findByUsername(username)
         .map(secureUser -> {
           try {
             int tokenLengthInt = secureUser.getTokenLength();
@@ -74,7 +75,9 @@ public class SecureUserService {
               secureUserDao.save(secureUser);
 
               // send access token and userSession
-              return new AuthUser(secureUser.getId(), accessToken, userSession, secureUser.getRole());
+              String userId = secureUser.getId();
+              EnumSecureRole role = secureUser.getRole();
+              return new AuthUser(userId, username, accessToken, userSession, role);
             }
           } catch (Exception e) {
             e.printStackTrace();
