@@ -19,6 +19,7 @@ import static com.workingbit.share.common.RequestConstants.USER_SESSION;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by Aleksey Popryaduhin on 17:56 30/09/2017.
@@ -78,6 +79,38 @@ public class SecurityControllerTest {
     authed = (AuthUser) post("/authenticate", author, author).getBody();
     assertNotNull(authed);
     System.out.println("AT1 " + authed.getAccessToken());
+  }
+
+  @Test
+  public void logout_test() throws Exception {
+    String username = Utils.getRandomString();
+    String password = Utils.getRandomString();
+    RegisterUser registerUser = new RegisterUser(username, password);
+    AuthUser anonym = AuthUser.anonymous();
+    AuthUser authUser = (AuthUser) post("/register", registerUser, anonym).getBody();
+    assertNotNull(authUser);
+
+    AuthUser authed = (AuthUser) post("/authenticate", authUser, authUser).getBody();
+    assertNotNull(authed);
+    System.out.println("AT1 " + authed.getAccessToken());
+
+    authed = (AuthUser) post("/authenticate", authUser, authed).getBody();
+    assertNotNull(authed);
+    System.out.println("AT1 " + authed.getAccessToken());
+
+    AuthUser author = (AuthUser) post("/authorize", registerUser, authed).getBody();
+    assertNotNull(author);
+
+    authed = (AuthUser) post("/authenticate", author, author).getBody();
+    assertNotNull(authed);
+    System.out.println("AT1 " + authed.getAccessToken());
+
+    authed = (AuthUser) post("/logout", author, author).getBody();
+    assertNotNull(authed);
+    System.out.println("LOGGED OUT " + authed.getAccessToken());
+
+    authed = (AuthUser) post("/authenticate", author, author).getBody();
+    assertNull(authed);
   }
 
   private Answer post(String path, Object payload, AuthUser authUser) throws HttpClientException {
