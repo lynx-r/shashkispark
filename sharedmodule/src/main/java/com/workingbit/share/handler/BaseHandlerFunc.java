@@ -108,7 +108,8 @@ public interface BaseHandlerFunc<T extends Payload> {
     if (StringUtils.isBlank(accessToken) || StringUtils.isBlank(session)) {
       return Optional.empty();
     }
-    AuthUser authUser = new AuthUser(accessToken, session);
+    AuthUser authUser = new AuthUser(accessToken, session)
+        .role(EnumSecureRole.INTERNAL);
     return ShareRemoteClient.Singleton.getInstance().authenticate(authUser);
   }
 }

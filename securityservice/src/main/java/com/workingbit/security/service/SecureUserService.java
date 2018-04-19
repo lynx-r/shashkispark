@@ -85,7 +85,7 @@ public class SecureUserService {
               String userId = secureUser.getId();
               EnumSecureRole role = secureUser.getRole();
 
-              logger.info("AUTHORIZE:" + username + " with " + accessToken);
+              logger.info("AUTHORIZE: " + username + " with " + accessToken);
               return new AuthUser(userId, username, accessToken.accessToken, userSession, role);
             }
           } catch (Exception e) {
@@ -102,17 +102,20 @@ public class SecureUserService {
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
-        TokenPair updatedAccessToken = getAccessToken(secureUser);
-        secureUser.setAccessToken(updatedAccessToken.accessToken);
-        secureUser.setSecureToken(updatedAccessToken.secureToken);
-        secureUserDao.save(secureUser);
+        if (!EnumSecureRole.INTERNAL.equals(authUser.getRole())) {
+          TokenPair updatedAccessToken = getAccessToken(secureUser);
+          secureUser.setAccessToken(updatedAccessToken.accessToken);
+          secureUser.setSecureToken(updatedAccessToken.secureToken);
+          secureUserDao.save(secureUser);
+          authUser.setAccessToken(updatedAccessToken.accessToken);
+          logger.info("GIVE USER THE NEW TOKEN: " + secureUser.getUsername() + " with " + updatedAccessToken);
+        }
 
-        authUser.setAccessToken(updatedAccessToken.accessToken);
         authUser.setUsername(secureUser.getUsername());
         authUser.setUserId(secureUser.getId());
         authUser.setRole(secureUser.getRole());
 
-        logger.info("AUTHENTICATE: " + secureUser.getUsername() + " with " + updatedAccessToken);
+        logger.info("AUTHENTICATE: " + secureUser.getUsername());
         return authUser;
       }
       logger.info("AUTHENTICATE FAILED: " + secureUser);

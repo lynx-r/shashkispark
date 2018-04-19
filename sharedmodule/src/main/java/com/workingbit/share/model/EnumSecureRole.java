@@ -6,7 +6,8 @@ package com.workingbit.share.model;
 public enum EnumSecureRole {
   AUTHOR,
   ADMIN,
-  ANONYMOUS;
+  ANONYMOUS,
+  INTERNAL;
 
   public static boolean isSecure(EnumSecureRole role) {
     switch (role) {
