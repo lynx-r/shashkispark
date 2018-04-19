@@ -7,7 +7,7 @@ public class Path {
    * save changes
    */
   public static final String BOARD = "/board";
-  public static final String BOARD_BY_ID = "/board/:id/:secure";
+  public static final String BOARD_BY_ID = "/board/:id";
   public static final String BOARD_MOVE = "/board/move";
   public static final String BOARD_HIGHLIGHT = "/board/highlight";
   public static final String BOARD_REDO = "/board/redo";

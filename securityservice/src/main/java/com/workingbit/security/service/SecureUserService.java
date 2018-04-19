@@ -35,17 +35,18 @@ public class SecureUserService {
         hashCredentials(registerUser, secureUser);
 
         // encrypt random token
-        String accessToken = getAccessToken(secureUser);
+        TokenPair accessToken = getAccessToken(secureUser);
 
         // save encrypted token and userSession
         String userSession = getUserSession();
-        secureUser.setAccessToken(accessToken);
+        secureUser.setSecureToken(accessToken.secureToken);
+        secureUser.setAccessToken(accessToken.accessToken);
         secureUser.setUserSession(userSession);
         secureUser.setRole(EnumSecureRole.AUTHOR);
         secureUserDao.save(secureUser);
 
         // send access token and userSession
-        return new AuthUser(secureUser.getId(), username, accessToken, userSession, secureUser.getRole());
+        return new AuthUser(secureUser.getId(), username, accessToken.accessToken, userSession, secureUser.getRole());
       } catch (Exception e) {
         e.printStackTrace();
         return null;
@@ -65,18 +66,19 @@ public class SecureUserService {
 
             if (clientDigest.equals(secureUser.getDigest())) {
               // encrypt random token
-              String accessToken = getAccessToken(secureUser);
+              TokenPair accessToken = getAccessToken(secureUser);
 
               // save encrypted token and userSession
               String userSession = getUserSession();
-              secureUser.setAccessToken(accessToken);
+              secureUser.setSecureToken(accessToken.secureToken);
+              secureUser.setAccessToken(accessToken.accessToken);
               secureUser.setUserSession(userSession);
               secureUserDao.save(secureUser);
 
               // send access token and userSession
               String userId = secureUser.getId();
               EnumSecureRole role = secureUser.getRole();
-              return new AuthUser(userId, username, accessToken, userSession, role);
+              return new AuthUser(userId, username, accessToken.accessToken, userSession, role);
             }
           } catch (Exception e) {
             e.printStackTrace();
@@ -92,8 +94,12 @@ public class SecureUserService {
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
-        String updatedAccessToken = getAccessToken(secureUser);
-        authUser.setAccessToken(updatedAccessToken);
+        TokenPair updatedAccessToken = getAccessToken(secureUser);
+        secureUser.setSecureToken(updatedAccessToken.secureToken);
+        secureUser.setAccessToken(updatedAccessToken.accessToken);
+        secureUserDao.save(secureUser);
+
+        authUser.setAccessToken(updatedAccessToken.accessToken);
         authUser.setUsername(secureUser.getUsername());
         authUser.setUserId(secureUser.getId());
         authUser.setRole(secureUser.getRole());
@@ -122,7 +128,7 @@ public class SecureUserService {
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
-        secureUser.setToken("");
+        secureUser.setSecureToken("");
         secureUser.setAccessToken("");
         secureUser.setKey("");
         secureUser.setTokenLength(0);
@@ -138,7 +144,7 @@ public class SecureUserService {
     String key = secureUser.getKey();
     String initVector = secureUser.getInitVector();
     String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
-    return secureUser.getToken().equals(tokenDecrypted);
+    return secureUser.getSecureToken().equals(tokenDecrypted);
   }
 
   private String getUserSession() {
@@ -153,14 +159,29 @@ public class SecureUserService {
     secureUser.setDigest(digest);
   }
 
-  private String getAccessToken(SecureUser secureUser) {
-    String randomToken = Utils.getRandomString(secureUser.getTokenLength());
-    secureUser.setToken(randomToken);
+  /**
+   * Set params for encryption generate secure token and encrypt it
+   * @param secureUser user
+   * @return access and secure token
+   */
+  private TokenPair getAccessToken(SecureUser secureUser) {
+    String secureToken = Utils.getRandomString(secureUser.getTokenLength());
     int encLength = 16;
     String initVector = Utils.getRandomString(encLength);
-    secureUser.setInitVector(initVector);
     String key = getRandomString(encLength);
+    secureUser.setInitVector(initVector);
     secureUser.setKey(key);
-    return SecureUtils.encrypt(key, initVector, randomToken);
+    String accessToken = SecureUtils.encrypt(key, initVector, secureToken);
+    return new TokenPair(accessToken, secureToken);
+  }
+
+  private static class TokenPair {
+    String accessToken;
+    String secureToken;
+
+    TokenPair(String accessToken, String secureToken) {
+      this.accessToken = accessToken;
+      this.secureToken = secureToken;
+    }
   }
 }

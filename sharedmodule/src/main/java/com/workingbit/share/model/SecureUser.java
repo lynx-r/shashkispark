@@ -72,10 +72,10 @@ public class SecureUser extends BaseDomain {
   private int tokenLength;
 
   /**
-   * unecrypted user token
+   * unecrypted user token. MUST NOT BE REVEAL
    */
-  @DynamoDBAttribute(attributeName = "token")
-  private String token;
+  @DynamoDBAttribute(attributeName = "secureToken")
+  private String secureToken;
 
   /**
    * encrypted user token goes through wires

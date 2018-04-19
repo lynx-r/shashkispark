@@ -29,10 +29,15 @@ public interface BaseHandlerFunc<T extends Payload> {
   default Answer getAnswer(Request request, Response response, boolean secure, T data) {
     String session = getOrCreateSession(request, response);
     String token = request.headers(ACCESS_TOKEN);
-    if (secure) {
+    String roleStr = request.headers(USER_ROLE);
+    EnumSecureRole role = EnumSecureRole.ANONYMOUS;
+    if (StringUtils.isNotBlank(roleStr)) {
+      role = EnumSecureRole.valueOf(roleStr.toUpperCase());
+    }
+    if (secure || EnumSecureRole.isSecure(role)) {
       return getSecureAnswer(data, token, session);
     } else {
-      return getInsecureAnswer(data, token, session);
+      return getInsecureAnswer(data, role, session);
     }
   }
 
@@ -45,14 +50,11 @@ public interface BaseHandlerFunc<T extends Payload> {
     }
   }
 
-  default Answer getInsecureAnswer(T data, String accessToken, String userSession) {
-    Optional<AuthUser> authUser;
-    if (StringUtils.isNotBlank(accessToken)) {
-      authUser = isAuthenticated(accessToken, userSession);
-    } else {
-      authUser = Optional.of(new AuthUser(userSession).role(EnumSecureRole.ANONYMOUS));
-    }
-    return process(data, authUser);
+  default Answer getInsecureAnswer(T data, EnumSecureRole role, String userSession) {
+    AuthUser authUser = new AuthUser(userSession)
+        .role(role);
+    Optional<AuthUser> authUserOptional = Optional.of(authUser);
+    return process(data, authUserOptional);
   }
 
   default String getOrCreateSession(Request request, Response response) {

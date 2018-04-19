@@ -12,5 +12,6 @@ public class RequestConstants {
   public static final int COOKIE_AGE = 30 * 24 * 60 * 60;
   public static final String ANONYMOUS_SESSION = "anonymous-session";
   public static final String USER_SESSION = "user-session";
+  public static final String USER_ROLE = "user-role";
   public static final String ACCESS_TOKEN = "access-token";
 }
