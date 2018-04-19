@@ -84,5 +84,10 @@ public class SecureUserServiceTest {
 
     Optional<AuthUser> forbiddenOpt = secureUserService.authenticate(registered);
     assertFalse(forbiddenOpt.isPresent());
+
+    Optional<AuthUser> authorizedOpt = secureUserService.authorize(registerUser);
+    assertTrue(authorizedOpt.isPresent());
+    AuthUser authorized = authorizedOpt.get();
+    System.out.println("AUTHORIZED USER " + authorized);
   }
 }

@@ -143,11 +143,7 @@ public class SecureUserService {
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
-        secureUser.setSecureToken("");
         secureUser.setAccessToken("");
-        secureUser.setKey("");
-        secureUser.setTokenLength(0);
-        secureUser.setInitVector("");
         secureUser.setUserSession("");
         secureUserDao.save(secureUser);
         logger.info("LOGOUT: " + secureUser.getUsername());
