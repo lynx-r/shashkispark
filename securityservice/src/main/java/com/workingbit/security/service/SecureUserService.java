@@ -32,10 +32,10 @@ public class SecureUserService {
         secureUser.setTokenLength(tokenLengthInt);
 
         // hash credentials
-        hashCredentials(registerUser, tokenLengthInt, secureUser);
+        hashCredentials(registerUser, secureUser);
 
         // encrypt random token
-        String accessToken = getAccessToken(secureUser, tokenLengthInt);
+        String accessToken = getAccessToken(secureUser);
 
         // save encrypted token and userSession
         String userSession = getUserSession();
@@ -58,7 +58,6 @@ public class SecureUserService {
     return secureUserDao.findByUsername(username)
         .map(secureUser -> {
           try {
-            int tokenLengthInt = secureUser.getTokenLength();
             // hash credentials
             String credentials = registerUser.getCredentials();
             String salt = secureUser.getSalt();
@@ -66,7 +65,7 @@ public class SecureUserService {
 
             if (clientDigest.equals(secureUser.getDigest())) {
               // encrypt random token
-              String accessToken = getAccessToken(secureUser, tokenLengthInt);
+              String accessToken = getAccessToken(secureUser);
 
               // save encrypted token and userSession
               String userSession = getUserSession();
@@ -91,11 +90,11 @@ public class SecureUserService {
     String accessToken = authUser.getAccessToken();
     Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
     return secureUserOptional.map((secureUser) -> {
-      String key = secureUser.getKey();
-      String initVector = secureUser.getInitVector();
-      String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
-      boolean isAuth = secureUser.getToken().equals(tokenDecrypted);
+      boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
+        String updatedAccessToken = getAccessToken(secureUser);
+        authUser.setAccessToken(updatedAccessToken);
+        authUser.setUsername(secureUser.getUsername());
         authUser.setUserId(secureUser.getId());
         authUser.setRole(secureUser.getRole());
         return authUser;
@@ -108,10 +107,7 @@ public class SecureUserService {
     String accessToken = authUser.getAccessToken();
     Optional<SecureUser> secureUserOptional = secureUserDao.findById(authUser.getUserId());
     return secureUserOptional.map((secureUser) -> {
-      String key = secureUser.getKey();
-      String initVector = secureUser.getInitVector();
-      String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
-      boolean isAuth = secureUser.getToken().equals(tokenDecrypted);
+      boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
         return new UserInfo(secureUser.getUsername());
       }
@@ -124,10 +120,7 @@ public class SecureUserService {
     String accessToken = authUser.getAccessToken();
     Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
     return secureUserOptional.map((secureUser) -> {
-      String key = secureUser.getKey();
-      String initVector = secureUser.getInitVector();
-      String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
-      boolean isAuth = secureUser.getToken().equals(tokenDecrypted);
+      boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
         secureUser.setToken("");
         secureUser.setAccessToken("");
@@ -141,20 +134,27 @@ public class SecureUserService {
     });
   }
 
+  private boolean isAuthed(String accessToken, SecureUser secureUser) {
+    String key = secureUser.getKey();
+    String initVector = secureUser.getInitVector();
+    String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
+    return secureUser.getToken().equals(tokenDecrypted);
+  }
+
   private String getUserSession() {
     return Utils.getRandomString(appProperties.sessionLength());
   }
 
-  private void hashCredentials(RegisterUser registerUser, int tokenLengthInt, SecureUser secureUser) throws NoSuchAlgorithmException {
+  private void hashCredentials(RegisterUser registerUser, SecureUser secureUser) throws NoSuchAlgorithmException {
     String credentials = registerUser.getCredentials();
-    String salt = ":" + Utils.getRandomString(tokenLengthInt);
+    String salt = ":" + Utils.getRandomString(secureUser.getTokenLength());
     secureUser.setSalt(salt);
     String digest = SecureUtils.digest(credentials + salt);
     secureUser.setDigest(digest);
   }
 
-  private String getAccessToken(SecureUser secureUser, int tokenLengthInt) {
-    String randomToken = Utils.getRandomString(tokenLengthInt);
+  private String getAccessToken(SecureUser secureUser) {
+    String randomToken = Utils.getRandomString(secureUser.getTokenLength());
     secureUser.setToken(randomToken);
     int encLength = 16;
     String initVector = Utils.getRandomString(encLength);

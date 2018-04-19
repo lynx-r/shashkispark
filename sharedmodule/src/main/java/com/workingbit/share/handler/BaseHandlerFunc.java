@@ -27,7 +27,7 @@ public interface BaseHandlerFunc<T extends Payload> {
   }
 
   default Answer getAnswer(Request request, Response response, boolean secure, T data) {
-    String session = request.headers(USER_SESSION);
+    String session = getOrCreateSession(request, response);
     String token = request.headers(ACCESS_TOKEN);
     if (secure) {
       return getSecureAnswer(data, token, session);
@@ -47,7 +47,7 @@ public interface BaseHandlerFunc<T extends Payload> {
 
   default Answer getInsecureAnswer(T data, String accessToken, String userSession) {
     Optional<AuthUser> authUser;
-    if (StringUtils.isBlank(accessToken)) {
+    if (StringUtils.isNotBlank(accessToken)) {
       authUser = isAuthenticated(accessToken, userSession);
     } else {
       authUser = Optional.of(new AuthUser(userSession).role(EnumSecureRole.ANONYMOUS));
