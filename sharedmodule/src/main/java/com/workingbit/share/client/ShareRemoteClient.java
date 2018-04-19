@@ -28,17 +28,16 @@ public class ShareRemoteClient {
 
   private static final Logger logger = LoggerFactory.getLogger(ShareRemoteClient.class);
 
-  private static String register;
-  private static String authorize;
-  private static String authenticate;
-  private static String article;
-  private static String articles;
-  private static String boardbox;
-  private static String userInfo;
-  private static String logout;
+  private String register;
+  private String authorize;
+  private String authenticate;
+  private String article;
+  private String articles;
+  private String boardbox;
+  private String userInfo;
+  private String logout;
 
-  static {
-    ShareProperties shareProperties = configurationProvider("shareconfig.yaml").bind("app", ShareProperties.class);
+  private ShareRemoteClient(ShareProperties shareProperties) {
     register = shareProperties.registerResource();
     authorize = shareProperties.authorizeResource();
     authenticate = shareProperties.authenticateResource();
@@ -48,10 +47,6 @@ public class ShareRemoteClient {
     userInfo = shareProperties.userInfoResource();
     logout = shareProperties.logoutResource();
     UnirestUtil.configureSerialization();
-  }
-
-  public static ShareRemoteClient getInstance() {
-    return new ShareRemoteClient();
   }
 
   public Optional<AuthUser> register(RegisterUser registerUser) {
@@ -105,7 +100,7 @@ public class ShareRemoteClient {
   }
 
   @SuppressWarnings("unchecked")
-  public  <T> Optional<T> post(String resource, Payload payload, Map<String, String> headers) {
+  public <T> Optional<T> post(String resource, Payload payload, Map<String, String> headers) {
     try {
       HttpResponse<Answer> response = Unirest.post(resource)
           .headers(headers)
@@ -133,7 +128,7 @@ public class ShareRemoteClient {
   }
 
   @SuppressWarnings("unchecked")
-  public  <T> Optional<T> get(String resource, Map<String, String> headers) {
+  public <T> Optional<T> get(String resource, Map<String, String> headers) {
     try {
       HttpResponse<Answer> response = Unirest.get(resource)
           .headers(headers)
@@ -147,5 +142,22 @@ public class ShareRemoteClient {
       logger.error("Unirest exception", e);
     }
     return Optional.empty();
+  }
+
+  public static class Singleton {
+    private static ShareRemoteClient INSTANCE;
+    private static ShareProperties shareProperties;
+
+    static {
+      shareProperties = configurationProvider("shareconfig.yaml").bind("app", ShareProperties.class);
+    }
+
+    public static ShareRemoteClient getInstance() {
+      if (INSTANCE == null) {
+        INSTANCE = new ShareRemoteClient(shareProperties);
+        return INSTANCE;
+      }
+      return INSTANCE;
+    }
   }
 }

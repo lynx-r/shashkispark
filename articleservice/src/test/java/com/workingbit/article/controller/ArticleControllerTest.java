@@ -46,7 +46,7 @@ public class ArticleControllerTest {
     String username = Utils.getRandomString();
     String password = Utils.getRandomString();
     RegisterUser registerUser = new RegisterUser(username, password);
-    AuthUser registered = ShareRemoteClient.getInstance().register(registerUser).get();
+    AuthUser registered = ShareRemoteClient.Singleton.getInstance().register(registerUser).get();
     assertNotNull(registered);
 
     return registered;
@@ -57,7 +57,7 @@ public class ArticleControllerTest {
     try {
       CreateArticlePayload createArticlePayload = getCreateArticlePayload();
       AuthUser headers = register();
-      Optional<CreateArticleResponse> articleResponseOpt = ShareRemoteClient.getInstance().createArticle(createArticlePayload, headers);
+      Optional<CreateArticleResponse> articleResponseOpt = ShareRemoteClient.Singleton.getInstance().createArticle(createArticlePayload, headers);
 //        CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
 
       assertTrue(articleResponseOpt.isPresent());
@@ -106,6 +106,9 @@ public class ArticleControllerTest {
     assertNotNull(article.getId());
     assertNotNull(article.getBoardBoxId());
     assertNotNull(board.getId());
+
+    article = (Article) get("/" + article.getId()).getBody();
+    assertNotNull(article);
 
     article = (Article) get("/" + article.getId()).getBody();
     assertNotNull(article);

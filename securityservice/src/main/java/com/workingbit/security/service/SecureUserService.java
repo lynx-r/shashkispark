@@ -3,6 +3,9 @@ package com.workingbit.security.service;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.SecureUtils;
 import com.workingbit.share.util.Utils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
@@ -15,6 +18,8 @@ import static com.workingbit.share.util.Utils.getRandomString;
  * Created by Aleksey Popryadukhin on 16/04/2018.
  */
 public class SecureUserService {
+
+  private Logger logger = LoggerFactory.getLogger(SecureUserService.class);
 
   public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
     return token.map(authUser -> {
@@ -46,6 +51,7 @@ public class SecureUserService {
         secureUserDao.save(secureUser);
 
         // send access token and userSession
+        logger.info("REGISTER: " + username + " with " + accessToken);
         return new AuthUser(secureUser.getId(), username, accessToken.accessToken, userSession, secureUser.getRole());
       } catch (Exception e) {
         e.printStackTrace();
@@ -78,6 +84,8 @@ public class SecureUserService {
               // send access token and userSession
               String userId = secureUser.getId();
               EnumSecureRole role = secureUser.getRole();
+
+              logger.info("AUTHORIZE:" + username + " with " + accessToken);
               return new AuthUser(userId, username, accessToken.accessToken, userSession, role);
             }
           } catch (Exception e) {
@@ -95,16 +103,19 @@ public class SecureUserService {
       boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
         TokenPair updatedAccessToken = getAccessToken(secureUser);
-        secureUser.setSecureToken(updatedAccessToken.secureToken);
         secureUser.setAccessToken(updatedAccessToken.accessToken);
+        secureUser.setSecureToken(updatedAccessToken.secureToken);
         secureUserDao.save(secureUser);
 
         authUser.setAccessToken(updatedAccessToken.accessToken);
         authUser.setUsername(secureUser.getUsername());
         authUser.setUserId(secureUser.getId());
         authUser.setRole(secureUser.getRole());
+
+        logger.info("AUTHENTICATE: " + secureUser.getUsername() + " with " + updatedAccessToken);
         return authUser;
       }
+      logger.info("AUTHENTICATE FAILED: " + secureUser);
       return null;
     });
   }
@@ -115,6 +126,7 @@ public class SecureUserService {
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
+        logger.info("USER_INFO: " + secureUser.getUsername());
         return new UserInfo(secureUser.getUsername());
       }
       return null;
@@ -135,6 +147,7 @@ public class SecureUserService {
         secureUser.setInitVector("");
         secureUser.setUserSession("");
         secureUserDao.save(secureUser);
+        logger.info("LOGOUT: " + secureUser.getUsername());
       }
       return AuthUser.anonymous();
     });
@@ -182,6 +195,13 @@ public class SecureUserService {
     TokenPair(String accessToken, String secureToken) {
       this.accessToken = accessToken;
       this.secureToken = secureToken;
+    }
+
+    @Override
+    public String toString() {
+      return new ToStringBuilder(this)
+          .append("accessToken", accessToken)
+          .toString();
     }
   }
 }

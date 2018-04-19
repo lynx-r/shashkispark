@@ -21,7 +21,7 @@ import static com.workingbit.share.util.Utils.getRandomString;
  */
 public class ArticleService {
 
-  private final static ShareRemoteClient shareRemoteClient = new ShareRemoteClient();
+  private final static ShareRemoteClient shareRemoteClient = ShareRemoteClient.Singleton.getInstance();
 
   private final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
@@ -33,7 +33,7 @@ public class ArticleService {
     Article article = articleAndBoard.getArticle();
     article.setUserId(authUser.getUserId());
 
-    ShareRemoteClient.getInstance().userInfo(authUser)
+    ShareRemoteClient.Singleton.getInstance().userInfo(authUser)
         .ifPresent(userInfo ->
             article.setAuthor(userInfo.getUsername())
         );

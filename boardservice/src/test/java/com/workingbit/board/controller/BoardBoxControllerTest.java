@@ -55,7 +55,7 @@ public class BoardBoxControllerTest {
     String username = Utils.getRandomString();
     String password = Utils.getRandomString();
     RegisterUser registerUser = new RegisterUser(username, password);
-    AuthUser registered = ShareRemoteClient.getInstance().register(registerUser).get();
+    AuthUser registered = ShareRemoteClient.Singleton.getInstance().register(registerUser).get();
     assertNotNull(registered);
 
     return registered;

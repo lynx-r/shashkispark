@@ -50,6 +50,14 @@ public class SecureUserServiceTest {
 
     Optional<AuthUser> authenticated2Opt = secureUserService.authenticate(authorized);
     assertTrue(authenticated2Opt.isPresent());
+
+    Optional<AuthUser> authenticated3Opt = secureUserService.authenticate(authorized);
+    assertTrue(authenticated3Opt.isPresent());
+    assertEquals(authenticated2Opt.get().getAccessToken(), authenticated3Opt.get().getAccessToken());
+
+    Optional<AuthUser> authenticated4Opt = secureUserService.authenticate(authorized);
+    assertTrue(authenticated4Opt.isPresent());
+    assertEquals(authenticated2Opt.get().getAccessToken(), authenticated4Opt.get().getAccessToken());
   }
 
   @Test

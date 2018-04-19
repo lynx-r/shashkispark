@@ -6,6 +6,7 @@ import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import lombok.*;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +17,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @DynamoDBTable(tableName = DBConstants.SECURE_USER_TABLE)
 public class SecureUser extends BaseDomain {
   @DynamoDBHashKey(attributeName = "id")
@@ -95,5 +95,18 @@ public class SecureUser extends BaseDomain {
   @Override
   public boolean isReadonly() {
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("id", id)
+        .append("createdAt", createdAt)
+        .append("updatedAt", updatedAt)
+        .append("username", username)
+        .append("role", role)
+        .append("accessToken", accessToken)
+        .append("userSession", userSession)
+        .toString();
   }
 }

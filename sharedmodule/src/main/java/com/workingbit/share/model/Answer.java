@@ -11,7 +11,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 //@JsonDeserialize(using = AnswerDeserializer.class)
 @NoArgsConstructor
 @Data
-public class Answer {
+public class Answer extends SecurePayload {
 
   private int statusCode;
   private Payload body;
@@ -43,16 +43,13 @@ public class Answer {
         .statusCode(HTTP_OK);
   }
 
-  public int getStatusCode() {
-    return statusCode;
-  }
-
-  public void setStatusCode(int statusCode) {
-    this.statusCode = statusCode;
-  }
-
   public Answer statusCode(int statusCode) {
     setStatusCode(statusCode);
+    return this;
+  }
+
+  public Answer message(int code, String message) {
+    setMessage(new MessageResponse(code, message));
     return this;
   }
 }
