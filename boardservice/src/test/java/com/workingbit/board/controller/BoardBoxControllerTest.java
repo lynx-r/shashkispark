@@ -3,7 +3,7 @@ package com.workingbit.board.controller;
 import com.despegar.http.client.*;
 import com.despegar.sparkjava.test.SparkServer;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.workingbit.board.BoardApplication;
+import com.workingbit.board.BoardEmbedded;
 import com.workingbit.board.config.Path;
 import com.workingbit.share.client.ShareRemoteClient;
 import com.workingbit.share.domain.ICoordinates;
@@ -44,7 +44,7 @@ public class BoardBoxControllerTest {
 
     @Override
     public void init() {
-      BoardApplication.start();
+      BoardEmbedded.start();
     }
   }
 

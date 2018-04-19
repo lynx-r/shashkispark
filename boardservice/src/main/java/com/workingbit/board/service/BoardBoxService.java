@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static com.workingbit.board.BoardApplication.*;
+import static com.workingbit.board.BoardEmbedded.*;
 
 /**
  * Created by Aleksey Popryaduhin on 07:00 22/09/2017.

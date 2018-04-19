@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import static com.workingbit.board.BoardApplication.boardDao;
+import static com.workingbit.board.BoardEmbedded.boardDao;
 import static com.workingbit.board.controller.util.BoardUtils.*;
 
 /**

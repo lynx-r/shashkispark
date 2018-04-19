@@ -2,7 +2,7 @@ package com.workingbit.article.controller;
 
 import com.despegar.http.client.*;
 import com.despegar.sparkjava.test.SparkServer;
-import com.workingbit.article.ArticleApplication;
+import com.workingbit.article.ArticleEmbedded;
 import com.workingbit.share.client.ShareRemoteClient;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
@@ -31,16 +31,16 @@ public class ArticleControllerTest {
   private static String boardUrl = "/api/v1/article";
   private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
 
-  public static class BoardBoxControllerTestSparkApplication implements SparkApplication {
+  public static class ArticleControllerTestSparkApplication implements SparkApplication {
 
     @Override
     public void init() {
-      ArticleApplication.start();
+      ArticleEmbedded.start();
     }
   }
 
   @ClassRule
-  public static SparkServer<BoardBoxControllerTestSparkApplication> testServer = new SparkServer<>(BoardBoxControllerTestSparkApplication.class, randomPort);
+  public static SparkServer<ArticleControllerTestSparkApplication> testServer = new SparkServer<>(ArticleControllerTestSparkApplication.class, randomPort);
 
   private AuthUser register() throws Exception {
     String username = Utils.getRandomString();

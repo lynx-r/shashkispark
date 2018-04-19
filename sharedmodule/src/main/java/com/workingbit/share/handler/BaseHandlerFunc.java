@@ -33,28 +33,32 @@ public interface BaseHandlerFunc<T extends Payload> {
 
   default Answer getAnswer(Request request, Response response, boolean secure, T data) {
     String userSession = getOrCreateSession(request, response);
-    String token = request.headers(ACCESS_TOKEN);
+    String accessToken = request.headers(ACCESS_TOKEN);
     String roleStr = request.headers(USER_ROLE);
     EnumSecureRole role = EnumSecureRole.ANONYMOUS;
     if (StringUtils.isNotBlank(roleStr)) {
       role = EnumSecureRole.valueOf(roleStr.toUpperCase());
     }
+    AuthUser internalUserRole = getInternalUserRole(accessToken, userSession);
     if (secure || EnumSecureRole.isSecure(role)) {
-      Answer processedAnswer = getSecureAnswer(data, token, userSession);
-      if (processedAnswer == null) {
+      if (internalUserRole == null) {
         return getForbiddenAnswer(response);
       }
-      return processedAnswer;
+      Answer securedAnswer = getSecureAnswer(data, internalUserRole);
+      if (securedAnswer == null) {
+        return getForbiddenAnswer(response);
+      }
+      return securedAnswer;
     } else {
-      return getInsecureAnswer(data, role, userSession);
+      return getInsecureAnswer(data, internalUserRole);
     }
   }
 
-  default Answer getSecureAnswer(T data, String token, String session) {
-    Optional<AuthUser> authUser = isAuthenticated(token, session);
-    if (authUser.isPresent()) {
-      Answer processed = process(data, authUser);
-      processed.setAuthUser(authUser.get());
+  default Answer getSecureAnswer(T data, AuthUser clientAuthUser) {
+    Optional<AuthUser> authenticated = isAuthenticated(clientAuthUser);
+    if (authenticated.isPresent()) {
+      Answer processed = process(data, authenticated);
+      processed.setAuthUser(authenticated.get());
       return processed;
     }
     return null;
@@ -69,11 +73,8 @@ public interface BaseHandlerFunc<T extends Payload> {
         .message(HTTP_FORBIDDEN, ErrorMessages.UNABLE_TO_AUTHENTICATE);
   }
 
-  default Answer getInsecureAnswer(T data, EnumSecureRole role, String userSession) {
-    AuthUser authUser = new AuthUser(userSession)
-        .role(role);
-    Optional<AuthUser> authUserOptional = Optional.of(authUser);
-    return process(data, authUserOptional);
+  default Answer getInsecureAnswer(T data, AuthUser authUser) {
+    return process(data, Optional.ofNullable(authUser));
   }
 
   default String getOrCreateSession(Request request, Response response) {
@@ -98,18 +99,19 @@ public interface BaseHandlerFunc<T extends Payload> {
    * @return generate session and set cookie
    */
   default String getSessionAndSetCookieInResponse(Response response) {
-    String anonymousSession;
-    anonymousSession = Utils.getRandomString(SESSION_LENGTH);
+    String anonymousSession = Utils.getRandomString(SESSION_LENGTH);
     response.cookie(ANONYMOUS_SESSION, anonymousSession, COOKIE_AGE, false, true);
     return anonymousSession;
   }
 
-  default Optional<AuthUser> isAuthenticated(String accessToken, String session) {
-    if (StringUtils.isBlank(accessToken) || StringUtils.isBlank(session)) {
-      return Optional.empty();
-    }
-    AuthUser authUser = new AuthUser(accessToken, session)
-        .role(EnumSecureRole.INTERNAL);
+  default Optional<AuthUser> isAuthenticated(AuthUser authUser) {
     return ShareRemoteClient.Singleton.getInstance().authenticate(authUser);
+  }
+
+  default AuthUser getInternalUserRole(String accessToken, String userSession) {
+    if (StringUtils.isBlank(accessToken) || StringUtils.isBlank(userSession)) {
+      return null;
+    }
+    return new AuthUser(accessToken, userSession).role(EnumSecureRole.INTERNAL);
   }
 }

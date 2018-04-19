@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-import static com.workingbit.article.ArticleApplication.articleDao;
+import static com.workingbit.article.ArticleEmbedded.articleDao;
 import static com.workingbit.share.util.Utils.getRandomString;
 
 /**

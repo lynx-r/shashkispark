@@ -10,7 +10,7 @@ import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.ParamPayload;
 import spark.Route;
 
-import static com.workingbit.board.BoardApplication.boardBoxService;
+import static com.workingbit.board.BoardEmbedded.boardBoxService;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 

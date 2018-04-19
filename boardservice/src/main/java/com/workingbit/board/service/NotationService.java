@@ -5,8 +5,8 @@ import com.workingbit.share.model.AuthUser;
 
 import java.util.Optional;
 
-import static com.workingbit.board.BoardApplication.notationDao;
-import static com.workingbit.board.BoardApplication.notationStoreService;
+import static com.workingbit.board.BoardEmbedded.notationDao;
+import static com.workingbit.board.BoardEmbedded.notationStoreService;
 
 /**
  * Created by Aleksey Popryadukhin on 14/04/2018.

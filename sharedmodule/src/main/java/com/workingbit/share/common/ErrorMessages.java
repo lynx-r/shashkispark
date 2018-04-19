@@ -23,7 +23,7 @@ public class ErrorMessages {
   public static final String IGNORE_VK_API_SIGN = "Ignore VK API Sign";
   public static final String UNABLE_TO_SAVE_BOARD = "Не удалось сохранить доску";
   public static final String UNABLE_TO_LOAD_BOARD = "Не удалось загрузить доску";
-  public static final String UNABLE_TO_REGISTER = "Не удалось зарегистрироваться или имя уже занято";
+  public static final String UNABLE_TO_REGISTER = "Не удалось зарегистрироваться или имя %s уже занято";
   public static final String UNABLE_TO_AUTHORIZE = "Не удалось получить доступ";
   public static final String UNABLE_TO_AUTHENTICATE = "Ваш аккаунт не найден на сайте";
   public static final String UNABLE_TO_ASSIGN_ROLE = "Не удалось назначить роль";

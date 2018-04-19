@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
-import static com.workingbit.security.SecurityApplication.appProperties;
-import static com.workingbit.security.SecurityApplication.secureUserDao;
+import static com.workingbit.security.SecurityEmbedded.appProperties;
+import static com.workingbit.security.SecurityEmbedded.secureUserDao;
 import static com.workingbit.share.util.Utils.getRandomString;
 
 /**
@@ -21,43 +21,42 @@ public class SecureUserService {
 
   private Logger logger = LoggerFactory.getLogger(SecureUserService.class);
 
-  public Optional<AuthUser> register(RegisterUser registerUser, Optional<AuthUser> token) {
-    return token.map(authUser -> {
-      try {
-        String username = registerUser.getUsername();
-        boolean duplicateName = secureUserDao.findByUsername(username).isPresent();
-        if (duplicateName) {
-          return null;
-        }
-        SecureUser secureUser = new SecureUser();
-        Utils.setRandomIdAndCreatedAt(secureUser);
-        secureUser.setUsername(username);
-
-        int tokenLengthInt = appProperties.tokenLength();
-        secureUser.setTokenLength(tokenLengthInt);
-
-        // hash credentials
-        hashCredentials(registerUser, secureUser);
-
-        // encrypt random token
-        TokenPair accessToken = getAccessToken(secureUser);
-
-        // save encrypted token and userSession
-        String userSession = getUserSession();
-        secureUser.setSecureToken(accessToken.secureToken);
-        secureUser.setAccessToken(accessToken.accessToken);
-        secureUser.setUserSession(userSession);
-        secureUser.setRole(EnumSecureRole.AUTHOR);
-        secureUserDao.save(secureUser);
-
-        // send access token and userSession
-        logger.info("REGISTER: " + username + " with " + accessToken);
-        return new AuthUser(secureUser.getId(), username, accessToken.accessToken, userSession, secureUser.getRole());
-      } catch (Exception e) {
-        e.printStackTrace();
-        return null;
+  public Optional<AuthUser> register(RegisterUser registerUser) {
+    try {
+      String username = registerUser.getUsername();
+      boolean duplicateName = secureUserDao.findByUsername(username).isPresent();
+      if (duplicateName) {
+        return Optional.empty();
       }
-    });
+      SecureUser secureUser = new SecureUser();
+      Utils.setRandomIdAndCreatedAt(secureUser);
+      secureUser.setUsername(username);
+
+      int tokenLengthInt = appProperties.tokenLength();
+      secureUser.setTokenLength(tokenLengthInt);
+
+      // hash credentials
+      hashCredentials(registerUser, secureUser);
+
+      // encrypt random token
+      TokenPair accessToken = getAccessToken(secureUser);
+
+      // save encrypted token and userSession
+      String userSession = getUserSession();
+      secureUser.setSecureToken(accessToken.secureToken);
+      secureUser.setAccessToken(accessToken.accessToken);
+      secureUser.setUserSession(userSession);
+      secureUser.setRole(EnumSecureRole.AUTHOR);
+      secureUserDao.save(secureUser);
+
+      // send access token and userSession
+      logger.info("REGISTER: " + username + " with " + accessToken);
+      AuthUser authUser = new AuthUser(secureUser.getId(), username, accessToken.accessToken, userSession, secureUser.getRole());
+      return Optional.of(authUser);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Optional.empty();
+    }
   }
 
   public Optional<AuthUser> authorize(RegisterUser registerUser) {
@@ -95,32 +94,34 @@ public class SecureUserService {
         });
   }
 
-  public Optional<AuthUser> authenticate(AuthUser authUser) {
-    String session = authUser.getUserSession();
-    String accessToken = authUser.getAccessToken();
-    Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
-    return secureUserOptional.map((secureUser) -> {
-      boolean isAuth = isAuthed(accessToken, secureUser);
-      if (isAuth) {
-        if (!EnumSecureRole.INTERNAL.equals(authUser.getRole())) {
-          TokenPair updatedAccessToken = getAccessToken(secureUser);
-          secureUser.setAccessToken(updatedAccessToken.accessToken);
-          secureUser.setSecureToken(updatedAccessToken.secureToken);
-          secureUserDao.save(secureUser);
-          authUser.setAccessToken(updatedAccessToken.accessToken);
-          logger.info("GIVE USER THE NEW TOKEN: " + secureUser.getUsername() + " with " + updatedAccessToken);
+  public Optional<AuthUser> authenticate(Optional<AuthUser> token) {
+    return token.map(authUser -> {
+      String session = authUser.getUserSession();
+      String accessToken = authUser.getAccessToken();
+      Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
+      return secureUserOptional.map((secureUser) -> {
+        boolean isAuth = isAuthed(accessToken, secureUser);
+        if (isAuth) {
+          if (!EnumSecureRole.INTERNAL.equals(authUser.getRole())) {
+            TokenPair updatedAccessToken = getAccessToken(secureUser);
+            secureUser.setAccessToken(updatedAccessToken.accessToken);
+            secureUser.setSecureToken(updatedAccessToken.secureToken);
+            secureUserDao.save(secureUser);
+            authUser.setAccessToken(updatedAccessToken.accessToken);
+            logger.info("GIVE THE USER A NEW TOKEN: " + secureUser.getUsername() + " with " + updatedAccessToken);
+          }
+
+          authUser.setUsername(secureUser.getUsername());
+          authUser.setUserId(secureUser.getId());
+          authUser.setRole(secureUser.getRole());
+
+          logger.info("AUTHENTICATE: " + secureUser.getUsername());
+          return authUser;
         }
-
-        authUser.setUsername(secureUser.getUsername());
-        authUser.setUserId(secureUser.getId());
-        authUser.setRole(secureUser.getRole());
-
-        logger.info("AUTHENTICATE: " + secureUser.getUsername());
-        return authUser;
-      }
-      logger.info("AUTHENTICATE FAILED: " + secureUser);
-      return null;
-    });
+        logger.info("AUTHENTICATE FAILED: " + secureUser);
+        return null;
+      });
+    }).orElse(null);
   }
 
   public Optional<UserInfo> userInfo(AuthUser authUser) {
@@ -155,6 +156,8 @@ public class SecureUserService {
   private boolean isAuthed(String accessToken, SecureUser secureUser) {
     String key = secureUser.getKey();
     String initVector = secureUser.getInitVector();
+    System.out.println("DECRYPT key " + key + " vect " + initVector + " acct " + accessToken + "\n key "
+        + secureUser.getKey() + " vect " + secureUser.getInitVector() + " accst " + secureUser.getAccessToken());
     String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
     return secureUser.getSecureToken().equals(tokenDecrypted);
   }
@@ -173,6 +176,7 @@ public class SecureUserService {
 
   /**
    * Set params for encryption generate secure token and encrypt it
+   *
    * @param secureUser user
    * @return access and secure token
    */

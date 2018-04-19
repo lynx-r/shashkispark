@@ -1,75 +1,14 @@
 package com.workingbit.security;
 
-import com.workingbit.security.config.AppProperties;
-import com.workingbit.security.config.Path;
-import com.workingbit.security.controller.SecurityController;
-import com.workingbit.security.dao.SecureUserDao;
-import com.workingbit.security.service.SecureUserService;
-import com.workingbit.share.util.Filters;
-import com.workingbit.share.util.UnirestUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spark.servlet.SparkApplication;
 
-import static com.workingbit.share.common.Config4j.configurationProvider;
-import static com.workingbit.share.common.CorsConfig.enableCors;
-import static spark.Spark.*;
-
-public class SecurityApplication implements SparkApplication {
-
-  private static final Logger LOG = LoggerFactory.getLogger(SecurityApplication.class);
-
-  // Declare dependencies
-  public static AppProperties appProperties;
-  public static SecureUserService secureUserService;
-  public static SecureUserDao secureUserDao;
-
-  static {
-    appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
-
-    secureUserDao = new SecureUserDao(appProperties);
-
-    secureUserService = new SecureUserService();
-  }
-
-  public static void main(String[] args) {
-    port(appProperties.port());
-    start();
-  }
+/**
+ * Created by Aleksey Popryadukhin on 19/04/2018.
+ */
+public class SecurityApplication extends SecurityEmbedded implements SparkApplication {
 
   @Override
   public void init() {
     start();
-  }
-
-
-  public static void start() {
-//    Logger logger = LoggerFactory.getLogger(SecurityApplication.class);
-//    SparkUtils.createServerWithRequestLog(logger);
-
-    UnirestUtil.configureSerialization();
-
-    LOG.info("Initializing routes");
-
-    enableCors(appProperties.origin().toString(), appProperties.methods(), appProperties.headers());
-    establishRoutes();
-  }
-
-  private static void establishRoutes() {
-    path("/api", () ->
-        path("/v1", () -> {
-          post(Path.REGISTER, SecurityController.register);
-          post(Path.AUTHORIZE, SecurityController.authorize);
-          post(Path.AUTHENTICATE, SecurityController.authenticate);
-          post(Path.USER_INFO, SecurityController.userInfo);
-          post(Path.LOGOUT, SecurityController.logout);
-
-          notFound((req, res) -> "Not found");
-          internalServerError((req, res) -> "Internal server message");
-
-          after(Filters.addJsonHeader);
-          after(Filters.addGzipHeader);
-        })
-    );
   }
 }

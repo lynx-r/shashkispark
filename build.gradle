@@ -68,7 +68,7 @@ configure(subprojects.findAll { it.name.endsWith('service') }) { p ->
 
         compile project(':sharedmodule')
 
-        testCompile "com.despegar:spark-test:1.1.4"
+        testCompile "com.despegar:spark-test:1.1.6"
     }
 
 //    'aws-sam-deployer' {
