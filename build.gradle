@@ -3,13 +3,9 @@ buildscript {
         mavenLocal()
         mavenCentral()
         jcenter()
-        maven { url "https://plugins.gradle.org/m2/" }
         flatDir {
             dirs 'lib'
         }
-    }
-    dependencies {
-        classpath "gradle.plugin.com.fieldju:gradle-aws-sam-deployer-plugin:1.6.0"
     }
 }
 
@@ -27,7 +23,6 @@ subprojects { subproject ->
     if (subproject.name.endsWith('service')) {
         subproject.apply plugin: 'application'
         subproject.apply plugin: 'war'
-//        subproject.apply plugin: "com.fieldju.aws-sam-deployer"
     }
 
     repositories {
@@ -42,45 +37,20 @@ subprojects { subproject ->
 
         compile "com.sparkjava:spark-core:2.7.2"
 
-//        compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
-//        compile 'com.amazonaws.serverless:aws-serverless-java-container-spark:0.7'
-//        compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
-//        compile('com.amazonaws:aws-lambda-java-log4j:1.0.0') {
-//            exclude group: 'log4j', module: 'log4j'
-//        }
-
         testCompile group: 'junit', name: 'junit', version: '4.+'
     }
 
     test.onlyIf { Boolean.getBoolean('skip.tests') }
 }
 
-configure(subprojects.findAll { it.name.endsWith('module') }) {
-
-    dependencies {
-    }
-}
-
 configure(subprojects.findAll { it.name.endsWith('service') }) { p ->
     dependencies {
-
         compile 'io.reactivex:rxjava:1.2.2'
 
         compile project(':sharedmodule')
 
         testCompile "com.despegar:spark-test:1.1.6"
     }
-
-//    'aws-sam-deployer' {
-//        region = project.ext.region
-//        s3Bucket = project.ext.s3Bucket
-//        s3Prefix = "${project.getName()}-artifact-uploads"
-//        stackName = "${project.ext.environment}-jvm-lambda-template"
-//        samTemplatePath = "${project.rootDir.absolutePath}${File.separator}application.yaml"
-//        tokenArtifactMap = [
-//                '@@CODE_URI@@': "${project.buildDir.absolutePath}${File.separator}libs${File.separator}jvm-lambda-template.jar"
-//        ]
-//    }
 }
 
 project(':securityservice') {
@@ -91,74 +61,20 @@ project(':securityservice') {
         environment = 'prod'
     }
 
+    version = 'v1'
     mainClassName = 'com.workingbit.security.SecurityApplication'
 
     dependencies {
     }
-
-    // Task for building the zip file for upload
-//    task buildZip(type: Zip) {
-//        // Using the Zip API from gradle to build a zip file of all the dependencies
-//        //
-//        // The path to this zip file can be set in the serverless.yml file for the
-//        // package/artifact setting for deployment to the S3 bucket
-//        //
-//        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
-//
-//        // set the base name of the zip file
-//        baseName = "securityservice"
-//        from compileJava
-//        from processResources
-//        into("lib") {
-//            from configurations.runtime
-//        }
-//    }
-
-//    build.dependsOn buildZip
 }
 
 project(':articleservice') {
-
-//    project.ext {
-//        region = 'eu-west-1'
-//        s3Bucket = 'articleservice'
-//        environment = 'prod'
-//    }
-
+    version = 'v1'
     mainClassName = 'com.workingbit.article.ArticleApplication'
-
-    dependencies {
-    }
-
-    // Task for building the zip file for upload
-//    task buildZip(type: Zip) {
-//        // Using the Zip API from gradle to build a zip file of all the dependencies
-//        //
-//        // The path to this zip file can be set in the serverless.yml file for the
-//        // package/artifact setting for deployment to the S3 bucket
-//        //
-//        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
-//
-//        // set the base name of the zip file
-//        baseName = "articleservice"
-//        from compileJava
-//        from processResources
-//        into("lib") {
-//            from configurations.runtime
-//        }
-//    }
-//
-//    build.dependsOn buildZip
 }
 
 project(':boardservice') {
-
-    project.ext {
-        region = 'eu-west-1'
-        s3Bucket = 'boardservice'
-        environment = 'prod'
-    }
-
+    version = 'v1'
     mainClassName = 'com.workingbit.board.BoardApplication'
 
     dependencies {
@@ -169,26 +85,6 @@ project(':boardservice') {
 
         compile files('lib/grammatica-1.6.jar')
     }
-
-    // Task for building the zip file for upload
-    task buildZip(type: Zip) {
-        // Using the Zip API from gradle to build a zip file of all the dependencies
-        //
-        // The path to this zip file can be set in the serverless.yml file for the
-        // package/artifact setting for deployment to the S3 bucket
-        //
-        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
-
-        // set the base name of the zip file
-        baseName = "boardservice"
-        from compileJava
-        from processResources
-        into("lib") {
-            from configurations.runtime
-        }
-    }
-
-    build.dependsOn buildZip
 }
 
 project(':sharedmodule') {
@@ -231,12 +127,4 @@ repositories {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.0'
-}
-
-task cleanBuild(type: GradleBuild) {
-    tasks = ['clean', 'build']
-}
-
-task deploy(type: GradleBuild) {
-    tasks = [':articleservice:packageSam']
 }

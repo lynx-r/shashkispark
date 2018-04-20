@@ -82,7 +82,7 @@ public class SecureUserServiceTest {
     assertTrue(register.isPresent());
     AuthUser registered = register.get();
 
-    Optional<AuthUser> loggedoutOpt = secureUserService.logout(registered);
+    Optional<AuthUser> loggedoutOpt = secureUserService.logout(register);
     assertTrue(loggedoutOpt.isPresent());
     AuthUser loggedout = loggedoutOpt.get();
     assertEquals(EnumSecureRole.ANONYMOUS, loggedout.getRole());
