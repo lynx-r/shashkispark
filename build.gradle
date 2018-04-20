@@ -59,7 +59,7 @@ project(':securityservice') {
         environment = 'prod'
     }
 
-    version = 'v1'
+    version = '1.0'
     mainClassName = 'com.workingbit.security.SecurityApplication'
 
     // Task for building the zip file for upload
@@ -84,7 +84,7 @@ project(':securityservice') {
 }
 
 project(':articleservice') {
-    version = 'v1'
+    version = '1.0'
     mainClassName = 'com.workingbit.article.ArticleApplication'
 
     // Task for building the zip file for upload
@@ -109,7 +109,7 @@ project(':articleservice') {
 }
 
 project(':boardservice') {
-    version = 'v1'
+    version = '1.0'
     mainClassName = 'com.workingbit.board.BoardApplication'
 
     dependencies {
@@ -145,7 +145,7 @@ project(':boardservice') {
 project(':sharedmodule') {
     jar {
         baseName = 'sharedmdoule'
-        version = "v1"
+        version = "1.0"
     }
 
     dependencies {

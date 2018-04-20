@@ -284,7 +284,7 @@ resources:
 
 plugins:
   - serverless-dynamodb-local
-  - serverless-dynamodb-fixtures-plugin
+#  - serverless-dynamodb-fixtures-plugin
 
 custom:
   dynamodb:
