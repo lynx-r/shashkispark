@@ -110,7 +110,7 @@ public interface BaseHandlerFunc<T extends Payload> {
 
   default AuthUser getInternalUserRole(String accessToken, String userSession) {
     if (StringUtils.isBlank(accessToken) || StringUtils.isBlank(userSession)) {
-      return null;
+      return new AuthUser(userSession).role(EnumSecureRole.ANONYMOUS);
     }
     return new AuthUser(accessToken, userSession).role(EnumSecureRole.INTERNAL);
   }

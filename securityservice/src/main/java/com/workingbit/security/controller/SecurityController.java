@@ -50,5 +50,4 @@ public class SecurityController {
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_ASSIGN_ROLE))
       ).handleRequest(req, res, false, AuthUser.class);
-
 }

@@ -20,8 +20,8 @@ public class AuthUser implements Payload {
   private String userSession;
   private EnumSecureRole role;
 
-  public AuthUser(String session) {
-    this.userSession = session;
+  public AuthUser(String userSession) {
+    this.userSession = userSession;
   }
 
   public AuthUser(String accessToken, String userSession) {

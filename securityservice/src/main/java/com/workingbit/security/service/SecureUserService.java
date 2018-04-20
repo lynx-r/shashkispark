@@ -95,33 +95,35 @@ public class SecureUserService {
   }
 
   public Optional<AuthUser> authenticate(Optional<AuthUser> token) {
-    return token.map(authUser -> {
-      String session = authUser.getUserSession();
-      String accessToken = authUser.getAccessToken();
-      Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
-      return secureUserOptional.map((secureUser) -> {
-        boolean isAuth = isAuthed(accessToken, secureUser);
-        if (isAuth) {
-          if (!EnumSecureRole.INTERNAL.equals(authUser.getRole())) {
-            TokenPair updatedAccessToken = getAccessToken(secureUser);
-            secureUser.setAccessToken(updatedAccessToken.accessToken);
-            secureUser.setSecureToken(updatedAccessToken.secureToken);
-            secureUserDao.save(secureUser);
-            authUser.setAccessToken(updatedAccessToken.accessToken);
-            logger.info("GIVE THE USER A NEW TOKEN: " + secureUser.getUsername() + " with " + updatedAccessToken);
-          }
+    return token
+        .filter(authUser -> !EnumSecureRole.ANONYMOUS.equals(authUser.getRole()))
+        .map(authUser -> {
+          String session = authUser.getUserSession();
+          String accessToken = authUser.getAccessToken();
+          Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
+          return secureUserOptional.map((secureUser) -> {
+            boolean isAuth = isAuthed(accessToken, secureUser);
+            if (isAuth) {
+              if (!EnumSecureRole.INTERNAL.equals(authUser.getRole())) {
+                TokenPair updatedAccessToken = getAccessToken(secureUser);
+                secureUser.setAccessToken(updatedAccessToken.accessToken);
+                secureUser.setSecureToken(updatedAccessToken.secureToken);
+                secureUserDao.save(secureUser);
+                authUser.setAccessToken(updatedAccessToken.accessToken);
+                logger.info("GIVE THE USER A NEW TOKEN: " + secureUser.getUsername() + " with " + updatedAccessToken);
+              }
 
-          authUser.setUsername(secureUser.getUsername());
-          authUser.setUserId(secureUser.getId());
-          authUser.setRole(secureUser.getRole());
+              authUser.setUsername(secureUser.getUsername());
+              authUser.setUserId(secureUser.getId());
+              authUser.setRole(secureUser.getRole());
 
-          logger.info("AUTHENTICATE: " + secureUser.getUsername());
-          return authUser;
-        }
-        logger.info("AUTHENTICATE FAILED: " + secureUser);
-        return null;
-      });
-    }).orElse(Optional.of(AuthUser.anonymous()));
+              logger.info("AUTHENTICATE: " + secureUser.getUsername());
+              return authUser;
+            }
+            logger.info("AUTHENTICATE FAILED: " + secureUser);
+            return null;
+          });
+        }).orElse(Optional.of(AuthUser.anonymous()));
   }
 
   public Optional<UserInfo> userInfo(AuthUser authUser) {
