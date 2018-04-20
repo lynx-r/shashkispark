@@ -33,8 +33,8 @@ public interface BaseHandlerFunc<T extends Payload> {
 
   default Answer getAnswer(Request request, Response response, boolean secure, T data) {
     String userSession = getOrCreateSession(request, response);
-    String accessToken = request.headers(ACCESS_TOKEN);
-    String roleStr = request.headers(USER_ROLE);
+    String accessToken = request.headers(ACCESS_TOKEN_HEADER);
+    String roleStr = request.headers(USER_ROLE_HEADER);
     EnumSecureRole role = EnumSecureRole.ANONYMOUS;
     if (StringUtils.isNotBlank(roleStr)) {
       role = EnumSecureRole.valueOf(roleStr.toUpperCase());
@@ -79,10 +79,10 @@ public interface BaseHandlerFunc<T extends Payload> {
 
   default String getOrCreateSession(Request request, Response response) {
     // take user session which user got after login
-    String accessToken = request.headers(ACCESS_TOKEN);
+    String accessToken = request.headers(ACCESS_TOKEN_HEADER);
     if (StringUtils.isBlank(accessToken)) {
       // if anonymous user
-      String anonymousSession = request.cookie(ANONYMOUS_SESSION);
+      String anonymousSession = request.cookie(ANONYMOUS_SESSION_HEADER);
       if (StringUtils.isBlank(anonymousSession)) {
         anonymousSession = getSessionAndSetCookieInResponse(response);
       }
@@ -90,7 +90,7 @@ public interface BaseHandlerFunc<T extends Payload> {
       return anonymousSession;
     }
     // return transfer session
-    return request.headers(USER_SESSION);
+    return request.headers(USER_SESSION_HEADER);
   }
 
   /**
@@ -100,7 +100,7 @@ public interface BaseHandlerFunc<T extends Payload> {
    */
   default String getSessionAndSetCookieInResponse(Response response) {
     String anonymousSession = Utils.getRandomString(SESSION_LENGTH);
-    response.cookie(ANONYMOUS_SESSION, anonymousSession, COOKIE_AGE, false, true);
+    response.cookie(ANONYMOUS_SESSION_HEADER, anonymousSession, COOKIE_AGE, false, true);
     return anonymousSession;
   }
 

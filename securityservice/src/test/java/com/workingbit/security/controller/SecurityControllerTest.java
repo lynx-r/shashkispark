@@ -14,8 +14,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import spark.servlet.SparkApplication;
 
-import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.USER_SESSION;
+import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN_HEADER;
+import static com.workingbit.share.common.RequestConstants.USER_SESSION_HEADER;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static org.junit.Assert.assertNotNull;
@@ -117,10 +117,10 @@ public class SecurityControllerTest {
     PostMethod resp = testServer.post(boardUrl + path, dataToJson(payload), false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {
-        resp.addHeader(ACCESS_TOKEN, authUser.getAccessToken());
+        resp.addHeader(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
       }
       if (StringUtils.isNotBlank(authUser.getUserSession())) {
-        resp.addHeader(USER_SESSION, authUser.getUserSession());
+        resp.addHeader(USER_SESSION_HEADER, authUser.getUserSession());
       }
     }
     HttpResponse execute = testServer.execute(resp);
@@ -130,8 +130,8 @@ public class SecurityControllerTest {
   private Answer put(String path, Object payload, AuthUser authUser) throws HttpClientException {
     PutMethod resp = testServer.put(boardUrl + path, dataToJson(payload), false);
     if (authUser != null) {
-      resp.addHeader(ACCESS_TOKEN, authUser.getAccessToken());
-      resp.addHeader(USER_SESSION, authUser.getUserSession());
+      resp.addHeader(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
+      resp.addHeader(USER_SESSION_HEADER, authUser.getUserSession());
     }
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);

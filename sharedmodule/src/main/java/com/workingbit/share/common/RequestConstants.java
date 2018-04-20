@@ -10,8 +10,8 @@ public class RequestConstants {
   public static final String SIGN_REQUEST = "sign-request";
   public static final int SESSION_LENGTH = 20;
   public static final int COOKIE_AGE = 30 * 24 * 60 * 60;
-  public static final String ANONYMOUS_SESSION = "anonymous-session";
-  public static final String USER_SESSION = "user-session";
-  public static final String USER_ROLE = "user-role";
-  public static final String ACCESS_TOKEN = "access-token";
+  public static final String ANONYMOUS_SESSION_HEADER = "anonymous-session";
+  public static final String USER_SESSION_HEADER = "user-session";
+  public static final String USER_ROLE_HEADER = "user-role";
+  public static final String ACCESS_TOKEN_HEADER = "access-token";
 }

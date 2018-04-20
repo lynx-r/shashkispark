@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
-import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.USER_SESSION;
+import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN_HEADER;
+import static com.workingbit.share.common.RequestConstants.USER_SESSION_HEADER;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -94,8 +94,8 @@ public class ShareRemoteClient {
 
   private Map<String, String> getAuthHeaders(AuthUser authUser) {
     return new HashMap<String, String>() {{
-      put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(USER_SESSION, authUser.getUserSession());
+      put(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
+      put(USER_SESSION_HEADER, authUser.getUserSession());
     }};
   }
 

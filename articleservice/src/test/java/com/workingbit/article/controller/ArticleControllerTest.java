@@ -16,8 +16,8 @@ import spark.servlet.SparkApplication;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN;
-import static com.workingbit.share.common.RequestConstants.USER_SESSION;
+import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN_HEADER;
+import static com.workingbit.share.common.RequestConstants.USER_SESSION_HEADER;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static com.workingbit.share.util.Utils.getRandomString;
@@ -167,8 +167,8 @@ public class ArticleControllerTest {
 
   private Answer post(String path, Object payload, AuthUser authUser) throws HttpClientException {
     Map<String, String> headers = new HashMap<String, String>() {{
-      put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(USER_SESSION, authUser.getUserSession());
+      put(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
+      put(USER_SESSION_HEADER, authUser.getUserSession());
     }};
     return post(path, payload, headers);
   }
@@ -186,8 +186,8 @@ public class ArticleControllerTest {
 
   private Answer put(String path, Article payload, AuthUser authUser) throws HttpClientException {
     Map<String, String> headers = new HashMap<String, String>() {{
-      put(ACCESS_TOKEN, authUser.getAccessToken());
-      put(USER_SESSION, authUser.getUserSession());
+      put(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
+      put(USER_SESSION_HEADER, authUser.getUserSession());
     }};
     PutMethod resp = testServer.put(boardUrl + path, dataToJson(payload), false);
     headers.forEach(resp::addHeader);

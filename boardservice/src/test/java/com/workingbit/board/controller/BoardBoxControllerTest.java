@@ -181,8 +181,8 @@ public class BoardBoxControllerTest {
   private Answer post(String path, Object payload, AuthUser authUser) throws HttpClientException {
     PostMethod resp = testServer.post(boardUrl + path, dataToJson(payload), false);
     if (authUser != null) {
-      resp.addHeader(ACCESS_TOKEN, authUser.getAccessToken());
-      resp.addHeader(USER_SESSION, authUser.getUserSession());
+      resp.addHeader(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
+      resp.addHeader(USER_SESSION_HEADER, authUser.getUserSession());
     }
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);
@@ -191,8 +191,8 @@ public class BoardBoxControllerTest {
   private Answer put(String path, Object payload, AuthUser authUser) throws HttpClientException {
     PutMethod resp = testServer.put(boardUrl + path, dataToJson(payload), false);
     if (authUser != null) {
-      resp.addHeader(ACCESS_TOKEN, authUser.getAccessToken());
-      resp.addHeader(USER_SESSION, authUser.getUserSession());
+      resp.addHeader(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
+      resp.addHeader(USER_SESSION_HEADER, authUser.getUserSession());
     }
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);
