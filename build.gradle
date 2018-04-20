@@ -16,7 +16,6 @@ allprojects {
     apply plugin: 'maven'
 
     group = 'com.workingbit'
-    version = '1.0'
 }
 
 subprojects { subproject ->
@@ -90,7 +89,7 @@ project(':boardservice') {
 project(':sharedmodule') {
     jar {
         baseName = 'sharedmdoule'
-        version = "${sharemodule_version}"
+        version = "v1"
     }
 
     dependencies {
