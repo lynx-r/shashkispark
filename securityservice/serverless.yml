@@ -1,0 +1,148 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: securityservice
+
+provider:
+  name: aws
+  runtime: java8
+  timeout: 300
+
+  stage: dev
+  region: eu-west-1
+
+# define service wide environment variables here
+  environment:
+    CFG4J_ENV: prod
+
+# packaging information here
+package:
+  artifact: build/distributions/securityservice-1.0.zip
+
+functions:
+  security:
+    handler: com.workingbit.security.LambdaHandler::handleRequest
+
+    events:
+      - http:
+          path: /api/security/register
+          method: options
+      - http:
+          path: /api/v1/board/register
+          method: post
+
+      - http:
+          path: /api/security/authorize
+          method: options
+      - http:
+          path: /api/v1/board/authorize
+          method: post
+
+      - http:
+          path: /api/security/authenticate
+          method: options
+      - http:
+          path: /api/v1/board/authenticate
+          method: post
+
+      - http:
+          path: /api/security/user-info
+          method: options
+      - http:
+          path: /api/v1/board/user-info
+          method: post
+
+      - http:
+          path: /api/security/logout
+          method: options
+      - http:
+          path: /api/v1/board/logout
+          method: post
+
+# CloudFormation resource templates here
+resources:
+  Resources:
+    DynamoDbTableSecureUser:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: SecureUser
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: userSession
+            AttributeType: S
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+        - IndexName: userSessionIndex
+          KeySchema:
+          - AttributeName: userSession
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+        - IndexName: usernameIndex
+          KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+    DynamoDBIamPolicySecureUser:
+      Type: AWS::IAM::Policy
+      DependsOn: DynamoDbTableSecureUser
+      Properties:
+        PolicyName: lambda-dynamodb-SecureUser
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+                - dynamodb:Query
+              Resource: arn:aws:dynamodb:*:*:table/SecureUser
+        Roles:
+          - Ref: IamRoleLambdaExecution
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-dynamodb-fixtures-plugin
+
+custom:
+  dynamodb:
+    start:
+      port: 8084
+      inMemory: true
+      migrate: true
