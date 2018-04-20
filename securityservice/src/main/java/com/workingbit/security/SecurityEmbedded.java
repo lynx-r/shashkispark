@@ -5,6 +5,8 @@ import com.workingbit.security.config.Path;
 import com.workingbit.security.controller.SecurityController;
 import com.workingbit.security.dao.SecureUserDao;
 import com.workingbit.security.service.SecureUserService;
+import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.model.Answer;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import com.workingbit.share.util.UnirestUtil;
@@ -13,6 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.common.CorsConfig.enableCors;
+import static com.workingbit.share.util.JsonUtils.dataToJson;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static spark.Spark.*;
 
 public class SecurityEmbedded {
@@ -52,15 +57,15 @@ public class SecurityEmbedded {
   private static void establishRoutes() {
     path("/api", () ->
         path("/v1", () -> {
-          before((req, res)-> System.out.println(req.toString() + " " + res.toString()));
+          before((req, res) -> System.out.println(req.toString() + " " + res.toString()));
           post(Path.REGISTER, SecurityController.register);
           post(Path.AUTHORIZE, SecurityController.authorize);
           post(Path.AUTHENTICATE, SecurityController.authenticate);
           post(Path.USER_INFO, SecurityController.userInfo);
           post(Path.LOGOUT, SecurityController.logout);
 
-          notFound((req, res) -> "Not found");
-          internalServerError((req, res) -> "Internal server message");
+          notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));
+          internalServerError((req, res) -> dataToJson(Answer.error(HTTP_INTERNAL_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR)));
 
           after(Filters.addJsonHeader);
           after(Filters.addGzipHeader);

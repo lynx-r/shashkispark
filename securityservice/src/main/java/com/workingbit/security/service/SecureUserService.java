@@ -145,6 +145,7 @@ public class SecureUserService {
       return secureUserOptional.map((secureUser) -> {
         boolean isAuth = isAuthed(accessToken, secureUser);
         if (isAuth) {
+          secureUser.setSecureToken("");
           secureUser.setAccessToken("");
           secureUser.setUserSession("");
           secureUserDao.save(secureUser);

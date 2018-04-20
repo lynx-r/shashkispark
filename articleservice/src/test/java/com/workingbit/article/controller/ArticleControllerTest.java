@@ -117,9 +117,13 @@ public class ArticleControllerTest {
   @Test
   public void find_all() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    AuthUser headers = register();
+    String username = Utils.getRandomString();
+    String password = Utils.getRandomString();
+    RegisterUser registerUser = new RegisterUser(username, password);
+    AuthUser registered = ShareRemoteClient.Singleton.getInstance().register(registerUser).get();
+    assertNotNull(registered);
 
-    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
     Article article = articleResponse.getArticle();
     BoardBox board = articleResponse.getBoard();
     assertNotNull(article.getId());
@@ -127,9 +131,26 @@ public class ArticleControllerTest {
     assertNotNull(board.getId());
 
     Articles articles = (Articles) get("s").getBody();
-    Article finalArticle = article;
-    article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(finalArticle.getId()))).findFirst().get();
+    String articleId = article.getId();
+    article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(articleId))).findFirst().get();
     assertNotNull(article);
+
+    articles = (Articles) get("s").getBody();
+    article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(articleId))).findFirst().get();
+    assertNotNull(article);
+
+    AuthUser loggedout = ShareRemoteClient.Singleton.getInstance().logout(registered).get();
+    assertEquals(EnumSecureRole.ANONYMOUS, loggedout.getRole());
+
+    createArticlePayload = getCreateArticlePayload();
+    int statusCode = post("", createArticlePayload, registered).getStatusCode();
+    assertEquals(403, statusCode);
+
+    AuthUser loggedIn = ShareRemoteClient.Singleton.getInstance().authorize(registerUser).get();
+    assertEquals(EnumSecureRole.AUTHOR, loggedIn.getRole());
+
+    loggedIn = ShareRemoteClient.Singleton.getInstance().authenticate(loggedIn).get();
+    assertNotNull(loggedIn);
   }
 
   private CreateArticlePayload getCreateArticlePayload() {

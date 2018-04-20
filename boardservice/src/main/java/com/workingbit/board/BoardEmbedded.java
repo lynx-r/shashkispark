@@ -9,6 +9,8 @@ import com.workingbit.board.dao.NotationDao;
 import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.board.service.BoardStoreService;
 import com.workingbit.board.service.NotationStoreService;
+import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.model.Answer;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import org.slf4j.Logger;
@@ -16,6 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.common.CorsConfig.enableCors;
+import static com.workingbit.share.util.JsonUtils.dataToJson;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static spark.Spark.*;
 
 public class BoardEmbedded {
@@ -81,8 +86,8 @@ public class BoardEmbedded {
           post(Path.BOARD_VIEW_BRANCH, BoardBoxController.viewBranch);
           post(Path.CHANGE_TURN, BoardBoxController.changeTurn);
 
-          notFound((req, res) -> "Not found");
-          internalServerError((req, res) -> "Internal server message");
+          notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));
+          internalServerError((req, res) -> dataToJson(Answer.error(HTTP_INTERNAL_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR)));
 
           after(Filters.addJsonHeader);
           after(Filters.addGzipHeader);
