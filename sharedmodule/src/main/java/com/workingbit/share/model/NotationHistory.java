@@ -324,8 +324,6 @@ public class NotationHistory implements DeepClone {
   }
 
   public String variantsToPdn() {
-    System.out.println("HISTORY: " + history.toPdn());
-    System.out.print("VARIANTS: ");
     return notation.toPdn();
   }
 

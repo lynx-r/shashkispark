@@ -21,7 +21,6 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> 
     T data = jsonToData(json, clazz);
 
     Answer answer = getAnswer(request, response, secure, data);
-    System.out.println("SENT ANSWER " + answer);
     response.status(answer.getStatusCode());
 
     return dataToJson(answer);

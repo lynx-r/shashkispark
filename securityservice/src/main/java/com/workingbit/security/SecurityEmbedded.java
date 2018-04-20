@@ -57,7 +57,6 @@ public class SecurityEmbedded {
   private static void establishRoutes() {
     path("/api", () ->
         path("/v1", () -> {
-          before((req, res) -> System.out.println(req.toString() + " " + res.toString()));
           post(Path.REGISTER, SecurityController.register);
           post(Path.AUTHORIZE, SecurityController.authorize);
           post(Path.AUTHENTICATE, SecurityController.authenticate);

@@ -7,6 +7,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
@@ -50,7 +52,6 @@ public class SecureUserService {
       secureUserDao.save(secureUser);
 
       // send access token and userSession
-      logger.info("REGISTER: " + username + " with " + accessToken);
       AuthUser authUser = new AuthUser(secureUser.getId(), username, accessToken.accessToken, userSession, secureUser.getRole());
       return Optional.of(authUser);
     } catch (Exception e) {
@@ -84,7 +85,6 @@ public class SecureUserService {
               String userId = secureUser.getId();
               EnumSecureRole role = secureUser.getRole();
 
-              logger.info("AUTHORIZE: " + username + " with " + accessToken);
               return new AuthUser(userId, username, accessToken.accessToken, userSession, role);
             }
           } catch (Exception e) {
@@ -110,17 +110,13 @@ public class SecureUserService {
                 secureUser.setSecureToken(updatedAccessToken.secureToken);
                 secureUserDao.save(secureUser);
                 authUser.setAccessToken(updatedAccessToken.accessToken);
-                logger.info("GIVE THE USER A NEW TOKEN: " + secureUser.getUsername() + " with " + updatedAccessToken);
               }
 
               authUser.setUsername(secureUser.getUsername());
               authUser.setUserId(secureUser.getId());
               authUser.setRole(secureUser.getRole());
-
-              logger.info("AUTHENTICATE: " + secureUser.getUsername());
               return authUser;
             }
-            logger.info("AUTHENTICATE FAILED: " + secureUser);
             return null;
           });
         }).orElse(Optional.of(AuthUser.anonymous()));
@@ -132,7 +128,6 @@ public class SecureUserService {
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
-        logger.info("USER_INFO: " + secureUser.getUsername());
         return new UserInfo(secureUser.getUsername());
       }
       return null;
@@ -151,7 +146,6 @@ public class SecureUserService {
           secureUser.setAccessToken("");
           secureUser.setUserSession("");
           secureUserDao.save(secureUser);
-          logger.info("LOGOUT: " + secureUser.getUsername());
         }
         return AuthUser.anonymous();
       });
@@ -161,10 +155,13 @@ public class SecureUserService {
   private boolean isAuthed(String accessToken, SecureUser secureUser) {
     String key = secureUser.getKey();
     String initVector = secureUser.getInitVector();
-    System.out.println("DECRYPT key " + key + " vect " + initVector + " acct " + accessToken + "\n key "
-        + secureUser.getKey() + " vect " + secureUser.getInitVector() + " accst " + secureUser.getAccessToken());
-    String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
-    return secureUser.getSecureToken().equals(tokenDecrypted);
+    try {
+      String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
+      return secureUser.getSecureToken().equals(tokenDecrypted);
+    } catch (IllegalBlockSizeException | BadPaddingException e) {
+      logger.error(String.format("Unable to decrypt accessToken %s", accessToken));
+      return false;
+    }
   }
 
   private String getUserSession() {

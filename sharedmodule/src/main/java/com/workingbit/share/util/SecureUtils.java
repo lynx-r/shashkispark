@@ -2,7 +2,9 @@ package com.workingbit.share.util;
 
 import org.apache.commons.codec.binary.Base64;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +31,8 @@ public class SecureUtils {
     return null;
   }
 
-  public static String decrypt(String key, String initVector, String encrypted) {
+  public static String decrypt(String key, String initVector, String encrypted)
+      throws IllegalBlockSizeException, BadPaddingException {
     try {
       IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
       SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
@@ -50,13 +53,5 @@ public class SecureUtils {
   public static String digest(String data) throws NoSuchAlgorithmException {
     MessageDigest digest = MessageDigest.getInstance("SHA-256");
     return new String(digest.digest(data.getBytes(StandardCharsets.UTF_8)));
-  }
-
-  public static void main(String[] args) {
-    String key = "Bar12345Bar12345"; // 128 bit key
-    String initVector = "RandomInitVector"; // 16 bytes IV
-
-    System.out.println(decrypt(key, initVector,
-        encrypt(key, initVector, "Hello World")));
   }
 }
