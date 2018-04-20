@@ -29,33 +29,38 @@ subprojects { subproject ->
         jcenter()
     }
 
-    dependencies {
-        compile 'org.apache.commons:commons-lang3:3.5'
-        compile 'org.apache.commons:commons-collections4:4.1'
-
-        compile ('com.sparkjava:spark-core:2.7.2') {
-            exclude group: 'org.eclipse.jetty.websocket'
-            exclude module: 'org.eclipse.jetty:jetty-http'
-            exclude module: 'org.eclipse.jetty:jetty-client'
-            exclude module: 'org.eclipse.jetty:jetty-webapp'
-            exclude module: 'org.eclipse.jetty:jetty-xml'
-            exclude module: 'org.eclipse.jetty:jetty-io'
-        }
-
-        testCompile group: 'junit', name: 'junit', version: '4.+'
+    configurations {
+        runtime.exclude group: 'org.eclipse.jetty.websocket'
+        runtime.exclude group: 'org.eclipse.jetty', module: 'jetty-client'
+        runtime.exclude group: 'org.eclipse.jetty', module: 'jetty-webapp'
+        runtime.exclude group: 'org.eclipse.jetty', module: 'jetty-xml'
+        runtime.exclude group: 'org.eclipse.jetty', module: 'jetty-io'
     }
 
     test.onlyIf { Boolean.getBoolean('skip.tests') }
 }
 
+configure(subprojects) {
+    dependencies {
+        compile 'org.apache.commons:commons-lang3:3.5'
+        compile 'org.apache.commons:commons-collections4:4.1'
+
+        compile('com.sparkjava:spark-core:2.7.2')
+
+        testCompile group: 'junit', name: 'junit', version: '4.+'
+    }
+}
+
 configure(subprojects.findAll { it.name.endsWith('service') }) { p ->
     dependencies {
+
         compile 'io.reactivex:rxjava:1.2.2'
 
         compile group: 'com.amazonaws.serverless', name: 'aws-serverless-java-container-spark', version: '1.1'
 
         compile project(':sharedmodule')
 
+        // test spark controllers
         testCompile "com.despegar:spark-test:1.1.6"
     }
 }
@@ -109,6 +114,7 @@ project(':articleservice') {
         baseName = "articleservice"
         from compileJava
         from processResources
+
         into("lib") {
             from configurations.runtime
         }
