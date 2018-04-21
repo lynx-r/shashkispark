@@ -1,0 +1,3 @@
+gradle:
+  script:
+    - gradle clean build
