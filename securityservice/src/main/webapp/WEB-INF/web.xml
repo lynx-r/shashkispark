@@ -17,7 +17,7 @@
 
         <web-resource-collection>
             <web-resource-name>Members Folder</web-resource-name>
-            <url-pattern>/*</url-pattern>
+            <url-pattern>/security/*</url-pattern>
         </web-resource-collection>
 
         <user-data-constraint>
