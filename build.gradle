@@ -38,6 +38,17 @@ subprojects { subproject ->
     }
 
     test.onlyIf { Boolean.getBoolean('skip.tests') }
+
+    task deploylocal(type: Copy) {
+        from libsDir
+        include '*.war'
+        into "${tomcatHome}/webapps"
+        rename { fileName ->
+            fileName.replace("service-${version}", "")
+        }
+    }
+
+    build.dependsOn deploylocal
 }
 
 configure(subprojects) {
@@ -66,42 +77,13 @@ configure(subprojects.findAll { it.name.endsWith('service') }) { p ->
 }
 
 project(':securityservice') {
-
-    project.ext {
-        region = 'eu-west-1'
-        s3Bucket = 'securityservice'
-        environment = 'prod'
-    }
-
     version = '1.0'
     mainClassName = 'com.workingbit.security.SecurityApplication'
-
-    task deploylocal(type: Copy) {
-        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps/security"
-        copy {
-            from libsDir
-            into "${tomcatHome}/webapps/security"
-            include '*.war'
-        }
-    }
-
-    build.dependsOn deploylocal
 }
 
 project(':articleservice') {
     version = '1.0'
     mainClassName = 'com.workingbit.article.ArticleApplication'
-
-    task deploylocal(type: Copy) {
-        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps/article"
-        copy {
-            from libsDir
-            into "${tomcatHome}/webapps/article"
-            include '*.war'
-        }
-    }
-
-    build.dependsOn deploylocal
 }
 
 project(':boardservice') {
@@ -116,17 +98,6 @@ project(':boardservice') {
 
         compile files('lib/grammatica-1.6.jar')
     }
-
-    task deploylocal(type: Copy) {
-        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps/board"
-        copy {
-            from libsDir
-            into "${tomcatHome}/webapps/board"
-            include '*.war'
-        }
-    }
-
-    build.dependsOn deploylocal
 }
 
 project(':sharedmodule') {
