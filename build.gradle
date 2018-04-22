@@ -94,6 +94,15 @@ project(':securityservice') {
         }
     }
 
+    task deploylocal(type: Copy) {
+        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps"
+        copy{
+            from libsDir
+            into "${tomcatHome}/webapps/security"
+            include '*.war'
+        }
+    }
+
     build.dependsOn buildZip
 }
 
@@ -117,6 +126,15 @@ project(':articleservice') {
 
         into("lib") {
             from configurations.runtime
+        }
+    }
+
+    task deploylocal(type: Copy) {
+        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps"
+        copy{
+            from libsDir
+            into "${tomcatHome}/webapps/article"
+            include '*.war'
         }
     }
 
@@ -151,6 +169,15 @@ project(':boardservice') {
         from processResources
         into("lib") {
             from configurations.runtime
+        }
+    }
+
+    task deploylocal(type: Copy) {
+        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps"
+        copy{
+            from libsDir
+            into "${tomcatHome}/webapps/board"
+            include '*.war'
         }
     }
 
