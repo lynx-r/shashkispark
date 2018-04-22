@@ -55,6 +55,8 @@ public class SecurityEmbedded {
   }
 
   private static void establishRoutes() {
+    path("/", () -> get(Path.HOME, SecurityController.home));
+
     path("/api", () ->
         path("/v1", () -> {
           post(Path.REGISTER, SecurityController.register);

@@ -21,6 +21,8 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
  */
 public class ArticleController {
 
+  public static Route home = (req, res) -> "Home, sweet home!";
+
   public static Route findAllArticles = (req, res) ->
       ((QueryParamsHandlerFunc<QueryPayload>) (params, token)->
           articleService.findAll(params.getQuery().value(RequestConstants.LIMIT), token)

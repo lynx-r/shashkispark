@@ -54,6 +54,8 @@ public class ArticleEmbedded {
   }
 
   private static void establishRoutes() {
+    path("/", () -> get(Path.HOME, ArticleController.home));
+
     path("/api", () ->
         path("/v1", () -> {
           get(Path.ARTICLES, ArticleController.findAllArticles);

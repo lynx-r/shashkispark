@@ -69,6 +69,8 @@ public class BoardEmbedded {
   }
 
   private static void establishRoutes() {
+    path("/", () -> get(Path.HOME, BoardBoxController.home));
+
     path("/api", () ->
         path("/v1", () -> {
           get(Path.BOARD_BY_ID, BoardBoxController.findBoardById);

@@ -7,4 +7,5 @@ public class Path {
   public static final String AUTHENTICATE = "/authenticate";
   public static final String USER_INFO = "/user-info";
   public static final String LOGOUT = "/logout";
+  public static final String HOME = "/";
 }

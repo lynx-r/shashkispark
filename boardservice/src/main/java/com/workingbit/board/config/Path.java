@@ -17,4 +17,5 @@ public class Path {
   public static final String BOARD_FORK = "/board/fork";
   public static final String BOARD_VIEW_BRANCH = "/board/view-branch";
   public static final String CHANGE_TURN = "/board/change-turn";
+  public static final String HOME = "/";
 }

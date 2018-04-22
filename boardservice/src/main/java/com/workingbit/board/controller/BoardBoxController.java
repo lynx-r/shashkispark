@@ -19,6 +19,8 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
  */
 public class BoardBoxController {
 
+  public static Route home = (req, res) -> "Home, sweet home!";
+
   public static Route createBoard = (req, res) ->
       ((ModelHandlerFunc<CreateBoardPayload>) (data, token) ->
           boardBoxService
