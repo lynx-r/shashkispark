@@ -11,4 +11,18 @@
         <filter-name>SparkFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <!-- Force SSL for entire site -->
+    <security-constraint>
+
+        <web-resource-collection>
+            <web-resource-name>Members Folder</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+
+    </security-constraint>
 </web-app>
