@@ -3,13 +3,13 @@ app:
   regionDynamoDB: dump
   endpointDynamoDB: http://example.com
   test: false
-  articleResource: https://206.189.6.123/article/api/v1/article
-  articlesResource: https://206.189.6.123/article/api/v1/articles
+  articleResource: https://206.189.6.123:8443/article/api/v1/article
+  articlesResource: https://206.189.6.123:8443/article/api/v1/articles
 
-  boardboxResource: https://206.189.6.123/board/api/v1/board
+  boardboxResource: https://206.189.6.123:8443/board/api/v1/board
 
-  registerResource: https://206.189.6.123/security/api/v1/register
-  authorizeResource: https://206.189.6.123/security/api/v1/authorize
-  authenticateResource: https://206.189.6.123/security/api/v1/authenticate
-  userInfoResource: https://206.189.6.123/security/api/v1/user-info
-  logoutResource: https://206.189.6.123/security/api/v1/logout
+  registerResource: https://206.189.6.123:8443/security/api/v1/register
+  authorizeResource: https://206.189.6.123:8443/security/api/v1/authorize
+  authenticateResource: https://206.189.6.123:8443/security/api/v1/authenticate
+  userInfoResource: https://206.189.6.123:8443/security/api/v1/user-info
+  logoutResource: https://206.189.6.123:8443/security/api/v1/logout
