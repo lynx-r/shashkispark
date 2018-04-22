@@ -76,69 +76,32 @@ project(':securityservice') {
     version = '1.0'
     mainClassName = 'com.workingbit.security.SecurityApplication'
 
-    // Task for building the zip file for upload
-    task buildZip(type: Zip) {
-        // Using the Zip API from gradle to build a zip file of all the dependencies
-        //
-        // The path to this zip file can be set in the serverless.yml file for the
-        // package/artifact setting for deployment to the S3 bucket
-        //
-        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
-
-        // set the base name of the zip file
-        baseName = "securityservice"
-        from compileJava
-        from processResources
-        into("lib") {
-            from configurations.runtime
-        }
-    }
-
     task deploylocal(type: Copy) {
-        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps"
-        copy{
+        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps/security"
+        copy {
             from libsDir
             into "${tomcatHome}/webapps/security"
             include '*.war'
         }
     }
 
-    build.dependsOn buildZip
+    build.dependsOn deploylocal
 }
 
 project(':articleservice') {
     version = '1.0'
     mainClassName = 'com.workingbit.article.ArticleApplication'
 
-    // Task for building the zip file for upload
-    task buildZip(type: Zip) {
-        // Using the Zip API from gradle to build a zip file of all the dependencies
-        //
-        // The path to this zip file can be set in the serverless.yml file for the
-        // package/artifact setting for deployment to the S3 bucket
-        //
-        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
-
-        // set the base name of the zip file
-        baseName = "articleservice"
-        from compileJava
-        from processResources
-
-        into("lib") {
-            from configurations.runtime
-        }
-    }
-
     task deploylocal(type: Copy) {
-        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps"
-        copy{
+        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps/article"
+        copy {
             from libsDir
             into "${tomcatHome}/webapps/article"
             include '*.war'
         }
     }
 
-    build.dependsOn buildZip
+    build.dependsOn deploylocal
 }
 
 project(':boardservice') {
@@ -154,34 +117,16 @@ project(':boardservice') {
         compile files('lib/grammatica-1.6.jar')
     }
 
-    // Task for building the zip file for upload
-    task buildZip(type: Zip) {
-        // Using the Zip API from gradle to build a zip file of all the dependencies
-        //
-        // The path to this zip file can be set in the serverless.yml file for the
-        // package/artifact setting for deployment to the S3 bucket
-        //
-        // Link: https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html
-
-        // set the base name of the zip file
-        baseName = "boardservice"
-        from compileJava
-        from processResources
-        into("lib") {
-            from configurations.runtime
-        }
-    }
-
     task deploylocal(type: Copy) {
-        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps"
-        copy{
+        println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps/board"
+        copy {
             from libsDir
             into "${tomcatHome}/webapps/board"
             include '*.war'
         }
     }
 
-    build.dependsOn buildZip
+    build.dependsOn deploylocal
 }
 
 project(':sharedmodule') {
@@ -225,3 +170,7 @@ repositories {
 task wrapper(type: Wrapper) {
     gradleVersion = '4.0'
 }
+
+//task localdeploy {
+//    dependsOn tasks.withType(Copy)
+//}
