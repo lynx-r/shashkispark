@@ -1,0 +1,16 @@
+{
+  "tableName": "Article",
+  "entries": [
+    {
+      "type": "article",
+      "id": "Новая статья-k1Fl67MnLU",
+      "createdAt": "2018-04-15T10:40:34.574",
+      "author": null,
+      "title": "Новая статья",
+      "content": null,
+      "boardBoxId": "9db23f25-3e2b-4611-ac98-f55760384703",
+      "state": "newadded",
+      "updatedAt": "2018-04-15T10:40:35.051"
+    }
+  ]
+}

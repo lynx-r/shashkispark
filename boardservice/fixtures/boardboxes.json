@@ -1,0 +1,59 @@
+{
+  "tableName": "BoardBox",
+  "entries": [
+    {
+      "type": "boardBox",
+      "id": "9db23f25-3e2b-4611-ac98-f55760384703",
+      "createdAt": "2018-04-15T10:40:34.666",
+      "updatedAt": "2018-04-15T10:42:06.108",
+      "articleId": "Новая статья-k1Fl67MnLU",
+      "boardId": "d4f9b9c5-0bc3-470f-ad12-0d68a0eef381",
+      "board": null,
+      "notationId": "4aa912ca-2b26-4291-8a66-bb106d82234b",
+      "notation": {
+        "type": "notation",
+        "id": null,
+        "createdAt": null,
+        "updatedAt": null,
+        "boardBoxId": null,
+        "tags": {},
+        "rules": null,
+        "notationHistory": {
+          "history": [
+            {
+              "notationNumber": null,
+              "moves": [],
+              "variants": [],
+              "ellipses": false,
+              "numeric": false,
+              "comment": null,
+              "root": true,
+              "selected": false,
+              "current": false,
+              "previous": false,
+              "notationNumberInt": 0
+            }
+          ],
+          "notation": [
+            {
+              "notationNumber": null,
+              "moves": [],
+              "variants": [],
+              "ellipses": false,
+              "numeric": false,
+              "comment": null,
+              "root": true,
+              "selected": false,
+              "current": false,
+              "previous": false,
+              "notationNumberInt": 0
+            }
+          ],
+          "currentNotationDrive": null,
+          "variantNotationDrive": null
+        }
+      },
+      "editMode": "EDIT"
+    }
+  ]
+}
