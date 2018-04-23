@@ -1,6 +1,6 @@
 gradle:
   script:
-    - mount -o remount,rw /
+#    - mount -o remount,rw /
     - TOMCATUID=112
     - TOMCATUSER=tomcat8
     - useradd -u $TOMCATUID -ms /bin/bash $TOMCATUSER
