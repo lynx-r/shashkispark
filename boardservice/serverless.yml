@@ -47,7 +47,7 @@ functions:
 #    Check the event documentation for details
     events:
       - http:
-          path: /api/v1/baord/add-draught
+          path: /api/v1/board/add-draught
           method: options
       - http:
           path: /api/v1/board/add-draught
