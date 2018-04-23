@@ -1,6 +1,7 @@
-gradle:
+production:
+  stage: deploy
+  environment: production
   script:
-#    - mount -o remount,rw /
     - TOMCATUID=112
     - TOMCATUSER=tomcat8
     - useradd -u $TOMCATUID -ms /bin/bash $TOMCATUSER
