@@ -1,6 +1,4 @@
 gradle:
   script:
-    - mkdir -p /var/lib/tomcat8/webapps/article
-    - mkdir -p /var/lib/tomcat8/webapps/board
-    - mkdir -p /var/lib/tomcat8/webapps/security
-    - gradle clean build deploylocal --debug
+    - mkdir -p /var/lib/tomcat8/webapps/{article,board,security}
+    - gradle clean build deploylocal
