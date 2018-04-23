@@ -1,8 +1,8 @@
 gradle:
   script:
-#    - mount -o remount,rw /
-#    - TOMCATUID=112
-#    - TOMCATUSER=tomcat8
-#    - useradd -u $TOMCATUID -ms /bin/bash $TOMCATUSER
+    - mount -o remount,rw /
+    - TOMCATUID=112
+    - TOMCATUSER=tomcat8
+    - useradd -u $TOMCATUID -ms /bin/bash $TOMCATUSER
     - mkdir -p /var/lib/tomcat8/webapps/{article,board,security}
     - gradle clean build deploylocal
