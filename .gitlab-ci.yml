@@ -1,5 +1,5 @@
 gradle:
   script:
     - mkdir -p /var/lib/tomcat8/webapps/{article,board,security}
-    - chmod -R 777 /var/lib/tomcat8/webapps
+    - touch file && cp file /var/lib/tomcat8/webapps
     - gradle clean build deploylocal
