@@ -1,4 +1,4 @@
 gradle:
   script:
     - mkdir -p /var/lib/tomcat8/webapps
-    - gradle clean build deploylocal
+    - gradle clean build deploylocal --debug
