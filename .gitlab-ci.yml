@@ -1,5 +1,7 @@
 gradle:
   script:
+    - TOMCATUID=112
+    - TOMCATUSER=tomcat8
+    - useradd -u $TOMCATUID -ms /bin/bash $TOMCATUSER
     - mkdir -p /var/lib/tomcat8/webapps/{article,board,security}
-    - touch file && cp file /var/lib/tomcat8/webapps
     - gradle clean build deploylocal
