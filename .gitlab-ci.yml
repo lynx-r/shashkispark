@@ -1,6 +1,5 @@
 gradle:
   script:
-    - whoami
     - mount -o remount,rw /
     - TOMCATUID=112
     - TOMCATUSER=tomcat8
