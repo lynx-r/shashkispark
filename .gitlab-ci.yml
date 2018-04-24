@@ -6,3 +6,11 @@ production:
     - useradd -u $TOMCATUID -ms /bin/bash $TOMCATUSER
     - mkdir -p /var/lib/tomcat8/webapps/{article,board,security}
     - gradle clean build deploylocal
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
