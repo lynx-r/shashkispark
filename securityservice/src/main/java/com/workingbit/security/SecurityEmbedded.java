@@ -39,13 +39,13 @@ public class SecurityEmbedded {
 
   public static void main(String[] args) {
     port(appProperties.port());
+
+    Logger logger = LoggerFactory.getLogger(SecurityEmbedded.class);
+    SparkUtils.createServerWithRequestLog(logger);
     start();
   }
 
   public static void start() {
-    Logger logger = LoggerFactory.getLogger(SecurityEmbedded.class);
-    SparkUtils.createServerWithRequestLog(logger);
-
     UnirestUtil.configureSerialization();
 
     LOG.info("Initializing routes");

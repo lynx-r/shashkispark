@@ -51,18 +51,15 @@ public class BoardEmbedded {
 
   public static void main(String[] args) {
     int port = appProperties.port();
-    if (args != null && args.length > 0) {
-      port = Integer.parseInt(args[0]);
-    }
     System.out.println("Listening on port: " + port);
     port(port);
+
+    Logger logger = LoggerFactory.getLogger(BoardApplication.class);
+    SparkUtils.createServerWithRequestLog(logger);
     start();
   }
 
   public static void start() {
-    Logger logger = LoggerFactory.getLogger(BoardApplication.class);
-    SparkUtils.createServerWithRequestLog(logger);
-
     LOG.info("Initializing routes");
     enableCors(appProperties.origin().toString(), appProperties.methods(), appProperties.headers());
     establishRoutes();
