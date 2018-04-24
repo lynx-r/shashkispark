@@ -1,6 +1,5 @@
 production:
   stage: deploy
-  environment: production
   script:
     - TOMCATUID=112
     - TOMCATUSER=tomcat8
