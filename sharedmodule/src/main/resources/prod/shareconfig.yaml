@@ -5,15 +5,15 @@ app:
   test: false
 
   # article
-  articleResource: https://shashki.online:8443/article/api/v1/article
-  articlesResource: https://shashki.online:8443/article/api/v1/articles
+  articleResource: https://api.shashki.online/article/api/v1/article
+  articlesResource: https://api.shashki.online/article/api/v1/articles
 
   # board
-  boardboxResource: https://shashki.online:8443/board/api/v1/board
+  boardboxResource: https://api.shashki.online/board/api/v1/board
 
   # security
-  registerResource: https://shashki.online:8443/security/api/v1/register
-  authorizeResource: https://shashki.online:8443/security/api/v1/authorize
-  authenticateResource: https://shashki.online:8443/security/api/v1/authenticate
-  userInfoResource: https://shashki.online:8443/security/api/v1/user-info
-  logoutResource: https://shashki.online:8443/security/api/v1/logout
+  registerResource: https://api.shashki.online/security/api/v1/register
+  authorizeResource: https://api.shashki.online/security/api/v1/authorize
+  authenticateResource: https://api.shashki.online/security/api/v1/authenticate
+  userInfoResource: https://api.shashki.online/security/api/v1/user-info
+  logoutResource: https://api.shashki.online/security/api/v1/logout
