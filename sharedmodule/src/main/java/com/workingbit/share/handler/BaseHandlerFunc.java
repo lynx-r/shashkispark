@@ -26,9 +26,15 @@ public interface BaseHandlerFunc<T extends Payload> {
   Answer process(T data, Optional<AuthUser> token);
 
   default void logRequest(Request request) {
-    System.out.println(String.format("%s %s %s %s %s",
+    System.out.println(String.format("REQUEST: %s %s %s %s %s",
         LocalDateTime.now().format(DateTimeFormatter.ISO_DATE),
         request.requestMethod(), request.url(), request.host(), request.userAgent()));
+  }
+
+  default void logResponse(Response response) {
+    System.out.println(String.format("RESPONSE: %s %s %s %s",
+        LocalDateTime.now().format(DateTimeFormatter.ISO_DATE),
+        response.type(), response.status(), response.body()));
   }
 
   default Answer getAnswer(Request request, Response response, boolean secure, T data) {
@@ -101,6 +107,7 @@ public interface BaseHandlerFunc<T extends Payload> {
   default String getSessionAndSetCookieInResponse(Response response) {
     String anonymousSession = Utils.getRandomString(SESSION_LENGTH);
     response.cookie(ANONYMOUS_SESSION_HEADER, anonymousSession, COOKIE_AGE, false, true);
+    System.out.println("Set-Cookie " + ANONYMOUS_SESSION_HEADER + ": " + anonymousSession);
     return anonymousSession;
   }
 

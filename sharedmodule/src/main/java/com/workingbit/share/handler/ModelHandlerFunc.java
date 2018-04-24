@@ -23,6 +23,7 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> 
     Answer answer = getAnswer(request, response, secure, data);
     response.status(answer.getStatusCode());
 
+    logResponse(response);
     return dataToJson(answer);
   }
 
