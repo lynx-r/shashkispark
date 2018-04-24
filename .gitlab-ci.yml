@@ -1,3 +1,5 @@
+image: provocon/gitlabci-gradle-java
+
 production:
   stage: deploy
   script:
