@@ -5,10 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Aleksey Popryadukhin on 16/04/2018.
@@ -38,8 +43,8 @@ public class SecureUser extends BaseDomain {
   private String username;
 
   @DynamoDBTypeConvertedEnum
-  @DynamoDBAttribute(attributeName = "role")
-  private EnumSecureRole role;
+  @DynamoDBAttribute(attributeName = "roles")
+  private Set<EnumSecureRole> roles = new HashSet<>();
 
   /**
    * hash of user:password:salt
@@ -104,9 +109,13 @@ public class SecureUser extends BaseDomain {
         .append("createdAt", createdAt)
         .append("updatedAt", updatedAt)
         .append("username", username)
-        .append("role", role)
+        .append("roles", roles)
         .append("accessToken", accessToken)
         .append("userSession", userSession)
         .toString();
+  }
+
+  public void addRole(EnumSecureRole role) {
+    roles.add(role);
   }
 }

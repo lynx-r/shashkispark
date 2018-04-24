@@ -35,6 +35,7 @@ public class ShareRemoteClient {
   private String articles;
   private String boardbox;
   private String userInfo;
+  private String saveUserInfo;
   private String logout;
 
   private ShareRemoteClient(ShareProperties shareProperties) {
@@ -45,6 +46,7 @@ public class ShareRemoteClient {
     articles = shareProperties.articlesResource();
     boardbox = shareProperties.boardboxResource();
     userInfo = shareProperties.userInfoResource();
+    saveUserInfo = shareProperties.saveUserInfoResource();
     logout = shareProperties.logoutResource();
     UnirestUtil.configureSerialization();
   }
@@ -120,6 +122,11 @@ public class ShareRemoteClient {
   public Optional<UserInfo> userInfo(AuthUser authUser) {
     Map<String, String> authHeaders = getAuthHeaders(authUser);
     return post(userInfo, authUser, authHeaders);
+  }
+
+  public Optional<UserInfo> saveUserInfo(UserInfo userInfo, AuthUser authUser) {
+    Map<String, String> authHeaders = getAuthHeaders(authUser);
+    return post(saveUserInfo, userInfo, authHeaders);
   }
 
   public Optional<AuthUser> logout(AuthUser authUser) {

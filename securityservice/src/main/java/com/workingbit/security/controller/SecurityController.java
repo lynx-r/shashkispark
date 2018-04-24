@@ -6,6 +6,7 @@ import com.workingbit.share.handler.ModelHandlerFunc;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.RegisterUser;
+import com.workingbit.share.model.UserInfo;
 import spark.Route;
 
 import static com.workingbit.security.SecurityEmbedded.secureUserService;
@@ -46,6 +47,13 @@ public class SecurityController {
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
       ).handleRequest(req, res, Path.USER_INFO, AuthUser.class);
+
+  public static Route saveUserInfo = (req, res) ->
+      ((ModelHandlerFunc<UserInfo>) (data, token) ->
+          secureUserService.saveUserInfo(data, token)
+              .map(Answer::ok)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
+      ).handleRequest(req, res, Path.USER_INFO, UserInfo.class);
 
   public static Route logout = (req, res) ->
       ((ModelHandlerFunc<AuthUser>) (data, token) ->

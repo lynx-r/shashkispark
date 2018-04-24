@@ -11,6 +11,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.workingbit.security.SecurityEmbedded.appProperties;
 import static com.workingbit.security.SecurityEmbedded.secureUserDao;
@@ -48,11 +49,11 @@ public class SecureUserService {
       secureUser.setSecureToken(accessToken.secureToken);
       secureUser.setAccessToken(accessToken.accessToken);
       secureUser.setUserSession(userSession);
-      secureUser.setRole(EnumSecureRole.AUTHOR);
+      secureUser.addRole(EnumSecureRole.AUTHOR);
       secureUserDao.save(secureUser);
 
       // send access token and userSession
-      AuthUser authUser = new AuthUser(secureUser.getId(), username, accessToken.accessToken, userSession, secureUser.getRole());
+      AuthUser authUser = new AuthUser(secureUser.getId(), username, accessToken.accessToken, userSession, secureUser.getRoles());
       return Optional.of(authUser);
     } catch (Exception e) {
       e.printStackTrace();
@@ -83,8 +84,7 @@ public class SecureUserService {
 
               // send access token and userSession
               String userId = secureUser.getId();
-              EnumSecureRole role = secureUser.getRole();
-
+              Set<EnumSecureRole> role = secureUser.getRoles();
               return new AuthUser(userId, username, accessToken.accessToken, userSession, role);
             }
           } catch (Exception e) {
@@ -96,7 +96,7 @@ public class SecureUserService {
 
   public Optional<AuthUser> authenticate(Optional<AuthUser> token) {
     return token
-        .filter(authUser -> !EnumSecureRole.ANONYMOUS.equals(authUser.getRole()))
+        .filter(authUser -> !authUser.getRoles().contains(EnumSecureRole.ANONYMOUS))
         .map(authUser -> {
           String session = authUser.getUserSession();
           String accessToken = authUser.getAccessToken();
@@ -104,7 +104,7 @@ public class SecureUserService {
           return secureUserOptional.map((secureUser) -> {
             boolean isAuth = isAuthed(accessToken, secureUser);
             if (isAuth) {
-              if (!EnumSecureRole.INTERNAL.equals(authUser.getRole())) {
+              if (!authUser.getRoles().contains(EnumSecureRole.INTERNAL)) {
                 TokenPair updatedAccessToken = getAccessToken(secureUser);
                 secureUser.setAccessToken(updatedAccessToken.accessToken);
                 secureUser.setSecureToken(updatedAccessToken.secureToken);
@@ -114,7 +114,7 @@ public class SecureUserService {
 
               authUser.setUsername(secureUser.getUsername());
               authUser.setUserId(secureUser.getId());
-              authUser.setRole(secureUser.getRole());
+              authUser.setRoles(secureUser.getRoles());
               return authUser;
             }
             return null;
@@ -128,7 +128,25 @@ public class SecureUserService {
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
-        return new UserInfo(secureUser.getUsername());
+        return new UserInfo(secureUser.getUsername(), secureUser.getRoles());
+      }
+      return null;
+    });
+  }
+
+  public Optional<UserInfo> saveUserInfo(UserInfo userInfo, Optional<AuthUser> token) {
+    if (!token.isPresent()) {
+      return Optional.of(userInfo);
+    }
+    AuthUser authUser = token.get();
+    String accessToken = authUser.getAccessToken();
+    Optional<SecureUser> secureUserOptional = secureUserDao.findById(authUser.getUserId());
+    return secureUserOptional.map((secureUser) -> {
+      boolean isAuth = isAuthed(accessToken, secureUser);
+      if (isAuth) {
+        secureUser.setRoles(userInfo.getRoles());
+        secureUserDao.save(secureUser);
+        return new UserInfo(secureUser.getUsername(), secureUser.getRoles());
       }
       return null;
     });

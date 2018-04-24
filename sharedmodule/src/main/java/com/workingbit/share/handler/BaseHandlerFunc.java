@@ -10,6 +10,7 @@ import spark.Response;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.workingbit.share.common.RequestConstants.*;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
@@ -50,7 +51,7 @@ public interface BaseHandlerFunc<T extends Payload> {
       if (securedAnswer == null) {
         return getForbiddenAnswer(response);
       }
-      if (hasRights(securedAnswer.getAuthUser().getRole(), path)) {
+      if (hasRights(securedAnswer.getAuthUser().getRoles(), path)) {
         return securedAnswer;
       }
       return getForbiddenAnswer(response);
@@ -59,8 +60,11 @@ public interface BaseHandlerFunc<T extends Payload> {
     }
   }
 
-  default boolean hasRights(EnumSecureRole role, IPath path) {
-    return path.getRoles().isEmpty() || path.getRoles().contains(role);
+  default boolean hasRights(Set<EnumSecureRole> roles, IPath path) {
+    if (roles.contains(EnumSecureRole.BAN)) {
+      return false;
+    }
+    return path.getRoles().isEmpty() || path.getRoles().contains(roles);
   }
 
   default Answer getSecureAnswer(T data, AuthUser clientAuthUser) {
@@ -76,7 +80,7 @@ public interface BaseHandlerFunc<T extends Payload> {
   default Answer getForbiddenAnswer(Response response) {
     String anonymousSession = getSessionAndSetCookieInResponse(response);
     AuthUser authUser = new AuthUser(anonymousSession)
-        .role(EnumSecureRole.ANONYMOUS);
+        .setRole(EnumSecureRole.ANONYMOUS);
     return Answer.created(authUser)
         .statusCode(HTTP_FORBIDDEN)
         .message(HTTP_FORBIDDEN, ErrorMessages.UNABLE_TO_AUTHENTICATE);
@@ -124,8 +128,8 @@ public interface BaseHandlerFunc<T extends Payload> {
 
   default AuthUser getInternalUserRole(String accessToken, String userSession) {
     if (StringUtils.isBlank(accessToken) || StringUtils.isBlank(userSession)) {
-      return new AuthUser(userSession).role(EnumSecureRole.ANONYMOUS);
+      return new AuthUser(userSession).setRole(EnumSecureRole.ANONYMOUS);
     }
-    return new AuthUser(accessToken, userSession).role(EnumSecureRole.INTERNAL);
+    return new AuthUser(accessToken, userSession).setRole(EnumSecureRole.INTERNAL);
   }
 }

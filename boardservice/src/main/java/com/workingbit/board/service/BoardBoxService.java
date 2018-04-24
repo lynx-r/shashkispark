@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -78,14 +79,13 @@ public class BoardBoxService {
 
   Optional<BoardBox> find(BoardBox boardBox, AuthUser authUser) {
     Optional<BoardBox> board = findBoardAndPutInStore(authUser, boardBox);
-    switch (authUser.getRole()) {
-      case AUTHOR:
-      case ADMIN:
-        return board.map(b -> b.readonly(false))
-            .map(bb -> updateBoardBox(authUser, bb));
-      default:
-        return board.map(b -> b.readonly(true))
-            .map(bb -> updateBoardBox(authUser, bb));
+    boolean secure = authUser.getRoles().containsAll(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
+    if (secure) {
+      return board.map(b -> b.readonly(false))
+          .map(bb -> updateBoardBox(authUser, bb));
+    } else {
+      return board.map(b -> b.readonly(true))
+          .map(bb -> updateBoardBox(authUser, bb));
     }
   }
 
@@ -417,12 +417,11 @@ public class BoardBoxService {
       }
       return null;
     };
-    switch (authUser.getRole()) {
-      case ADMIN:
-      case AUTHOR:
-        return Optional.ofNullable(fromDb.get());
-      default:
-        return Optional.of(fromStore.orElseGet(fromDb));
+    boolean secure = authUser.getRoles().containsAll(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
+    if (secure) {
+      return Optional.ofNullable(fromDb.get());
+    } else {
+      return Optional.of(fromStore.orElseGet(fromDb));
     }
   }
 

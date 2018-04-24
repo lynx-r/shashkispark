@@ -19,5 +19,7 @@ public interface ShareProperties {
 
   String userInfoResource();
 
+  String saveUserInfoResource();
+
   String logoutResource();
 }

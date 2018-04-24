@@ -63,6 +63,7 @@ public class SecurityEmbedded {
           post(Path.AUTHORIZE.getPath(), SecurityController.authorize);
           post(Path.AUTHENTICATE.getPath(), SecurityController.authenticate);
           post(Path.USER_INFO.getPath(), SecurityController.userInfo);
+          post(Path.SAVE_USER_INFO.getPath(), SecurityController.saveUserInfo);
           post(Path.LOGOUT.getPath(), SecurityController.logout);
 
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));

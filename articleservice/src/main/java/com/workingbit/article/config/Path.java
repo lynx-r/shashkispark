@@ -4,17 +4,16 @@ package com.workingbit.article.config;
 import com.workingbit.share.model.EnumSecureRole;
 import com.workingbit.share.model.IPath;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
-import static java.util.Collections.emptySet;
-
 public enum Path implements IPath {
-  HOME("", false, emptySet()),
+  HOME("", false, new HashSet()),
 
-  ARTICLES("/articles", false, emptySet()),
-  ARTICLE("/article", false, emptySet()),
-  ARTICLE_BY_ID("/article/:id", false, emptySet());
+  ARTICLES("/articles", false, new HashSet()),
+  ARTICLE("/article", false, new HashSet()),
+  ARTICLE_BY_ID("/article/:id", false, new HashSet());
 
   private String path;
   private boolean secure;
@@ -51,8 +50,13 @@ public enum Path implements IPath {
     return this;
   }
 
-  public Path setRoles(List<EnumSecureRole> roles) {
+  public Path setRoles(Set<EnumSecureRole> roles) {
     this.roles.addAll(roles);
     return this;
+  }
+
+  public static class Constants {
+    public static Set<EnumSecureRole> ARTICLE_SECURE_ROLES
+        = new HashSet<>(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
   }
 }

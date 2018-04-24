@@ -7,10 +7,11 @@ import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.handler.ModelHandlerFunc;
 import com.workingbit.share.handler.ParamsHandlerFunc;
 import com.workingbit.share.handler.QueryParamsHandlerFunc;
-import com.workingbit.share.model.*;
+import com.workingbit.share.model.Answer;
+import com.workingbit.share.model.CreateArticlePayload;
+import com.workingbit.share.model.ParamPayload;
+import com.workingbit.share.model.QueryPayload;
 import spark.Route;
-
-import java.util.Arrays;
 
 import static com.workingbit.article.ArticleEmbedded.articleService;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -43,7 +44,7 @@ public class ArticleController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_ARTICLE))
       ).handleRequest(req, res,
-          Path.ARTICLE.setSecure(true).setRoles(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR)),
+          Path.ARTICLE.setSecure(true).setRoles(Path.Constants.ARTICLE_SECURE_ROLES),
           CreateArticlePayload.class);
 
   public static Route saveArticle = (req, res) ->
@@ -52,6 +53,6 @@ public class ArticleController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_ARTICLE))
       ).handleRequest(req, res,
-          Path.ARTICLE.setSecure(true).setRoles(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR)),
+          Path.ARTICLE.setSecure(true).setRoles(Path.Constants.ARTICLE_SECURE_ROLES),
           Article.class);
 }

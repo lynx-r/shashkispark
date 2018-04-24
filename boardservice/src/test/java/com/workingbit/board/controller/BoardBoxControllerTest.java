@@ -70,7 +70,7 @@ public class BoardBoxControllerTest {
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId, authUser);
 
-    boardBox = (BoardBox) post(Path.BOARD_ADD_DRAUGHT, boardBox, authUser).getBody();
+    boardBox = (BoardBox) post(Path.BOARD_ADD_DRAUGHT.getPath(), boardBox, authUser).getBody();
     Board board = boardBox.getBoard();
     Draught draught = board.getWhiteDraughts().get("c3");
     assertTrue(draught != null);
@@ -165,11 +165,11 @@ public class BoardBoxControllerTest {
     createBoardPayload.setFillBoard(false);
     createBoardPayload.setBlack(false);
     UnirestUtil.configureSerialization();
-    BoardBox body = (BoardBox) post(Path.BOARD, createBoardPayload, authUser).getBody();
+    BoardBox body = (BoardBox) post(Path.BOARD.getPath(), createBoardPayload, authUser).getBody();
     assertNotNull(body);
 
     body.setEditMode(EnumEditBoardBoxMode.PLACE);
-    body = (BoardBox) put(Path.BOARD, body, authUser).getBody();
+    body = (BoardBox) put(Path.BOARD.getPath(), body, authUser).getBody();
 
     BoardBox boardBox = (BoardBox) get(Path.BOARD + "/" + body.getId()).getBody();
     Board board = boardBox.getBoard();

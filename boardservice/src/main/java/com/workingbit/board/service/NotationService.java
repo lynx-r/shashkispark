@@ -2,7 +2,9 @@ package com.workingbit.board.service;
 
 import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.model.EnumSecureRole;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static com.workingbit.board.BoardEmbedded.notationDao;
@@ -19,13 +21,12 @@ public class NotationService {
     }
 
     Optional<Notation> notationOptional = notationDao.findById(notationId);
-    switch (authUser.getRole()) {
-      case ADMIN:
-      case AUTHOR:
-        return notationOptional;
-      default:
-        Notation notation = findNotationAndPutInStore(authUser, notationOptional, notationId);
-        return Optional.ofNullable(notation);
+    boolean secure = authUser.getRoles().containsAll(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
+    if (secure) {
+      return notationOptional;
+    } else {
+      Notation notation = findNotationAndPutInStore(authUser, notationOptional, notationId);
+      return Optional.ofNullable(notation);
     }
   }
 
@@ -33,14 +34,12 @@ public class NotationService {
     if (authUser == null) {
       return;
     }
-    switch (authUser.getRole()) {
-      case ADMIN:
-      case AUTHOR:
-        notation.setReadonly(false);
-        notationDao.save(notation);
-        return;
-      default:
-        notationStoreService.put(authUser.getUserSession(), notation);
+    boolean secure = authUser.getRoles().containsAll(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
+    if (secure) {
+      notation.setReadonly(false);
+      notationDao.save(notation);
+    } else {
+      notationStoreService.put(authUser.getUserSession(), notation);
     }
   }
 

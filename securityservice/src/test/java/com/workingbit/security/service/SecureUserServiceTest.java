@@ -85,7 +85,7 @@ public class SecureUserServiceTest {
     Optional<AuthUser> loggedoutOpt = secureUserService.logout(register);
     assertTrue(loggedoutOpt.isPresent());
     AuthUser loggedout = loggedoutOpt.get();
-    assertEquals(EnumSecureRole.ANONYMOUS, loggedout.getRole());
+    assertEquals(EnumSecureRole.ANONYMOUS, loggedout.getRoles());
 
     Optional<AuthUser> forbiddenOpt = secureUserService.authenticate(loggedoutOpt);
     assertFalse(forbiddenOpt.isPresent());

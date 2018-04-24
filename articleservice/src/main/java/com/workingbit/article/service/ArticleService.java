@@ -1,7 +1,6 @@
 package com.workingbit.article.service;
 
 import com.workingbit.share.client.ShareRemoteClient;
-import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.*;
@@ -63,10 +62,6 @@ public class ArticleService {
 
   public Optional<Article> save(Article article, Optional<AuthUser> token) {
     return token.map(authUser -> {
-      if (!isOwn(authUser, article)) {
-        logger.error(ErrorMessages.NOT_OWNER);
-        return null;
-      }
       String title = article.getTitle().trim();
       article.setTitle(title);
       String content = article.getContent().trim();
@@ -91,10 +86,5 @@ public class ArticleService {
 
   public Optional<Article> findById(String articleId) {
     return articleDao.findById(articleId);
-  }
-
-  private boolean isOwn(AuthUser authUser, Article article) {
-    // authUser == null when board is created from notation pdn
-    return authUser == null || authUser.getUserId().equals(article.getUserId());
   }
 }

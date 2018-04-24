@@ -7,9 +7,13 @@ public enum EnumSecureRole {
   AUTHOR,
   ADMIN,
   ANONYMOUS,
-  INTERNAL;
+  INTERNAL,
+  BAN;
 
   public static boolean isSecure(EnumSecureRole role) {
+    if (BAN.equals(role)) {
+      return false;
+    }
     switch (role) {
       case ADMIN:
       case AUTHOR:

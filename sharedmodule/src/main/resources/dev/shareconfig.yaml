@@ -9,4 +9,5 @@ app:
   authorizeResource: http://localhost:8001/security/api/v1/authorize
   authenticateResource: http://localhost:8001/security/api/v1/authenticate
   userInfoResource: http://localhost:8001/security/api/v1/user-info
+  saveUserInfoResource: http://localhost:8001/security/api/v1/save-user-info
   logoutResource: http://localhost:8001/security/api/v1/logout
