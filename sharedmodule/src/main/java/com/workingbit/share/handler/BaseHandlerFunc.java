@@ -2,17 +2,13 @@ package com.workingbit.share.handler;
 
 import com.workingbit.share.client.ShareRemoteClient;
 import com.workingbit.share.common.ErrorMessages;
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.EnumSecureRole;
-import com.workingbit.share.model.Payload;
+import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import static com.workingbit.share.common.RequestConstants.*;
@@ -27,17 +23,17 @@ public interface BaseHandlerFunc<T extends Payload> {
 
   default void logRequest(Request request) {
     System.out.println(String.format("REQUEST: %s %s %s %s %s",
-        LocalDateTime.now().format(DateTimeFormatter.ISO_DATE),
+        LocalDateTime.now(),
         request.requestMethod(), request.url(), request.host(), request.userAgent()));
   }
 
-  default void logResponse(Response response) {
-    System.out.println(String.format("RESPONSE: %s %s %s %s",
-        LocalDateTime.now().format(DateTimeFormatter.ISO_DATE),
-        response.type(), response.status(), response.body()));
+  default void logResponse(Response response, AuthUser token) {
+    System.out.println(String.format("RESPONSE: %s %s %s",
+        LocalDateTime.now(),
+        response.status(), token));
   }
 
-  default Answer getAnswer(Request request, Response response, boolean secure, T data) {
+  default Answer getAnswer(Request request, Response response, IPath path, T data) {
     String userSession = getOrCreateSession(request, response);
     String accessToken = request.headers(ACCESS_TOKEN_HEADER);
     String roleStr = request.headers(USER_ROLE_HEADER);
@@ -46,7 +42,7 @@ public interface BaseHandlerFunc<T extends Payload> {
       role = EnumSecureRole.valueOf(roleStr.toUpperCase());
     }
     AuthUser internalUserRole = getInternalUserRole(accessToken, userSession);
-    if (secure || EnumSecureRole.isSecure(role)) {
+    if (path.isSecure() || EnumSecureRole.isSecure(role)) {
       if (internalUserRole == null) {
         return getForbiddenAnswer(response);
       }
@@ -54,10 +50,17 @@ public interface BaseHandlerFunc<T extends Payload> {
       if (securedAnswer == null) {
         return getForbiddenAnswer(response);
       }
-      return securedAnswer;
+      if (hasRights(securedAnswer.getAuthUser().getRole(), path)) {
+        return securedAnswer;
+      }
+      return getForbiddenAnswer(response);
     } else {
       return getInsecureAnswer(data, internalUserRole);
     }
+  }
+
+  default boolean hasRights(EnumSecureRole role, IPath path) {
+    return path.getRoles().isEmpty() || path.getRoles().contains(role);
   }
 
   default Answer getSecureAnswer(T data, AuthUser clientAuthUser) {
@@ -80,7 +83,11 @@ public interface BaseHandlerFunc<T extends Payload> {
   }
 
   default Answer getInsecureAnswer(T data, AuthUser authUser) {
-    return process(data, Optional.ofNullable(authUser));
+    Answer process = process(data, Optional.ofNullable(authUser));
+    if (process.getBody() instanceof AuthUser) {
+      process.setAuthUser((AuthUser) process.getBody());
+    }
+    return process;
   }
 
   default String getOrCreateSession(Request request, Response response) {

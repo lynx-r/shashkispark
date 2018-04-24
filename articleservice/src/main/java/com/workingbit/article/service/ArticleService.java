@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 import static com.workingbit.article.ArticleEmbedded.articleDao;
-import static com.workingbit.share.util.Utils.getRandomString;
+import static com.workingbit.share.util.Utils.getRandomUUID;
 
 /**
  * Created by Aleksey Popryaduhin on 09:05 28/09/2017.
@@ -41,7 +41,7 @@ public class ArticleService {
     Utils.setArticleIdAndCreatedAt(article, present);
 
     article.setState(EnumArticleState.NEW_ADDED);
-    article.setBoardBoxId(getRandomString());
+    article.setBoardBoxId(getRandomUUID());
 
     CreateBoardPayload boardRequest = articleAndBoard.getBoardRequest();
     boardRequest.setBoardBoxId(article.getBoardBoxId());

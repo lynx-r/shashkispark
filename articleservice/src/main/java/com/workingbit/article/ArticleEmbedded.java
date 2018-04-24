@@ -54,14 +54,14 @@ public class ArticleEmbedded {
   }
 
   private static void establishRoutes() {
-    path("/", () -> get(Path.HOME, ArticleController.home));
+    path("/", () -> get(Path.HOME.getPath(), ArticleController.home));
 
     path("/api", () ->
         path("/v1", () -> {
-          get(Path.ARTICLES, ArticleController.findAllArticles);
-          get(Path.ARTICLE_BY_ID, ArticleController.findArticleById);
-          post(Path.ARTICLE, ArticleController.createArticleAndBoard);
-          put(Path.ARTICLE, ArticleController.saveArticle);
+          get(Path.ARTICLES.getPath(), ArticleController.findAllArticles);
+          get(Path.ARTICLE_BY_ID.getPath(), ArticleController.findArticleById);
+          post(Path.ARTICLE.getPath(), ArticleController.createArticleAndBoard);
+          put(Path.ARTICLE.getPath(), ArticleController.saveArticle);
 
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));
           internalServerError((req, res) -> dataToJson(Answer.error(HTTP_INTERNAL_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR)));

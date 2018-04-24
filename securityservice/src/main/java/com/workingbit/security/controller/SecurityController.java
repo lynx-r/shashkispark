@@ -1,5 +1,6 @@
 package com.workingbit.security.controller;
 
+import com.workingbit.security.config.Path;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.handler.ModelHandlerFunc;
 import com.workingbit.share.model.Answer;
@@ -23,33 +24,33 @@ public class SecurityController {
           secureUserService.register((RegisterUser) data)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, String.format(ErrorMessages.UNABLE_TO_REGISTER, data.getUsername())))
-      ).handleRequest(req, res, false, RegisterUser.class);
+      ).handleRequest(req, res, Path.REGISTER, RegisterUser.class);
 
   public static Route authorize = (req, res) ->
       ((ModelHandlerFunc<RegisterUser>) (data, token) ->
           secureUserService.authorize((RegisterUser) data)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHORIZE))
-      ).handleRequest(req, res, false, RegisterUser.class);
+      ).handleRequest(req, res, Path.AUTHORIZE, RegisterUser.class);
 
   public static Route authenticate = (req, res) ->
       ((ModelHandlerFunc<AuthUser>) (data, token) ->
           secureUserService.authenticate(token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_FORBIDDEN, ErrorMessages.UNABLE_TO_AUTHENTICATE))
-      ).handleRequest(req, res, false, AuthUser.class);
+      ).handleRequest(req, res, Path.AUTHENTICATE, AuthUser.class);
 
   public static Route userInfo = (req, res) ->
       ((ModelHandlerFunc<AuthUser>) (data, token) ->
           secureUserService.userInfo((AuthUser) data)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
-      ).handleRequest(req, res, false, AuthUser.class);
+      ).handleRequest(req, res, Path.USER_INFO, AuthUser.class);
 
   public static Route logout = (req, res) ->
       ((ModelHandlerFunc<AuthUser>) (data, token) ->
           secureUserService.logout(token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_ASSIGN_ROLE))
-      ).handleRequest(req, res, false, AuthUser.class);
+      ).handleRequest(req, res, Path.LOGOUT, AuthUser.class);
 }

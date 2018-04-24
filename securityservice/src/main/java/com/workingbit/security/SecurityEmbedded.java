@@ -55,15 +55,15 @@ public class SecurityEmbedded {
   }
 
   private static void establishRoutes() {
-    path("/", () -> get(Path.HOME, SecurityController.home));
+    path("/", () -> get(Path.HOME.getPath(), SecurityController.home));
 
     path("/api", () ->
         path("/v1", () -> {
-          post(Path.REGISTER, SecurityController.register);
-          post(Path.AUTHORIZE, SecurityController.authorize);
-          post(Path.AUTHENTICATE, SecurityController.authenticate);
-          post(Path.USER_INFO, SecurityController.userInfo);
-          post(Path.LOGOUT, SecurityController.logout);
+          post(Path.REGISTER.getPath(), SecurityController.register);
+          post(Path.AUTHORIZE.getPath(), SecurityController.authorize);
+          post(Path.AUTHENTICATE.getPath(), SecurityController.authenticate);
+          post(Path.USER_INFO.getPath(), SecurityController.userInfo);
+          post(Path.LOGOUT.getPath(), SecurityController.logout);
 
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));
           internalServerError((req, res) -> dataToJson(Answer.error(HTTP_INTERNAL_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR)));

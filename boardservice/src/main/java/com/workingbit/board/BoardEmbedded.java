@@ -66,24 +66,24 @@ public class BoardEmbedded {
   }
 
   private static void establishRoutes() {
-    path("/", () -> get(Path.HOME, BoardBoxController.home));
+    path("/", () -> get(Path.HOME.getPath(), BoardBoxController.home));
 
     path("/api", () ->
         path("/v1", () -> {
-          get(Path.BOARD_BY_ID, BoardBoxController.findBoardById);
+          get(Path.BOARD_BY_ID.getPath(), BoardBoxController.findBoardById);
 
-          post(Path.BOARD_ADD_DRAUGHT, BoardBoxController.addDraught);
-          post(Path.BOARD, BoardBoxController.createBoard);
-          put(Path.BOARD, BoardBoxController.saveBoard);
-          post(Path.BOARD_MOVE, BoardBoxController.move);
-          post(Path.BOARD_HIGHLIGHT, BoardBoxController.highlightBoard);
-          post(Path.BOARD_REDO, BoardBoxController.redo);
-          post(Path.BOARD_UNDO, BoardBoxController.undo);
-          post(Path.BOARD_LOAD_PREVIEW, BoardBoxController.loadPreviewBoard);
-          post(Path.BOARD_SWITCH, BoardBoxController.switchNotation);
-          post(Path.BOARD_FORK, BoardBoxController.forkNotation);
-          post(Path.BOARD_VIEW_BRANCH, BoardBoxController.viewBranch);
-          post(Path.CHANGE_TURN, BoardBoxController.changeTurn);
+          post(Path.BOARD_ADD_DRAUGHT.getPath(), BoardBoxController.addDraught);
+          post(Path.BOARD.getPath(), BoardBoxController.createBoard);
+          put(Path.BOARD.getPath(), BoardBoxController.saveBoard);
+          post(Path.BOARD_MOVE.getPath(), BoardBoxController.move);
+          post(Path.BOARD_HIGHLIGHT.getPath(), BoardBoxController.highlightBoard);
+          post(Path.BOARD_REDO.getPath(), BoardBoxController.redo);
+          post(Path.BOARD_UNDO.getPath(), BoardBoxController.undo);
+          post(Path.BOARD_LOAD_PREVIEW.getPath(), BoardBoxController.loadPreviewBoard);
+          post(Path.BOARD_SWITCH.getPath(), BoardBoxController.switchNotation);
+          post(Path.BOARD_FORK.getPath(), BoardBoxController.forkNotation);
+          post(Path.BOARD_VIEW_BRANCH.getPath(), BoardBoxController.viewBranch);
+          post(Path.CHANGE_TURN.getPath(), BoardBoxController.changeTurn);
 
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));
           internalServerError((req, res) -> dataToJson(Answer.error(HTTP_INTERNAL_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR)));
