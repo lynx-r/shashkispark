@@ -146,7 +146,7 @@ public class BoardBoxService {
               isOwn(authUser, boardBox);
               if (!isOwn(authUser, boardBox)) {
                 logger.error(ErrorMessages.NOT_OWNER);
-                throw new BoardServiceException(ErrorMessages.NOT_OWNER);
+                return null;
               }
               BoardBox userBoardBox = updatedBoxOrig.deepClone();
               Board boardUpdated = userBoardBox.getBoard();
@@ -196,7 +196,7 @@ public class BoardBoxService {
             .map(updatedBox -> {
               if (!isOwn(authUser, boardBox)) {
                 logger.error(ErrorMessages.NOT_OWNER);
-                throw new BoardServiceException(ErrorMessages.NOT_OWNER);
+                return null;
               }
 
               Board inverted = boardBox.getBoard();
@@ -238,7 +238,7 @@ public class BoardBoxService {
         .map(updated -> {
           if (!isOwn(authUser, boardBox)) {
             logger.error(ErrorMessages.NOT_OWNER);
-            throw new BoardServiceException(ErrorMessages.NOT_OWNER);
+            return null;
           }
 
           Board currentBoard = updated.getBoard();
@@ -357,7 +357,7 @@ public class BoardBoxService {
           } else {
             if (!isOwn(authUser, boardBox)) {
               logger.error(ErrorMessages.NOT_OWNER);
-              throw new BoardServiceException(ErrorMessages.NOT_OWNER);
+              return null;
             }
             boardBoxDao.save(boardBox);
           }
@@ -397,7 +397,7 @@ public class BoardBoxService {
   private BoardBox saveAndFillBoard(AuthUser authUser, BoardBox boardBox) {
     if (!isOwn(authUser, boardBox)) {
       logger.error(ErrorMessages.NOT_OWNER);
-      throw new BoardServiceException(ErrorMessages.NOT_OWNER);
+      return null;
     }
 
     boardBox.setReadonly(false);

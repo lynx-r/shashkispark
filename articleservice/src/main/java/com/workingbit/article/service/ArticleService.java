@@ -1,6 +1,5 @@
 package com.workingbit.article.service;
 
-import com.workingbit.article.exception.ArticleServiceException;
 import com.workingbit.share.client.ShareRemoteClient;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Article;
@@ -66,7 +65,7 @@ public class ArticleService {
     return token.map(authUser -> {
       if (!isOwn(authUser, article)) {
         logger.error(ErrorMessages.NOT_OWNER);
-        throw new ArticleServiceException(ErrorMessages.NOT_OWNER);
+        return null;
       }
       String title = article.getTitle().trim();
       article.setTitle(title);
