@@ -8,15 +8,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.util.Collections.singletonList;
-
 public enum Path implements IPath {
   HOME("/", false, new HashSet()),
   REGISTER("/register", false, new HashSet()),
   AUTHORIZE("/authorize", false, new HashSet()),
   AUTHENTICATE("/authenticate", false, new HashSet()),
-  USER_INFO("/user-info", true, new HashSet<>(singletonList(EnumSecureRole.ADMIN))),
-  SAVE_USER_INFO("/save-user-info", true, new HashSet<>(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR))),
+  USER_INFO("/user-info", true, Constants.SECURE_USER_ROLES),
+  SAVE_USER_INFO("/save-user-info", true, Constants.SECURE_USER_ROLES),
   LOGOUT("/logout", false, new HashSet());
 
   private String path;
@@ -57,5 +55,9 @@ public enum Path implements IPath {
   public Path setRoles(Set<EnumSecureRole> roles) {
     this.roles = roles;
     return this;
+  }
+
+  public static class Constants {
+    public static final HashSet<EnumSecureRole> SECURE_USER_ROLES = new HashSet<>(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
   }
 }

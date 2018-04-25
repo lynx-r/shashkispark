@@ -10,7 +10,6 @@ import com.workingbit.share.util.UnirestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +19,7 @@ import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN_HEADER;
 import static com.workingbit.share.common.RequestConstants.USER_SESSION_HEADER;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.util.Collections.emptyMap;
 
 /**
  * Created by Aleksey Popryaduhin on 23:59 27/09/2017.
@@ -52,27 +52,15 @@ public class ShareRemoteClient {
   }
 
   public Optional<AuthUser> register(RegisterUser registerUser) {
-    return register(registerUser, Collections.emptyMap());
-  }
-
-  public Optional<AuthUser> register(RegisterUser registerUser, Map<String, String> headers) {
-    return post(register, registerUser, headers);
+    return post(register, registerUser, emptyMap());
   }
 
   public Optional<AuthUser> authorize(RegisterUser registerUser) {
-    return authorize(registerUser, Collections.emptyMap());
-  }
-
-  public Optional<AuthUser> authorize(RegisterUser registerUser, Map<String, String> headers) {
-    return post(authorize, registerUser, headers);
+    return post(authorize, registerUser, emptyMap());
   }
 
   public Optional<AuthUser> authenticate(AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
-    return authenticate(authUser, headers);
-  }
-
-  public Optional<AuthUser> authenticate(AuthUser authUser, Map<String, String> headers) {
     return post(authenticate, authUser, headers);
   }
 
@@ -81,17 +69,24 @@ public class ShareRemoteClient {
     return post(article, articlePayload, headers);
   }
 
-  public Optional<CreateArticleResponse> createArticle(CreateArticlePayload articlePayload, Map<String, String> headers) {
-    return post(article, articlePayload, headers);
-  }
-
   public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return post(boardbox, boardRequest, headers);
   }
 
-  public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, Map<String, String> headers) {
-    return post(boardbox, boardRequest, headers);
+  public Optional<UserInfo> userInfo(AuthUser authUser) {
+    Map<String, String> authHeaders = getAuthHeaders(authUser);
+    return post(userInfo, authUser, authHeaders);
+  }
+
+  public Optional<UserInfo> saveUserInfo(UserInfo userInfo, AuthUser authUser) {
+    Map<String, String> authHeaders = getAuthHeaders(authUser);
+    return post(saveUserInfo, userInfo, authHeaders);
+  }
+
+  public Optional<AuthUser> logout(AuthUser authUser) {
+    Map<String, String> headers = getAuthHeaders(authUser);
+    return post(logout, authUser, headers);
   }
 
   private Map<String, String> getAuthHeaders(AuthUser authUser) {
@@ -117,21 +112,6 @@ public class ShareRemoteClient {
       logger.error("Unirest exception", e);
     }
     return Optional.empty();
-  }
-
-  public Optional<UserInfo> userInfo(AuthUser authUser) {
-    Map<String, String> authHeaders = getAuthHeaders(authUser);
-    return post(userInfo, authUser, authHeaders);
-  }
-
-  public Optional<UserInfo> saveUserInfo(UserInfo userInfo, AuthUser authUser) {
-    Map<String, String> authHeaders = getAuthHeaders(authUser);
-    return post(saveUserInfo, userInfo, authHeaders);
-  }
-
-  public Optional<AuthUser> logout(AuthUser authUser) {
-    Map<String, String> headers = getAuthHeaders(authUser);
-    return post(logout, authUser, headers);
   }
 
   @SuppressWarnings("unchecked")

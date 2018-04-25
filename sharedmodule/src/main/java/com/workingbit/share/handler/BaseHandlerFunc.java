@@ -43,18 +43,23 @@ public interface BaseHandlerFunc<T extends Payload> {
       role = EnumSecureRole.valueOf(roleStr.toUpperCase());
     }
     AuthUser internalUserRole = getInternalUserRole(accessToken, userSession);
+    if (internalUserRole == null) {
+      return getForbiddenAnswer(response);
+    }
     if (path.isSecure() || EnumSecureRole.isSecure(role)) {
-      if (internalUserRole == null) {
+      Optional<AuthUser> authenticated = isAuthenticated(internalUserRole);
+      if (!authenticated.isPresent()) {
         return getForbiddenAnswer(response);
       }
-      Answer securedAnswer = getSecureAnswer(data, internalUserRole);
+      AuthUser securedUser = authenticated.get();
+      if (!hasRights(securedUser.getRoles(), path)) {
+        return getForbiddenAnswer(response);
+      }
+      Answer securedAnswer = getSecureAnswer(data, securedUser);
       if (securedAnswer == null) {
         return getForbiddenAnswer(response);
       }
-      if (hasRights(securedAnswer.getAuthUser().getRoles(), path)) {
-        return securedAnswer;
-      }
-      return getForbiddenAnswer(response);
+      return securedAnswer;
     } else {
       return getInsecureAnswer(data, internalUserRole);
     }
@@ -64,17 +69,13 @@ public interface BaseHandlerFunc<T extends Payload> {
     if (roles.contains(EnumSecureRole.BAN)) {
       return false;
     }
-    return path.getRoles().isEmpty() || path.getRoles().contains(roles);
+    return path.getRoles().isEmpty() || path.getRoles().containsAll(roles);
   }
 
-  default Answer getSecureAnswer(T data, AuthUser clientAuthUser) {
-    Optional<AuthUser> authenticated = isAuthenticated(clientAuthUser);
-    if (authenticated.isPresent()) {
-      Answer processed = process(data, authenticated);
-      processed.setAuthUser(authenticated.get());
-      return processed;
-    }
-    return null;
+  default Answer getSecureAnswer(T data, AuthUser authenticated) {
+    Answer processed = process(data, Optional.of(authenticated));
+    processed.setAuthUser(authenticated);
+    return processed;
   }
 
   default Answer getForbiddenAnswer(Response response) {

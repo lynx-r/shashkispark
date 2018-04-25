@@ -23,6 +23,8 @@ import static com.workingbit.share.common.RequestConstants.USER_SESSION_HEADER;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static com.workingbit.share.util.Utils.getRandomString;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singleton;
 import static org.junit.Assert.*;
 
 /**
@@ -72,7 +74,7 @@ public class ArticleControllerTest {
     try {
       CreateArticlePayload createArticlePayload = getCreateArticlePayload();
       // can't create
-      Optional<CreateArticleResponse> articleResponseOpt = ShareRemoteClient.Singleton.getInstance().createArticle(createArticlePayload, new HashMap<>());
+      Optional<CreateArticleResponse> articleResponseOpt = ShareRemoteClient.Singleton.getInstance().createArticle(createArticlePayload, new AuthUser());
       assertFalse(articleResponseOpt.isPresent());
 
       AuthUser headers = register();
@@ -112,19 +114,39 @@ public class ArticleControllerTest {
 
     UserInfo userInfo = ShareRemoteClient.Singleton.getInstance().userInfo(headers).get();
     userInfo.addRole(EnumSecureRole.BAN);
-    ShareRemoteClient.Singleton.getInstance().saveUserInfo(userInfo, headers).get();
+    UserInfo savedUserInfo = ShareRemoteClient.Singleton.getInstance().saveUserInfo(userInfo, headers).get();
+    assertTrue(savedUserInfo.getRoles().contains(EnumSecureRole.BAN));
     articleNotAuthorized = (AuthUser) put("", article, headers).getBody();
-    assertTrue(articleNotAuthorized.getRoles().contains(EnumSecureRole.BAN));
+    assertTrue(articleNotAuthorized.getRoles().contains(EnumSecureRole.ANONYMOUS));
 
     userInfo.setRoles(headers.getRoles());
-    ShareRemoteClient.Singleton.getInstance().saveUserInfo(userInfo, headers).get();
+    boolean bannedUserInfo1 = ShareRemoteClient.Singleton.getInstance().saveUserInfo(userInfo, headers).isPresent();
+    assertFalse(bannedUserInfo1);
     assertFalse(articleNotAuthorized.getRoles().contains(EnumSecureRole.BAN));
 
+    articleNotAuthorized = (AuthUser) put("", article, headers).getBody();
+    assertTrue(articleNotAuthorized.getRoles().contains(EnumSecureRole.ANONYMOUS));
+
+    AuthUser admin = register();
+    UserInfo adminInfo = ShareRemoteClient.Singleton.getInstance().userInfo(admin).get();
+    adminInfo.addRole(EnumSecureRole.ADMIN);
+    ShareRemoteClient.Singleton.getInstance().saveUserInfo(adminInfo, admin);
+
+    // unban
+    userInfo.setRoles(singleton(EnumSecureRole.AUTHOR));
+    ShareRemoteClient.Singleton.getInstance().saveUserInfo(userInfo, admin);
+
+    String newTitle = Utils.getRandomString();
+    String newContent = Utils.getRandomString();
+    article.setTitle(newTitle);
+    article.setContent(newContent);
     article = (Article) put("", article, headers).getBody();
 
+    assertEquals(newTitle, article.getTitle());
+
     article = (Article) get("/" + article.getId()).getBody();
-    assertEquals(article.getTitle(), title);
-    assertNotNull(article.getContent(), content);
+    assertEquals(article.getTitle(), newTitle);
+    assertNotNull(article.getContent(), newContent);
   }
 
   /**
@@ -223,7 +245,7 @@ public class ArticleControllerTest {
   }
 
   private Answer post(String path, Object payload) throws HttpClientException {
-    return post(path, payload, Collections.emptyMap());
+    return post(path, payload, emptyMap());
   }
 
   private Answer put(String path, Article payload, AuthUser authUser) throws HttpClientException {

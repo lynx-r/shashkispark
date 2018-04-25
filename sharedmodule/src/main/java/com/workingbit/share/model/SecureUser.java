@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.LocalDateTimeConverter;
+import com.workingbit.share.converter.UserRolesConverter;
 import com.workingbit.share.domain.BaseDomain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,7 +43,7 @@ public class SecureUser extends BaseDomain {
   @DynamoDBAttribute(attributeName = "username")
   private String username;
 
-  @DynamoDBTypeConvertedEnum
+  @DynamoDBTypeConverted(converter = UserRolesConverter.class)
   @DynamoDBAttribute(attributeName = "roles")
   private Set<EnumSecureRole> roles = new HashSet<>();
 

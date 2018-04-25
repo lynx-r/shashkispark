@@ -84,8 +84,8 @@ public class SecureUserService {
 
               // send access token and userSession
               String userId = secureUser.getId();
-              Set<EnumSecureRole> role = secureUser.getRoles();
-              return new AuthUser(userId, username, accessToken.accessToken, userSession, role);
+              Set<EnumSecureRole> roles = secureUser.getRoles();
+              return new AuthUser(userId, username, accessToken.accessToken, userSession, roles);
             }
           } catch (Exception e) {
             e.printStackTrace();
@@ -128,7 +128,7 @@ public class SecureUserService {
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
       if (isAuth) {
-        return new UserInfo(secureUser.getUsername(), secureUser.getRoles());
+        return extractUserInfo(secureUser);
       }
       return null;
     });
@@ -143,10 +143,13 @@ public class SecureUserService {
     Optional<SecureUser> secureUserOptional = secureUserDao.findById(authUser.getUserId());
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
-      if (isAuth) {
-        secureUser.setRoles(userInfo.getRoles());
-        secureUserDao.save(secureUser);
-        return new UserInfo(secureUser.getUsername(), secureUser.getRoles());
+      boolean canUpdate = userInfo.getUserId().equals(secureUser.getId())
+          || secureUser.getRoles().contains(EnumSecureRole.ADMIN);
+      if (isAuth && canUpdate) {
+        Optional<SecureUser> userBeforeSave = secureUserDao.findById(userInfo.getUserId());
+        if (userBeforeSave.isPresent()) {
+          return updateUserInfo(userBeforeSave.get(), userInfo);
+        }
       }
       return null;
     });
@@ -168,6 +171,16 @@ public class SecureUserService {
         return AuthUser.anonymous();
       });
     }).orElse(null);
+  }
+
+  private UserInfo updateUserInfo(SecureUser secureUser, UserInfo userInfo) {
+    secureUser.setRoles(userInfo.getRoles());
+    secureUserDao.save(secureUser);
+    return extractUserInfo(secureUser);
+  }
+
+  private UserInfo extractUserInfo(SecureUser secureUser) {
+    return new UserInfo(secureUser.getId(), secureUser.getUsername(), secureUser.getRoles());
   }
 
   private boolean isAuthed(String accessToken, SecureUser secureUser) {

@@ -17,6 +17,7 @@ import java.util.Set;
 @Data
 public class UserInfo implements Payload {
 
+  private String userId;
   private String username;
 
   private Set<EnumSecureRole> roles = new HashSet<>();
