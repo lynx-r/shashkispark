@@ -155,22 +155,20 @@ public class SecureUserService {
     });
   }
 
-  public Optional<AuthUser> logout(Optional<AuthUser> token) {
-    return token.map(authUser -> {
-      String session = authUser.getUserSession();
-      String accessToken = authUser.getAccessToken();
-      Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
-      return secureUserOptional.map((secureUser) -> {
-        boolean isAuth = isAuthed(accessToken, secureUser);
-        if (isAuth) {
-          secureUser.setSecureToken("");
-          secureUser.setAccessToken("");
-          secureUser.setUserSession("");
-          secureUserDao.save(secureUser);
-        }
-        return AuthUser.anonymous();
-      });
-    }).orElse(null);
+  public Optional<AuthUser> logout(AuthUser authUser) {
+    String session = authUser.getUserSession();
+    String accessToken = authUser.getAccessToken();
+    Optional<SecureUser> secureUserOptional = secureUserDao.findBySession(session);
+    return secureUserOptional.map((secureUser) -> {
+      boolean isAuth = isAuthed(accessToken, secureUser);
+      if (isAuth) {
+        secureUser.setSecureToken("");
+        secureUser.setAccessToken("");
+        secureUser.setUserSession("");
+        secureUserDao.save(secureUser);
+      }
+      return AuthUser.anonymous();
+    });
   }
 
   private UserInfo updateUserInfo(SecureUser secureUser, UserInfo userInfo) {

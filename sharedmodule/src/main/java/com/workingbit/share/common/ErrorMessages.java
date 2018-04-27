@@ -27,6 +27,7 @@ public class ErrorMessages {
   public static final String UNABLE_TO_AUTHORIZE = "Не удалось получить доступ";
   public static final String UNABLE_TO_AUTHENTICATE = "Ваш аккаунт не найден на сайте";
   public static final String UNABLE_TO_ASSIGN_ROLE = "Не удалось назначить роль";
+  public static final String UNABLE_TO_LOGOUT = "Не удалось выйти с сайта";
   public static final String NOT_OWNER = "Не владелец";
   public static final String RESOURCE_NOT_FOUND = "Запрашиваемый ресурс не найден";
   public static final String INTERNAL_SERVER_ERROR = "Внутрення ошибка сервера";

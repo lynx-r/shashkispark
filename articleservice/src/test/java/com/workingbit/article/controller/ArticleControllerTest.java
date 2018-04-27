@@ -142,6 +142,8 @@ public class ArticleControllerTest {
     article.setContent(newContent);
     article = (Article) put("", article, headers).getBody();
 
+    article = (Article) put("", article, headers).getBody();
+
     assertEquals(newTitle, article.getTitle());
 
     article = (Article) get("/" + article.getId()).getBody();

@@ -57,8 +57,8 @@ public class SecurityController {
 
   public static Route logout = (req, res) ->
       ((ModelHandlerFunc<AuthUser>) (data, token) ->
-          secureUserService.logout(token)
+          secureUserService.logout(data)
               .map(Answer::ok)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_ASSIGN_ROLE))
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_LOGOUT))
       ).handleRequest(req, res, Path.LOGOUT, AuthUser.class);
 }
