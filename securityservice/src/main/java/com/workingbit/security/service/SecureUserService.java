@@ -53,7 +53,7 @@ public class SecureUserService {
       secureUserDao.save(secureUser);
 
       // send access token and userSession
-      AuthUser authUser = new AuthUser(secureUser.getId(), username, accessToken.accessToken, userSession, secureUser.getRoles());
+      AuthUser authUser = new AuthUser(secureUser.getId(), username, accessToken.accessToken, userSession, 0, secureUser.getRoles());
       return Optional.of(authUser);
     } catch (Exception e) {
       e.printStackTrace();
@@ -85,7 +85,7 @@ public class SecureUserService {
               // send access token and userSession
               String userId = secureUser.getId();
               Set<EnumSecureRole> roles = secureUser.getRoles();
-              return new AuthUser(userId, username, accessToken.accessToken, userSession, roles);
+              return new AuthUser(userId, username, accessToken.accessToken, userSession, 0, roles);
             }
           } catch (Exception e) {
             e.printStackTrace();
@@ -109,6 +109,7 @@ public class SecureUserService {
                 secureUser.setAccessToken(updatedAccessToken.accessToken);
                 secureUser.setSecureToken(updatedAccessToken.secureToken);
                 secureUserDao.save(secureUser);
+                authUser.setCounter(authUser.getCounter() + 1);
                 authUser.setAccessToken(updatedAccessToken.accessToken);
               }
 
@@ -219,6 +220,7 @@ public class SecureUserService {
     secureUser.setInitVector(initVector);
     secureUser.setKey(key);
     String accessToken = SecureUtils.encrypt(key, initVector, secureToken);
+    logger.info("Emit new access token: " + accessToken);
     return new TokenPair(accessToken, secureToken);
   }
 

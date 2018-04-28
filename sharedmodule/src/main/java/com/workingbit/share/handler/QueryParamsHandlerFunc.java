@@ -26,7 +26,7 @@ public interface QueryParamsHandlerFunc<T extends Payload> extends BaseHandlerFu
     Answer answer = getAnswer(request, response, path, (T) query);
     response.status(answer.getStatusCode());
 
-    logResponse(response, answer.getAuthUser());
+    logResponse(request.url(), response, answer.getAuthUser());
     return dataToJson(answer);
   }
 }

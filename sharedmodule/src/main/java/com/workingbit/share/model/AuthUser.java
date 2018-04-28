@@ -23,6 +23,7 @@ public class AuthUser implements Payload, DeepClone {
   private String username;
   private String accessToken;
   private String userSession;
+  private int counter;
   private Set<EnumSecureRole> roles = new HashSet<>();
 
   public AuthUser(String userSession) {
@@ -35,7 +36,7 @@ public class AuthUser implements Payload, DeepClone {
   }
 
   public static AuthUser anonymous() {
-    return new AuthUser(null, null, null, null,
+    return new AuthUser(null, null, null, null, 0,
         Collections.singleton(EnumSecureRole.ANONYMOUS));
   }
 

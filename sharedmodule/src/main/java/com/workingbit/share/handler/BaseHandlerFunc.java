@@ -30,8 +30,9 @@ public interface BaseHandlerFunc<T extends Payload> {
         request.requestMethod(), request.url(), request.host(), request.userAgent()));
   }
 
-  default void logResponse(Response response, AuthUser token) {
-    System.out.println(String.format("RESPONSE: %s %s %s",
+  default void logResponse(String url, Response response, AuthUser token) {
+    System.out.println(String.format("RESPONSE: %s %s %s %s",
+        url,
         LocalDateTime.now(),
         response.status(), token));
   }

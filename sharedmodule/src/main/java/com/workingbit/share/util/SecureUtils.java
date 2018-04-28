@@ -5,9 +5,13 @@ import org.apache.commons.codec.binary.Base64;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -39,14 +43,13 @@ public class SecureUtils {
 
       Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
       cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-
       byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
 
       return new String(original);
-    } catch (Exception ex) {
-      ex.printStackTrace();
+    } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException
+        | InvalidKeyException | NoSuchPaddingException | UnsupportedEncodingException e) {
+      e.printStackTrace();
     }
-
     return null;
   }
 

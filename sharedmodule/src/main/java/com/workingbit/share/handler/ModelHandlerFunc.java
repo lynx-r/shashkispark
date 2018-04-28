@@ -24,7 +24,7 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> 
     Answer answer = getAnswer(request, response, path, data);
     response.status(answer.getStatusCode());
 
-    logResponse(response, answer.getAuthUser());
+    logResponse(request.url(), response, answer.getAuthUser());
     return dataToJson(answer);
   }
 

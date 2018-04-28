@@ -27,7 +27,7 @@ public interface ParamsHandlerFunc<T extends Payload> extends BaseHandlerFunc<T>
     Answer answer = getAnswer(request, response, findById, (T) paramPayload);
     response.status(answer.getStatusCode());
 
-    logResponse(response, answer.getAuthUser());
+    logResponse(request.url(), response, answer.getAuthUser());
     return dataToJson(answer);
   }
 }
