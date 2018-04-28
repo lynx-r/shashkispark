@@ -16,4 +16,5 @@ app:
   authorizeResource: https://api.shashki.online/security/api/v1/authorize
   authenticateResource: https://api.shashki.online/security/api/v1/authenticate
   userInfoResource: https://api.shashki.online/security/api/v1/user-info
+  saveUserInfoResource: https://api.shashki.online/security/api/v1/save-user-info
   logoutResource: https://api.shashki.online/security/api/v1/logout

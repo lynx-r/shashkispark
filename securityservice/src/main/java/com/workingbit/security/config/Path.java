@@ -9,13 +9,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum Path implements IPath {
-  HOME("/", false, new HashSet()),
-  REGISTER("/register", false, new HashSet()),
-  AUTHORIZE("/authorize", false, new HashSet()),
-  AUTHENTICATE("/authenticate", false, new HashSet()),
+  HOME("/", false, new HashSet<>()),
+  REGISTER("/register", false, new HashSet<>()),
+  AUTHORIZE("/authorize", false, new HashSet<>()),
+  AUTHENTICATE("/authenticate", false, new HashSet<>()),
   USER_INFO("/user-info", true, Constants.SECURE_USER_ROLES),
   SAVE_USER_INFO("/save-user-info", true, Constants.SECURE_USER_ROLES),
-  LOGOUT("/logout", false, new HashSet());
+  LOGOUT("/logout", false, new HashSet<>());
 
   private String path;
   private boolean secure;

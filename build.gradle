@@ -49,6 +49,10 @@ subprojects { subproject ->
     }
 
     build.dependsOn deploylocal
+
+    [compileJava, compileTestJava]*.options.collect {options ->
+        options.compilerArgs.add '-Xlint:unchecked'
+    }
 }
 
 configure(subprojects) {

@@ -32,7 +32,8 @@ public class CorsConfig {
     });
 
     before((request, response) -> {
-      response.header("Access-Control-Allow-Origin", origin);
+//      response.header("Access-Control-Allow-Origin", origin);
+      response.header("Access-Control-Allow-Origin", "http://localhost:4200");
       response.header("Access-Control-Request-Method", methods);
       response.header("Access-Control-Allow-Headers", headers);
       response.header("Access-Control-Allow-Credentials", "true");

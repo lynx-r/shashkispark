@@ -53,6 +53,7 @@ public class ArticleService {
       createArticleResponse.setArticle(article);
       createArticleResponse.setBoard(boardBoxOptional.get());
     } else {
+      logger.error("Unable to create board");
       return Optional.empty();
     }
     articleDao.save(article);
@@ -73,7 +74,7 @@ public class ArticleService {
     });
   }
 
-  public Optional<Articles> findAll(String limitStr, Optional<AuthUser> token) {
+  public Optional<Articles> findAll(String limitStr) {
     Integer limit = null;
     if (!StringUtils.isBlank(limitStr)) {
       limit = Integer.valueOf(limitStr);

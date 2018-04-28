@@ -26,7 +26,7 @@ public class ArticleController {
 
   public static Route findAllArticles = (req, res) ->
       ((QueryParamsHandlerFunc<QueryPayload>) (params, token) ->
-          articleService.findAll(params.getQuery().value(RequestConstants.LIMIT), token)
+          articleService.findAll(params.getQuery().value(RequestConstants.LIMIT))
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.UNABLE_TO_GET_ARTICLES))
       ).handleRequest(req, res, Path.ARTICLES);

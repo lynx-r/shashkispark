@@ -9,11 +9,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum Path implements IPath {
-  HOME("", false, new HashSet()),
+  HOME("", false, new HashSet<>()),
 
-  ARTICLES("/articles", false, new HashSet()),
-  ARTICLE("/article", false, new HashSet()),
-  ARTICLE_BY_ID("/article/:id", false, new HashSet());
+  ARTICLES("/articles", false, new HashSet<>()),
+  ARTICLE("/article", false, new HashSet<>()),
+  ARTICLE_BY_ID("/article/:id", false, new HashSet<>());
 
   private String path;
   private boolean secure;
