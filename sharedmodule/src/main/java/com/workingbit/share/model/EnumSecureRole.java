@@ -1,5 +1,6 @@
 package com.workingbit.share.model;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +32,14 @@ public enum EnumSecureRole {
       return false;
     }
     return roles.stream().anyMatch(EnumSecureRole::isSecure);
+  }
+
+  public static boolean isAuthorRole(AuthUser authUser) {
+    return authUser.getRoles()
+        .stream()
+        .anyMatch((role) ->
+            Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR).contains(role)
+        );
   }
 
   public static Set<EnumSecureRole> parseRoles(String roles) {

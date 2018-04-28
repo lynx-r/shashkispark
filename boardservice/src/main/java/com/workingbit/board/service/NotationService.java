@@ -4,7 +4,6 @@ import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.EnumSecureRole;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import static com.workingbit.board.BoardEmbedded.notationDao;
@@ -21,7 +20,7 @@ public class NotationService {
     }
 
     Optional<Notation> notationOptional = notationDao.findById(notationId);
-    boolean secure = authUser.getRoles().containsAll(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
+    boolean secure = EnumSecureRole.isAuthorRole(authUser);
     if (secure) {
       return notationOptional;
     } else {
@@ -34,7 +33,7 @@ public class NotationService {
     if (authUser == null) {
       return;
     }
-    boolean secure = authUser.getRoles().containsAll(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
+    boolean secure = EnumSecureRole.isAuthorRole(authUser);
     if (secure) {
       notation.setReadonly(false);
       notationDao.save(notation);

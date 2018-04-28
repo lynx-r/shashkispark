@@ -28,9 +28,9 @@ class HighlightMoveUtil {
   }
 
   /**
-   * highlightedAssignedMoves move for the selected square
+   * getHighlightedAssignedMoves move for the selected square
    */
-  static MovesList highlightedAssignedMoves(Square selectedSquare) {
+  static MovesList getHighlightedAssignedMoves(Square selectedSquare) {
     if (selectedSquare != null && !selectedSquare.isOccupied()) {
       throw new BoardServiceException("Invalid selected square");
     }

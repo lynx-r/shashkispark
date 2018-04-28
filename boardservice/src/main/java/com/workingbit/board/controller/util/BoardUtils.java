@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.controller.util.HighlightMoveUtil.highlightedAssignedMoves;
+import static com.workingbit.board.controller.util.HighlightMoveUtil.getHighlightedAssignedMoves;
 
 
 /**
@@ -237,7 +237,7 @@ public class BoardUtils {
     performMoveDraught(board, capturedSquares);
     Board newBoard = board.deepClone();
     boolean blackTurn = board.isBlackTurn();
-    MovesList nextMovesSquares = highlightedBoard(blackTurn, newBoard);
+    MovesList nextMovesSquares = getHighlightedBoard(blackTurn, newBoard);
     boolean previousCaptured = !capturedSquares.isEmpty();
     boolean nextCaptured = !nextMovesSquares.getCaptured().isEmpty();
     if (previousCaptured && nextCaptured) {
@@ -429,8 +429,8 @@ public class BoardUtils {
    *
    * @return is next move allowed
    */
-  public static MovesList highlightedBoard(boolean blackTurn, Board board) {
-    MovesList movesList = highlightedAssignedMoves(board.getSelectedSquare());
+  public static MovesList getHighlightedBoard(boolean blackTurn, Board board) {
+    MovesList movesList = getHighlightedAssignedMoves(board.getSelectedSquare());
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();
     boolean isCapturedFound = !captured.isEmpty();
@@ -438,11 +438,11 @@ public class BoardUtils {
       highlightCaptured(board, allowed, captured);
       return movesList;
     } else {
-      return highlightSimple(board, movesList, allowed, blackTurn);
+      return getHighlightSimple(board, movesList, allowed, blackTurn);
     }
   }
 
-  private static MovesList highlightSimple(Board board, MovesList movesList, List<Square> allowed, boolean blackTurn) {
+  private static MovesList getHighlightSimple(Board board, MovesList movesList, List<Square> allowed, boolean blackTurn) {
     Set<String> draughtsNotations;
     if (blackTurn) {
       draughtsNotations = board.getBlackDraughts().keySet();
@@ -454,11 +454,12 @@ public class BoardUtils {
         .stream()
         .filter(square -> !square.equals(board.getSelectedSquare()))
         .filter(square -> draughtsNotations.contains(square.getAlphanumericNotation64()))
+        .filter(Square::isOccupied)
         .collect(Collectors.toList());
     // find all squares captured by current user
     List<Square> allCaptured = draughtsSquares
         .stream()
-        .flatMap(square -> highlightedAssignedMoves(square).getCaptured().stream())
+        .flatMap(square -> getHighlightedAssignedMoves(square).getCaptured().stream())
         .collect(Collectors.toList());
     // reset highlight
     board.getAssignedSquares()

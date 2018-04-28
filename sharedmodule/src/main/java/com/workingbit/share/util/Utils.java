@@ -239,12 +239,4 @@ public class Utils {
         .collect(Collectors.toList());
     return StringUtils.join(pdns, "");
   }
-
-  public static boolean isAuthorRole(AuthUser authUser) {
-    return authUser.getRoles()
-        .stream()
-        .anyMatch((role) ->
-            Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR).contains(role)
-        );
-  }
 }

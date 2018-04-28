@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
-import static com.workingbit.board.controller.util.BoardUtils.highlightedBoard;
+import static com.workingbit.board.controller.util.BoardUtils.getHighlightedBoard;
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static com.workingbit.share.util.Utils.getRandomString;
 import static junit.framework.TestCase.assertFalse;
@@ -154,7 +154,7 @@ public class BaseServiceTest {
 
   protected Board move(Board board, Square selectedSquare, NotationHistory notationHistory) {
     boolean blackTurn = board.isBlackTurn();
-    MovesList capturedSquares = highlightedBoard(blackTurn, board);
+    MovesList capturedSquares = getHighlightedBoard(blackTurn, board);
     return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getId(), notationHistory);
   }
 

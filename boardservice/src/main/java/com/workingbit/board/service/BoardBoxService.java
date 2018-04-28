@@ -9,12 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import static com.workingbit.board.BoardEmbedded.*;
-import static com.workingbit.share.util.Utils.isAuthorRole;
 
 /**
  * Created by Aleksey Popryaduhin on 07:00 22/09/2017.
@@ -79,7 +77,7 @@ public class BoardBoxService {
 
   Optional<BoardBox> find(BoardBox boardBox, AuthUser authUser) {
     Optional<BoardBox> board = findBoardAndPutInStore(authUser, boardBox);
-    boolean secure = isAuthorRole(authUser);
+    boolean secure = EnumSecureRole.isAuthorRole(authUser);
     if (secure) {
       return board.map(b -> b.readonly(false))
           .map(bb -> updateBoardBox(authUser, bb));
@@ -127,7 +125,7 @@ public class BoardBoxService {
                   }
                   BoardUtils.updateMoveSquaresHighlightAndDraught(currentBoard, boardBox.getBoard());
                   try {
-                    currentBoard = boardService.highlight(currentBoard);
+                    currentBoard = boardService.getHighlight(currentBoard);
                   } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     return null;
@@ -144,22 +142,26 @@ public class BoardBoxService {
     return token.map(authUser -> find(boardBox, authUser)
         .map(updatedBoxOrig -> {
               BoardBox userBoardBox = updatedBoxOrig.deepClone();
+              Board boardUpdated = userBoardBox.getBoard();
               Board board = boardBox.getBoard();
               if (isNotEditMode(boardBox)) {
                 return null;
               }
+              boardUpdated.setSelectedSquare(board.getSelectedSquare());
+              boardUpdated.setNextSquare(board.getNextSquare());
+
               Notation notation = userBoardBox.getNotation();
               NotationHistory notationBoardBox = notation.getNotationHistory();
-              board.setDriveCount(notationBoardBox.size() - 1);
+              boardUpdated.setDriveCount(notationBoardBox.size() - 1);
 
               try {
-                board = boardService.move(board, notationBoardBox);
+                boardUpdated = boardService.move(boardUpdated, notationBoardBox);
               } catch (BoardServiceException e) {
                 logger.error("Error while moving", e);
                 return null;
               }
-              userBoardBox.setBoard(board);
-              userBoardBox.setBoardId(board.getId());
+              userBoardBox.setBoard(boardUpdated);
+              userBoardBox.setBoardId(boardUpdated.getId());
               notationService.save(authUser, notation);
 
               logger.info("Notation after move: " + notation.getNotationHistory().pdnString());
@@ -389,7 +391,7 @@ public class BoardBoxService {
       }
       return null;
     };
-    boolean secure = authUser.getRoles().containsAll(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
+    boolean secure = EnumSecureRole.isAuthorRole(authUser);
     if (secure) {
       return Optional.ofNullable(fromDb.get());
     } else {

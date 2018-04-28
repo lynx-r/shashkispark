@@ -470,7 +470,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       boardBoxDao.save(boardBoxCurrent);
 
 //      boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
-//      boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent).get();
+//      boardBoxCurrent = boardBoxService.getHighlight(boardBoxCurrent).get();
       boardBoxCurrent = boardBoxService.move(boardBoxCurrent, token).get();
     }
     return boardBoxCurrent;

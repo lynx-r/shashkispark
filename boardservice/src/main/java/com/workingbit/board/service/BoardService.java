@@ -56,12 +56,12 @@ public class BoardService {
   /**
    * @return map of {allowed, captured}
    */
-  Board highlight(Board boardHighlight) {
+  Board getHighlight(Board boardHighlight) {
     Square selectedSquare = boardHighlight.getSelectedSquare();
     if (isValidHighlight(selectedSquare)) {
-      throw new BoardServiceException("Invalid highlight square");
+      throw new BoardServiceException("Invalid getHighlight square");
     }
-    highlightedBoard(boardHighlight.isBlackTurn(), boardHighlight);
+    getHighlightedBoard(boardHighlight.isBlackTurn(), boardHighlight);
     return boardHighlight;
   }
 
@@ -78,7 +78,7 @@ public class BoardService {
   public Board move(Board board, NotationHistory notationHistory) {
     boolean blackTurn = board.isBlackTurn();
     board = updateBoard(board);
-    MovesList movesList = highlightedBoard(blackTurn, board);
+    MovesList movesList = getHighlightedBoard(blackTurn, board);
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();
     if (allowed.isEmpty()) {

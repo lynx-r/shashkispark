@@ -79,7 +79,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "c3", "d4", false, boardBox.getNotation().getNotationHistory());
     board = move(board, "f6", "e5", true, boardBox.getNotation().getNotationHistory());
     Square d4 = findSquareByNotation("d4", board);
-    MovesList movesList = highlightedBoard(board.isBlackTurn(), board);
+    MovesList movesList = getHighlightedBoard(board.isBlackTurn(), board);
     assertTrue(!movesList.getCaptured().isEmpty());
     Square from = BoardUtils.findSquareByNotation("a1", board);
     Square to = BoardUtils.findSquareByNotation("f6", board);
@@ -125,16 +125,16 @@ public class MoveUtilTest extends BaseServiceTest {
     Square b2 = findSquareByNotation("b2", board);
     board.setSelectedSquare(b2);
     board = move(board, "b2", "d4", false, boardBox.getNotation().getNotationHistory());
-    MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d4"));
+    MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d4"));
     testCollection("f6,d8,b6", highlight.getAllowed());
     testCollection("e5,e7,c7,c5", highlight.getCaptured());
     board = move(board, "d4", "f6", false, boardBox.getNotation().getNotationHistory());
-    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "f6"));
+    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
     testCollection("d8,b6,d4", highlight.getAllowed());
     testCollection("e7,c7,c5", highlight.getCaptured());
     board = move(board, "f6", "d8", false, boardBox.getNotation().getNotationHistory());
     assertTrue(board.getSelectedSquare().getDraught().isQueen());
-    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
+    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
     testCollection("d4,e3,f2,g1,b6", highlight.getAllowed());
     testCollection("c5,c7", highlight.getCaptured());
     System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
@@ -152,17 +152,17 @@ public class MoveUtilTest extends BaseServiceTest {
     Square e1 = findSquareByNotation("e1", board);
     board.setSelectedSquare(e1);
     board = move(board, "e1", "a5", false, boardBox.getNotation().getNotationHistory());
-    MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "a5"));
+    MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "a5"));
     assertTrue(testSameHighlight(board, highlight));
     board = move(board, "a5", "d8", false, boardBox.getNotation().getNotationHistory());
-    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
+    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
     assertTrue(testSameHighlight(board, highlight));
-//    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "f6"));
+//    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
 //    testCollection("d8,b6,d4", highlight.getAllowed());
 //    testCollection("e7,c7,c5", highlight.getCaptured());
 //    board = move(board, "f6", "d8", false);
 //    assertTrue(board.getSelectedSquare().getDraught().isQueen());
-//    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
+//    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
 //    testCollection("d4,e3,f2,g1,b6", highlight.getAllowed());
 //    testCollection("c5,c7", highlight.getCaptured());
     System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
@@ -182,27 +182,27 @@ public class MoveUtilTest extends BaseServiceTest {
     Square d4 = findSquareByNotation("d4", board);
     board.setSelectedSquare(d4);
     board = move(board, "d4", "b6", false, boardBox.getNotation().getNotationHistory());
-    MovesList highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "b6"));
+    MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "b6"));
     assertTrue(testSameHighlight(board, highlight));
 
     board = move(board, "b6", "d8", false, boardBox.getNotation().getNotationHistory());
-    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d8"));
+    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
     assertTrue(testSameHighlight(board, highlight));
 
     board = move(board, "d8", "f6", false, boardBox.getNotation().getNotationHistory());
-    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "f6"));
+    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
     assertTrue(testSameHighlight(board, highlight));
 
     board = move(board, "f6", "h4", false, boardBox.getNotation().getNotationHistory());
-    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "h4"));
+    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "h4"));
     assertTrue(testSameHighlight(board, highlight));
 
     board = move(board, "h4", "f2", false, boardBox.getNotation().getNotationHistory());
-    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "f2"));
+    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f2"));
     assertTrue(testSameHighlight(board, highlight));
 
     board = move(board, "f2", "d4", false, boardBox.getNotation().getNotationHistory());
-    highlight = HighlightMoveUtil.highlightedAssignedMoves(getSquare(board, "d4"));
+    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d4"));
     assertTrue(testSameHighlight(board, highlight));
 
     System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
