@@ -48,7 +48,6 @@ public interface BaseHandlerFunc<T extends Payload> {
       roles = EnumSecureRole.parseRoles(roleStr);
     }
     AuthUser internalUserRole = getInternalUserRole(accessToken, userSession);
-    internalUserRole.setCounter(counter);
     if (path.isSecure() || EnumSecureRole.isSecure(roles)) {
       Optional<AuthUser> authenticated = isAuthenticated(internalUserRole);
       if (!authenticated.isPresent()) {
@@ -58,6 +57,7 @@ public interface BaseHandlerFunc<T extends Payload> {
       if (!hasRights(securedUser.getRoles(), path)) {
         return getForbiddenAnswer(response);
       }
+      securedUser.setCounter(counter);
       Answer securedAnswer = getSecureAnswer(data, securedUser);
       if (securedAnswer == null) {
         return getForbiddenAnswer(response);
