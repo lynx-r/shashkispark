@@ -1,14 +1,22 @@
 package com.workingbit.share.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.model.enumarable.EnumAuthority;
+import com.workingbit.share.util.SecureUtils;
+import com.workingbit.share.util.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import static com.workingbit.share.util.JsonUtils.jsonToFilters;
 
 /**
  * Created by Aleksey Popryadukhin on 16/04/2018.
@@ -23,8 +31,13 @@ public class AuthUser implements Payload, DeepClone {
   private String username;
   private String accessToken;
   private String userSession;
-  private int counter;
-  private Set<EnumSecureRole> roles = new HashSet<>();
+  private long timestamp;
+  private List<SimpleFilter> filters = new ArrayList<>();
+  private Set<EnumAuthority> authorities = new HashSet<>();
+  private String superHash;
+
+  @JsonIgnore
+  private String internalKey;
 
   public AuthUser(String userSession) {
     this.userSession = userSession;
@@ -36,17 +49,48 @@ public class AuthUser implements Payload, DeepClone {
   }
 
   public static AuthUser anonymous() {
-    return new AuthUser(null, null, null, null, 0,
-        Collections.singleton(EnumSecureRole.ANONYMOUS));
+    return new AuthUser(null, null, null, null,
+        Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.ANONYMOUS)), null, null);
   }
 
-  public AuthUser setRole(EnumSecureRole role) {
-    this.roles = Collections.singleton(role);
+  public static AuthUser simpleAuthor(String userId, String username, String accessToken, String userSession) {
+    return new AuthUser(userId, username, accessToken, userSession,
+        Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.AUTHOR)), null, null);
+  }
+
+  public static AuthUser simpleUser(String userId, String username, String accessToken, String userSession, Set<EnumAuthority> authorities) {
+    return new AuthUser(userId, username, accessToken, userSession,
+        Utils.getTimestamp(), new ArrayList<>(), authorities, null, null);
+  }
+
+  public void setAuthorities(Set<EnumAuthority> authorities) {
+    this.authorities = new HashSet<>(authorities);
+  }
+
+  public AuthUser addAuthorities(EnumAuthority... authorities) {
+    this.authorities = new HashSet<>(Set.of(authorities));
     return this;
   }
 
-  public AuthUser addRole(EnumSecureRole role) {
-    this.roles.add(role);
+  public AuthUser addAuthority(EnumAuthority authority) {
+    this.authorities.add(authority);
     return this;
+  }
+
+  public AuthUser setInternalKey(String internalKey) {
+    this.internalKey = internalKey;
+    return this;
+  }
+
+  @JsonIgnore
+  public String getInternalHash() {
+    return SecureUtils.digest(userSession + accessToken + internalKey);
+  }
+
+  @SuppressWarnings("unchecked")
+  public void parseFilters(String filterExpression) {
+    if (StringUtils.isNotBlank(filterExpression)) {
+      filters = jsonToFilters(filterExpression);
+    }
   }
 }

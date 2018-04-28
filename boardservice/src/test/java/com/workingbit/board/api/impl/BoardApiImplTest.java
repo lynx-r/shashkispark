@@ -46,7 +46,7 @@
 //  public void checkHealth_returnsTenants() throws Exception {
 //    mockMvc.perform(get("/board/" + board.getId()))
 //        .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-//        .andExpect(status().isOk())
+//        .andExpect(articleStatus().isOk())
 //        .andExpect(jsonPath("$.id").value(equalTo(board.getId())));
 ////        .andExpect(jsonPath("$.tenants").value(Matchers.containsInAnyOrder(MAIN_TEST_TENANT_NAME, SECOND_TEST_TENANT_NAME)));
 //  }

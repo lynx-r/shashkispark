@@ -5,7 +5,7 @@ import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.model.EnumRules;
+import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.model.NotationHistory;
 import org.junit.Test;
 

@@ -3,6 +3,8 @@ package com.workingbit.share.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
+import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.Data;
 
 /**

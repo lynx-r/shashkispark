@@ -7,6 +7,7 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
+import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
 
 import java.util.Iterator;

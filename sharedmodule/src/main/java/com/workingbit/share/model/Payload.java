@@ -23,10 +23,11 @@ import com.workingbit.share.domain.impl.BoardBox;
     @JsonSubTypes.Type(value = BoardBox.class, name = "BoardBox"),
     @JsonSubTypes.Type(value = Board.class, name = "Board"),
 
-    @JsonSubTypes.Type(value = RegisterUser.class, name = "RegisterUser"),
+    @JsonSubTypes.Type(value = UserCredentials.class, name = "UserCredentials"),
     @JsonSubTypes.Type(value = AuthUser.class, name = "AuthUser"),
     @JsonSubTypes.Type(value = UserInfo.class, name = "UserInfo"),
-    @JsonSubTypes.Type(value = ParamPayload.class, name = "Params")
+    @JsonSubTypes.Type(value = ParamPayload.class, name = "Params"),
+    @JsonSubTypes.Type(value = EmptyBody.class, name = "EmptyBody")
 })
 public interface Payload {
 }

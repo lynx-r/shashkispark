@@ -13,6 +13,8 @@ import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
+import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
+import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
 import junit.framework.TestCase;
 import org.junit.Before;
@@ -20,13 +22,11 @@ import org.junit.Before;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
 import static com.workingbit.board.controller.util.BoardUtils.getHighlightedBoard;
 import static com.workingbit.share.common.Config4j.configurationProvider;
-import static com.workingbit.share.util.Utils.getRandomString;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,11 +45,11 @@ public class BaseServiceTest {
   protected BoardDao boardDao = new BoardDao(appProperties);
 
   protected NotationParserService notationParserService = new NotationParserService();
-  private Optional<AuthUser> token;
+  private AuthUser token;
 
   @Before
   public void setUp() throws Exception {
-    token = Optional.of(new AuthUser(Utils.getRandomString(), Utils.getRandomString()));
+    token = new AuthUser(Utils.getRandomString20(), Utils.getRandomString20());
   }
 
   protected BoardBox getBoardBox(boolean fillBoard) {
@@ -60,9 +60,9 @@ public class BaseServiceTest {
 
   protected BoardBox getSavedBoardBoxEmpty() {
     BoardBox boardBox = new BoardBox();
-    boardBox.setId(getRandomString());
+    boardBox.setId(Utils.getRandomString20());
     boardBox.setCreatedAt(LocalDateTime.now());
-    boardBox.setArticleId(getRandomString());
+    boardBox.setArticleId(Utils.getRandomString20());
     return boardBoxService.save(boardBox, token).get();
   }
 
@@ -107,8 +107,8 @@ public class BaseServiceTest {
     createBoardPayload.setBlack(black);
     createBoardPayload.setFillBoard(fillBoard);
     createBoardPayload.setRules(rules);
-    createBoardPayload.setArticleId(Utils.getRandomString());
-    createBoardPayload.setBoardBoxId(Utils.getRandomString());
+    createBoardPayload.setArticleId(Utils.getRandomString20());
+    createBoardPayload.setBoardBoxId(Utils.getRandomString20());
     createBoardPayload.setEditMode(editMode);
     return createBoardPayload;
   }

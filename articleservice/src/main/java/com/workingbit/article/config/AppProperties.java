@@ -22,4 +22,6 @@ public interface AppProperties {
   String headers();
 
   int port();
+
+  String filterSep();
 }

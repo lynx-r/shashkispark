@@ -7,7 +7,7 @@ import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.DraughtMapConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.model.EnumRules;
+import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.model.Payload;
 import lombok.Getter;
 import lombok.Setter;

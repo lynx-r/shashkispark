@@ -2,7 +2,7 @@ package com.workingbit.board.service;
 
 import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.EnumSecureRole;
+import com.workingbit.share.model.enumarable.EnumAuthority;
 
 import java.util.Optional;
 
@@ -12,28 +12,31 @@ import static com.workingbit.board.BoardEmbedded.notationStoreService;
 /**
  * Created by Aleksey Popryadukhin on 14/04/2018.
  */
-public class NotationService {
+class NotationService {
 
-  public Optional<Notation> findById(AuthUser authUser, String notationId) {
+  Optional<Notation> findById(AuthUser authUser, String notationId) {
     if (authUser == null) {
       return Optional.empty();
     }
 
     Optional<Notation> notationOptional = notationDao.findById(notationId);
-    boolean secure = EnumSecureRole.isAuthorRole(authUser);
+    boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     if (secure) {
       return notationOptional;
     } else {
-      Notation notation = findNotationAndPutInStore(authUser, notationOptional, notationId);
-      return Optional.ofNullable(notation);
+      if (notationOptional.isPresent()) {
+        Notation notation = findNotationAndPutInStore(authUser, notationOptional.get(), notationId);
+        return Optional.of(notation);
+      }
+      return Optional.empty();
     }
   }
 
-  public void save(AuthUser authUser, Notation notation) {
+  void save(AuthUser authUser, Notation notation) {
     if (authUser == null) {
       return;
     }
-    boolean secure = EnumSecureRole.isAuthorRole(authUser);
+    boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     if (secure) {
       notation.setReadonly(false);
       notationDao.save(notation);
@@ -42,16 +45,12 @@ public class NotationService {
     }
   }
 
-  private Notation findNotationAndPutInStore(AuthUser authUser, Optional<Notation> notationOptional, String notationId) {
+  private Notation findNotationAndPutInStore(AuthUser authUser, Notation notation, String notationId) {
     return notationStoreService.get(authUser.getUserSession(), notationId)
         .orElseGet(() -> {
-          if (notationOptional.isPresent()) {
-            Notation notation = notationOptional.get();
             notation.setReadonly(true);
             notationStoreService.put(authUser.getUserSession(), notation);
             return notation;
-          }
-          return null;
         });
   }
 }

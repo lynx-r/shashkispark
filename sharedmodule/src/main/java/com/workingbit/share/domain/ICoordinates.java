@@ -2,7 +2,7 @@ package com.workingbit.share.domain;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.workingbit.share.model.EnumRules;
+import com.workingbit.share.model.enumarable.EnumRules;
 
 import java.util.Map;
 

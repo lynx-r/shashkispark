@@ -9,11 +9,11 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import static org.apache.commons.codec.digest.DigestUtils.sha1Hex;
 
 public class SecureUtils {
 
@@ -53,8 +53,13 @@ public class SecureUtils {
     return null;
   }
 
-  public static String digest(String data) throws NoSuchAlgorithmException {
-    MessageDigest digest = MessageDigest.getInstance("SHA-256");
-    return new String(digest.digest(data.getBytes(StandardCharsets.UTF_8)));
+  public static String digest(String data) {
+    return sha1Hex(data);
+//    try {
+//      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//      return new String(digest.digest(data.getBytes(StandardCharsets.UTF_8)));
+//    } catch (NoSuchAlgorithmException e) {
+//      return "";
+//    }
   }
 }

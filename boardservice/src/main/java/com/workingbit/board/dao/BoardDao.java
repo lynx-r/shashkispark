@@ -28,10 +28,10 @@ public class BoardDao extends BaseDao<Board> {
 //    Map<String, AttributeValue> eav = new HashMap<>();
 //    eav.put(":trueVal", new AttributeValue().withN("1"));
 //    eav.put(":falseVal", new AttributeValue().withN("0"));
-//    String filterExpression = Published.name() + " = :trueVal and "
+//    String filters = Published.name() + " = :trueVal and "
 //        + NewAdded.name() + " = :falseVal and "
 //        + Banned.name() + " = :falseVal";
-//    scanExpression.withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+//    scanExpression.withFilterExpression(filters).withExpressionAttributeValues(eav);
 //    PaginatedScanList<Article> scanArticle = getDynamoDBMapper().scan(Article.class, scanExpression);
 //    scanArticle.loadAllResults();
 //    List<Article> articles = new ArrayList<>(scanArticle.size());

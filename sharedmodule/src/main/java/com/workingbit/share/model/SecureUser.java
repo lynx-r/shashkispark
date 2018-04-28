@@ -6,6 +6,7 @@ import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.converter.UserRolesConverter;
 import com.workingbit.share.domain.BaseDomain;
+import com.workingbit.share.model.enumarable.EnumAuthority;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,8 +45,8 @@ public class SecureUser extends BaseDomain {
   private String username;
 
   @DynamoDBTypeConverted(converter = UserRolesConverter.class)
-  @DynamoDBAttribute(attributeName = "roles")
-  private Set<EnumSecureRole> roles = new HashSet<>();
+  @DynamoDBAttribute(attributeName = "authorities")
+  private Set<EnumAuthority> authorities = new HashSet<>();
 
   /**
    * hash of user:password:salt
@@ -110,13 +111,13 @@ public class SecureUser extends BaseDomain {
         .append("createdAt", createdAt)
         .append("updatedAt", updatedAt)
         .append("username", username)
-        .append("roles", roles)
+        .append("authorities", authorities)
         .append("accessToken", accessToken)
         .append("userSession", userSession)
         .toString();
   }
 
-  public void addRole(EnumSecureRole role) {
-    roles.add(role);
+  public void addAuthority(EnumAuthority role) {
+    authorities.add(role);
   }
 }

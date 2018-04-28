@@ -3,12 +3,15 @@ package com.workingbit.article.controller;
 import com.despegar.http.client.*;
 import com.despegar.sparkjava.test.SparkServer;
 import com.workingbit.article.ArticleEmbedded;
-import com.workingbit.share.client.ShareRemoteClient;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.*;
+import com.workingbit.share.model.enumarable.EnumArticleStatus;
+import com.workingbit.share.model.enumarable.EnumAuthority;
+import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -18,11 +21,12 @@ import spark.servlet.SparkApplication;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN_HEADER;
-import static com.workingbit.share.common.RequestConstants.USER_SESSION_HEADER;
+import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
+import static com.workingbit.orchestrate.util.AuthRequestUtil.hasAuthorities;
+import static com.workingbit.share.common.RequestConstants.*;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
-import static com.workingbit.share.util.Utils.getRandomString;
+import static java.net.HttpURLConnection.*;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singleton;
 import static org.junit.Assert.*;
@@ -55,10 +59,12 @@ public class ArticleControllerTest {
   public static SparkServer<ArticleControllerTestSparkApplication> testServer = new SparkServer<>(ArticleControllerTestSparkApplication.class, randomPort);
 
   private AuthUser register() throws Exception {
-    String username = Utils.getRandomString();
-    String password = Utils.getRandomString();
-    RegisterUser registerUser = new RegisterUser(username, password);
-    AuthUser registered = ShareRemoteClient.Singleton.getInstance().register(registerUser).get();
+    String username = Utils.getRandomString20();
+    String password = Utils.getRandomString20();
+    UserCredentials userCredentials = new UserCredentials(username, password);
+    AuthUser registered = orchestralService
+        .register(userCredentials)
+        .get();
     assertNotNull(registered);
 
     return registered;
@@ -71,26 +77,19 @@ public class ArticleControllerTest {
    */
   @Test
   public void create_article() throws Exception {
-    try {
-      CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-      // can't create
-      Optional<CreateArticleResponse> articleResponseOpt = ShareRemoteClient.Singleton.getInstance().createArticle(createArticlePayload, new AuthUser());
-      assertFalse(articleResponseOpt.isPresent());
+    CreateArticlePayload createArticlePayload = getCreateArticlePayload();
+    // can't create
+    post("", createArticlePayload, AuthUser.anonymous(), HTTP_FORBIDDEN);
 
-      AuthUser headers = register();
-      articleResponseOpt = ShareRemoteClient.Singleton.getInstance().createArticle(createArticlePayload, headers);
+    AuthUser headers = register();
+    CreateArticleResponse articleAnswer = (CreateArticleResponse) post("", createArticlePayload, headers, HTTP_CREATED).getBody();
 
-      assertTrue(articleResponseOpt.isPresent());
-      CreateArticleResponse articleResponse = articleResponseOpt.get();
-      Article article = articleResponse.getArticle();
-      BoardBox board = articleResponse.getBoard();
-      assertNotNull(article.getId());
-      assertNotNull(article.getBoardBoxId());
-      assertNotNull(board.getId());
-    } catch (Exception e) {
-      assertFalse(e.getMessage(), false);
-      e.printStackTrace();
-    }
+    assertNotNull(articleAnswer);
+    Article article = articleAnswer.getArticle();
+    BoardBox board = articleAnswer.getBoard();
+    assertNotNull(article.getId());
+    assertNotNull(article.getBoardBoxId());
+    assertNotNull(board.getId());
   }
 
   /**
@@ -102,42 +101,53 @@ public class ArticleControllerTest {
   public void save_article() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
     AuthUser headers = register();
-    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
+    Answer answer = post("", createArticlePayload, headers);
+    assertEquals(HTTP_CREATED, answer.getStatusCode());
 
-    Article article = articleResponse.getArticle();
-    String title = getRandomString();
+    Article article = ((CreateArticleResponse) answer.getBody()).getArticle();
+    String title = Utils.getRandomString20();
     article.setTitle(title);
-    String content = getRandomString();
+    String content = Utils.getRandomString20();
     article.setContent(content);
-    AuthUser articleNotAuthorized = (AuthUser) put("", article).getBody();
-    assertTrue(articleNotAuthorized.getRoles().contains(EnumSecureRole.ANONYMOUS));
+    MessageResponse articleNotAuthorized = put("", article).getMessage();
+    assertEquals(HTTP_FORBIDDEN, articleNotAuthorized.getCode());
 
-    UserInfo userInfo = ShareRemoteClient.Singleton.getInstance().userInfo(headers).get();
-    userInfo.addRole(EnumSecureRole.BAN);
-    UserInfo savedUserInfo = ShareRemoteClient.Singleton.getInstance().saveUserInfo(userInfo, headers).get();
-    assertTrue(savedUserInfo.getRoles().contains(EnumSecureRole.BAN));
-    articleNotAuthorized = (AuthUser) put("", article, headers).getBody();
-    assertTrue(articleNotAuthorized.getRoles().contains(EnumSecureRole.ANONYMOUS));
+    UserInfo userInfo = orchestralService
+        .userInfo(headers)
+        .get();
+    userInfo.addAuthority(EnumAuthority.BANNED);
+    answer = orchestralService.saveUserInfoAnswer(userInfo, headers).get();
+    UserInfo savedUserInfo = (UserInfo) answer.getBody();
+    headers = answer.getAuthUser();
+    assertTrue(savedUserInfo.getAuthorities().contains(EnumAuthority.BANNED));
+    articleNotAuthorized = put("", article, headers).getMessage();
+    assertEquals(HTTP_FORBIDDEN, articleNotAuthorized.getCode());
 
-    userInfo.setRoles(headers.getRoles());
-    boolean bannedUserInfo1 = ShareRemoteClient.Singleton.getInstance().saveUserInfo(userInfo, headers).isPresent();
-    assertFalse(bannedUserInfo1);
-    assertFalse(articleNotAuthorized.getRoles().contains(EnumSecureRole.BAN));
+    headers = answer.getAuthUser();
+    answer = orchestralService.authenticateAnswer(headers).get();
+    assertEquals(HTTP_OK, answer.getStatusCode());
+    headers = answer.getAuthUser();
+    assertTrue(headers.getAuthorities().contains(EnumAuthority.BANNED));
 
-    articleNotAuthorized = (AuthUser) put("", article, headers).getBody();
-    assertTrue(articleNotAuthorized.getRoles().contains(EnumSecureRole.ANONYMOUS));
+    answer = put("", article, headers);
+    assertEquals(HTTP_FORBIDDEN, answer.getStatusCode());
 
     AuthUser admin = register();
-    UserInfo adminInfo = ShareRemoteClient.Singleton.getInstance().userInfo(admin).get();
-    adminInfo.addRole(EnumSecureRole.ADMIN);
-    ShareRemoteClient.Singleton.getInstance().saveUserInfo(adminInfo, admin);
+    String superHash = System.getenv("SHASHKI_SUPER_USER");
+    assertNotNull("Супер пароль не может быть пустым", superHash);
+    admin.setSuperHash(superHash);
+    UserInfo adminInfo = orchestralService.userInfo(admin).get();
+    adminInfo.addAuthority(EnumAuthority.ADMIN);
+    orchestralService.saveUserInfo(adminInfo, admin);
 
     // unban
-    userInfo.setRoles(singleton(EnumSecureRole.AUTHOR));
-    ShareRemoteClient.Singleton.getInstance().saveUserInfo(userInfo, admin);
+    userInfo.setAuthorities(new HashSet<>(Set.of(EnumAuthority.AUTHOR)));
+    answer = orchestralService.saveUserInfoAnswer(userInfo, admin).get();
+    assertEquals(HTTP_OK, answer.getStatusCode());
+    headers = answer.getAuthUser();
 
-    String newTitle = Utils.getRandomString();
-    String newContent = Utils.getRandomString();
+    String newTitle = Utils.getRandomString20();
+    String newContent = Utils.getRandomString20();
     article.setTitle(newTitle);
     article.setContent(newContent);
     article = (Article) put("", article, headers).getBody();
@@ -183,10 +193,10 @@ public class ArticleControllerTest {
   @Test
   public void find_all() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    String username = Utils.getRandomString();
-    String password = Utils.getRandomString();
-    RegisterUser registerUser = new RegisterUser(username, password);
-    AuthUser registered = ShareRemoteClient.Singleton.getInstance().register(registerUser).get();
+    String username = Utils.getRandomString20();
+    String password = Utils.getRandomString20();
+    UserCredentials userCredentials = new UserCredentials(username, password);
+    AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 
     CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
@@ -195,6 +205,9 @@ public class ArticleControllerTest {
     assertNotNull(article.getId());
     assertNotNull(article.getBoardBoxId());
     assertNotNull(board.getId());
+
+    article.setArticleStatus(EnumArticleStatus.PUBLISHED);
+    article = (Article) put("", article, registered).getBody();
 
     Articles articles = (Articles) get("s").getBody();
     String articleId = article.getId();
@@ -205,23 +218,59 @@ public class ArticleControllerTest {
     article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(articleId))).findFirst().get();
     assertNotNull(article);
 
-    AuthUser loggedout = ShareRemoteClient.Singleton.getInstance().logout(registered).get();
-    assertEquals(EnumSecureRole.ANONYMOUS, loggedout.getRoles());
+    AuthUser loggedout = orchestralService
+        .logout(registered)
+        .get();
+    assertTrue(hasAuthorities(singleton(EnumAuthority.ANONYMOUS), loggedout.getAuthorities()));
 
     createArticlePayload = getCreateArticlePayload();
     int statusCode = post("", createArticlePayload, registered).getStatusCode();
-    assertEquals(403, statusCode);
+    assertEquals(HTTP_FORBIDDEN, statusCode);
 
-    AuthUser loggedIn = ShareRemoteClient.Singleton.getInstance().authorize(registerUser).get();
-    assertEquals(EnumSecureRole.AUTHOR, loggedIn.getRoles());
+    AuthUser loggedIn = orchestralService.authorize(userCredentials).get();
+    assertTrue(!hasAuthorities(singleton(EnumAuthority.AUTHOR), loggedout.getAuthorities()));
 
-    loggedIn = ShareRemoteClient.Singleton.getInstance().authenticate(loggedIn).get();
-    assertNotNull(loggedIn);
+    orchestralService.authenticate(loggedIn).get();
+    assertTrue(hasAuthorities(singleton(EnumAuthority.ANONYMOUS), loggedout.getAuthorities()));
+  }
+
+  @Test
+  public void find_with_filter() throws Exception {
+    CreateArticlePayload createArticlePayload = getCreateArticlePayload();
+    String username = Utils.getRandomString20();
+    String password = Utils.getRandomString20();
+    UserCredentials userCredentials = new UserCredentials(username, password);
+    AuthUser registered = orchestralService.register(userCredentials).get();
+    assertNotNull(registered);
+
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
+    registered.parseFilters("articleStatus = NEW_ADDED");
+    Answer answer = get("s", registered, HTTP_OK);
+    Articles articles = (Articles) answer.getBody();
+    assertEquals(1, articles.getArticles().size());
+    registered = answer.getAuthUser();
+
+    createArticlePayload = getCreateArticlePayload();
+    articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
+    Article article = articleResponse.getArticle();
+
+    article.setArticleStatus(EnumArticleStatus.PUBLISHED);
+    article = (Article) put("", article, registered).getBody();
+
+    registered.parseFilters("articleStatus = PUBLISHED");
+    answer = get("s", registered, HTTP_OK);
+    articles = (Articles) answer.getBody();
+    assertEquals(1, articles.getArticles().size());
+    registered = answer.getAuthUser();
+
+    registered.parseFilters("articleStatus = PUBLISHED;articleStatus = NEW_ADDED");
+    articles = (Articles) get("s", registered, HTTP_OK).getBody();
+    assertEquals(2, articles.getArticles().size());
   }
 
   private CreateArticlePayload getCreateArticlePayload() {
     CreateArticlePayload createArticlePayload = CreateArticlePayload.createArticlePayload();
-    Article article = new Article(getRandomString(), getRandomString(), getRandomString());
+    Article article = new Article(Utils.getRandomString20(), Utils.getRandomString20(), Utils.getRandomString20());
     createArticlePayload.setArticle(article);
     CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
     createBoardPayload.setBlack(false);
@@ -251,7 +300,7 @@ public class ArticleControllerTest {
   }
 
   private Answer put(String path, Article payload, AuthUser authUser) throws HttpClientException {
-    Map<String, String> headers = new HashMap<String, String>() {{
+    Map<String, String> headers = new HashMap<>() {{
       put(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
       put(USER_SESSION_HEADER, authUser.getUserSession());
     }};
@@ -294,4 +343,61 @@ public class ArticleControllerTest {
     assertEquals(objectList, myClassList);
   }
 
+  private Answer post(String path, Object payload, AuthUser authUser, int expectCode) throws HttpClientException {
+    PostMethod resp = testServer.post(articleUrl + path, dataToJson(payload), false);
+    if (authUser != null) {
+      if (StringUtils.isNotBlank(authUser.getAccessToken())) {
+        resp.addHeader(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
+      }
+      if (StringUtils.isNotBlank(authUser.getUserSession())) {
+        resp.addHeader(USER_SESSION_HEADER, authUser.getUserSession());
+      }
+      resp.addHeader(FILTERS_HEADER, dataToJson(authUser.getFilters()));
+    }
+    HttpResponse execute = testServer.execute(resp);
+    assertEquals(expectCode, execute.code());
+    Answer answer = jsonToData(new String(execute.body()), Answer.class);
+    assertEquals(expectCode, answer.getStatusCode());
+    return answer;
+  }
+
+  private Answer post(String path, Object payload, AuthUser authUser, int expectCode, String[] errors) throws HttpClientException {
+    PostMethod resp = testServer.post(articleUrl + path, dataToJson(payload), false);
+    if (authUser != null) {
+      if (StringUtils.isNotBlank(authUser.getAccessToken())) {
+        resp.addHeader(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
+      }
+      if (StringUtils.isNotBlank(authUser.getUserSession())) {
+        resp.addHeader(USER_SESSION_HEADER, authUser.getUserSession());
+      }
+      resp.addHeader(FILTERS_HEADER, dataToJson(authUser.getFilters()));
+    }
+    HttpResponse execute = testServer.execute(resp);
+    assertEquals(expectCode, execute.code());
+    Answer answer = jsonToData(new String(execute.body()), Answer.class);
+    assertEquals(expectCode, answer.getStatusCode());
+    Arrays.sort(errors);
+    String[] actualErrors = answer.getMessage().getMessages();
+    Arrays.sort(actualErrors);
+    assertArrayEquals(errors, actualErrors);
+    return answer;
+  }
+
+  private Answer get(String path, AuthUser authUser, int expectCode) throws HttpClientException {
+    var resp = testServer.get(articleUrl + path, false);
+    if (authUser != null) {
+      if (StringUtils.isNotBlank(authUser.getAccessToken())) {
+        resp.addHeader(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
+      }
+      if (StringUtils.isNotBlank(authUser.getUserSession())) {
+        resp.addHeader(USER_SESSION_HEADER, authUser.getUserSession());
+      }
+      resp.addHeader(FILTERS_HEADER, dataToJson(authUser.getFilters()));
+    }
+    HttpResponse execute = testServer.execute(resp);
+    assertEquals(expectCode, execute.code());
+    Answer answer = jsonToData(new String(execute.body()), Answer.class);
+    assertEquals(expectCode, answer.getStatusCode());
+    return answer;
+  }
 }

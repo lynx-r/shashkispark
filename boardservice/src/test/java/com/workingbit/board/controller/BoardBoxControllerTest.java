@@ -4,14 +4,18 @@ import com.despegar.http.client.*;
 import com.despegar.sparkjava.test.SparkServer;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.workingbit.board.BoardEmbedded;
-import com.workingbit.board.config.Path;
-import com.workingbit.share.client.ShareRemoteClient;
+import com.workingbit.board.config.Authority;
 import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.model.*;
+import com.workingbit.share.model.Answer;
+import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.model.CreateBoardPayload;
+import com.workingbit.share.model.UserCredentials;
+import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
+import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.UnirestUtil;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.RandomUtils;
@@ -25,7 +29,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.workingbit.share.common.RequestConstants.*;
+import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
+import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN_HEADER;
+import static com.workingbit.share.common.RequestConstants.USER_SESSION_HEADER;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static junit.framework.TestCase.assertEquals;
@@ -52,10 +58,10 @@ public class BoardBoxControllerTest {
   public static SparkServer<BoardBoxControllerTestSparkApplication> testServer = new SparkServer<>(BoardBoxControllerTestSparkApplication.class, randomPort);
 
   private AuthUser register() throws Exception {
-    String username = Utils.getRandomString();
-    String password = Utils.getRandomString();
-    RegisterUser registerUser = new RegisterUser(username, password);
-    AuthUser registered = ShareRemoteClient.Singleton.getInstance().register(registerUser).get();
+    String username = Utils.getRandomString20();
+    String password = Utils.getRandomString20();
+    UserCredentials userCredentials = new UserCredentials(username, password);
+    AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 
     return registered;
@@ -70,7 +76,7 @@ public class BoardBoxControllerTest {
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId, authUser);
 
-    boardBox = (BoardBox) post(Path.BOARD_ADD_DRAUGHT.getPath(), boardBox, authUser).getBody();
+    boardBox = (BoardBox) post(Authority.BOARD_ADD_DRAUGHT.getPath(), boardBox, authUser).getBody();
     Board board = boardBox.getBoard();
     Draught draught = board.getWhiteDraughts().get("c3");
     assertTrue(draught != null);
@@ -165,13 +171,13 @@ public class BoardBoxControllerTest {
     createBoardPayload.setFillBoard(false);
     createBoardPayload.setBlack(false);
     UnirestUtil.configureSerialization();
-    BoardBox body = (BoardBox) post(Path.BOARD.getPath(), createBoardPayload, authUser).getBody();
+    BoardBox body = (BoardBox) post(Authority.BOARD.getPath(), createBoardPayload, authUser).getBody();
     assertNotNull(body);
 
     body.setEditMode(EnumEditBoardBoxMode.PLACE);
-    body = (BoardBox) put(Path.BOARD.getPath(), body, authUser).getBody();
+    body = (BoardBox) put(Authority.BOARD.getPath(), body, authUser).getBody();
 
-    BoardBox boardBox = (BoardBox) get(Path.BOARD + "/" + body.getId()).getBody();
+    BoardBox boardBox = (BoardBox) get(Authority.BOARD + "/" + body.getId()).getBody();
     Board board = boardBox.getBoard();
     Square square = new Square(5, 2, 8, true, new Draught(5, 2, 8));
     board.setSelectedSquare(square);

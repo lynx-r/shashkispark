@@ -3,17 +3,15 @@ package com.workingbit.share.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
  */
 public class NotationHistory implements DeepClone {
-
-  private final Logger logger = LoggerFactory.getLogger(NotationHistory.class);
 
   private NotationDrives history;
   private NotationDrives notation;
@@ -34,6 +32,7 @@ public class NotationHistory implements DeepClone {
     if (hasRoot) {
       notation = NotationDrives.create();
       NotationDrive root = new NotationDrive(true);
+      root.setSelected(true);
       notation.add(root);
       history = NotationDrives.create();
       history.add(root.deepClone());
@@ -151,7 +150,6 @@ public class NotationHistory implements DeepClone {
       }
     }
 
-    logger.info("Notation after fork: " + pdnString());
     return true;
   }
 
@@ -233,7 +231,6 @@ public class NotationHistory implements DeepClone {
       return false;
     }
 
-    logger.info("Notation after switch: " + pdnString());
     return true;
   }
 

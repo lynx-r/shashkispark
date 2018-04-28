@@ -8,6 +8,8 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
+import com.workingbit.share.model.enumarable.EnumNotation;
+import com.workingbit.share.model.enumarable.EnumRules;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;

@@ -24,11 +24,17 @@ public class ErrorMessages {
   public static final String UNABLE_TO_SAVE_BOARD = "Не удалось сохранить доску";
   public static final String UNABLE_TO_LOAD_BOARD = "Не удалось загрузить доску";
   public static final String UNABLE_TO_REGISTER = "Не удалось зарегистрироваться или имя %s уже занято";
-  public static final String UNABLE_TO_AUTHORIZE = "Не удалось получить доступ";
+  public static final String UNABLE_TO_AUTHORIZE = "Не удалось войти";
   public static final String UNABLE_TO_AUTHENTICATE = "Ваш аккаунт не найден на сайте";
   public static final String UNABLE_TO_ASSIGN_ROLE = "Не удалось назначить роль";
   public static final String UNABLE_TO_LOGOUT = "Не удалось выйти с сайта";
   public static final String NOT_OWNER = "Не владелец";
   public static final String RESOURCE_NOT_FOUND = "Запрашиваемый ресурс не найден";
-  public static final String INTERNAL_SERVER_ERROR = "Внутрення ошибка сервера";
+  public static final String INTERNAL_SERVER_ERROR = "Ошибка на сервере";
+  public static final String FORBIDDEN = "Доступ запрещён";
+  public static final String USERNAME_NOT_NULL = "Поле <Имя пользователя> не может быть пустым";
+  public static final String USERNAME_CONSTRAINTS = "Минимальная длина поля <Имя пользователя> 3 символа, максимальная 40";
+  public static final String PASSWORD_NOT_NULL = "Поле <Пароль> не может быть пустым";
+  public static final String PASSWORD_CONSTRAINTS = "Минимальная длина поля <Пароль> 6 символов";
+  public static final String INVALID_INTERNAL_REQUEST = "Не верный внутренний запрос";
 }

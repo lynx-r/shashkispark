@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.model.EnumArticleState;
+import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import com.workingbit.share.model.Payload;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,8 +54,8 @@ public class Article extends BaseDomain implements Payload {
   private String boardBoxId;
 
   @DynamoDBTypeConvertedEnum
-  @DynamoDBAttribute(attributeName = "state")
-  private EnumArticleState state;
+  @DynamoDBAttribute(attributeName = "articleStatus")
+  private EnumArticleStatus articleStatus;
 
   @DynamoDBAttribute(attributeName = "readonly")
   private boolean readonly;
@@ -76,7 +76,7 @@ public class Article extends BaseDomain implements Payload {
                  @JsonProperty("title") String title,
                  @JsonProperty("content") String content,
                  @JsonProperty("boardBoxId") String boardBoxId,
-                 @JsonProperty("state") EnumArticleState state
+                 @JsonProperty("articleStatus") EnumArticleStatus articleStatus
   ) {
     this.id = id;
     this.createdAt = createdAt;
@@ -84,7 +84,7 @@ public class Article extends BaseDomain implements Payload {
     this.title = title;
     this.content = content;
     this.boardBoxId = boardBoxId;
-    this.state = state;
+    this.articleStatus = articleStatus;
   }
 
   @Override

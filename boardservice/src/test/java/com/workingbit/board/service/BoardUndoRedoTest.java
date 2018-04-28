@@ -10,9 +10,6 @@ import com.workingbit.share.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Optional;
-
-import static com.workingbit.share.util.Utils.getRandomString;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
@@ -21,12 +18,12 @@ import static junit.framework.TestCase.assertTrue;
  */
 public class BoardUndoRedoTest extends BaseServiceTest {
 
-  private String articleId = getRandomString();
-  private Optional<AuthUser> token;
+  private String articleId = Utils.getRandomString20();
+  private AuthUser token;
 
   @Before
   public void setUp() throws Exception {
-    token = Optional.of(new AuthUser(Utils.getRandomString(), Utils.getRandomString()));
+    token = new AuthUser(Utils.getRandomString20(), Utils.getRandomString20());
   }
 
   @Test

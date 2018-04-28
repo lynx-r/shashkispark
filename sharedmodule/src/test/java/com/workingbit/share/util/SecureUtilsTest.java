@@ -17,7 +17,7 @@ public class SecureUtilsTest {
       String key = Utils.getRandomString(16); // 128 bit key
       String initVector = Utils.getRandomString(16); // 16 bytes IV
 
-      String text = Utils.getRandomString();
+      String text = Utils.getRandomString20();
 //      String enc = SecureUtils.encrypt(key, initVector, text);
 //      String decr = SecureUtils.decrypt(key, initVector, enc);
 //      assertEquals(text, decr);

@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.workingbit.share.model.EnumNotation.LPAREN;
-import static com.workingbit.share.model.EnumNotation.RPAREN;
+import static com.workingbit.share.model.enumarable.EnumNotation.LPAREN;
+import static com.workingbit.share.model.enumarable.EnumNotation.RPAREN;
 
 /**
  * Created by Aleksey Popryaduhin on 12:01 12/08/2017.
@@ -130,8 +130,7 @@ public class Utils {
   }};
 
   private static String RANDOM_STR_SEP = "-";
-  private static int COUNT_RANDOM_STR = 10;
-  private static int COUNT_RANDOM_STR_LONG = 20;
+  private static int COUNT_RANDOM_STR = 20;
 
   public static boolean isBlank(String s) {
     if (s == null) {
@@ -154,7 +153,7 @@ public class Utils {
     domain.setCreatedAt(LocalDateTime.now());
   }
 
-  public static String getRandomString() {
+  public static String getRandomString20() {
     return RandomStringUtils.randomAlphanumeric(COUNT_RANDOM_STR);
   }
 
@@ -182,7 +181,7 @@ public class Utils {
   }
 
   public static void setArticleIdAndCreatedAt(Article article, boolean present) {
-    article.setId(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString() : ""));
+    article.setId(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString20() : ""));
     article.setCreatedAt(LocalDateTime.now());
   }
 
@@ -238,5 +237,9 @@ public class Utils {
         )
         .collect(Collectors.toList());
     return StringUtils.join(pdns, "");
+  }
+
+  public static long getTimestamp() {
+    return new Date().getTime();
   }
 }

@@ -9,6 +9,11 @@ buildscript {
     }
 }
 
+// lombok configuration
+plugins {
+    id 'net.ltgt.apt' version '0.15'
+}
+
 allprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
@@ -63,6 +68,9 @@ configure(subprojects) {
         compile('com.sparkjava:spark-core:2.7.2')
 
         testCompile group: 'junit', name: 'junit', version: '4.+'
+
+        // test spark controllers
+        testCompile "com.despegar:spark-test:1.1.6"
     }
 }
 
@@ -74,20 +82,25 @@ configure(subprojects.findAll { it.name.endsWith('service') }) { p ->
         compile group: 'com.amazonaws.serverless', name: 'aws-serverless-java-container-spark', version: '1.1'
 
         compile project(':sharedmodule')
-
-        // test spark controllers
-        testCompile "com.despegar:spark-test:1.1.6"
     }
 }
 
 project(':securityservice') {
     version = '1.0'
     mainClassName = 'com.workingbit.security.SecurityApplication'
+
+    dependencies {
+        compile project(':orchestratemodule')
+    }
 }
 
 project(':articleservice') {
     version = '1.0'
     mainClassName = 'com.workingbit.article.ArticleApplication'
+
+    dependencies {
+        compile project(':orchestratemodule')
+    }
 }
 
 project(':boardservice') {
@@ -100,7 +113,23 @@ project(':boardservice') {
 
         compile 'org.ehcache:ehcache:3.5.2'
 
+        compile project(':orchestratemodule')
+
         compile files('lib/grammatica-1.6.jar')
+    }
+}
+
+project(':orchestratemodule') {
+    jar {
+        baseName = 'orchestratemodule'
+        version = "1.0"
+    }
+
+    dependencies {
+        // https://mvnrepository.com/artifact/org.redisson/redisson
+        compile group: 'org.redisson', name: 'redisson', version: '3.6.5'
+
+        compile project(':sharedmodule')
     }
 }
 
@@ -122,9 +151,17 @@ project(':sharedmodule') {
         compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.1'
         compile 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.1'
 
-        compile 'org.projectlombok:lombok:1.16.18'
+        // https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
+        compile group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.9.Final'
 
-        compile 'uk.com.robust-it:cloning:1.9.5'
+        // https://mvnrepository.com/artifact/org.glassfish/javax.el
+        compile group: 'org.glassfish', name: 'javax.el', version: '3.0.0'
+
+//        compileOnly('org.projectlombok:lombok:1.16.20')
+        compileOnly files('lib/lombok-edge.jar')
+        annotationProcessor files('lib/lombok-edge.jar')
+
+        compile 'uk.com.robust-it:cloning:1.9.10'
 
         compile 'com.mashape.unirest:unirest-java:1.4.9'
 
@@ -135,13 +172,13 @@ project(':sharedmodule') {
     }
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.10
+targetCompatibility = 1.10
 
 repositories {
     mavenCentral()
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.0'
-}
+//task wrapper(type: Wrapper) {
+//    gradleVersion = '4.7'
+//}

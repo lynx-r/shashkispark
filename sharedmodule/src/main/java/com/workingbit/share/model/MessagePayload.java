@@ -11,19 +11,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     include = JsonTypeInfo.As.PROPERTY,
     property = "type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = MessageResponse.class, name = "message"),
+    @JsonSubTypes.Type(value = MessageResponse.class, name = "messages"),
 })
 public interface MessagePayload {
   int getCode();
 
-  void setCode(int statusCode);
-
-  String getMessage();
-
-  void setMessage(String message);
-
-  default MessagePayload message(String message) {
-    setMessage(message);
-    return this;
-  }
+  String[] getMessages();
 }

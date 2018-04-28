@@ -1,11 +1,14 @@
 package com.workingbit.security;
 
+import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.security.config.AppProperties;
-import com.workingbit.security.config.Path;
+import com.workingbit.security.config.SecureAuthority;
 import com.workingbit.security.controller.SecurityController;
 import com.workingbit.security.dao.SecureUserDao;
 import com.workingbit.security.service.SecureUserService;
+import com.workingbit.share.exception.ExceptionHandler;
 import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
@@ -30,6 +33,8 @@ public class SecurityEmbedded {
   public static SecureUserDao secureUserDao;
 
   static {
+    OrchestrateModule.loadModule();
+
     appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     secureUserDao = new SecureUserDao(appProperties);
@@ -55,17 +60,18 @@ public class SecurityEmbedded {
   }
 
   private static void establishRoutes() {
-    path("/", () -> get(Path.HOME.getPath(), SecurityController.home));
+    path("/", () -> get(SecureAuthority.HOME.getPath(), SecurityController.home));
 
     path("/api", () ->
         path("/v1", () -> {
-          post(Path.REGISTER.getPath(), SecurityController.register);
-          post(Path.AUTHORIZE.getPath(), SecurityController.authorize);
-          post(Path.AUTHENTICATE.getPath(), SecurityController.authenticate);
-          post(Path.USER_INFO.getPath(), SecurityController.userInfo);
-          post(Path.SAVE_USER_INFO.getPath(), SecurityController.saveUserInfo);
-          post(Path.LOGOUT.getPath(), SecurityController.logout);
+          post(SecureAuthority.REGISTER.getPath(), SecurityController.register);
+          post(SecureAuthority.AUTHORIZE.getPath(), SecurityController.authorize);
+          get(SecureAuthority.AUTHENTICATE.getPath(), SecurityController.authenticate);
+          post(SecureAuthority.USER_INFO.getPath(), SecurityController.userInfo);
+          post(SecureAuthority.SAVE_USER_INFO.getPath(), SecurityController.saveUserInfo);
+          get(SecureAuthority.LOGOUT.getPath(), SecurityController.logout);
 
+          exception(RequestException.class, ExceptionHandler.handle);
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));
           internalServerError((req, res) -> dataToJson(Answer.error(HTTP_INTERNAL_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR)));
 

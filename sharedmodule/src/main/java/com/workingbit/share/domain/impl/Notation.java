@@ -7,6 +7,8 @@ import com.workingbit.share.converter.ListOrderedMapConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.*;
+import com.workingbit.share.model.enumarable.EnumNotation;
+import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

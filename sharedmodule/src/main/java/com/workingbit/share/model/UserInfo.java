@@ -1,6 +1,7 @@
 package com.workingbit.share.model;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.workingbit.share.model.enumarable.EnumAuthority;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,14 +21,14 @@ public class UserInfo implements Payload {
   private String userId;
   private String username;
 
-  private Set<EnumSecureRole> roles = new HashSet<>();
+  private Set<EnumAuthority> authorities = new HashSet<>();
 
-  public void addRole(EnumSecureRole role) {
-    this.roles.add(role);
+  public void addAuthority(EnumAuthority role) {
+    this.authorities.add(role);
   }
 
-  public UserInfo role(EnumSecureRole role) {
-    this.roles.add(role);
+  public UserInfo authority(EnumAuthority role) {
+    this.authorities.add(role);
     return this;
   }
 }

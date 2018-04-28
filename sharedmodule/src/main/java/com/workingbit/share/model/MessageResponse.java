@@ -11,34 +11,29 @@ import static java.net.HttpURLConnection.HTTP_OK;
 /**
  * MessageResponse
  */
-@JsonTypeName("message")
+@JsonTypeName("messages")
 @Data
 public class MessageResponse implements MessagePayload {
-  private String message;
+  private String[] messages;
   private int code;
 
   @JsonCreator
   public MessageResponse(@JsonProperty("code") Integer code,
-                         @JsonProperty("message") String message
+                         @JsonProperty("messages") String[] messages
   ) {
     this.code = code;
-    this.message = message;
+    this.messages = messages;
   }
 
-  @Override
-  public void setCode(int code) {
-    this.code = code;
-  }
-
-  public static MessageResponse error(int statusCode, String message) {
-    return new MessageResponse(statusCode, message);
+  public static MessageResponse error(int statusCode, String... messages) {
+    return new MessageResponse(statusCode, messages);
   }
 
   public static MessageResponse ok() {
-    return new MessageResponse(HTTP_OK, "Request completed");
+    return new MessageResponse(HTTP_OK, new String[]{"Request completed"});
   }
 
   public static MessageResponse created() {
-    return new MessageResponse(HTTP_CREATED, "Object created");
+    return new MessageResponse(HTTP_CREATED, new String[]{"Object created"});
   }
 }

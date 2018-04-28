@@ -1,11 +1,11 @@
 package com.workingbit.board.controller;
 
-import com.workingbit.board.config.Path;
+import com.workingbit.board.config.Authority;
+import com.workingbit.orchestrate.function.ModelHandlerFunc;
+import com.workingbit.orchestrate.function.ParamsHandlerFunc;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.handler.ModelHandlerFunc;
-import com.workingbit.share.handler.ParamsHandlerFunc;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.ParamPayload;
@@ -29,7 +29,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
       ).handleRequest(req, res,
-          Path.BOARD.setSecure(true).setRoles(Path.Constants.BOARD_SECURE_ROLES),
+          Authority.BOARD.setAuthorities(Authority.Constants.BOARD_SECURE_ROLES),
           CreateBoardPayload.class);
 
   public static Route saveBoard = (req, res) ->
@@ -39,7 +39,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_BOARD))
       ).handleRequest(req, res,
-          Path.BOARD.setSecure(true).setRoles(Path.Constants.BOARD_SECURE_ROLES),
+          Authority.BOARD.setAuthorities(Authority.Constants.BOARD_SECURE_ROLES),
           BoardBox.class);
 
   public static Route loadPreviewBoard = (req, res) ->
@@ -49,16 +49,16 @@ public class BoardBoxController {
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_LOAD_BOARD))
       ).handleRequest(req, res,
-          Path.BOARD_LOAD_PREVIEW,
+          Authority.BOARD_LOAD_PREVIEW,
           BoardBox.class);
 
   public static Route findBoardById = (req, res) ->
-      ((ParamsHandlerFunc<ParamPayload>) (params, token)->
+      ((ParamsHandlerFunc<ParamPayload>) (params, token) ->
           boardBoxService.findById(params.getParam().get(RequestConstants.ID), token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND,
                   ErrorMessages.BOARD_WITH_ID_NOT_FOUND))
-      ).handleRequest(req, res, Path.BOARD_BY_ID);
+      ).handleRequest(req, res, Authority.BOARD_BY_ID);
 
   public static Route addDraught = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -67,7 +67,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_ADD_DRAUGHT))
       ).handleRequest(req, res,
-          Path.BOARD_ADD_DRAUGHT,
+          Authority.BOARD_ADD_DRAUGHT,
           BoardBox.class);
 
   public static Route highlightBoard = (req, res) ->
@@ -77,7 +77,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_HIGHLIGHT_BOARD))
       ).handleRequest(req, res,
-          Path.BOARD_HIGHLIGHT,
+          Authority.BOARD_HIGHLIGHT,
           BoardBox.class);
 
   public static Route move = (req, res) ->
@@ -87,7 +87,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_MOVE))
       ).handleRequest(req, res,
-          Path.BOARD_MOVE,
+          Authority.BOARD_MOVE,
           BoardBox.class);
 
   public static Route redo = (req, res) ->
@@ -97,7 +97,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_REDO))
       ).handleRequest(req, res,
-          Path.BOARD_REDO,
+          Authority.BOARD_REDO,
           BoardBox.class);
 
   public static Route undo = (req, res) ->
@@ -107,7 +107,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_UNDO))
       ).handleRequest(req, res,
-          Path.BOARD_UNDO,
+          Authority.BOARD_UNDO,
           BoardBox.class);
 
   public static Route switchNotation = (req, res) ->
@@ -117,7 +117,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SWITCH))
       ).handleRequest(req, res,
-          Path.BOARD_SWITCH,
+          Authority.BOARD_SWITCH,
           BoardBox.class);
 
   public static Route viewBranch = (req, res) ->
@@ -127,7 +127,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SWITCH))
       ).handleRequest(req, res,
-          Path.BOARD_VIEW_BRANCH,
+          Authority.BOARD_VIEW_BRANCH,
           BoardBox.class);
 
   public static Route forkNotation = (req, res) ->
@@ -137,7 +137,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_FORK))
       ).handleRequest(req, res,
-          Path.BOARD_FORK,
+          Authority.BOARD_FORK,
           BoardBox.class);
 
   public static Route changeTurn = (req, res) ->
@@ -147,6 +147,6 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CHANGE_TURN))
       ).handleRequest(req, res,
-          Path.CHANGE_TURN,
+          Authority.CHANGE_TURN,
           BoardBox.class);
 }

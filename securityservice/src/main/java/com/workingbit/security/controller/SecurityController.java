@@ -1,12 +1,10 @@
 package com.workingbit.security.controller;
 
-import com.workingbit.security.config.Path;
+import com.workingbit.orchestrate.function.ModelHandlerFunc;
+import com.workingbit.orchestrate.function.ParamsHandlerFunc;
+import com.workingbit.security.config.SecureAuthority;
 import com.workingbit.share.common.ErrorMessages;
-import com.workingbit.share.handler.ModelHandlerFunc;
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.RegisterUser;
-import com.workingbit.share.model.UserInfo;
+import com.workingbit.share.model.*;
 import spark.Route;
 
 import static com.workingbit.security.SecurityEmbedded.secureUserService;
@@ -21,44 +19,44 @@ public class SecurityController {
   public static Route home = (req, res) -> "Home, sweet home!";
 
   public static Route register = (req, res) ->
-      ((ModelHandlerFunc<RegisterUser>) (data, token) ->
-          secureUserService.register((RegisterUser) data)
+      ((ModelHandlerFunc<UserCredentials>) (data, token) ->
+          secureUserService.register((UserCredentials) data)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, String.format(ErrorMessages.UNABLE_TO_REGISTER, data.getUsername())))
-      ).handleRequest(req, res, Path.REGISTER, RegisterUser.class);
+      ).handleAuthRequest(req, res, UserCredentials.class);
 
   public static Route authorize = (req, res) ->
-      ((ModelHandlerFunc<RegisterUser>) (data, token) ->
-          secureUserService.authorize((RegisterUser) data)
+      ((ModelHandlerFunc<UserCredentials>) (data, token) ->
+          secureUserService.authorize((UserCredentials) data)
               .map(Answer::ok)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHORIZE))
-      ).handleRequest(req, res, Path.AUTHORIZE, RegisterUser.class);
+              .orElse(Answer.error(HTTP_FORBIDDEN, ErrorMessages.UNABLE_TO_AUTHORIZE))
+      ).handleAuthRequest(req, res, UserCredentials.class);
 
   public static Route authenticate = (req, res) ->
-      ((ModelHandlerFunc<AuthUser>) (data, token) ->
+      ((ParamsHandlerFunc<ParamPayload>) (data, token) ->
           secureUserService.authenticate(token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_FORBIDDEN, ErrorMessages.UNABLE_TO_AUTHENTICATE))
-      ).handleRequest(req, res, Path.AUTHENTICATE, AuthUser.class);
+      ).handleAuthRequest(req, res);
 
   public static Route userInfo = (req, res) ->
       ((ModelHandlerFunc<AuthUser>) (data, token) ->
           secureUserService.userInfo((AuthUser) data)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
-      ).handleRequest(req, res, Path.USER_INFO, AuthUser.class);
+      ).handleRequest(req, res, SecureAuthority.USER_INFO, AuthUser.class);
 
   public static Route saveUserInfo = (req, res) ->
       ((ModelHandlerFunc<UserInfo>) (data, token) ->
           secureUserService.saveUserInfo(data, token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
-      ).handleRequest(req, res, Path.USER_INFO, UserInfo.class);
+      ).handleRequest(req, res, SecureAuthority.USER_INFO, UserInfo.class);
 
   public static Route logout = (req, res) ->
-      ((ModelHandlerFunc<AuthUser>) (data, token) ->
-          secureUserService.logout(data)
+      ((ParamsHandlerFunc<ParamPayload>) (params, token) ->
+          secureUserService.logout(token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_LOGOUT))
-      ).handleRequest(req, res, Path.LOGOUT, AuthUser.class);
+      ).handleRequest(req, res, SecureAuthority.LOGOUT);
 }

@@ -24,4 +24,6 @@ public interface AppProperties {
   int sessionLength();
 
   int tokenLength();
+
+  String superHashEnvName();
 }

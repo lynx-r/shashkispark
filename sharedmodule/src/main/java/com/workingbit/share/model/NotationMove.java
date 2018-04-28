@@ -3,6 +3,7 @@ package com.workingbit.share.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.model.enumarable.EnumNotation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,8 +12,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.workingbit.share.model.EnumNotation.CAPTURE;
-import static com.workingbit.share.model.EnumNotation.SIMPLE;
+import static com.workingbit.share.model.enumarable.EnumNotation.CAPTURE;
+import static com.workingbit.share.model.enumarable.EnumNotation.SIMPLE;
 
 /**
  * Moves like e1-b2 or a1:e2

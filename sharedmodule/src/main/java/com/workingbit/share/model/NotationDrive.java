@@ -3,6 +3,7 @@ package com.workingbit.share.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.model.enumarable.EnumNotation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;

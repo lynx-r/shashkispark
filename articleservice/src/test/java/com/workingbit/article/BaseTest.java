@@ -4,6 +4,7 @@ import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.service.ArticleService;
 import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import com.workingbit.share.util.Utils;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
@@ -22,11 +23,11 @@ public class BaseTest {
   protected Article createArticle() {
     Article article = new Article();
     Utils.setArticleIdAndCreatedAt(article, true);
-    article.setAuthor(Utils.getRandomString());
-    article.setBoardBoxId(Utils.getRandomString());
-    article.setContent(Utils.getRandomString());
-    article.setTitle(Utils.getRandomString());
-    articleDao.save(article);
+    article.setArticleStatus(EnumArticleStatus.NEW_ADDED);
+    article.setAuthor(Utils.getRandomString20());
+    article.setBoardBoxId(Utils.getRandomString20());
+    article.setContent(Utils.getRandomString20());
+    article.setTitle(Utils.getRandomString20());
     return article;
   }
 }

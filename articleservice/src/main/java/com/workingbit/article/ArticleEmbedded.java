@@ -1,11 +1,14 @@
 package com.workingbit.article;
 
 import com.workingbit.article.config.AppProperties;
-import com.workingbit.article.config.Path;
+import com.workingbit.article.config.Authority;
 import com.workingbit.article.controller.ArticleController;
 import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.service.ArticleService;
+import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.exception.ExceptionHandler;
+import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
@@ -30,6 +33,8 @@ public class ArticleEmbedded {
   public static ArticleService articleService;
 
   static {
+    OrchestrateModule.loadModule();
+
     appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     articleDao = new ArticleDao(appProperties);
@@ -54,15 +59,17 @@ public class ArticleEmbedded {
   }
 
   private static void establishRoutes() {
-    path("/", () -> get(Path.HOME.getPath(), ArticleController.home));
+    path("/", () -> get(Authority.HOME.getPath(), ArticleController.home));
 
     path("/api", () ->
         path("/v1", () -> {
-          get(Path.ARTICLES.getPath(), ArticleController.findAllArticles);
-          get(Path.ARTICLE_BY_ID.getPath(), ArticleController.findArticleById);
-          post(Path.ARTICLE.getPath(), ArticleController.createArticleAndBoard);
-          put(Path.ARTICLE.getPath(), ArticleController.saveArticle);
+          get(Authority.ARTICLES.getPath(), ArticleController.findAllArticles);
+          get(Authority.ARTICLE_BY_ID.getPath(), ArticleController.findArticleById);
+          delete(Authority.ARTICLE_BY_ID.getPath(), ArticleController.removeArticleById);
+          post(Authority.ARTICLE.getPath(), ArticleController.createArticleAndBoard);
+          put(Authority.ARTICLE.getPath(), ArticleController.saveArticle);
 
+          exception(RequestException.class, ExceptionHandler.handle);
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));
           internalServerError((req, res) -> dataToJson(Answer.error(HTTP_INTERNAL_ERROR, ErrorMessages.INTERNAL_SERVER_ERROR)));
 
