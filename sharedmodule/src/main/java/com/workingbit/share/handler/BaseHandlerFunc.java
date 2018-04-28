@@ -9,10 +9,7 @@ import spark.Request;
 import spark.Response;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static com.workingbit.share.common.RequestConstants.*;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
@@ -41,14 +38,17 @@ public interface BaseHandlerFunc<T extends Payload> {
     String userSession = getOrCreateSession(request, response);
     String accessToken = request.headers(ACCESS_TOKEN_HEADER);
     String roleStr = request.headers(USER_ROLE_HEADER);
-    Set<EnumSecureRole> roles = new HashSet<>(Arrays.asList(EnumSecureRole.ANONYMOUS));
+    int counter = 0;
+    try {
+      counter = Integer.parseInt(request.headers(AUTH_COUNTER_HEADER));
+    } catch (NumberFormatException ignore) {
+    }
+    Set<EnumSecureRole> roles = new HashSet<>(Collections.singletonList(EnumSecureRole.ANONYMOUS));
     if (StringUtils.isNotBlank(roleStr)) {
       roles = EnumSecureRole.parseRoles(roleStr);
     }
     AuthUser internalUserRole = getInternalUserRole(accessToken, userSession);
-    if (internalUserRole == null) {
-      return getForbiddenAnswer(response);
-    }
+    internalUserRole.setCounter(counter);
     if (path.isSecure() || EnumSecureRole.isSecure(roles)) {
       Optional<AuthUser> authenticated = isAuthenticated(internalUserRole);
       if (!authenticated.isPresent()) {
