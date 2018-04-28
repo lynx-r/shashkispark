@@ -9,6 +9,8 @@ import spark.Request;
 import spark.Response;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,15 +40,15 @@ public interface BaseHandlerFunc<T extends Payload> {
     String userSession = getOrCreateSession(request, response);
     String accessToken = request.headers(ACCESS_TOKEN_HEADER);
     String roleStr = request.headers(USER_ROLE_HEADER);
-    EnumSecureRole role = EnumSecureRole.ANONYMOUS;
+    Set<EnumSecureRole> roles = new HashSet<>(Arrays.asList(EnumSecureRole.ANONYMOUS));
     if (StringUtils.isNotBlank(roleStr)) {
-      role = EnumSecureRole.valueOf(roleStr.toUpperCase());
+      roles = EnumSecureRole.parseRoles(roleStr);
     }
     AuthUser internalUserRole = getInternalUserRole(accessToken, userSession);
     if (internalUserRole == null) {
       return getForbiddenAnswer(response);
     }
-    if (path.isSecure() || EnumSecureRole.isSecure(role)) {
+    if (path.isSecure() || EnumSecureRole.isSecure(roles)) {
       Optional<AuthUser> authenticated = isAuthenticated(internalUserRole);
       if (!authenticated.isPresent()) {
         return getForbiddenAnswer(response);
