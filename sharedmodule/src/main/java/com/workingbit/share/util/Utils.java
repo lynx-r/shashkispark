@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.impl.Article;
-import com.workingbit.share.model.NotationDrive;
-import com.workingbit.share.model.NotationDrives;
-import com.workingbit.share.model.ToPdn;
+import com.workingbit.share.model.*;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -240,5 +238,13 @@ public class Utils {
         )
         .collect(Collectors.toList());
     return StringUtils.join(pdns, "");
+  }
+
+  public static boolean isAuthorRole(AuthUser authUser) {
+    return authUser.getRoles()
+        .stream()
+        .anyMatch((role) ->
+            Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR).contains(role)
+        );
   }
 }

@@ -2,7 +2,6 @@ package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
-import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
@@ -15,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static com.workingbit.board.BoardEmbedded.*;
+import static com.workingbit.share.util.Utils.isAuthorRole;
 
 /**
  * Created by Aleksey Popryaduhin on 07:00 22/09/2017.
@@ -49,7 +49,7 @@ public class BoardBoxService {
     return Optional.of(boardBox);
   }
 
-  Optional<BoardBox> createBoardBoxFromNotation(String articleId, Notation fromNotation) {
+  Optional<BoardBox> createBoardBoxFromNotation(String articleId, Notation fromNotation, AuthUser authUser) {
     BoardBox boardBox = new BoardBox();
     boardBox.setArticleId(articleId);
     Utils.setRandomIdAndCreatedAt(boardBox);
@@ -72,14 +72,14 @@ public class BoardBoxService {
             boardBox.setBoard(firstBoard);
             return boardBox;
           })
-          .map((b) -> saveAndFillBoard(null, b));
+          .map((b) -> saveAndFillBoard(authUser, b));
     }
     return Optional.empty();
   }
 
   Optional<BoardBox> find(BoardBox boardBox, AuthUser authUser) {
     Optional<BoardBox> board = findBoardAndPutInStore(authUser, boardBox);
-    boolean secure = authUser.getRoles().containsAll(Arrays.asList(EnumSecureRole.ADMIN, EnumSecureRole.AUTHOR));
+    boolean secure = isAuthorRole(authUser);
     if (secure) {
       return board.map(b -> b.readonly(false))
           .map(bb -> updateBoardBox(authUser, bb));
@@ -143,32 +143,23 @@ public class BoardBoxService {
   public Optional<BoardBox> move(BoardBox boardBox, Optional<AuthUser> token) {
     return token.map(authUser -> find(boardBox, authUser)
         .map(updatedBoxOrig -> {
-              isOwn(authUser, boardBox);
-              if (!isOwn(authUser, boardBox)) {
-                logger.error(ErrorMessages.NOT_OWNER);
-                return null;
-              }
               BoardBox userBoardBox = updatedBoxOrig.deepClone();
-              Board boardUpdated = userBoardBox.getBoard();
               Board board = boardBox.getBoard();
               if (isNotEditMode(boardBox)) {
                 return null;
               }
-              boardUpdated.setSelectedSquare(board.getSelectedSquare());
-              boardUpdated.setNextSquare(board.getNextSquare());
-
               Notation notation = userBoardBox.getNotation();
               NotationHistory notationBoardBox = notation.getNotationHistory();
-              boardUpdated.setDriveCount(notationBoardBox.size() - 1);
+              board.setDriveCount(notationBoardBox.size() - 1);
 
               try {
-                boardUpdated = boardService.move(boardUpdated, notationBoardBox);
+                board = boardService.move(board, notationBoardBox);
               } catch (BoardServiceException e) {
                 logger.error("Error while moving", e);
                 return null;
               }
-              userBoardBox.setBoard(boardUpdated);
-              userBoardBox.setBoardId(boardUpdated.getId());
+              userBoardBox.setBoard(board);
+              userBoardBox.setBoardId(board.getId());
               notationService.save(authUser, notation);
 
               logger.info("Notation after move: " + notation.getNotationHistory().pdnString());
@@ -194,11 +185,6 @@ public class BoardBoxService {
     return token.map(authUser ->
         find(boardBox, authUser)
             .map(updatedBox -> {
-              if (!isOwn(authUser, boardBox)) {
-                logger.error(ErrorMessages.NOT_OWNER);
-                return null;
-              }
-
               Board inverted = boardBox.getBoard();
               inverted.setSelectedSquare(null);
               inverted.setBlackTurn(!inverted.isBlackTurn());
@@ -236,11 +222,6 @@ public class BoardBoxService {
     Draught draught = selectedSquare.getDraught();
     return token.map(authUser -> find(boardBox, authUser)
         .map(updated -> {
-          if (!isOwn(authUser, boardBox)) {
-            logger.error(ErrorMessages.NOT_OWNER);
-            return null;
-          }
-
           Board currentBoard = updated.getBoard();
           Square squareLink = BoardUtils.findSquareByLink(selectedSquare, currentBoard);
           if (squareLink == null) {
@@ -355,10 +336,6 @@ public class BoardBoxService {
           if (boardBox.isReadonly() && authUser != null) {
             boardStoreService.put(authUser.getUserSession(), boardBox);
           } else {
-            if (!isOwn(authUser, boardBox)) {
-              logger.error(ErrorMessages.NOT_OWNER);
-              return null;
-            }
             boardBoxDao.save(boardBox);
           }
           notationService.save(authUser, boardBox.getNotation());
@@ -395,11 +372,6 @@ public class BoardBoxService {
   }
 
   private BoardBox saveAndFillBoard(AuthUser authUser, BoardBox boardBox) {
-    if (!isOwn(authUser, boardBox)) {
-      logger.error(ErrorMessages.NOT_OWNER);
-      return null;
-    }
-
     boardBox.setReadonly(false);
     boardBoxDao.save(boardBox);
     notationService.save(authUser, boardBox.getNotation());
@@ -423,10 +395,5 @@ public class BoardBoxService {
     } else {
       return Optional.of(fromStore.orElseGet(fromDb));
     }
-  }
-
-  private boolean isOwn(AuthUser authUser, BoardBox boardBox) {
-    // authUser == null when board is created from notation pdn
-    return authUser == null || authUser.getUserId().equals(boardBox.getUserId());
   }
 }
