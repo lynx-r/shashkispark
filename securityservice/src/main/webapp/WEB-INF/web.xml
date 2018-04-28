@@ -1,4 +1,8 @@
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="4.0">
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app
+        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
     <filter>
         <filter-name>SparkFilter</filter-name>
         <filter-class>spark.servlet.SparkFilter</filter-class>

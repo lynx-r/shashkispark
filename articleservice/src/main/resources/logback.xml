@@ -8,10 +8,8 @@
     </appender>
 
     <logger name="com.workingbit" level="DEBUG"/>
-    <logger name="org.apache.catalina" level="ERROR"/>
-    <logger name="org.apache.coyote" level="ERROR"/>
 
-    <root level="error">
+    <root level="TRACE">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

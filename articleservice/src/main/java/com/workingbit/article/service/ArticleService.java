@@ -19,8 +19,6 @@ import static com.workingbit.share.util.Utils.getRandomUUID;
  */
 public class ArticleService {
 
-  private final static ShareRemoteClient shareRemoteClient = ShareRemoteClient.Singleton.getInstance();
-
   private final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
   public Optional<CreateArticleResponse> createArticleResponse(CreateArticlePayload articleAndBoard, Optional<AuthUser> token) {
@@ -48,7 +46,8 @@ public class ArticleService {
     CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();
     boardRequest.setArticleId(article.getId());
 
-    Optional<BoardBox> boardBoxOptional = shareRemoteClient.createBoardBox(boardRequest, authUser);
+    Optional<BoardBox> boardBoxOptional = ShareRemoteClient.Singleton.getInstance()
+        .createBoardBox(boardRequest, authUser);
     if (boardBoxOptional.isPresent()) {
       article.setBoardBoxId(boardBoxOptional.get().getId());
       createArticleResponse.setArticle(article);
