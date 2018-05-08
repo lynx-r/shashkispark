@@ -1,4 +1,4 @@
-image: keeganwitt/docker-gradle-root
+image: gradle:jdk10
 
 stages:
   - production
