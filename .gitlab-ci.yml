@@ -1,5 +1,3 @@
-image: gradle:jdk10
-
 stages:
   - production
 
