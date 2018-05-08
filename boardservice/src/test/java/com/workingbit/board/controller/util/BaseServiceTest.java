@@ -95,9 +95,9 @@ public class BaseServiceTest {
   }
 
 //  BoardService getBoardServiceMock() {
-//    ShareProperties appProperties = mock(ShareProperties.class);
-//    when(appProperties.getRegion()).thenReturn("eu-central-1");
-//    BoardDao boardDao = new BoardDao(appProperties);
+//    ShareProperties moduleProperties = mock(ShareProperties.class);
+//    when(moduleProperties.getRegion()).thenReturn("eu-central-1");
+//    BoardDao boardDao = new BoardDao(moduleProperties);
 //    return new BoardService(boardDao, objectMapper, boardHistoryService);
 //  }
 

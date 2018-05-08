@@ -7,10 +7,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.*;
 import org.redisson.config.Config;
-import org.redisson.config.TransportMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.workingbit.orchestrate.OrchestrateModule.moduleProperties;
 import static com.workingbit.orchestrate.config.OrchestalConstants.*;
 
 /**
@@ -43,9 +43,9 @@ public class RedisUtil {
 
   private static void initReddisonClient() {
     Config config = new Config();
-    config.setTransportMode(TransportMode.NIO);
+//    config.setTransportMode(TransportMode.NIO);
     config.useSingleServer()
-        .setAddress("redis://127.0.0.1:6379");
+        .setAddress("redis://" + moduleProperties.redisHost() + ":" + moduleProperties.redisPort());
 
     reddison = Redisson.create(config);
   }

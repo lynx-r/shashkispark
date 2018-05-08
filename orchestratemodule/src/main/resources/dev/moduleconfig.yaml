@@ -12,3 +12,6 @@ app:
   saveUserInfoResource: http://localhost:8080/security/api/v1/save-user-info
   logoutResource: http://localhost:8080/security/api/v1/logout
   rocksDbDirPrefix: ~/.shashkionline/rocks.db
+
+  redisHost: 127.0.0.1
+  redisPort: 6379

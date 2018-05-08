@@ -3,7 +3,7 @@ package com.workingbit.orchestrate.service;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.workingbit.orchestrate.config.ShareProperties;
+import com.workingbit.orchestrate.config.ModuleProperties;
 import com.workingbit.orchestrate.util.RedisUtil;
 import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.domain.impl.Article;
@@ -44,15 +44,15 @@ public class OrchestralService {
   private String saveUserInfo;
   private String logout;
 
-  public OrchestralService(ShareProperties shareProperties) {
-    register = shareProperties.registerResource();
-    authorize = shareProperties.authorizeResource();
-    authenticate = shareProperties.authenticateResource();
-    article = shareProperties.articleResource();
-    boardbox = shareProperties.boardboxResource();
-    userInfo = shareProperties.userInfoResource();
-    saveUserInfo = shareProperties.saveUserInfoResource();
-    logout = shareProperties.logoutResource();
+  public OrchestralService(ModuleProperties moduleProperties) {
+    register = moduleProperties.registerResource();
+    authorize = moduleProperties.authorizeResource();
+    authenticate = moduleProperties.authenticateResource();
+    article = moduleProperties.articleResource();
+    boardbox = moduleProperties.boardboxResource();
+    userInfo = moduleProperties.userInfoResource();
+    saveUserInfo = moduleProperties.saveUserInfoResource();
+    logout = moduleProperties.logoutResource();
     UnirestUtil.configureSerialization();
   }
 

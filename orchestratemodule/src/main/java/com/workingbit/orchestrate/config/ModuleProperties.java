@@ -3,7 +3,7 @@ package com.workingbit.orchestrate.config;
 /**
  * Created by Aleksey Popryaduhin on 14:17 27/09/2017.
  */
-public interface ShareProperties {
+public interface ModuleProperties {
 
   String registerResource();
 
@@ -24,4 +24,8 @@ public interface ShareProperties {
   String logoutResource();
 
   String rocksDbDirPrefix();
+
+  String redisHost();
+
+  String redisPort();
 }

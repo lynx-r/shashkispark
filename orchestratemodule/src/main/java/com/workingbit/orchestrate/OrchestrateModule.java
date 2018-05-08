@@ -1,6 +1,6 @@
 package com.workingbit.orchestrate;
 
-import com.workingbit.orchestrate.config.ShareProperties;
+import com.workingbit.orchestrate.config.ModuleProperties;
 import com.workingbit.orchestrate.service.OrchestralService;
 import com.workingbit.orchestrate.util.RedisUtil;
 import com.workingbit.share.common.Config4j;
@@ -10,13 +10,14 @@ import com.workingbit.share.common.Config4j;
  */
 public class OrchestrateModule {
   public static OrchestralService orchestralService;
+  public static ModuleProperties moduleProperties;
 
   private OrchestrateModule() {
   }
 
   public static void loadModule() {
     RedisUtil.init();
-    ShareProperties shareProperties = Config4j.configurationProvider("shareconfig.yaml").bind("app", ShareProperties.class);
-    orchestralService = new OrchestralService(shareProperties);
+    moduleProperties = Config4j.configurationProvider("moduleconfig.yaml").bind("app", ModuleProperties.class);
+    orchestralService = new OrchestralService(moduleProperties);
   }
 }
