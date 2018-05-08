@@ -1,5 +1,3 @@
-#image: docker:stable
-
 stages:
   - production
 
@@ -9,12 +7,3 @@ job_production:
       - shashki-back
   script:
     - whoami
-#    - TOMCATUID=112
-#    - TOMCATUSER=tomcat8
-#    - useradd -u $TOMCATUID -ms /bin/bash $TOMCATUSER
-#    - mkdir -p /var/lib/tomcat8/webapps/{article,board,security}
-#    - ./gradlew clean build deploylocal
-
-#variables:
-#  GIT_SSL_NO_VERIFY: "true"
-
