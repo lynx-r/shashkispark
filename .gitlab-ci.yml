@@ -1,7 +1,14 @@
 image: keeganwitt/docker-gradle-root
 
-production:
-  stage: deploy
+stages:
+  - production
+
+job_production:
+  stage: production
+  tags:
+      - shashki-back
   script:
     - mkdir -p /var/lib/tomcat8/webapps/{article,board,security}
     - gradle clean build deploylocal
+  only:
+    - tags
