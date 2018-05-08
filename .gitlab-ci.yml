@@ -15,3 +15,5 @@ job_production:
     - gradle clean build deploylocal
   only:
     - tags
+
+
