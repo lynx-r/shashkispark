@@ -6,4 +6,8 @@ job_production:
   tags:
       - shashki-back
   script:
-    - whoami
+    - ./gradlew clean build deploylocal
+
+#variables:
+#  GIT_SSL_NO_VERIFY: "true"
+
