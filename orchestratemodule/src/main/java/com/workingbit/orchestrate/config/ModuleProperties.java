@@ -23,8 +23,6 @@ public interface ModuleProperties {
 
   String logoutResource();
 
-  String rocksDbDirPrefix();
-
   String redisHost();
 
   String redisPort();
