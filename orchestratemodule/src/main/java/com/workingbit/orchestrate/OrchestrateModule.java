@@ -16,8 +16,8 @@ public class OrchestrateModule {
   }
 
   public static void loadModule() {
-    RedisUtil.init();
     moduleProperties = Config4j.configurationProvider("moduleconfig.yaml").bind("app", ModuleProperties.class);
     orchestralService = new OrchestralService(moduleProperties);
+    RedisUtil.init(moduleProperties);
   }
 }

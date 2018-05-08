@@ -1,5 +1,6 @@
 package com.workingbit.orchestrate.util;
 
+import com.workingbit.orchestrate.config.ModuleProperties;
 import com.workingbit.orchestrate.exception.OrchestrateException;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.Payload;
@@ -10,8 +11,9 @@ import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.workingbit.orchestrate.OrchestrateModule.moduleProperties;
-import static com.workingbit.orchestrate.config.OrchestalConstants.*;
+import static com.workingbit.orchestrate.config.OrchestalConstants.CACHE_REQUEST_MAP;
+import static com.workingbit.orchestrate.config.OrchestalConstants.CACHE_TOKEN_MAP;
+import static com.workingbit.orchestrate.config.OrchestalConstants.INTERNAL_REQUEST_MAP;
 
 /**
  * Created by Aleksey Popryadukhin on 06/05/2018.
@@ -20,8 +22,10 @@ public class RedisUtil {
 
   private static RedissonClient reddison;
   private static Logger logger = LoggerFactory.getLogger(RedisUtil.class);
+  private static ModuleProperties moduleProperties;
 
-  public static void init() {
+  public static void init(ModuleProperties moduleProperties) {
+    RedisUtil.moduleProperties = moduleProperties;
     initReddisonClient();
   }
 
