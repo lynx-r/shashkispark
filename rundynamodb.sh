@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-cd articleservice
+cd articleservice/aws-resources
 sls dynamodb start &
-cd ../boardservice
+cd ../../boardservice/aws-resources
 sls dynamodb start &
-cd ../securityservice
+cd ../../securityservice/aws-resources
 sls dynamodb start &

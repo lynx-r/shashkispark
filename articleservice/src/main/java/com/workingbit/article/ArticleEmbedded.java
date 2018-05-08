@@ -64,7 +64,7 @@ public class ArticleEmbedded {
     path("/api", () ->
         path("/v1", () -> {
           get(Authority.ARTICLES.getPath(), ArticleController.findAllArticles);
-          get(Authority.ARTICLE_BY_ID.getPath(), ArticleController.findArticleById);
+          get(Authority.ARTICLE_BY_HRU.getPath(), ArticleController.findArticleByHru);
           delete(Authority.ARTICLE_BY_ID.getPath(), ArticleController.removeArticleById);
           post(Authority.ARTICLE.getPath(), ArticleController.createArticleAndBoard);
           put(Authority.ARTICLE.getPath(), ArticleController.saveArticle);

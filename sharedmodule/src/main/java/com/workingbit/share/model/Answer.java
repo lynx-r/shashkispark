@@ -22,7 +22,7 @@ public class Answer extends SecurePayload {
   private Answer(@JsonProperty("body") Payload body, @JsonProperty("messages") MessageResponse message) {
     this.body = body;
     this.message = message;
-    this.id = Utils.getRandomUUID();
+    this.id = Utils.getRandomID();
   }
 
   public static Answer ok(Payload body) {

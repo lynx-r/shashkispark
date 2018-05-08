@@ -71,8 +71,8 @@ public class BoardBoxControllerTest {
   public void add_draught() throws Exception {
 
     AuthUser authUser = register();
-    String boardBoxId = Utils.getRandomUUID();
-    String articleId = Utils.getRandomUUID();
+    String boardBoxId = Utils.getRandomID();
+    String articleId = Utils.getRandomID();
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId, authUser);
 
@@ -92,8 +92,8 @@ public class BoardBoxControllerTest {
   @Test
   public void anonym_find_board() throws Exception {
     AuthUser authUser = register();
-    String boardBoxId = Utils.getRandomUUID();
-    String articleId = Utils.getRandomUUID();
+    String boardBoxId = Utils.getRandomID();
+    String articleId = Utils.getRandomID();
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId, authUser);
 
@@ -113,8 +113,8 @@ public class BoardBoxControllerTest {
 
   @Test
   public void highlight() throws UnirestException, HttpClientException {
-    String boardBoxId = Utils.getRandomUUID();
-    String articleId = Utils.getRandomUUID();
+    String boardBoxId = Utils.getRandomID();
+    String articleId = Utils.getRandomID();
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId, null);
 
@@ -134,8 +134,8 @@ public class BoardBoxControllerTest {
 
   @Test
   public void move() throws Exception {
-    String boardBoxId = Utils.getRandomUUID();
-    String articleId = Utils.getRandomUUID();
+    String boardBoxId = Utils.getRandomID();
+    String articleId = Utils.getRandomID();
 
     AuthUser authUser = register();
 

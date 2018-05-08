@@ -32,16 +32,16 @@ public class ArticleController {
               .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.UNABLE_TO_GET_ARTICLES))
       ).handleRequest(req, res, Authority.ARTICLES);
 
-  public static Route findArticleById = (req, res) ->
+  public static Route findArticleByHru = (req, res) ->
       ((ParamsHandlerFunc<ParamPayload>) (params, token) ->
-          articleService.findById(params.getParam().get(RequestConstants.ID))
+          articleService.findByHru(params.getParam().get(RequestConstants.HRU))
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.ARTICLE_WITH_ID_NOT_FOUND))
-      ).handleRequest(req, res, Authority.ARTICLE_BY_ID);
+      ).handleRequest(req, res, Authority.ARTICLE_BY_HRU);
 
   public static Route removeArticleById = (req, res) ->
       ((ParamsHandlerFunc<ParamPayload>) (params, token) ->
-          articleService.removeById(params.getParam().get(RequestConstants.ID))
+          articleService.removeById(params.getParam().get(RequestConstants.ID), token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.ARTICLE_WITH_ID_NOT_FOUND))
       ).handleRequest(req, res,

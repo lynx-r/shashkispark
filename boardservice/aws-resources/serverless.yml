@@ -228,3 +228,14 @@ resources:
               Resource: arn:aws:dynamodb:*:*:table/Notation
         Roles:
           - Ref: IamRoleLambdaExecution
+
+plugins:
+  - serverless-dynamodb-local
+#  - serverless-dynamodb-fixtures-plugin
+
+custom:
+  dynamodb:
+    start:
+      port: 8083
+      inMemory: true
+      migrate: true

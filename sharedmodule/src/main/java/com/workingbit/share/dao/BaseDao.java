@@ -163,4 +163,27 @@ public class BaseDao<T extends BaseDomain> {
   public Optional<T> find(T obj) {
     return findById(obj.getId());
   }
+
+  protected Optional<T> findByAttributeIndex(String attribute, String attributeName, String indexName) {
+    if (StringUtils.isBlank(attribute)) {
+      logger.info(attribute + " is null");
+      return Optional.empty();
+    }
+    logger.info("Find by " + attributeName + ": " + attribute);
+
+    Map<String, AttributeValue> eav = new HashMap<>();
+    eav.put(":attribute", new AttributeValue().withS(attribute));
+
+    DynamoDBQueryExpression<T> queryExpression = new DynamoDBQueryExpression<T>()
+        .withIndexName(indexName)
+        .withConsistentRead(false)
+        .withKeyConditionExpression(attributeName + " = :attribute")
+        .withExpressionAttributeValues(eav);
+
+    PaginatedQueryList<T> queryList = getDynamoDBMapper().query(clazz, queryExpression);
+    if (!queryList.isEmpty()) {
+      return Optional.of(queryList.get(0));
+    }
+    return Optional.empty();
+  }
 }

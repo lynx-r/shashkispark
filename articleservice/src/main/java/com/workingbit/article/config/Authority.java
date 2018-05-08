@@ -13,7 +13,8 @@ public enum Authority implements IAuthority {
 
   ARTICLES("/articles", new HashSet<>()),
   ARTICLE("/article", new HashSet<>()),
-  ARTICLE_BY_ID("/article/:id", new HashSet<>());
+  ARTICLE_BY_ID("/article/:id", new HashSet<>()),
+  ARTICLE_BY_HRU("/article/:hru", new HashSet<>());
 
   private String path;
   private Set<EnumAuthority> authorities;

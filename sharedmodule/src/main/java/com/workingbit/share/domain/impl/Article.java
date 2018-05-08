@@ -38,6 +38,10 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "updatedAt")
   private LocalDateTime updatedAt;
 
+  @DynamoDBIndexHashKey(globalSecondaryIndexName = "humanReadableUrlIndex")
+  @DynamoDBAttribute(attributeName = "humanReadableUrl")
+  private String humanReadableUrl;
+
   @DynamoDBAttribute(attributeName = "author")
   private String author;
 
@@ -76,7 +80,8 @@ public class Article extends BaseDomain implements Payload {
                  @JsonProperty("title") String title,
                  @JsonProperty("content") String content,
                  @JsonProperty("boardBoxId") String boardBoxId,
-                 @JsonProperty("articleStatus") EnumArticleStatus articleStatus
+                 @JsonProperty("articleStatus") EnumArticleStatus articleStatus,
+                 @JsonProperty("humanReadableUrl") String humanReadableUrl
   ) {
     this.id = id;
     this.createdAt = createdAt;
@@ -85,6 +90,7 @@ public class Article extends BaseDomain implements Payload {
     this.content = content;
     this.boardBoxId = boardBoxId;
     this.articleStatus = articleStatus;
+    this.humanReadableUrl = humanReadableUrl;
   }
 
   @Override

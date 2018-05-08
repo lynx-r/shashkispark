@@ -113,6 +113,8 @@ resources:
             AttributeType: S
           - AttributeName: createdAt
             AttributeType: S
+          - AttributeName: humanReadableUrl
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -122,6 +124,17 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         GlobalSecondaryIndexes:
+        - IndexName: humanReadableUrlIndex
+          KeySchema:
+          - AttributeName: humanReadableUrl
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
         - IndexName: articleIndex
           KeySchema:
           - AttributeName: id
@@ -152,3 +165,14 @@ resources:
               Resource: arn:aws:dynamodb:*:*:table/Article
         Roles:
           - Ref: IamRoleLambdaExecution
+
+plugins:
+  - serverless-dynamodb-local
+#  - serverless-dynamodb-fixtures-plugin
+
+custom:
+  dynamodb:
+    start:
+      port: 8081
+      inMemory: true
+      migrate: true

@@ -167,3 +167,14 @@ resources:
               Resource: arn:aws:dynamodb:*:*:table/SecureUser
         Roles:
           - Ref: IamRoleLambdaExecution
+
+plugins:
+  - serverless-dynamodb-local
+#  - serverless-dynamodb-fixtures-plugin
+
+custom:
+  dynamodb:
+    start:
+      port: 8084
+      inMemory: true
+      migrate: true

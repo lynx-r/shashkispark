@@ -130,7 +130,8 @@ public class Utils {
   }};
 
   private static String RANDOM_STR_SEP = "-";
-  private static int COUNT_RANDOM_STR = 20;
+  public static int RANDOM_ID_LENGTH = 20;
+  public static int RANDOM_STRING_LENGTH = 7;
 
   public static boolean isBlank(String s) {
     if (s == null) {
@@ -144,17 +145,17 @@ public class Utils {
     return true;
   }
 
-  public static String getRandomUUID() {
-    return UUID.randomUUID().toString();
+  public static String getRandomID() {
+    return getRandomString(RANDOM_ID_LENGTH);
   }
 
   public static void setRandomIdAndCreatedAt(BaseDomain domain) {
-    domain.setId(getRandomUUID());
+    domain.setId(getRandomID());
     domain.setCreatedAt(LocalDateTime.now());
   }
 
   public static String getRandomString20() {
-    return RandomStringUtils.randomAlphanumeric(COUNT_RANDOM_STR);
+    return RandomStringUtils.randomAlphanumeric(RANDOM_STRING_LENGTH);
   }
 
   public static String getRandomString(int length) {
@@ -180,9 +181,15 @@ public class Utils {
     return Hex.encodeHexString(sha256_HMAC.doFinal(data.getBytes("UTF-8")));
   }
 
-  public static void setArticleIdAndCreatedAt(Article article, boolean present) {
-    article.setId(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString20() : ""));
+  public static void setArticleUrlAndIdAndCreatedAt(Article article, boolean present) {
+    article.setId(getRandomID());
+    article.setBoardBoxId(getRandomID());
+    article.setHumanReadableUrl(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString4() : ""));
     article.setCreatedAt(LocalDateTime.now());
+  }
+
+  private static String getRandomString4() {
+    return getRandomString(4);
   }
 
   public static ObjectMapper configureObjectMapper(ObjectMapper mapper) {

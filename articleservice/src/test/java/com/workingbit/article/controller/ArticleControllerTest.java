@@ -162,7 +162,7 @@ public class ArticleControllerTest {
   }
 
   /**
-   * test for findArticleById
+   * test for findArticleByHru
    *
    * @throws Exception
    */
@@ -244,7 +244,7 @@ public class ArticleControllerTest {
     assertNotNull(registered);
 
     CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
-    registered.parseFilters("articleStatus = NEW_ADDED");
+    registered.parseFilters("articleStatus = DRAFT");
     Answer answer = get("s", registered, HTTP_OK);
     Articles articles = (Articles) answer.getBody();
     assertEquals(1, articles.getArticles().size());
@@ -263,7 +263,7 @@ public class ArticleControllerTest {
     assertEquals(1, articles.getArticles().size());
     registered = answer.getAuthUser();
 
-    registered.parseFilters("articleStatus = PUBLISHED;articleStatus = NEW_ADDED");
+    registered.parseFilters("articleStatus = PUBLISHED;articleStatus = DRAFT");
     articles = (Articles) get("s", registered, HTTP_OK).getBody();
     assertEquals(2, articles.getArticles().size());
   }

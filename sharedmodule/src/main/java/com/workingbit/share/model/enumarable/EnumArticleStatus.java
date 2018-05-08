@@ -8,7 +8,7 @@ public enum EnumArticleStatus {
   /**
    * New board not viewed by moderator
    */
-  NEW_ADDED,
+  DRAFT,
 
   /**
    * Article was removed

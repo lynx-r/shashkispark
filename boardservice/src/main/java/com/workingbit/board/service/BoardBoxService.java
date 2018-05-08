@@ -33,7 +33,7 @@ public class BoardBoxService {
     boardBox.setId(boardBoxId);
     String articleId = createBoardPayload.getArticleId();
     boardBox.setArticleId(articleId);
-    String userId = authUser.getUserId();
+    String userId = createBoardPayload.getUserId();
     boardBox.setUserId(userId);
     boardBox.setCreatedAt(LocalDateTime.now());
 

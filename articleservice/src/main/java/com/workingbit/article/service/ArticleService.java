@@ -1,6 +1,5 @@
 package com.workingbit.article.service;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.exception.RequestException;
@@ -11,11 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
+import static com.workingbit.article.ArticleEmbedded.appProperties;
 import static com.workingbit.article.ArticleEmbedded.articleDao;
 import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
-import static com.workingbit.share.util.Utils.getRandomUUID;
+import static java.net.HttpURLConnection.HTTP_CREATED;
 
 /**
  * Created by Aleksey Popryaduhin on 09:05 28/09/2017.
@@ -33,28 +34,28 @@ public class ArticleService {
     );
     userInfoAnswer.ifPresent(answer -> article.setAuthor(((UserInfo) answer.getBody()).getUsername()));
 
-    boolean present = articleDao.findById(article.getTitle()).isPresent();
-    Utils.setArticleIdAndCreatedAt(article, present);
-
-    article.setArticleStatus(EnumArticleStatus.NEW_ADDED);
-    article.setBoardBoxId(getRandomUUID());
+    boolean present = articleDao.findByHru(article.getHumanReadableUrl()).isPresent();
+    Utils.setArticleUrlAndIdAndCreatedAt(article, present);
+    article.setArticleStatus(EnumArticleStatus.DRAFT);
+    articleDao.save(article);
 
     CreateBoardPayload boardRequest = articleAndBoard.getBoardRequest();
     boardRequest.setBoardBoxId(article.getBoardBoxId());
-
-    CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();
     boardRequest.setArticleId(article.getId());
+    boardRequest.setUserId(article.getUserId());
 
-    Optional<BoardBox> boardBoxOptional = orchestralService.createBoardBox(boardRequest, authUser);
-    if (boardBoxOptional.isPresent()) {
-      article.setBoardBoxId(boardBoxOptional.get().getId());
+    Optional<Answer> boardBoxAnswer = orchestralService.internal(authUser,
+        (au, internalKey) -> orchestralService.createBoardBoxAnswer(boardRequest, au.setInternalKey(internalKey))
+    );
+    CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();
+    if (boardBoxAnswer.isPresent() && boardBoxAnswer.get().getStatusCode() == HTTP_CREATED) {
+      BoardBox boardBox = (BoardBox) boardBoxAnswer.get().getBody();
       createArticleResponse.setArticle(article);
-      createArticleResponse.setBoard(boardBoxOptional.get());
+      createArticleResponse.setBoard(boardBox);
     } else {
       logger.error("Unable to create board");
       return Optional.empty();
     }
-    articleDao.save(article);
     return Optional.of(createArticleResponse);
   }
 
@@ -75,11 +76,41 @@ public class ArticleService {
   }
 
   public Optional<Articles> findAll(String limitStr, AuthUser authUser) {
-    int limit = 50;
+    int limit = appProperties.articlesFetchLimit();
     if (!StringUtils.isBlank(limitStr)) {
       limit = Integer.parseInt(limitStr);
     }
     Articles articles = new Articles();
+    List<SimpleFilter> filters = getUserFilter(authUser);
+    List<Article> published = articleDao.findPublished(limit, filters);
+    articles.setArticles(published);
+    return Optional.of(articles);
+  }
+
+  public Optional<Article> findById(String articleId) {
+    return articleDao.findActiveById(articleId);
+  }
+
+  public Optional<Article> findByHru(String articleHru) {
+    return articleDao.findByHru(articleHru);
+  }
+
+  public Optional<Articles> removeById(String articleId, AuthUser authUser) {
+    Optional<Article> articleOpt = articleDao.findActiveById(articleId);
+    return articleOpt.map(article -> {
+      article.setArticleStatus(EnumArticleStatus.REMOVED);
+      articleDao.save(article);
+
+      int limit = appProperties.articlesFetchLimit();
+      List<SimpleFilter> filters = getUserFilter(authUser);
+      List<Article> published = articleDao.findPublished(limit, filters);
+      Articles articles = new Articles();
+      articles.setArticles(published);
+      return articles;
+    });
+  }
+
+  private List<SimpleFilter> getUserFilter(AuthUser authUser) {
     List<SimpleFilter> filters = authUser.getFilters();
     if (StringUtils.isNotBlank(authUser.getUserId())) {
       long userIdCount = filters.stream().filter(filter -> filter.getKey().equals("userId")).count();
@@ -87,29 +118,6 @@ public class ArticleService {
         filters.add(new SimpleFilter("userId", authUser.getUserId()));
       }
     }
-    List<Article> published = articleDao.findPublished(limit, filters);
-    articles.setArticles(published);
-    return Optional.of(articles);
-  }
-
-  private boolean isValidFilters(String filter, Map<String, AttributeValue> values) {
-    return true;
-  }
-
-  public Optional<Article> findById(String articleId) {
-    return articleDao.findActiveById(articleId);
-  }
-
-  public Optional<Articles> removeById(String articleId) {
-    Optional<Article> articleOpt = articleDao.findActiveById(articleId);
-    return articleOpt.map(article -> {
-      article.setArticleStatus(EnumArticleStatus.REMOVED);
-      articleDao.save(article);
-
-      List<Article> published = articleDao.findPublished(50);
-      Articles articles = new Articles();
-      articles.setArticles(published);
-      return articles;
-    });
+    return filters;
   }
 }

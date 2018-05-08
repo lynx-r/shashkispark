@@ -22,8 +22,8 @@ public class BaseTest {
 
   protected Article createArticle() {
     Article article = new Article();
-    Utils.setArticleIdAndCreatedAt(article, true);
-    article.setArticleStatus(EnumArticleStatus.NEW_ADDED);
+    Utils.setArticleUrlAndIdAndCreatedAt(article, true);
+    article.setArticleStatus(EnumArticleStatus.DRAFT);
     article.setAuthor(Utils.getRandomString20());
     article.setBoardBoxId(Utils.getRandomString20());
     article.setContent(Utils.getRandomString20());

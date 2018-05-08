@@ -19,6 +19,7 @@ public class CreateBoardPayload implements Payload {
   private Boolean black;
   private EnumRules rules;
   private String boardBoxId;
+  private String userId;
   private EnumEditBoardBoxMode editMode;
 
   private CreateBoardPayload() {

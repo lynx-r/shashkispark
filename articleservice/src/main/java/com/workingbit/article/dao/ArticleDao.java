@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.workingbit.article.config.AppConstants.VALID_FILTER_KEYS;
+import static com.workingbit.article.config.AppConstants.VALID_FILTER_VALUES;
 import static com.workingbit.share.util.Utils.getRandomString;
 
 /**
@@ -36,12 +38,9 @@ public class ArticleDao extends BaseDao<Article> {
 
     Map<String, AttributeValue> eav = new HashMap<>();
     eav.put(":entityKey", new AttributeValue().withS(entityKey));
-    eav.put(":new_added", new AttributeValue().withS(EnumArticleStatus.NEW_ADDED.name()));
-    eav.put(":published", new AttributeValue().withS(EnumArticleStatus.PUBLISHED.name()));
 
     DynamoDBQueryExpression<Article> queryExpression = new DynamoDBQueryExpression<Article>()
         .withKeyConditionExpression("id = :entityKey")
-        .withFilterExpression("articleStatus = :new_added or articleStatus = :published")
         .withExpressionAttributeValues(eav);
 
     PaginatedQueryList<Article> queryList = getDynamoDBMapper().query(Article.class, queryExpression);
@@ -141,10 +140,17 @@ public class ArticleDao extends BaseDao<Article> {
   }
 
   private boolean validFilter(SimpleFilter filter) {
-    return StringUtils.isNotBlank(filter.getKey()) && !filter.getKey().contains("null");
+    boolean notBlankAndNotNull = StringUtils.isNotBlank(filter.getKey()) && !filter.getKey().contains("null");
+    boolean validKey = Arrays.stream(VALID_FILTER_KEYS).anyMatch((p) -> p.equals(filter.getKey()));
+    boolean validValue = Arrays.stream(VALID_FILTER_VALUES).anyMatch(p -> p.matcher(filter.getValue()).matches());
+    return notBlankAndNotNull && validKey && validValue;
   }
 
   private String formatSub(String sub) {
     return ":" + sub.toLowerCase();
+  }
+
+  public Optional<Article> findByHru(String articleHru) {
+    return findByAttributeIndex(articleHru, "humanReadableUrl","humanReadableUrlIndex");
   }
 }
