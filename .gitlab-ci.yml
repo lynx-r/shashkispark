@@ -13,7 +13,7 @@ job_production:
 #    - TOMCATUSER=tomcat8
 #    - useradd -u $TOMCATUID -ms /bin/bash $TOMCATUSER
 #    - mkdir -p /var/lib/tomcat8/webapps/{article,board,security}
-    - ./gradlew clean build deploylocal
+#    - ./gradlew clean build deploylocal
 
 #variables:
 #  GIT_SSL_NO_VERIFY: "true"
