@@ -16,5 +16,6 @@ variables:
   GIT_SSL_NO_VERIFY: "true"
 
 build_image:
+  stage: production
   script:
     - docker -u root run gradle:jdk10
