@@ -18,16 +18,16 @@ import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.runner.RunWith;
+import spark.utils.IOUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.share.model.enumarable.EnumRules.*;
@@ -870,6 +870,83 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   protected BoardBox getBoardBox(boolean black, boolean fillBoard, EnumRules rules, EnumEditBoardBoxMode editMode) {
     CreateBoardPayload createBoardPayload = getCreateBoardRequest(black, fillBoard, rules, editMode);
     return boardBoxService().createBoardBox(createBoardPayload, token).get();
+  }
+
+  @Test
+  public void createBoardBox() {
+  }
+
+  @Test
+  public void parsePdn() throws IOException {
+    var parsePdn = ImportPdnPayload.createBoardPayload();
+    parsePdn.setArticleId(Utils.getRandomID());
+    parsePdn.setRules(EnumRules.RUSSIAN);
+    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/parse_simple.pdn");
+    StringWriter writer = new StringWriter();
+    IOUtils.copy(resourceAsStream, writer);
+    parsePdn.setPdn(writer.toString());
+    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token).get();
+    System.out.println(boardBox.getNotation().toPdn());
+  }
+
+  @Test
+  public void createBoardBoxFromNotation() {
+  }
+
+  @Test
+  public void find() {
+  }
+
+  @Test
+  public void highlight() {
+  }
+
+  @Test
+  public void move() {
+  }
+
+  @Test
+  public void changeTurn() {
+  }
+
+  @Test
+  public void save() {
+  }
+
+  @Test
+  public void loadPreviewBoard() {
+  }
+
+  @Test
+  public void addDraught() {
+  }
+
+  @Test
+  public void forkNotation() {
+  }
+
+  @Test
+  public void viewBranch() {
+  }
+
+  @Test
+  public void switchNotation() {
+  }
+
+  @Test
+  public void boardPreviewByIds() {
+    createBoard();
+    createBoard();
+    List<BoardBox> boardBoxes = boardBoxDao.findAll(2);
+    assertEquals(2, boardBoxes.size());
+    Set<DomainId> collect = boardBoxes
+        .stream()
+        .map(DomainId::new)
+        .collect(Collectors.toSet());
+    DomainIds domainIds = new DomainIds();
+    domainIds.addAll(collect);
+    BoardBoxes boardBoxes2 = boardBoxService.findByIds(domainIds, token).get();
+    assertEquals(2, boardBoxes2.getBoardBoxes().size());
   }
 
   private class LoadNotationForkNumberAndForwardMoves {

@@ -40,8 +40,7 @@ public interface BaseHandlerFunc<T extends Payload> {
       }
     }
     if (!hasAuthorities(authUser.getAuthorities(), Set.of(EnumAuthority.INTERNAL))) {
-      boolean canBeAnonymous = (path.getAuthorities().isEmpty()
-          || path.getAuthorities().contains(EnumAuthority.ANONYMOUS));
+      boolean canBeAnonymous = canBeAnonymous(path);
       Optional<AuthUser> authenticated = Optional.empty();
       try {
         authenticated = isAuthenticated(authUser);

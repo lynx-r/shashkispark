@@ -16,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -40,6 +43,7 @@ public class OrchestralService {
   private String authenticate;
   private String article;
   private String boardbox;
+  private String parsePdn;
   private String userInfo;
   private String saveUserInfo;
   private String logout;
@@ -50,90 +54,112 @@ public class OrchestralService {
     authenticate = moduleProperties.authenticateResource();
     article = moduleProperties.articleResource();
     boardbox = moduleProperties.boardboxResource();
+    parsePdn = moduleProperties.parsePdnResource();
     userInfo = moduleProperties.userInfoResource();
     saveUserInfo = moduleProperties.saveUserInfoResource();
     logout = moduleProperties.logoutResource();
     UnirestUtil.configureSerialization();
   }
 
-  public Optional<AuthUser> register(UserCredentials userCredentials) throws RequestException {
+  public Optional<AuthUser> register(UserCredentials userCredentials) {
     return registerAnswer(userCredentials).map(answer -> ((AuthUser) answer.getBody()));
   }
 
-  public Optional<Answer> registerAnswer(UserCredentials userCredentials) throws RequestException {
+  public Optional<Answer> registerAnswer(UserCredentials userCredentials) {
     return post(register, userCredentials, emptyMap());
   }
 
-  public Optional<AuthUser> authorize(UserCredentials userCredentials) throws RequestException {
+  public Optional<AuthUser> authorize(UserCredentials userCredentials) {
     return authorizeAnswer(userCredentials).map(answer -> ((AuthUser) answer.getBody()));
   }
 
-  public Optional<Answer> authorizeAnswer(UserCredentials userCredentials) throws RequestException {
+  public Optional<Answer> authorizeAnswer(UserCredentials userCredentials) {
     return post(authorize, userCredentials, emptyMap());
   }
 
-  public Optional<AuthUser> authenticate(AuthUser authUser) throws RequestException {
+  public Optional<AuthUser> authenticate(AuthUser authUser) {
     return authenticateAnswer(authUser).map(answer -> ((AuthUser) answer.getBody()));
   }
 
-  public Optional<Answer> authenticateAnswer(AuthUser authUser) throws RequestException {
+  public Optional<Answer> authenticateAnswer(AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return get(authenticate, headers);
   }
 
-  public Optional<Article> createArticle(CreateArticlePayload articlePayload, AuthUser authUser) throws RequestException {
+  public Optional<Article> createArticle(CreateArticlePayload articlePayload, AuthUser authUser) {
     return createArticleAnswer(articlePayload, authUser).map(answer -> ((Article) answer.getBody()));
   }
 
-  public Optional<Answer> createArticleAnswer(CreateArticlePayload articlePayload, AuthUser authUser) throws RequestException {
+  public Optional<Answer> createArticleAnswer(CreateArticlePayload articlePayload, AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return post(article, articlePayload, headers);
   }
 
-  public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, AuthUser authUser) throws RequestException {
+  public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, AuthUser authUser) {
     return createBoardBoxAnswer(boardRequest, authUser).map(answer -> ((BoardBox) answer.getBody()));
   }
 
-  public Optional<Answer> createBoardBoxAnswer(CreateBoardPayload boardRequest, AuthUser authUser) throws RequestException {
+  public Optional<Answer> createBoardBoxAnswer(CreateBoardPayload boardRequest, AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return post(boardbox, boardRequest, headers);
   }
 
-  public Optional<UserInfo> userInfo(AuthUser authUser) throws RequestException {
+  public Optional<BoardBox> parsePdn(ImportPdnPayload boardRequest, AuthUser authUser) {
+    return parsePdnAnswer(boardRequest, authUser).map(answer -> ((BoardBox) answer.getBody()));
+  }
+
+  public Optional<Answer> parsePdnAnswer(ImportPdnPayload boardRequest, AuthUser authUser) {
+    Map<String, String> headers = getAuthHeaders(authUser);
+    return post(parsePdn, boardRequest, headers);
+  }
+
+  public Optional<UserInfo> userInfo(AuthUser authUser) {
     return userInfoAnswer(authUser).map(answer -> ((UserInfo) answer.getBody()));
   }
 
-  public Optional<Answer> userInfoAnswer(AuthUser authUser) throws RequestException {
+  public Optional<Answer> userInfoAnswer(AuthUser authUser) {
     Map<String, String> authHeaders = getAuthHeaders(authUser);
     return post(userInfo, authUser, authHeaders);
   }
 
-  public Optional<UserInfo> saveUserInfo(UserInfo userInfo, AuthUser authUser) throws RequestException {
+  public Optional<UserInfo> saveUserInfo(UserInfo userInfo, AuthUser authUser) {
     return saveUserInfoAnswer(userInfo, authUser).map(answer -> ((UserInfo) answer.getBody()));
   }
 
-  public Optional<Answer> saveUserInfoAnswer(UserInfo userInfo, AuthUser authUser) throws RequestException {
+  public Optional<Answer> saveUserInfoAnswer(UserInfo userInfo, AuthUser authUser) {
     Map<String, String> authHeaders = getAuthHeaders(authUser);
     return post(saveUserInfo, userInfo, authHeaders);
   }
 
-  public Optional<AuthUser> logout(AuthUser authUser) throws RequestException {
+  public Optional<AuthUser> logout(AuthUser authUser) {
     return logoutAnswer(authUser).map(answer -> ((AuthUser) answer.getBody()));
   }
 
-  public Optional<Answer> logoutAnswer(AuthUser authUser) throws RequestException {
+  public Optional<Answer> logoutAnswer(AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return get(logout, headers);
   }
 
-  public Optional<Answer> internal(AuthUser authUser, BiFunction<AuthUser, String, Optional<Answer>> function) {
+  @SuppressWarnings("unchecked")
+  public Optional<Answer> internal(AuthUser authUser, String methodName, Object... params) {
     AuthUser authUserInternal = authUser.deepClone();
     String internalKey = getRandomString20();
     authUser.setInternalKey(internalKey);
     authUserInternal.setInternalKey(internalKey);
     authUserInternal.addAuthorities(EnumAuthority.INTERNAL);
     putInternalRequest(internalKey, authUserInternal);
-    return function.apply(authUserInternal, internalKey);
+    try {
+      Class[] classParams = Arrays.stream(params).map(Object::getClass).toArray(Class[]::new);
+      Method method = getClass().getMethod(methodName, classParams);
+      return (Optional<Answer>) method.invoke(this, params);
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      logger.error("INTERNAL CALL FAIL: " + e.getMessage());
+      throw RequestException.forbidden();
+    }
+  }
+
+  private Optional<Answer> internalCall(AuthUser authUser, String internalKey, BiFunction<AuthUser, String, Optional<Answer>> function) {
+    return function.apply(authUser, internalKey);
   }
 
   private Map<String, String> getAuthHeaders(AuthUser authUser) {
@@ -145,7 +171,7 @@ public class OrchestralService {
   }
 
   @SuppressWarnings("unchecked")
-  public Optional<Answer> post(String resource, Payload payload, Map<String, String> headers) throws RequestException {
+  public Optional<Answer> post(String resource, Payload payload, Map<String, String> headers) {
     try {
       HttpResponse<Answer> response = Unirest.post(resource)
           .headers(headers)
@@ -162,7 +188,7 @@ public class OrchestralService {
   }
 
   @SuppressWarnings("unchecked")
-  public Optional<Answer> get(String resource, Map<String, String> headers) throws RequestException {
+  public Optional<Answer> get(String resource, Map<String, String> headers) {
     try {
       HttpResponse<Answer> response = Unirest.get(resource)
           .headers(headers)

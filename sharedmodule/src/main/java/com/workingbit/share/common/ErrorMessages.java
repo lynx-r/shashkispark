@@ -37,4 +37,7 @@ public class ErrorMessages {
   public static final String PASSWORD_NOT_NULL = "Поле <Пароль> не может быть пустым";
   public static final String PASSWORD_CONSTRAINTS = "Минимальная длина поля <Пароль> 6 символов";
   public static final String INVALID_INTERNAL_REQUEST = "Не верный внутренний запрос";
+  public static final String UNPARSABLE_PDN_CONTENT = "Не удалось обработать pdn";
+  public static final String UNABLE_TO_PARSE_PDN = "Не удалось обработать pdn";
+  public static final String UNABLE_TO_IMPORT_NOTATION = "Не удалось импортировать нотацию";
 }

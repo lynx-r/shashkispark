@@ -2,6 +2,7 @@ package com.workingbit.share.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.SecureUtils;
@@ -16,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.workingbit.share.util.JsonUtils.jsonToFilters;
+import static com.workingbit.share.util.JsonUtils.jsonToDataTypeRef;
 
 /**
  * Created by Aleksey Popryadukhin on 16/04/2018.
@@ -90,7 +91,9 @@ public class AuthUser implements Payload, DeepClone {
   @SuppressWarnings("unchecked")
   public void parseFilters(String filterExpression) {
     if (StringUtils.isNotBlank(filterExpression)) {
-      filters = jsonToFilters(filterExpression);
+      TypeReference<List<SimpleFilter>> typeRef = new TypeReference<>() {
+      };
+      filters = jsonToDataTypeRef(filterExpression, typeRef);
     }
   }
 }

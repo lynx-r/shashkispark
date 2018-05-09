@@ -29,29 +29,27 @@ public class ArticleService {
     var article = articleAndBoard.getArticle();
     article.setUserId(authUser.getUserId());
 
-    Optional<Answer> userInfoAnswer = orchestralService.internal(authUser,
-        (au, internalKey) -> orchestralService.userInfoAnswer(au.setInternalKey(internalKey))
-    );
+    Optional<Answer> userInfoAnswer = orchestralService.internal(authUser, "userInfoAnswer", authUser);
     userInfoAnswer.ifPresent(answer -> article.setAuthor(((UserInfo) answer.getBody()).getUsername()));
 
     boolean present = articleDao.findByHru(article.getHumanReadableUrl()).isPresent();
     Utils.setArticleUrlAndIdAndCreatedAt(article, present);
     article.setArticleStatus(EnumArticleStatus.DRAFT);
-    articleDao.save(article);
 
     CreateBoardPayload boardRequest = articleAndBoard.getBoardRequest();
-    boardRequest.setBoardBoxId(article.getBoardBoxId());
+    boardRequest.setBoardBoxId(article.getSelectedBoardBoxId());
     boardRequest.setArticleId(article.getId());
     boardRequest.setUserId(article.getUserId());
 
-    Optional<Answer> boardBoxAnswer = orchestralService.internal(authUser,
-        (au, internalKey) -> orchestralService.createBoardBoxAnswer(boardRequest, au.setInternalKey(internalKey))
-    );
+    Optional<Answer> boardBoxAnswer = orchestralService.internal(authUser, "createBoardBoxAnswer", boardRequest, authUser);
     CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();
     if (boardBoxAnswer.isPresent() && boardBoxAnswer.get().getStatusCode() == HTTP_CREATED) {
       BoardBox boardBox = (BoardBox) boardBoxAnswer.get().getBody();
       createArticleResponse.setArticle(article);
       createArticleResponse.setBoard(boardBox);
+
+      article.getBoardBoxIds().add(new DomainId(boardBox));
+      articleDao.save(article);
     } else {
       logger.error("Unable to create board");
       return Optional.empty();
@@ -65,13 +63,42 @@ public class ArticleService {
           if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
             return null;
           }
-          String title = articleClient.getTitle().trim();
-          article.setTitle(title);
-          String content = articleClient.getContent().trim();
-          article.setContent(content);
+          if (StringUtils.isNotBlank(articleClient.getTitle())) {
+            String title = articleClient.getTitle().trim();
+            article.setTitle(title);
+          }
+          if (StringUtils.isNotBlank(articleClient.getContent())) {
+            String content = articleClient.getContent().trim();
+            article.setContent(content);
+          }
           article.setArticleStatus(articleClient.getArticleStatus());
+          article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
           articleDao.save(article);
           return article;
+        });
+  }
+
+  public Optional<CreateArticleResponse> importPdn(ImportPdnPayload importPdnPayload, AuthUser authUser) {
+    return articleDao.findById(importPdnPayload.getArticleId())
+        .map(article -> {
+          if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
+            return null;
+          }
+
+          Optional<Answer> boardBoxAnswer = orchestralService.internal(authUser, "parsePdnAnswer", importPdnPayload, authUser);
+          if (boardBoxAnswer.isPresent() && boardBoxAnswer.get().getStatusCode() == HTTP_CREATED) {
+            BoardBox boardBox = (BoardBox) boardBoxAnswer.get().getBody();
+            String boardBoxId = boardBox.getId();
+            article.setSelectedBoardBoxId(boardBoxId);
+            article.getBoardBoxIds().add(new DomainId(boardBox));
+            articleDao.save(article);
+
+            CreateArticleResponse articleResponse = CreateArticleResponse.createArticleResponse();
+            articleResponse.setArticle(article);
+            articleResponse.setBoard(boardBox);
+            return articleResponse;
+          }
+          return null;
         });
   }
 
@@ -115,7 +142,7 @@ public class ArticleService {
     if (StringUtils.isNotBlank(authUser.getUserId())) {
       long userIdCount = filters.stream().filter(filter -> filter.getKey().equals("userId")).count();
       if (userIdCount == 0) {
-        filters.add(new SimpleFilter("userId", authUser.getUserId()));
+        filters.add(new SimpleFilter("userId", authUser.getUserId(), " = ", "S"));
       }
     }
     return filters;

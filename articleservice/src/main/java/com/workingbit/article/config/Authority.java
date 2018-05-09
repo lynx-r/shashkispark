@@ -11,10 +11,13 @@ import java.util.Set;
 public enum Authority implements IAuthority {
   HOME("", new HashSet<>()),
 
-  ARTICLES("/articles", new HashSet<>()),
-  ARTICLE("/article", new HashSet<>()),
-  ARTICLE_BY_ID("/article/:id", new HashSet<>()),
-  ARTICLE_BY_HRU("/article/:hru", new HashSet<>());
+  ARTICLES("/articles", Constants.INSECURE_ROLES),
+  ARTICLE_BY_ID_SECURE("/article/:id", Constants.INSECURE_ROLES),
+  ARTICLE_BY_HRU("/article/:hru", Constants.INSECURE_ROLES),
+
+  ARTICLE("/article", Constants.SECURE_ROLES),
+  ARTICLE_IMPORT_PDN("/import-pdn", Constants.SECURE_ROLES)
+  ;
 
   private String path;
   private Set<EnumAuthority> authorities;
@@ -45,7 +48,9 @@ public enum Authority implements IAuthority {
   }
 
   public static class Constants {
-    public static Set<EnumAuthority> ARTICLE_SECURE_ROLES
+    static Set<EnumAuthority> SECURE_ROLES
         = new HashSet<>(Arrays.asList(EnumAuthority.ADMIN, EnumAuthority.AUTHOR));
+    static Set<EnumAuthority> INSECURE_ROLES
+        = new HashSet<>();
   }
 }

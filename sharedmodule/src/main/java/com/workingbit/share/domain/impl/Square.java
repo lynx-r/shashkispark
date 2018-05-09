@@ -133,7 +133,8 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
   @Override
   public String toString() {
     return "Square{" +
-        "notation=" + getAlphanumericNotation64() +
+        "notation=" + getNotation() +
+        ", notationNum=" + getNotationNum() +
         ", highlight=" + highlight +
         ", draught=" + draught +
         '}';
@@ -184,6 +185,11 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
   @Override
   public boolean isReadonly() {
     return false;
+  }
+
+  @Override
+  public void setReadonly(boolean readonly) {
+
   }
 
   @Override

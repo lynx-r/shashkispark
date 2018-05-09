@@ -1,14 +1,8 @@
 package com.workingbit.share.domain;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.model.enumarable.EnumRules;
 
-import java.util.Map;
-
-import static com.workingbit.share.util.Utils.ALPH;
-import static com.workingbit.share.util.Utils.ALPHANUMERIC64_TO_NUMERIC100;
-import static com.workingbit.share.util.Utils.ALPHANUMERIC64_TO_NUMERIC64;
+import static com.workingbit.share.util.Utils.*;
 
 /**
  * Created by Aleksey Popryaduhin on 15:10 11/08/2017.
@@ -39,40 +33,32 @@ public interface ICoordinates {
   default String getNotation() {
     return getDim() == EnumRules.INTERNATIONAL.getDimension()
         ? getPdnNumericNotation100()
-        : getAlphanumericNotation64();
+        : getAlphanumericNotation();
   }
 
+  @SuppressWarnings("unused")
   default void setNotation(String ignore) {
-
   }
 
-  @JsonIgnore
-  @DynamoDBIgnore
-  default String getPdnNumericNotation100() {
-    return ALPHANUMERIC64_TO_NUMERIC100.get(getAlphanumericNotation64());
+  default String getNotationNum() {
+    return getDim() == EnumRules.INTERNATIONAL.getDimension()
+        ? getPdnNumericNotation100()
+        : getPdnNumericNotation64();
   }
 
-  default void setPdnNumericNotation100(String ignore) {
+  @SuppressWarnings("unused")
+  default void setNotationNum(String ignore) {
   }
 
-  @JsonIgnore
-  @DynamoDBIgnore
-  default String getAlphanumericNotation64() {
+  private String getPdnNumericNotation64() {
+    return ALPHANUMERIC_TO_NUMERIC_64.get(getAlphanumericNotation());
+  }
+
+  private String getPdnNumericNotation100() {
+    return ALPHANUMERIC_TO_NUMERIC_100.get(getAlphanumericNotation());
+  }
+
+  private String getAlphanumericNotation() {
     return ALPH.get(getH()) + (getDim() - getV());
-  }
-
-  default void setAlphanumericNotation64(String ignore) {
-  }
-
-  static String toAlphanumericNotation64(String notation) {
-      // try from numeric to alphanumeric
-      return ALPHANUMERIC64_TO_NUMERIC64
-          .entrySet()
-          .stream()
-          .filter(stringStringEntry -> stringStringEntry.getValue().equals(notation))
-          .findFirst()
-          .map(Map.Entry::getKey)
-          // already alphanumeric
-          .orElse(notation);
   }
 }

@@ -7,6 +7,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.Select;
 import com.workingbit.share.domain.BaseDomain;
+import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.model.DomainIds;
+import com.workingbit.share.model.SimpleFilter;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,8 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.workingbit.share.util.Utils.getRandomString;
 import static com.workingbit.share.util.Utils.isBlank;
 import static java.lang.String.format;
 
@@ -147,15 +152,15 @@ public class BaseDao<T extends BaseDomain> {
         .ifPresent(dynamoDBMapper::delete);
   }
 
-  public List<T> findByIds(List<String> ids) {
+  public List<BoardBox> findByIds(DomainIds ids) {
     logger.info(String.format("Find by ids %s", ids));
-    Map<Class<?>, List<KeyPair>> itemsToGet = new HashMap<>(ids.size());
-    itemsToGet.put(clazz, ids.stream()
-        .map(id -> new KeyPair().withHashKey(id))
+    Map<Class<?>, List<KeyPair>> itemsToGet = new HashMap<>(ids.getIds().size());
+    itemsToGet.put(BoardBox.class, ids.getIds().stream()
+        .map(id -> new KeyPair().withHashKey(id.getId()).withRangeKey(id.getCreatedAt()))
         .collect(Collectors.toList()));
-    Map<String, List<Object>> batchLoad = dynamoDBMapper.batchLoad(itemsToGet);
+    Map<String, List<Object>> batchLoad = getDynamoDBMapper().batchLoad(itemsToGet);
     if (!batchLoad.isEmpty()) {
-      return Utils.listObjectsToListT(batchLoad.get(clazz.getSimpleName()), clazz);
+      return Utils.listObjectsToListT(batchLoad.get(BoardBox.class.getSimpleName()), BoardBox.class);
     }
     return Collections.emptyList();
   }
@@ -185,5 +190,97 @@ public class BaseDao<T extends BaseDomain> {
       return Optional.of(queryList.get(0));
     }
     return Optional.empty();
+  }
+
+  protected List<T> findByFilter(int limit, List<SimpleFilter> filters, String defaultFilterExpression,
+                                 Map<String, AttributeValue> eav,
+                                 String[] validFilterKeys, Pattern[] validFilterValues) {
+    String filterExpression = createFilterAndPutValues(filters, eav, validFilterKeys, validFilterValues);
+    logger.info("Apply filter: " + filterExpression);
+
+    DynamoDBScanExpression dynamoDBQueryExpression = new DynamoDBScanExpression();
+    String filter = chooseFilterExpression(filterExpression, defaultFilterExpression);
+    dynamoDBQueryExpression
+        .withFilterExpression(filter)
+        .withExpressionAttributeValues(eav)
+        .withSelect(Select.ALL_ATTRIBUTES);
+    try {
+      DynamoDBIndexHashKey indexAnnotation = clazz.getDeclaredField("id").getAnnotation(DynamoDBIndexHashKey.class);
+      if (indexAnnotation != null) {
+        String indexName = indexAnnotation.globalSecondaryIndexName();
+        dynamoDBQueryExpression
+            .withIndexName(indexName);
+      }
+    } catch (NoSuchFieldException e) {
+      logger.info("No DynamoDBIndexHashKey annotation on class " + getClass().getCanonicalName(), e);
+    }
+
+    List<T> result = getDynamoDBMapper().scanPage(clazz, dynamoDBQueryExpression)
+        .getResults();
+    if (limit < result.size()) {
+      result = result.subList(0, limit);
+    }
+    result.sort((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()));
+    return result;
+  }
+
+  private String chooseFilterExpression(String filterExpression, String defaultFilterExpression) {
+    String userFilter = StringUtils.isNotBlank(filterExpression) ? filterExpression : "";
+    if (StringUtils.isNotBlank(userFilter)) {
+      defaultFilterExpression = userFilter;
+    }
+    return defaultFilterExpression;
+  }
+
+  @SuppressWarnings("unchecked")
+  private String createFilterAndPutValues(List<SimpleFilter> filters, Map<String, AttributeValue> eav,
+                                          String[] validFilterKeys, Pattern[] validFilterValues) {
+    List<String> filterExpression = new ArrayList<>();
+    filters
+        .stream()
+        .filter((filter) -> validFilter(filter, validFilterKeys, validFilterValues))
+        .forEach(filter -> {
+          String key = formatSub(filter.getKey());
+          if (eav.containsKey(key)) {
+            key += getRandomString(3);
+          }
+          AttributeValue value = new AttributeValue();
+          switch (filter.getType()) {
+            case "S":
+              value.setS((String) filter.getValue());
+              break;
+            case "SS":
+              value.setSS((Collection<String>) filter.getValue());
+              break;
+          }
+          eav.put(key, value);
+          filterExpression.add(filter.getKey() + filter.getOperator() + key);
+        });
+    Optional<String> userId = filterExpression.stream()
+        .filter(f -> f.contains("userId"))
+        .findFirst();
+    if (userId.isPresent()) {
+      String orFilters = filterExpression.stream()
+          .filter(f -> !f.contains("userId"))
+          .collect(Collectors.joining(" or "));
+      if (!orFilters.isEmpty()) {
+        return "( " + orFilters + " ) and " + userId.get();
+      }
+      return userId.get();
+    }
+    return filterExpression.stream().collect(Collectors.joining(" or "));
+  }
+
+  private boolean validFilter(SimpleFilter filter, String[] validFilterKeys, Pattern[] validFilterValues) {
+    boolean notBlankAndNotNull = StringUtils.isNotBlank(filter.getKey()) && !filter.getKey().contains("null");
+    boolean validKey = true;
+    if (validFilterKeys != null) {
+      validKey = Arrays.stream(validFilterKeys).anyMatch((p) -> p.equals(filter.getKey()));
+    }
+    return notBlankAndNotNull && validKey;
+  }
+
+  private String formatSub(String sub) {
+    return ":" + sub.toLowerCase();
   }
 }

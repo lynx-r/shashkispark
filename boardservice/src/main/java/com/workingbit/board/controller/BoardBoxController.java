@@ -6,9 +6,7 @@ import com.workingbit.orchestrate.function.ParamsHandlerFunc;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.CreateBoardPayload;
-import com.workingbit.share.model.ParamPayload;
+import com.workingbit.share.model.*;
 import spark.Route;
 
 import static com.workingbit.board.BoardEmbedded.boardBoxService;
@@ -29,8 +27,18 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_BOARD))
       ).handleRequest(req, res,
-          Authority.BOARD.setAuthorities(Authority.Constants.BOARD_SECURE_ROLES),
+          Authority.BOARD,
           CreateBoardPayload.class);
+
+  public static Route parsePdn = (req, res) ->
+      ((ModelHandlerFunc<ImportPdnPayload>) (data, token) ->
+          boardBoxService
+              .parsePdn(data, token)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_PARSE_PDN))
+      ).handleRequest(req, res,
+          Authority.PARSE_PDN.setAuthorities(Authority.Constants.SECURE_ROLES),
+          ImportPdnPayload.class);
 
   public static Route saveBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
@@ -39,7 +47,7 @@ public class BoardBoxController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_BOARD))
       ).handleRequest(req, res,
-          Authority.BOARD.setAuthorities(Authority.Constants.BOARD_SECURE_ROLES),
+          Authority.BOARD,
           BoardBox.class);
 
   public static Route loadPreviewBoard = (req, res) ->
@@ -59,6 +67,14 @@ public class BoardBoxController {
               .orElse(Answer.error(HTTP_NOT_FOUND,
                   ErrorMessages.BOARD_WITH_ID_NOT_FOUND))
       ).handleRequest(req, res, Authority.BOARD_BY_ID);
+
+  public static Route findBoardByIds = (req, res) ->
+      ((ModelHandlerFunc<DomainIds>) (ids, token) ->
+          boardBoxService.findByIds(ids, token)
+              .map(Answer::ok)
+              .orElse(Answer.error(HTTP_NOT_FOUND,
+                  ErrorMessages.BOARD_WITH_ID_NOT_FOUND))
+      ).handleRequest(req, res, Authority.BOARD_BY_ID, DomainIds.class);
 
   public static Route addDraught = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->

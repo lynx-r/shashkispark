@@ -159,4 +159,9 @@ public class Draught extends BaseDomain implements ICoordinates{
   public boolean isReadonly() {
     return false;
   }
+
+  @Override
+  public void setReadonly(boolean readonly) {
+
+  }
 }

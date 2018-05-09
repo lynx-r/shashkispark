@@ -68,7 +68,7 @@ public class BoardUtils {
     boardClone.setWhiteDraughts(whiteDraughts);
 
     boardClone.setAssignedSquares(boardSquares);
-    updateMoveSquaresDimensionAndDiagonals(boardClone);
+//    updateMoveSquaresDimensionAndDiagonals(boardClone);
     updateMoveSquaresHighlightAndDraught(boardClone, board);
 
     List<Square> squares = getSquares(boardSquares, rules.getDimension());
@@ -190,7 +190,7 @@ public class BoardUtils {
       throw new BoardServiceException("Invalid notation " + notation);
     }
     for (Square square : board.getAssignedSquares()) {
-      if (square.getNotation().equals(notation)) {
+      if (square.getNotation().equals(notation) || square.getNotationNum().equals(notation)) {
         return square;
       }
     }
@@ -455,7 +455,7 @@ public class BoardUtils {
     List<Square> draughtsSquares = board.getAssignedSquares()
         .stream()
         .filter(square -> !square.equals(board.getSelectedSquare()))
-        .filter(square -> draughtsNotations.contains(square.getAlphanumericNotation64()))
+        .filter(square -> draughtsNotations.contains(square.getNotation()))
         .filter(Square::isOccupied)
         .collect(Collectors.toList());
     // find all squares captured by current user
@@ -527,7 +527,7 @@ public class BoardUtils {
     board.setNextSquare(null);
     board.setPreviousSquare(board.getSelectedSquare());
     board.getPreviousSquare().setDraught(null);
-    board.setSelectedSquare(targetSquare);
+    board.setSelectedSquare(targetSquare.deepClone());
 
     replaceDraught(board.getWhiteDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
     replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
@@ -606,21 +606,29 @@ public class BoardUtils {
   }
 
   public static void updateMoveSquaresHighlightAndDraught(Board currentBoard, Board origBoard) {
+    int dim = currentBoard.getRules().getDimension();
     Square selectedSquare = findSquareByLink(origBoard.getSelectedSquare(), currentBoard);
     if (selectedSquare != null) {
-      currentBoard.setSelectedSquare(updateSquare(selectedSquare, origBoard.getSelectedSquare()));
+      selectedSquare.setDim(dim);
+      selectedSquare.getDraught().setDim(dim);
+      currentBoard.setSelectedSquare(selectedSquare);
     }
-    Square nextSquare = findSquareByLink(origBoard.getNextSquare(), currentBoard);
+    Square origNextSquare = origBoard.getNextSquare();
+    Square nextSquare = findSquareByLink(origNextSquare, currentBoard);
     if (nextSquare != null) {
-      currentBoard.setNextSquare(updateSquare(nextSquare, origBoard.getNextSquare()));
+      nextSquare.setDim(dim);
+      // нужно для эмуляции
+      nextSquare.setHighlight(origNextSquare.isHighlight());
+      currentBoard.setNextSquare(nextSquare);
     }
     Square previousSquare = findSquareByLink(origBoard.getPreviousSquare(), currentBoard);
     if (previousSquare != null) {
-      currentBoard.setPreviousSquare(updateSquare(previousSquare, origBoard.getPreviousSquare()));
+      previousSquare.setDim(dim);
+      if (previousSquare.getDraught() != null) {
+        previousSquare.getDraught().setDim(dim);
+      }
+      currentBoard.setPreviousSquare(previousSquare);
     }
-    updateMoveDraughtsNotation(selectedSquare);
-    updateMoveDraughtsNotation(nextSquare);
-    updateMoveDraughtsNotation(previousSquare);
   }
 
   private static Square updateSquare(Square selectedSquare, Square origSquare) {

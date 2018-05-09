@@ -105,6 +105,11 @@ public class SecureUser extends BaseDomain {
   }
 
   @Override
+  public void setReadonly(boolean readonly) {
+
+  }
+
+  @Override
   public String toString() {
     return new ToStringBuilder(this)
         .append("id", id)

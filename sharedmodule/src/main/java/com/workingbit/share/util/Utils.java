@@ -28,7 +28,7 @@ import static com.workingbit.share.model.enumarable.EnumNotation.RPAREN;
  */
 public class Utils {
 
-  public static List<String> ALPH = new ArrayList<String>() {{
+  public static List<String> ALPH = new ArrayList<>() {{
     add("a");
     add("b");
     add("c");
@@ -41,7 +41,7 @@ public class Utils {
     add("j");
   }};
 
-  public static Map<String, String> ALPHANUMERIC64_TO_NUMERIC64 = new HashMap<String, String>() {{
+  public static Map<String, String> ALPHANUMERIC_TO_NUMERIC_64 = new HashMap<>() {{
     put("b8", "1");
     put("d8", "2");
     put("f8", "3");
@@ -76,7 +76,7 @@ public class Utils {
     put("g1", "32");
   }};
 
-  public static Map<String, String> ALPHANUMERIC64_TO_NUMERIC100 = new HashMap<String, String>() {{
+  public static Map<String, String> ALPHANUMERIC_TO_NUMERIC_100 = new HashMap<>() {{
     put("b10", "1");
     put("d10", "2");
     put("f10", "3");
@@ -155,7 +155,7 @@ public class Utils {
   }
 
   public static String getRandomString20() {
-    return RandomStringUtils.randomAlphanumeric(RANDOM_STRING_LENGTH);
+    return RandomStringUtils.randomAlphanumeric(RANDOM_STRING_LENGTH, RANDOM_STRING_LENGTH);
   }
 
   public static String getRandomString(int length) {
@@ -183,7 +183,7 @@ public class Utils {
 
   public static void setArticleUrlAndIdAndCreatedAt(Article article, boolean present) {
     article.setId(getRandomID());
-    article.setBoardBoxId(getRandomID());
+    article.setSelectedBoardBoxId(getRandomID());
     article.setHumanReadableUrl(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString4() : ""));
     article.setCreatedAt(LocalDateTime.now());
   }
@@ -194,7 +194,6 @@ public class Utils {
 
   public static ObjectMapper configureObjectMapper(ObjectMapper mapper) {
     mapper.registerModule(new JavaTimeModule());
-//    mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
     mapper = mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     mapper.findAndRegisterModules();
     return mapper;

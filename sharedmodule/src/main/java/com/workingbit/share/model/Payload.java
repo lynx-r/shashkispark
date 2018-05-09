@@ -17,11 +17,14 @@ import com.workingbit.share.domain.impl.BoardBox;
     @JsonSubTypes.Type(value = CreateArticlePayload.class, name = "CreateArticlePayload"),
     @JsonSubTypes.Type(value = CreateArticleResponse.class, name = "CreateArticleResponse"),
     @JsonSubTypes.Type(value = CreateBoardPayload.class, name = "CreateBoardPayload"),
+    @JsonSubTypes.Type(value = ImportPdnPayload.class, name = "ImportPdnPayload"),
 
     @JsonSubTypes.Type(value = Article.class, name = "Article"),
     @JsonSubTypes.Type(value = Articles.class, name = "Articles"),
     @JsonSubTypes.Type(value = BoardBox.class, name = "BoardBox"),
+    @JsonSubTypes.Type(value = BoardBoxes.class, name = "BoardBoxes"),
     @JsonSubTypes.Type(value = Board.class, name = "Board"),
+    @JsonSubTypes.Type(value = DomainIds.class, name = "DomainIds"),
 
     @JsonSubTypes.Type(value = UserCredentials.class, name = "UserCredentials"),
     @JsonSubTypes.Type(value = AuthUser.class, name = "AuthUser"),

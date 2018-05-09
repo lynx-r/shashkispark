@@ -7,11 +7,7 @@ import com.workingbit.orchestrate.function.QueryParamsHandlerFunc;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.domain.impl.Article;
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.CreateArticlePayload;
-import com.workingbit.share.model.ParamPayload;
-import com.workingbit.share.model.QueryPayload;
-import com.workingbit.share.model.enumarable.EnumAuthority;
+import com.workingbit.share.model.*;
 import spark.Route;
 
 import static com.workingbit.article.ArticleEmbedded.articleService;
@@ -45,7 +41,7 @@ public class ArticleController {
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.ARTICLE_WITH_ID_NOT_FOUND))
       ).handleRequest(req, res,
-          Authority.ARTICLE_BY_ID.setAuthorities(EnumAuthority.ADMIN, EnumAuthority.AUTHOR));
+          Authority.ARTICLE_BY_ID_SECURE);
 
   public static Route createArticleAndBoard = (req, res) ->
       ((ModelHandlerFunc<CreateArticlePayload>) (data, token) ->
@@ -53,7 +49,7 @@ public class ArticleController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_ARTICLE))
       ).handleRequest(req, res,
-          Authority.ARTICLE.setAuthorities(Authority.Constants.ARTICLE_SECURE_ROLES),
+          Authority.ARTICLE,
           CreateArticlePayload.class);
 
   public static Route saveArticle = (req, res) ->
@@ -62,6 +58,15 @@ public class ArticleController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_ARTICLE))
       ).handleRequest(req, res,
-          Authority.ARTICLE.setAuthorities(Authority.Constants.ARTICLE_SECURE_ROLES),
+          Authority.ARTICLE,
           Article.class);
+
+  public static Route importPdn = (req, res) ->
+      ((ModelHandlerFunc<ImportPdnPayload>) (article, token) ->
+          articleService.importPdn((ImportPdnPayload) article, token)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_IMPORT_NOTATION))
+      ).handleRequest(req, res,
+          Authority.ARTICLE_IMPORT_PDN,
+          ImportPdnPayload.class);
 }

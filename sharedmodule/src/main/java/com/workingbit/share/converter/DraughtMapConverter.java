@@ -29,8 +29,8 @@ public class DraughtMapConverter implements DynamoDBTypeConverter<String, HashMa
   @Override
   public HashMap<String, Draught> unconvert(String object) {
     try {
-      TypeReference<HashMap<String, Draught>> typeRef
-          = new TypeReference<HashMap<String, Draught>>() {};
+      TypeReference<HashMap<String, Draught>> typeRef = new TypeReference<>() {
+      };
       return mapper.readValue(object, typeRef);
     } catch (IOException e) {
       e.printStackTrace();

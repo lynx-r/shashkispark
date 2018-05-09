@@ -37,7 +37,7 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "updatedAt")
   private LocalDateTime updatedAt;
 
-  @DynamoDBAttribute(attributeName = "boardBoxId")
+  @DynamoDBAttribute(attributeName = "selectedBoardBoxId")
   private String boardBoxId;
 
   /**

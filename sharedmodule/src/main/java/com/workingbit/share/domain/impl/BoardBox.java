@@ -65,7 +65,6 @@ public class BoardBox extends BaseDomain implements Payload {
   private boolean readonly;
 
   public BoardBox() {
-    notation = new Notation();
     editMode = EnumEditBoardBoxMode.EDIT;
   }
 

@@ -21,7 +21,7 @@
 //import static com.workingbit.share.common.RequestConstants.FILTERS_HEADER;
 //import static com.workingbit.share.common.RequestConstants.FILTER_VALUES_HEADER;
 //import static com.workingbit.share.util.AuthRequestUtils.*;
-//import static com.workingbit.share.util.JsonUtils.jsonToFilters;
+//import static com.workingbit.share.util.JsonUtils.jsonToDataTypeRef;
 //import static java.net.HttpURLConnection.*;
 //
 ///**
@@ -77,7 +77,7 @@
 //    if (StringUtils.isNotBlank(filters)) {
 //      authUser.setFilters(filters);
 //      @SuppressWarnings("unchecked")
-//      Map<String, AttributeValue> filterValuesMap = jsonToFilters(filterValues);
+//      Map<String, AttributeValue> filterValuesMap = jsonToDataTypeRef(filterValues);
 //      authUser.setFilterValues(filterValuesMap);
 //    }
 //    Answer securedAnswer = getSecureAnswer(data, authUser);

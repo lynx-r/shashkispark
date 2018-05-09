@@ -2,12 +2,10 @@ package com.workingbit.share.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.workingbit.share.model.SimpleFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
 
 public class JsonUtils {
   private static Logger logger = LoggerFactory.getLogger(JsonUtils.class);
@@ -34,13 +32,11 @@ public class JsonUtils {
     }
   }
 
-  public static List<SimpleFilter> jsonToFilters(String filterValues) {
+  public static <T> T jsonToDataTypeRef(String json, TypeReference typeRef) {
     try {
-      TypeReference<List<SimpleFilter>> typeRef = new TypeReference<>() {
-      };
-      return mapper.readValue(filterValues, typeRef);
+      return mapper.readValue(json, typeRef);
     } catch (IOException e) {
-      throw new RuntimeException("IOException while mapping json " + filterValues + ".\n" + e.getMessage());
+      throw new RuntimeException("IOException while mapping json " + json + ".\n" + e.getMessage());
     }
   }
 }

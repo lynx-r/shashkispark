@@ -8,6 +8,7 @@ import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.dao.NotationDao;
 import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.board.service.BoardStoreService;
+import com.workingbit.board.service.NotationParserService;
 import com.workingbit.board.service.NotationStoreService;
 import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.share.common.ErrorMessages;
@@ -32,13 +33,14 @@ public class BoardEmbedded {
 
   // Declare dependencies
   public static BoardBoxService boardBoxService;
+  public static NotationParserService notationParserService;
   public static BoardStoreService boardStoreService;
   public static NotationStoreService notationStoreService;
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
   public static NotationDao notationDao;
 
-  private static AppProperties appProperties;
+  public static AppProperties appProperties;
 
   static {
     OrchestrateModule.loadModule();
@@ -46,6 +48,7 @@ public class BoardEmbedded {
     appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     boardBoxService = new BoardBoxService();
+    notationParserService = new NotationParserService();
     boardStoreService = new BoardStoreService();
     notationStoreService = new NotationStoreService();
 
@@ -76,10 +79,11 @@ public class BoardEmbedded {
     path("/api", () ->
         path("/v1", () -> {
           get(Authority.BOARD_BY_ID.getPath(), BoardBoxController.findBoardById);
-
+          post(Authority.BOARD_BY_IDS.getPath(), BoardBoxController.findBoardByIds);
           post(Authority.BOARD_ADD_DRAUGHT.getPath(), BoardBoxController.addDraught);
           post(Authority.BOARD.getPath(), BoardBoxController.createBoard);
-          put(Authority.BOARD.getPath(), BoardBoxController.saveBoard);
+          put(Authority.BOARD_PUT.getPath(), BoardBoxController.saveBoard);
+          post(Authority.PARSE_PDN.getPath(), BoardBoxController.parsePdn);
           post(Authority.BOARD_MOVE.getPath(), BoardBoxController.move);
           post(Authority.BOARD_HIGHLIGHT.getPath(), BoardBoxController.highlightBoard);
           post(Authority.BOARD_REDO.getPath(), BoardBoxController.redo);

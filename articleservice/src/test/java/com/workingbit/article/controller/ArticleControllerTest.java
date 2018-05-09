@@ -88,7 +88,7 @@ public class ArticleControllerTest {
     Article article = articleAnswer.getArticle();
     BoardBox board = articleAnswer.getBoard();
     assertNotNull(article.getId());
-    assertNotNull(article.getBoardBoxId());
+    assertNotNull(article.getSelectedBoardBoxId());
     assertNotNull(board.getId());
   }
 
@@ -175,7 +175,7 @@ public class ArticleControllerTest {
     Article article = articleResponse.getArticle();
     BoardBox board = articleResponse.getBoard();
     assertNotNull(article.getId());
-    assertNotNull(article.getBoardBoxId());
+    assertNotNull(article.getSelectedBoardBoxId());
     assertNotNull(board.getId());
 
     article = (Article) get("/" + article.getId()).getBody();
@@ -203,7 +203,7 @@ public class ArticleControllerTest {
     Article article = articleResponse.getArticle();
     BoardBox board = articleResponse.getBoard();
     assertNotNull(article.getId());
-    assertNotNull(article.getBoardBoxId());
+    assertNotNull(article.getSelectedBoardBoxId());
     assertNotNull(board.getId());
 
     article.setArticleStatus(EnumArticleStatus.PUBLISHED);

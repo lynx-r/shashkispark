@@ -25,7 +25,7 @@ public class BaseTest {
     Utils.setArticleUrlAndIdAndCreatedAt(article, true);
     article.setArticleStatus(EnumArticleStatus.DRAFT);
     article.setAuthor(Utils.getRandomString20());
-    article.setBoardBoxId(Utils.getRandomString20());
+    article.setSelectedBoardBoxId(Utils.getRandomString20());
     article.setContent(Utils.getRandomString20());
     article.setTitle(Utils.getRandomString20());
     return article;

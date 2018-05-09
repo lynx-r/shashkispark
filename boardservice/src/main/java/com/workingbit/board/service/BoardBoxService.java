@@ -2,17 +2,21 @@ package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
+import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.util.Utils;
+import net.percederberg.grammatica.parser.ParserCreationException;
+import net.percederberg.grammatica.parser.ParserLogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
 
@@ -37,12 +41,30 @@ public class BoardBoxService {
     boardBox.setUserId(userId);
     boardBox.setCreatedAt(LocalDateTime.now());
 
-    createNewNotation(boardBox, board);
+    createNewNotation(boardBox, authUser);
     saveAndFillBoard(authUser, boardBox);
 
-    board.setBoardBoxId(boardBox.getId());
-    boardService.save(board);
     return Optional.of(boardBox);
+  }
+
+  public Optional<BoardBox> parsePdn(ImportPdnPayload importPdnPayload, AuthUser authUser) {
+    try {
+      Notation notation = notationParserService.parse(importPdnPayload.getPdn());
+      notation.setRules(importPdnPayload.getRules());
+      Optional<BoardBox> boardBoxFromNotation = createBoardBoxFromNotation(importPdnPayload.getArticleId(), notation, authUser);
+      return boardBoxFromNotation.map(boardBox ->
+          boardBox.getNotation().getNotationHistory().getLastNotationBoardId()
+              .map(s -> {
+                boardBox.setBoardId(s);
+                boardBoxDao.save(boardBox);
+                return updateBoardBox(authUser, boardBox);
+              })
+              .orElseThrow(BoardServiceException::new)
+      );
+    } catch (ParserLogException | ParserCreationException e) {
+      logger.error("PARSE ERROR: " + e.getMessage(), e);
+      throw new BoardServiceException(ErrorMessages.UNPARSABLE_PDN_CONTENT);
+    }
   }
 
   Optional<BoardBox> createBoardBoxFromNotation(String articleId, Notation fromNotation, AuthUser authUser) {
@@ -109,19 +131,20 @@ public class BoardBoxService {
     return find(boardBox, authUser)
         .map(updatedBoardBox -> {
               BoardBox userBoardBox = updatedBoardBox.deepClone();
+              Board clientBoard = boardBox.getBoard();
               if (resetHighlightIfNotLastBoard(userBoardBox)) {
-                Board noHighlight = boardService.resetHighlightAndUpdate(boardBox.getBoard());
+                Board noHighlight = boardService.resetHighlightAndUpdate(clientBoard);
                 boardBox.setBoard(noHighlight);
                 return boardBox;
               }
               Board currentBoard = userBoardBox.getBoard();
-              Square selectedSquare = boardBox.getBoard().getSelectedSquare();
+              Square selectedSquare = clientBoard.getSelectedSquare();
               if (!selectedSquare.isOccupied()) {
                 return userBoardBox;
               }
-              BoardUtils.updateMoveSquaresHighlightAndDraught(currentBoard, boardBox.getBoard());
               try {
-                currentBoard = boardService.getHighlight(currentBoard);
+                var highlight = boardService.getHighlight(currentBoard, clientBoard);
+                currentBoard = (Board) highlight.get("serverBoard");
               } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 return null;
@@ -137,26 +160,24 @@ public class BoardBoxService {
     return find(boardBox, authUser)
         .map(updatedBoxOrig -> {
               BoardBox userBoardBox = updatedBoxOrig.deepClone();
-              Board boardUpdated = userBoardBox.getBoard();
-              Board board = boardBox.getBoard();
               if (isNotEditMode(boardBox)) {
                 return null;
               }
-              boardUpdated.setSelectedSquare(board.getSelectedSquare());
-              boardUpdated.setNextSquare(board.getNextSquare());
 
+              Board serverBoard = userBoardBox.getBoard();
               Notation notation = userBoardBox.getNotation();
               NotationHistory notationBoardBox = notation.getNotationHistory();
-              boardUpdated.setDriveCount(notationBoardBox.size() - 1);
-
+              serverBoard.setDriveCount(notationBoardBox.size() - 1);
               try {
-                boardUpdated = boardService.move(boardUpdated, notationBoardBox);
+                Board clientBoard = boardBox.getBoard();
+                serverBoard = boardService.move(serverBoard, clientBoard, notationBoardBox);
               } catch (BoardServiceException e) {
                 logger.error("Error while moving", e);
                 return null;
               }
-              userBoardBox.setBoard(boardUpdated);
-              userBoardBox.setBoardId(boardUpdated.getId());
+
+              userBoardBox.setBoard(serverBoard);
+              userBoardBox.setBoardId(serverBoard.getId());
               notationService.save(authUser, notation);
 
               logger.info("Notation after move: " + notation.getNotationHistory().pdnString());
@@ -167,12 +188,11 @@ public class BoardBoxService {
         );
   }
 
-  private void createNewNotation(BoardBox boardBox, Board board) {
+  private void createNewNotation(BoardBox boardBox, AuthUser authUser) {
     Notation notation = new Notation();
     Utils.setRandomIdAndCreatedAt(notation);
-//    notation.getNotationHistory().getLast().setSelected(true);
     notation.setBoardBoxId(boardBox.getId());
-    notation.setRules(board.getRules());
+    notation.setRules(boardBox.getBoard().getRules());
     boardBox.setNotationId(notation.getId());
     boardBox.setNotation(notation);
   }
@@ -269,6 +289,14 @@ public class BoardBoxService {
     return switchNotationTo(authUser, boardBox, currentNotationDrive, variantNotationDrive);
   }
 
+  public Optional<BoardBoxes> findByIds(DomainIds boardIds, AuthUser authUser) {
+    List<BoardBox> byUserAndIds = boardBoxDao.findByIds(boardIds);
+    return Optional.of(BoardBoxes.create(byUserAndIds
+        .stream()
+        .map(boardBox -> updateBoardBox(authUser, boardBox))
+        .collect(Collectors.toList())));
+  }
+
   private Optional<BoardBox> forkNotationFor(AuthUser token, BoardBox boardBox, NotationDrive forkFromNotationDrive) {
     return find(boardBox, token)
         .map(bb -> forkNotationForVariants(token, bb, forkFromNotationDrive));
@@ -355,9 +383,12 @@ public class BoardBoxService {
   }
 
   private BoardBox saveAndFillBoard(AuthUser authUser, BoardBox boardBox) {
-    boardBox.setReadonly(false);
     boardBoxDao.save(boardBox);
-    notationService.save(authUser, boardBox.getNotation());
+    Board board = boardBox.getBoard();
+    board.setBoardBoxId(boardBox.getId());
+    boardService.save(board);
+    Notation notation = boardBox.getNotation();
+    notationService.save(authUser, notation);
     boardBox = updateBoardBox(authUser, boardBox);
     return boardBox;
   }

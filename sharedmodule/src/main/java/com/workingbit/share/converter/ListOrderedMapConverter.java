@@ -25,8 +25,8 @@ public class ListOrderedMapConverter implements DynamoDBTypeConverter<String, Li
   @Override
   public ListOrderedMap<String, String> unconvert(String object) {
     try {
-      TypeReference<ListOrderedMap<String, String>> typeRef
-          = new TypeReference<ListOrderedMap<String, String>>() {};
+      TypeReference<ListOrderedMap<String, String>> typeRef = new TypeReference<>() {
+      };
       return mapper.readValue(object, typeRef);
     } catch (IOException e) {
       e.printStackTrace();

@@ -1,0 +1,26 @@
+[
+  "DomainIds",
+  [
+    {
+      "id": "64WoKrqhMg4E18Gfnlny",
+      "createdAt": {
+        "month": "MAY",
+        "dayOfWeek": "THURSDAY",
+        "dayOfYear": 130,
+        "year": 2018,
+        "monthValue": 5,
+        "dayOfMonth": 10,
+        "hour": 19,
+        "minute": 4,
+        "second": 34,
+        "nano": 731153000,
+        "chronology": {
+          "id": "ISO",
+          "calendarType": "iso8601"
+        }
+      },
+      "readonly": false,
+      "updatedAt": null
+    }
+  ]
+]

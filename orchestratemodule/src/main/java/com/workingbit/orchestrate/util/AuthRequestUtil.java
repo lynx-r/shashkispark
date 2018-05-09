@@ -3,6 +3,7 @@ package com.workingbit.orchestrate.util;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.enumarable.EnumAuthority;
+import com.workingbit.share.model.enumarable.IAuthority;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
@@ -33,7 +34,7 @@ public class AuthRequestUtil {
 
   public static Optional<AuthUser> isAuthenticated(AuthUser authUser) throws RequestException {
     return orchestralService
-        .internal(authUser, (au, internalKey) -> orchestralService.authenticateAnswer(au.setInternalKey(internalKey)))
+        .internal(authUser, "authenticateAnswer", authUser)
         .map(answer -> answer.getAuthUser());
   }
 
@@ -103,5 +104,10 @@ public class AuthRequestUtil {
         .stream()
         .map(ConstraintViolation::getMessage)
         .collect(Collectors.toSet());
+  }
+
+  public static boolean canBeAnonymous(IAuthority path) {
+    return path.getAuthorities().isEmpty()
+        || path.getAuthorities().contains(EnumAuthority.ANONYMOUS);
   }
 }

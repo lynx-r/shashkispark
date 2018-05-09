@@ -26,4 +26,6 @@ public interface ModuleProperties {
   String redisHost();
 
   String redisPort();
+
+  String parsePdnResource();
 }

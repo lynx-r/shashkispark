@@ -12,6 +12,7 @@ import com.workingbit.share.util.Utils;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.workingbit.board.BoardEmbedded.boardDao;
@@ -57,13 +58,14 @@ public class BoardService {
   /**
    * @return map of {allowed, captured}
    */
-  Board getHighlight(Board boardHighlight) {
-    Square selectedSquare = boardHighlight.getSelectedSquare();
+  Map getHighlight(Board serverBoard, Board clientBoard) {
+    BoardUtils.updateMoveSquaresHighlightAndDraught(serverBoard, clientBoard);
+    Square selectedSquare = serverBoard.getSelectedSquare();
     if (isValidHighlight(selectedSquare)) {
       throw new BoardServiceException("Invalid getHighlight square");
     }
-    getHighlightedBoard(boardHighlight.isBlackTurn(), boardHighlight);
-    return boardHighlight;
+    MovesList movesList = getHighlightedBoard(serverBoard.isBlackTurn(), serverBoard);
+    return Map.of("serverBoard", serverBoard, "movesList", movesList);
   }
 
   private boolean isValidHighlight(Square selectedSquare) {
@@ -72,31 +74,31 @@ public class BoardService {
   }
 
   /**
-   * @param board map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
+   * @param serverBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
    *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
    *                     h - distance for move horizontal (minus left), targetSquare is a new square with
+   * @param clientBoard
    */
-  public Board move(Board board, NotationHistory notationHistory) {
-    boolean blackTurn = board.isBlackTurn();
-    board = updateBoard(board);
-    MovesList movesList = getHighlightedBoard(blackTurn, board);
+  public Board move(Board serverBoard, Board clientBoard, NotationHistory notationHistory) {
+    Map highlight = getHighlight(serverBoard, clientBoard);
+    serverBoard = (Board) highlight.get("serverBoard");
+    MovesList movesList = (MovesList) highlight.get("movesList");
     List<Square> allowed = movesList.getAllowed();
     List<Square> captured = movesList.getCaptured();
     if (allowed.isEmpty()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
-    board.getSelectedSquare().getDraught().setHighlight(false);
-    boardDao.save(board);
+    boolean isEmulate = serverBoard.getId().equals(clientBoard.getId());
+    if (isEmulate) {
+      serverBoard.getNextSquare().setHighlight(clientBoard.getNextSquare().isHighlight());
+    }
+    serverBoard.getSelectedSquare().getDraught().setHighlight(false);
+    boardDao.save(serverBoard);
 
-    Board nextBoard = board.deepClone();
-    nextBoard.setSelectedSquare(board.getSelectedSquare());
-    nextBoard.setNextSquare(board.getNextSquare());
-
-    // should be there because in move draught, I set boardId in notation
-    nextBoard.setBoardBoxId(board.getBoardBoxId());
+    Board nextBoard = serverBoard.deepClone();
     Utils.setRandomIdAndCreatedAt(nextBoard);
 
-    String boardId = board.getId();
+    String boardId = serverBoard.getId();
     // MOVE DRAUGHT
     nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId, notationHistory);
 
@@ -178,12 +180,12 @@ public class BoardService {
     Iterator<String> iterator = moves.iterator();
     for (String move = iterator.next(); iterator.hasNext();) {
       Square selected = findSquareByNotation(move, board).deepClone();
-      board.setSelectedSquare(selected);
+      board.setSelectedSquare(selected.deepClone());
       move = iterator.next();
       Square next = findSquareByNotation(move, board).deepClone();
       next.setHighlight(true);
       board.setNextSquare(next);
-      board = move(board, notationHistory);
+      board = move(board, board.deepClone(), notationHistory);
       if (!iterator.hasNext()) {
         break;
       }
