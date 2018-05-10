@@ -10,6 +10,7 @@ app:
 
   # board
   boardboxResource: https://api.shashki.online/board/api/v1/board
+  parsePdnResource: https://api.shashki.online/board/api/v1/parse-pdn
 
   # security
   registerResource: https://api.shashki.online/security/api/v1/register
