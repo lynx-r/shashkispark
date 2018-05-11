@@ -18,7 +18,7 @@ import java.util.Set;
 @Data
 public class UserInfo implements Payload {
 
-  private String userId;
+  private DomainId userId;
   private String username;
 
   private Set<EnumAuthority> authorities = new HashSet<>();

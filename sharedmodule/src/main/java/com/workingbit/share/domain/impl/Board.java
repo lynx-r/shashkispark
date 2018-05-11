@@ -7,8 +7,9 @@ import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.DraughtMapConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.model.enumarable.EnumRules;
+import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.Payload;
+import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -37,8 +38,9 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "updatedAt")
   private LocalDateTime updatedAt;
 
+  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "selectedBoardBoxId")
-  private String boardBoxId;
+  private DomainId boardBoxId;
 
   /**
    * Black draughts associated with owner square

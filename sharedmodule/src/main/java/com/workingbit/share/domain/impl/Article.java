@@ -8,6 +8,7 @@ import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.DomainIdsConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
+import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.DomainIds;
 import com.workingbit.share.model.Payload;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
@@ -28,7 +29,7 @@ import java.util.Objects;
 @DynamoDBTable(tableName = DBConstants.ARTICLE_TABLE)
 public class Article extends BaseDomain implements Payload {
 
-  @DynamoDBIndexHashKey(globalSecondaryIndexName = "articleIndex")
+  @DynamoDBIndexHashKey(globalSecondaryIndexName = "articleIdIndex")
   @DynamoDBHashKey(attributeName = "id")
   private String id;
 
@@ -47,8 +48,9 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "author")
   private String author;
 
+  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "userId")
-  private String userId;
+  private DomainId userId;
 
   @DynamoDBAttribute(attributeName = "title")
   private String title;
@@ -56,13 +58,15 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "content")
   private String content;
 
+  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "selectedBoardBoxId")
-  private String selectedBoardBoxId;
+  private DomainId selectedBoardBoxId;
 
   @DynamoDBTypeConverted(converter = DomainIdsConverter.class)
   @DynamoDBAttribute(attributeName = "boardBoxIds")
   private DomainIds boardBoxIds;
 
+  @DynamoDBIndexHashKey(globalSecondaryIndexName = "articleStatusIndex")
   @DynamoDBTypeConvertedEnum
   @DynamoDBAttribute(attributeName = "articleStatus")
   private EnumArticleStatus articleStatus;
@@ -87,7 +91,7 @@ public class Article extends BaseDomain implements Payload {
                  @JsonProperty("author") String author,
                  @JsonProperty("title") String title,
                  @JsonProperty("content") String content,
-                 @JsonProperty("selectedBoardBoxId") String selectedBoardBoxId,
+                 @JsonProperty("selectedBoardBoxId") DomainId selectedBoardBoxId,
                  @JsonProperty("boardBoxIds") DomainIds boardBoxIds,
                  @JsonProperty("articleStatus") EnumArticleStatus articleStatus,
                  @JsonProperty("humanReadableUrl") String humanReadableUrl

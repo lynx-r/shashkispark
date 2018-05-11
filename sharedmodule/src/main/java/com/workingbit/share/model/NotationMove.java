@@ -30,7 +30,6 @@ public class NotationMove implements DeepClone, ToPdn {
    * Moves. The first is notation like a1 or b2 the second is boardId
    */
   private LinkedList<NotationSimpleMove> move = new LinkedList<>();
-  private boolean cursor;
   private String moveStrength;
 
   @JsonIgnore
@@ -91,10 +90,10 @@ public class NotationMove implements DeepClone, ToPdn {
     return notationMove;
   }
 
-  public static NotationMove create(EnumNotation type, boolean cursor) {
+  public static NotationMove create(EnumNotation type) {
     NotationMove notationMove = new NotationMove();
     notationMove.setType(type);
-    notationMove.setCursor(cursor);
+//    notationMove.setCursor(cursor);
     return notationMove;
   }
 
@@ -103,7 +102,7 @@ public class NotationMove implements DeepClone, ToPdn {
         .append(prefix).append(getClass().getSimpleName())
         .append(prefix).append("\t").append("type: ").append(type)
         .append(prefix).append("\t").append("move: ").append(move.toString())
-        .append(prefix).append("\t").append("cursor: ").append(cursor)
+//        .append(prefix).append("\t").append("cursor: ").append(cursor)
         .append(prefix).append("\t").append("moveStrength: ").append(moveStrength)
         .toString();
   }
@@ -118,7 +117,7 @@ public class NotationMove implements DeepClone, ToPdn {
     return new ToStringBuilder(this)
         .append("type", type)
         .append("move", move)
-        .append("cursor", cursor)
+//        .append("cursor", cursor)
         .append("moveStrength", moveStrength)
         .toString();
   }
@@ -134,14 +133,18 @@ public class NotationMove implements DeepClone, ToPdn {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public Optional<String> getLastMoveBoardId() {
+  public Optional<DomainId> getLastMoveBoardId() {
     return Optional.ofNullable(move.getLast().getBoardId());
   }
 
-  public void addMove(String previousNotation, String prevBoardId, String currentNotation, String currentBoardId) {
-    move = new LinkedList<NotationSimpleMove>() {{
+  public void addMove(String previousNotation, DomainId prevBoardId, String currentNotation, DomainId currentBoardId) {
+    move = new LinkedList<>() {{
       add(new NotationSimpleMove(previousNotation, prevBoardId));
       add(new NotationSimpleMove(currentNotation, currentBoardId));
     }};
+  }
+
+  public void resetCursor() {
+    move.forEach(m->m.setCursor(false));
   }
 }

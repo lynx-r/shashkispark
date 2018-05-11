@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.workingbit.article.config.AppProperties;
 import com.workingbit.share.dao.BaseDao;
 import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.SimpleFilter;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import org.apache.commons.lang3.StringUtils;
@@ -55,19 +56,20 @@ public class ArticleDao extends BaseDao<Article> {
 //    save(board);
 //  }
 
-  public List<Article> findPublished(int limit, List<SimpleFilter> filters) {
+  public List<Article> findPublished(int limit, AuthUser authUser, List<SimpleFilter> filters) {
     logger.info("Find all published with limit " + limit);
     Map<String, AttributeValue> eav = new HashMap<>();
+    String filter = "";
     if (filters.isEmpty()) {
       eav.put(":published", new AttributeValue().withS(EnumArticleStatus.PUBLISHED.name()));
+      filter = "articleStatus = :published and ";
     }
-    String filter = "articleStatus = :published";
     return findByFilter(limit, filters, filter, eav, VALID_FILTER_KEYS, VALID_FILTER_VALUES);
   }
 
-  public List<Article> findPublished(int limit) {
-    return findPublished(limit, new ArrayList<>());
-  }
+//  public List<Article> findPublished(int limit) {
+//    return findPublished(limit, null);
+//  }
 
   public Optional<Article> findByHru(String articleHru) {
     return findByAttributeIndex(articleHru, "humanReadableUrl", "humanReadableUrlIndex");

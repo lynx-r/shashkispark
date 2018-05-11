@@ -10,6 +10,7 @@ import java.util.Set;
  */
 public enum EnumAuthority {
   AUTHOR,
+  VIEWER,
   ADMIN,
   ANONYMOUS,
   INTERNAL,
@@ -28,5 +29,9 @@ public enum EnumAuthority {
 
   public static boolean hasAuthorAuthorities(AuthUser authUser) {
     return hasAuthorities(authUser.getAuthorities(), Set.of(AUTHOR, ADMIN, INTERNAL));
+  }
+
+  public static boolean isAnonymous(AuthUser authUser) {
+    return hasAuthorities(authUser.getAuthorities(), Set.of(ANONYMOUS));
   }
 }

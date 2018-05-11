@@ -3,7 +3,8 @@ package com.workingbit.share.converter;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
+import static com.workingbit.share.common.DBConstants.DATE_TIME_FORMATTER;
 
 public class LocalDateTimeConverter implements DynamoDBTypeConverter<String, LocalDateTime> {
   @Override
@@ -13,6 +14,6 @@ public class LocalDateTimeConverter implements DynamoDBTypeConverter<String, Loc
 
   @Override
   public LocalDateTime unconvert(final String stringValue) {
-    return LocalDateTime.parse(stringValue, DateTimeFormatter.ISO_DATE_TIME);
+    return LocalDateTime.parse(stringValue, DATE_TIME_FORMATTER);
   }
 }

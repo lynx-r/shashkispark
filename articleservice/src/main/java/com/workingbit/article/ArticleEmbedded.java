@@ -5,6 +5,7 @@ import com.workingbit.article.config.Authority;
 import com.workingbit.article.controller.ArticleController;
 import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.service.ArticleService;
+import com.workingbit.article.service.ArticleStoreService;
 import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.ExceptionHandler;
@@ -31,6 +32,7 @@ public class ArticleEmbedded {
   public static ArticleDao articleDao;
   public static AppProperties appProperties;
   public static ArticleService articleService;
+  public static ArticleStoreService articleStoreService;
 
   static {
     OrchestrateModule.loadModule();
@@ -39,6 +41,7 @@ public class ArticleEmbedded {
 
     articleDao = new ArticleDao(appProperties);
     articleService = new ArticleService();
+    articleStoreService = new ArticleStoreService();
   }
 
   public static void main(String[] args) {
@@ -63,12 +66,17 @@ public class ArticleEmbedded {
 
     path("/api", () ->
         path("/v1", () -> {
+          // open api
           get(Authority.ARTICLES.getPath(), ArticleController.findAllArticles);
           get(Authority.ARTICLE_BY_HRU.getPath(), ArticleController.findArticleByHru);
-          delete(Authority.ARTICLE_BY_ID_SECURE.getPath(), ArticleController.removeArticleById);
-          post(Authority.ARTICLE.getPath(), ArticleController.createArticleAndBoard);
-          put(Authority.ARTICLE.getPath(), ArticleController.saveArticle);
-          post(Authority.ARTICLE_IMPORT_PDN.getPath(), ArticleController.importPdn);
+          get(Authority.ARTICLE_BY_HRU_CACHED.getPath(), ArticleController.findCachedArticleByHru);
+          post(Authority.ARTICLE_CACHE.getPath(), ArticleController.cacheArticle);
+
+          // protected api
+          post(Authority.ARTICLE_PROTECTED.getPath(), ArticleController.createArticleAndBoard);
+          put(Authority.ARTICLE_PROTECTED.getPath(), ArticleController.saveArticle);
+          post(Authority.ARTICLE_IMPORT_PDN_PROTECTED.getPath(), ArticleController.importPdn);
+          post(Authority.ARTICLE_REMOVE_PROTECTED.getPath(), ArticleController.removeArticleById);
 
           exception(RequestException.class, ExceptionHandler.handle);
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,11 +18,19 @@ public class DomainIds implements Payload {
     this.ids = new ArrayList<>();
   }
 
-  public void add(DomainId id) {
-    ids.add(id);
+  public int size() {
+    return ids.size();
   }
 
-  public void addAll(Collection<DomainId> ids) {
-    this.ids.addAll(ids);
+  public DomainId get(int index) {
+    return ids.get(index);
+  }
+
+  public void add(DomainId element) {
+    ids.add(element);
+  }
+
+  public void addAll(List<DomainId> domainIds) {
+    ids.addAll(domainIds);
   }
 }

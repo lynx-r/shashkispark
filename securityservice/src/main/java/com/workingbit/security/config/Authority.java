@@ -8,19 +8,23 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public enum SecureAuthority implements IAuthority {
+public enum Authority implements IAuthority {
   HOME("/", new HashSet<>()),
+
+  // open api
   REGISTER("/register", Constants.FREE_USER_AUTHORITIES),
   AUTHORIZE("/authorize", Constants.FREE_USER_AUTHORITIES),
-  AUTHENTICATE("/authenticate", Constants.SECURE_USER_AUTHORITIES),
-  USER_INFO("/user-info", Constants.SECURE_USER_AUTHORITIES),
-  SAVE_USER_INFO("/save-user-info", Constants.SECURE_USER_AUTHORITIES),
-  LOGOUT("/logout", Constants.SECURE_USER_AUTHORITIES);
+
+  // must be protected
+  AUTHENTICATE_PROTECTED("/authenticate", Constants.SECURE_USER_AUTHORITIES),
+  USER_INFO_PROTECTED("/user-info", Constants.SECURE_USER_AUTHORITIES),
+  SAVE_USER_INFO_PROTECTED("/save-user-info", Constants.SECURE_USER_AUTHORITIES),
+  LOGOUT_PROTECTED("/logout", Constants.SECURE_USER_AUTHORITIES);
 
   private String path;
   private Set<EnumAuthority> roles;
 
-  SecureAuthority(String path, Set<EnumAuthority> roles) {
+  Authority(String path, Set<EnumAuthority> roles) {
     this.path = path;
     this.roles = roles;
   }

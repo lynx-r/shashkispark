@@ -156,7 +156,7 @@ public class ArticleControllerTest {
 
     assertEquals(newTitle, article.getTitle());
 
-    article = (Article) get("/" + article.getId()).getBody();
+    article = (Article) get("/" + article.getHumanReadableUrl()).getBody();
     assertEquals(article.getTitle(), newTitle);
     assertNotNull(article.getContent(), newContent);
   }
@@ -178,10 +178,10 @@ public class ArticleControllerTest {
     assertNotNull(article.getSelectedBoardBoxId());
     assertNotNull(board.getId());
 
-    article = (Article) get("/" + article.getId()).getBody();
+    article = (Article) get("/" + article.getHumanReadableUrl()).getBody();
     assertNotNull(article);
 
-    article = (Article) get("/" + article.getId()).getBody();
+    article = (Article) get("/" + article.getHumanReadableUrl()).getBody();
     assertNotNull(article);
   }
 
@@ -243,27 +243,34 @@ public class ArticleControllerTest {
     AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 
-    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
-    registered.parseFilters("articleStatus = DRAFT");
+     post("", createArticlePayload, registered).getBody();
+    List<SimpleFilter> filters = new ArrayList<>();
+    filters.add(new SimpleFilter("articleStatus", "DRAFT", " = ", "S"));
+    registered.parseFilters(dataToJson(filters));
     Answer answer = get("s", registered, HTTP_OK);
     Articles articles = (Articles) answer.getBody();
     assertEquals(1, articles.getArticles().size());
     registered = answer.getAuthUser();
 
     createArticlePayload = getCreateArticlePayload();
-    articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
     Article article = articleResponse.getArticle();
 
     article.setArticleStatus(EnumArticleStatus.PUBLISHED);
     article = (Article) put("", article, registered).getBody();
 
-    registered.parseFilters("articleStatus = PUBLISHED");
+    filters = new ArrayList<>();
+    filters.add(new SimpleFilter("articleStatus", "PUBLISHED", " = ", "S"));
+    registered.parseFilters(dataToJson(filters));
     answer = get("s", registered, HTTP_OK);
     articles = (Articles) answer.getBody();
     assertEquals(1, articles.getArticles().size());
     registered = answer.getAuthUser();
 
-    registered.parseFilters("articleStatus = PUBLISHED;articleStatus = DRAFT");
+    filters = new ArrayList<>();
+    filters.add(new SimpleFilter("articleStatus", "DRAFT", " = ", "S"));
+    filters.add(new SimpleFilter("articleStatus", "PUBLISHED", " = ", "S"));
+    registered.parseFilters(dataToJson(filters));
     articles = (Articles) get("s", registered, HTTP_OK).getBody();
     assertEquals(2, articles.getArticles().size());
   }
@@ -271,6 +278,7 @@ public class ArticleControllerTest {
   private CreateArticlePayload getCreateArticlePayload() {
     CreateArticlePayload createArticlePayload = CreateArticlePayload.createArticlePayload();
     Article article = new Article(Utils.getRandomString20(), Utils.getRandomString20(), Utils.getRandomString20());
+    Utils.setArticleUrlAndIdAndCreatedAt(article, false);
     createArticlePayload.setArticle(article);
     CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
     createBoardPayload.setBlack(false);

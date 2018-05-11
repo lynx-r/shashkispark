@@ -1,6 +1,7 @@
 package com.workingbit.board.service;
 
 import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.model.DomainId;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -27,8 +28,8 @@ public class BoardStoreService {
     store = cacheManager.getCache(board, String.class, BoardBox.class);
   }
 
-  public Optional<BoardBox> get(String key, String boardBoxId) {
-    return Optional.ofNullable(store.get(getKey(key, boardBoxId)));
+  public Optional<BoardBox> get(String key, DomainId boardBoxId) {
+    return Optional.ofNullable(store.get(getKey(key, boardBoxId.getId())));
   }
 
   public void put(String key, BoardBox board) {

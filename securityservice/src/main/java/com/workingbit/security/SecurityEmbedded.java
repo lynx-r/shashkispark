@@ -2,7 +2,7 @@ package com.workingbit.security;
 
 import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.security.config.AppProperties;
-import com.workingbit.security.config.SecureAuthority;
+import com.workingbit.security.config.Authority;
 import com.workingbit.security.controller.SecurityController;
 import com.workingbit.security.dao.SecureUserDao;
 import com.workingbit.security.service.SecureUserService;
@@ -60,16 +60,19 @@ public class SecurityEmbedded {
   }
 
   private static void establishRoutes() {
-    path("/", () -> get(SecureAuthority.HOME.getPath(), SecurityController.home));
+    path("/", () -> get(Authority.HOME.getPath(), SecurityController.home));
 
     path("/api", () ->
         path("/v1", () -> {
-          post(SecureAuthority.REGISTER.getPath(), SecurityController.register);
-          post(SecureAuthority.AUTHORIZE.getPath(), SecurityController.authorize);
-          get(SecureAuthority.AUTHENTICATE.getPath(), SecurityController.authenticate);
-          post(SecureAuthority.USER_INFO.getPath(), SecurityController.userInfo);
-          post(SecureAuthority.SAVE_USER_INFO.getPath(), SecurityController.saveUserInfo);
-          get(SecureAuthority.LOGOUT.getPath(), SecurityController.logout);
+          // open api
+          post(Authority.REGISTER.getPath(), SecurityController.register);
+          post(Authority.AUTHORIZE.getPath(), SecurityController.authorize);
+
+          // protected api
+          get(Authority.AUTHENTICATE_PROTECTED.getPath(), SecurityController.authenticate);
+          post(Authority.USER_INFO_PROTECTED.getPath(), SecurityController.userInfo);
+          post(Authority.SAVE_USER_INFO_PROTECTED.getPath(), SecurityController.saveUserInfo);
+          get(Authority.LOGOUT_PROTECTED.getPath(), SecurityController.logout);
 
           exception(RequestException.class, ExceptionHandler.handle);
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));

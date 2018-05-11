@@ -18,6 +18,14 @@ public class NotationMoves extends LinkedList<NotationMove> implements ToPdn, De
         .collect(Collectors.joining("\n"));
   }
 
+  public NotationSimpleMove getLastMove() {
+    LinkedList<NotationSimpleMove> move = getLast().getMove();
+    if (!move.isEmpty()) {
+      return move.getLast();
+    }
+    return null;
+  }
+
   public String toPdn() {
     return Utils.listToPdn(new ArrayList<>(this));
   }

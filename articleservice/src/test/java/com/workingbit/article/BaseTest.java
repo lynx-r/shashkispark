@@ -4,6 +4,7 @@ import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.service.ArticleService;
 import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import com.workingbit.share.util.Utils;
 
@@ -25,7 +26,7 @@ public class BaseTest {
     Utils.setArticleUrlAndIdAndCreatedAt(article, true);
     article.setArticleStatus(EnumArticleStatus.DRAFT);
     article.setAuthor(Utils.getRandomString20());
-    article.setSelectedBoardBoxId(Utils.getRandomString20());
+    article.setSelectedBoardBoxId(DomainId.getRandomID());
     article.setContent(Utils.getRandomString20());
     article.setTitle(Utils.getRandomString20());
     return article;

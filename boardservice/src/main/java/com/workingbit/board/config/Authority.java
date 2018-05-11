@@ -10,24 +10,24 @@ public enum Authority implements IAuthority {
 
   HOME("/", new HashSet<>()),
 
-  // for everybody
+  // open api
   BOARD_VIEW_BRANCH("/board/view-branch", Constants.INSECURE_ROLES),
-  BOARD_BY_ID("/board/:id", Constants.INSECURE_ROLES),
+  BOARD_BY_ID("/by-id/:id", Constants.INSECURE_ROLES),
   BOARD_BY_IDS("/board/by-ids", Constants.INSECURE_ROLES),
   BOARD_LOAD_PREVIEW("/board/load-board-preview", Constants.INSECURE_ROLES),
   BOARD_SWITCH("/board/switch", Constants.INSECURE_ROLES),
 
   // must be protected
-  BOARD("/board", Constants.SECURE_ROLES),
-  PARSE_PDN("/parse-pdn", Constants.SECURE_ROLES),
-  BOARD_PUT("/board", Constants.SECURE_ROLES),
-  BOARD_ADD_DRAUGHT("/board/add-draught", Constants.SECURE_ROLES),
-  BOARD_MOVE("/board/move", Constants.SECURE_ROLES),
-  BOARD_HIGHLIGHT("/board/highlight", Constants.SECURE_ROLES),
-  BOARD_REDO("/board/redo", Constants.SECURE_ROLES),
-  BOARD_UNDO("/board/undo", Constants.SECURE_ROLES),
-  BOARD_FORK("/board/fork", Constants.SECURE_ROLES),
-  CHANGE_TURN("/board/change-turn", Constants.SECURE_ROLES)
+  BOARD_PROTECTED("/board", Constants.SECURE_ROLES),
+  PARSE_PDN_PROTECTED("/parse-pdn", Constants.SECURE_ROLES),
+  BOARD_PUT_PROTECTED("/board", Constants.SECURE_ROLES),
+  BOARD_ADD_DRAUGHT_PROTECTED("/board/add-draught", Constants.SECURE_ROLES),
+  BOARD_MOVE_PROTECTED("/board/move", Constants.SECURE_ROLES),
+  BOARD_HIGHLIGHT_PROTECTED("/board/highlight", Constants.SECURE_ROLES),
+  BOARD_REDO_PROTECTED("/board/redo", Constants.SECURE_ROLES),
+  BOARD_UNDO_PROTECTED("/board/undo", Constants.SECURE_ROLES),
+  BOARD_FORK_PROTECTED("/board/fork", Constants.SECURE_ROLES),
+  CHANGE_TURN_PROTECTED("/board/change-turn", Constants.SECURE_ROLES)
   ;
 
   private String path;

@@ -13,24 +13,24 @@ import lombok.Data;
 @JsonTypeName("CreateBoardPayload")
 @Data
 public class CreateBoardPayload implements Payload {
-  private String articleId;
+  private DomainId articleId;
 
   private Boolean fillBoard;
   private Boolean black;
   private EnumRules rules;
-  private String boardBoxId;
-  private String userId;
+  private DomainId boardBoxId;
+  private DomainId userId;
   private EnumEditBoardBoxMode editMode;
 
   private CreateBoardPayload() {
   }
 
   @JsonCreator
-  public CreateBoardPayload(@JsonProperty("articleId") String articleId,
+  public CreateBoardPayload(@JsonProperty("articleId") DomainId articleId,
                             @JsonProperty("fillBoard") Boolean fillBoard,
                             @JsonProperty("black") Boolean black,
                             @JsonProperty("rules") EnumRules rules,
-                            @JsonProperty("selectedBoardBoxId") String boardBoxId,
+                            @JsonProperty("selectedBoardBoxId") DomainId boardBoxId,
                             @JsonProperty("editMode") EnumEditBoardBoxMode editMode
   ) {
     this.articleId = articleId;

@@ -10,10 +10,7 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.CreateBoardPayload;
-import com.workingbit.share.model.UserCredentials;
+import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.UnirestUtil;
@@ -71,12 +68,12 @@ public class BoardBoxControllerTest {
   public void add_draught() throws Exception {
 
     AuthUser authUser = register();
-    String boardBoxId = Utils.getRandomID();
-    String articleId = Utils.getRandomID();
+    DomainId boardBoxId = DomainId.getRandomID();
+    DomainId articleId = DomainId.getRandomID();
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId, authUser);
 
-    boardBox = (BoardBox) post(Authority.BOARD_ADD_DRAUGHT.getPath(), boardBox, authUser).getBody();
+    boardBox = (BoardBox) post(Authority.BOARD_ADD_DRAUGHT_PROTECTED.getPath(), boardBox, authUser).getBody();
     Board board = boardBox.getBoard();
     Draught draught = board.getWhiteDraughts().get("c3");
     assertTrue(draught != null);
@@ -92,8 +89,8 @@ public class BoardBoxControllerTest {
   @Test
   public void anonym_find_board() throws Exception {
     AuthUser authUser = register();
-    String boardBoxId = Utils.getRandomID();
-    String articleId = Utils.getRandomID();
+    DomainId boardBoxId = DomainId.getRandomID();
+    DomainId articleId = DomainId.getRandomID();
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId, authUser);
 
@@ -113,8 +110,8 @@ public class BoardBoxControllerTest {
 
   @Test
   public void highlight() throws UnirestException, HttpClientException {
-    String boardBoxId = Utils.getRandomID();
-    String articleId = Utils.getRandomID();
+    DomainId boardBoxId = DomainId.getRandomID();
+    DomainId articleId = DomainId.getRandomID();
 
     BoardBox boardBox = getBoardBox(boardBoxId, articleId, null);
 
@@ -134,8 +131,8 @@ public class BoardBoxControllerTest {
 
   @Test
   public void move() throws Exception {
-    String boardBoxId = Utils.getRandomID();
-    String articleId = Utils.getRandomID();
+    DomainId boardBoxId = DomainId.getRandomID();
+    DomainId articleId = DomainId.getRandomID();
 
     AuthUser authUser = register();
 
@@ -163,7 +160,7 @@ public class BoardBoxControllerTest {
     assertTrue(moved.isOccupied());
   }
 
-  private BoardBox getBoardBox(String boardBoxId, String articleId, AuthUser authUser) throws HttpClientException {
+  private BoardBox getBoardBox(DomainId boardBoxId, DomainId articleId, AuthUser authUser) throws HttpClientException {
     CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
     createBoardPayload.setArticleId(articleId);
     createBoardPayload.setBoardBoxId(boardBoxId);
@@ -171,13 +168,13 @@ public class BoardBoxControllerTest {
     createBoardPayload.setFillBoard(false);
     createBoardPayload.setBlack(false);
     UnirestUtil.configureSerialization();
-    BoardBox body = (BoardBox) post(Authority.BOARD.getPath(), createBoardPayload, authUser).getBody();
+    BoardBox body = (BoardBox) post(Authority.BOARD_PROTECTED.getPath(), createBoardPayload, authUser).getBody();
     assertNotNull(body);
 
     body.setEditMode(EnumEditBoardBoxMode.PLACE);
-    body = (BoardBox) put(Authority.BOARD.getPath(), body, authUser).getBody();
+    body = (BoardBox) put(Authority.BOARD_PROTECTED.getPath(), body, authUser).getBody();
 
-    BoardBox boardBox = (BoardBox) get(Authority.BOARD + "/" + body.getId()).getBody();
+    BoardBox boardBox = (BoardBox) get(Authority.BOARD_PROTECTED + "/" + body.getId()).getBody();
     Board board = boardBox.getBoard();
     Square square = new Square(5, 2, 8, true, new Draught(5, 2, 8));
     board.setSelectedSquare(square);

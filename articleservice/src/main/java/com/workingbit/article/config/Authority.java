@@ -11,12 +11,16 @@ import java.util.Set;
 public enum Authority implements IAuthority {
   HOME("", new HashSet<>()),
 
+  // open api
   ARTICLES("/articles", Constants.INSECURE_ROLES),
-  ARTICLE_BY_ID_SECURE("/article/:id", Constants.INSECURE_ROLES),
   ARTICLE_BY_HRU("/article/:hru", Constants.INSECURE_ROLES),
+  ARTICLE_BY_HRU_CACHED("/article-cache/:hru/:bbid", Constants.INSECURE_ROLES),
+  ARTICLE_CACHE("/article-cache", Constants.INSECURE_ROLES),
 
-  ARTICLE("/article", Constants.SECURE_ROLES),
-  ARTICLE_IMPORT_PDN("/import-pdn", Constants.SECURE_ROLES)
+  // must be protected
+  ARTICLE_PROTECTED("/article", Constants.SECURE_ROLES),
+  ARTICLE_IMPORT_PDN_PROTECTED("/import-pdn", Constants.SECURE_ROLES),
+  ARTICLE_REMOVE_PROTECTED("/article-remove", Constants.SECURE_ROLES)
   ;
 
   private String path;

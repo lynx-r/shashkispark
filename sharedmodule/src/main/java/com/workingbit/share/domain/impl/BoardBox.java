@@ -7,8 +7,9 @@ import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.EnumEditBoardBoxModeConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
+import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.Payload;
+import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -38,20 +39,24 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "updatedAt")
   private LocalDateTime updatedAt;
 
+  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "userId")
-  private String userId;
+  private DomainId userId;
 
+  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "articleId")
-  private String articleId;
+  private DomainId articleId;
 
+  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "boardId")
-  private String boardId;
+  private DomainId boardId;
 
   @DynamoDBIgnore
   private Board board;
 
+  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "notationId")
-  private String notationId;
+  private DomainId notationId;
 
   @DynamoDBIgnore
   private Notation notation;
@@ -71,7 +76,7 @@ public class BoardBox extends BaseDomain implements Payload {
   public BoardBox(Board board) {
     this();
     this.board = board;
-    this.boardId = board.getId();
+    this.boardId = new DomainId(board);
   }
 
   @Override

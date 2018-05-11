@@ -12,7 +12,7 @@ import lombok.Data;
 @JsonTypeName("ImportPdnPayload")
 @Data
 public class ImportPdnPayload implements Payload {
-  private String articleId;
+  private DomainId articleId;
   private String pdn;
   private EnumRules rules;
 
@@ -20,7 +20,7 @@ public class ImportPdnPayload implements Payload {
   }
 
   @JsonCreator
-  public ImportPdnPayload(@JsonProperty("articleId") String articleId,
+  public ImportPdnPayload(@JsonProperty("articleId") DomainId articleId,
                           @JsonProperty("pdn") String pdn
   ) {
     this.articleId = articleId;

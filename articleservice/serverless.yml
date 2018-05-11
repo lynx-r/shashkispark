@@ -82,64 +82,64 @@ functions:
           path: /api/v1/article
           method: options
 
-resources:
-  Resources:
-    DynamoDbTableArticle:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: Article
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: createdAt
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-        - IndexName: articleIndex
-          KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
-          Projection:
-            ProjectionType: ALL
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-    DynamoDBIamPolicyArticle:
-      Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTableArticle
-      Properties:
-        PolicyName: lambda-dynamodb-article
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - dynamodb:DescribeTable
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:UpdateItem
-                - dynamodb:Scan
-                - dynamodb:Query
-              Resource: arn:aws:dynamodb:*:*:table/Article
-        Roles:
-          - Ref: IamRoleLambdaExecution
-
-plugins:
-  - serverless-dynamodb-local
-#  - serverless-dynamodb-fixtures-plugin
-
-custom:
-  dynamodb:
-    start:
-      port: 8081
-      inMemory: true
-      migrate: true
+#resources:
+#  Resources:
+#    DynamoDbTableArticle:
+#      Type: AWS::DynamoDB::Table
+#      Properties:
+#        TableName: Article
+#        AttributeDefinitions:
+#          - AttributeName: id
+#            AttributeType: S
+#          - AttributeName: createdAt
+#            AttributeType: S
+#        KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#          - AttributeName: createdAt
+#            KeyType: RANGE
+#        ProvisionedThroughput:
+#          ReadCapacityUnits: 1
+#          WriteCapacityUnits: 1
+#        GlobalSecondaryIndexes:
+#        - IndexName: articleIndex
+#          KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#          - AttributeName: createdAt
+#            KeyType: RANGE
+#          Projection:
+#            ProjectionType: ALL
+#          ProvisionedThroughput:
+#            ReadCapacityUnits: 1
+#            WriteCapacityUnits: 1
+#    DynamoDBIamPolicyArticle:
+#      Type: AWS::IAM::Policy
+#      DependsOn: DynamoDbTableArticle
+#      Properties:
+#        PolicyName: lambda-dynamodb-article
+#        PolicyDocument:
+#          Version: '2012-10-17'
+#          Statement:
+#            - Effect: Allow
+#              Action:
+#                - dynamodb:DescribeTable
+#                - dynamodb:GetItem
+#                - dynamodb:PutItem
+#                - dynamodb:UpdateItem
+#                - dynamodb:Scan
+#                - dynamodb:Query
+#              Resource: arn:aws:dynamodb:*:*:table/Article
+#        Roles:
+#          - Ref: IamRoleLambdaExecution
+#
+#plugins:
+#  - serverless-dynamodb-local
+##  - serverless-dynamodb-fixtures-plugin
+#
+#custom:
+#  dynamodb:
+#    start:
+#      port: 8081
+#      inMemory: true
+#      migrate: true

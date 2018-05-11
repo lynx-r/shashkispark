@@ -4,7 +4,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.ListOrderedMapConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
+import com.workingbit.share.converter.NotationHistoryConverter;
 import com.workingbit.share.domain.BaseDomain;
+import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.NotationHistory;
 import com.workingbit.share.model.Payload;
 import com.workingbit.share.model.ToPdn;
@@ -43,8 +45,9 @@ public class Notation extends BaseDomain implements Payload, ToPdn {
   @DynamoDBAttribute(attributeName = "updatedAt")
   private LocalDateTime updatedAt;
 
+  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "selectedBoardBoxId")
-  private String boardBoxId;
+  private DomainId boardBoxId;
 
   /**
    * Some possible tags:
@@ -66,7 +69,7 @@ public class Notation extends BaseDomain implements Payload, ToPdn {
   @DynamoDBAttribute(attributeName = "rules")
   private EnumRules rules;
 
-  @DynamoDBTypeConvertedJson(targetType = NotationHistory.class)
+  @DynamoDBTypeConverted(converter = NotationHistoryConverter.class)
   @DynamoDBAttribute(attributeName = "notationHistory")
   private NotationHistory notationHistory;
 
@@ -108,8 +111,8 @@ public class Notation extends BaseDomain implements Payload, ToPdn {
   }
 
   public void setTags(ListOrderedMap<String, String> tags) {
-    Map<String,String> map = new LinkedHashMap<>(tags);
-    NOTATION_DEFAULT_TAGS.forEach((key, value)->{
+    Map<String, String> map = new LinkedHashMap<>(tags);
+    NOTATION_DEFAULT_TAGS.forEach((key, value) -> {
       if (StringUtils.isBlank(map.get(key))) {
         map.put(key, "");
       }

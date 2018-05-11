@@ -39,7 +39,7 @@ public class BoardService {
     syncBoardWithNotation(board, genNotationHistory, fillNotationHistory);
   }
 
-  Optional<Board> findById(String boardId) {
+  Optional<Board> findById(DomainId boardId) {
     Optional<Board> boardOptional = boardDao.findById(boardId);
     return boardOptional.map(this::updateBoard);
   }
@@ -51,7 +51,7 @@ public class BoardService {
   }
 
 
-  void delete(String boardId) {
+  void delete(DomainId boardId) {
     boardDao.delete(boardId);
   }
 
@@ -98,7 +98,7 @@ public class BoardService {
     Board nextBoard = serverBoard.deepClone();
     Utils.setRandomIdAndCreatedAt(nextBoard);
 
-    String boardId = serverBoard.getId();
+    DomainId boardId = serverBoard.getDomainId();
     // MOVE DRAUGHT
     nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId, notationHistory);
 

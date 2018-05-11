@@ -1,9 +1,6 @@
 package com.workingbit.security.service;
 
-import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.SecureUser;
-import com.workingbit.share.model.UserCredentials;
-import com.workingbit.share.model.UserInfo;
+import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.SecureUtils;
 import com.workingbit.share.util.Utils;
@@ -57,7 +54,7 @@ public class SecureUserService {
       secureUserDao.save(secureUser);
 
       // send access token and userSession
-      AuthUser authUser = AuthUser.simpleUser(secureUser.getId(), username, accessToken.accessToken, userSession, secureUser.getAuthorities());
+      AuthUser authUser = AuthUser.simpleUser(secureUser.getDomainId(), username, accessToken.accessToken, userSession, secureUser.getAuthorities());
       return Optional.of(authUser);
     } catch (Exception e) {
       logger.error("UNREGISTERED: " + userCredentials, e.getMessage());
@@ -87,7 +84,7 @@ public class SecureUserService {
               secureUserDao.save(secureUser);
 
               // send access token and userSession
-              String userId = secureUser.getId();
+              DomainId userId = secureUser.getDomainId();
               Set<EnumAuthority> authorities = secureUser.getAuthorities();
               AuthUser authUser = AuthUser.simpleUser(userId, username, accessToken.accessToken, userSession, authorities);
               logger.info("AUTHORIZED: " + authUser);
@@ -120,7 +117,7 @@ public class SecureUserService {
         }
 
         authUser.setUsername(secureUser.getUsername());
-        authUser.setUserId(secureUser.getId());
+        authUser.setUserId(secureUser.getDomainId());
         authUser.setAuthorities(secureUser.getAuthorities());
         logger.info("AUTHENTICATED: " + authUser);
         return authUser;
@@ -147,7 +144,7 @@ public class SecureUserService {
     Optional<SecureUser> secureUserOptional = getSecureUserByIdOrSession(authUser);
     return secureUserOptional.map((secureUser) -> {
       boolean isAuth = isAuthed(accessToken, secureUser);
-      boolean canUpdate = userInfo.getUserId().equals(secureUser.getId())
+      boolean canUpdate = userInfo.getUserId().equals(secureUser.getDomainId())
           || secureUser.getAuthorities().contains(EnumAuthority.ADMIN);
       boolean superAuthority = false;
       if (StringUtils.isNotBlank(authUser.getSuperHash())) {
@@ -256,7 +253,7 @@ public class SecureUserService {
   }
 
   private UserInfo extractUserInfo(SecureUser secureUser) {
-    return new UserInfo(secureUser.getId(), secureUser.getUsername(), secureUser.getAuthorities());
+    return new UserInfo(secureUser.getDomainId(), secureUser.getUsername(), secureUser.getAuthorities());
   }
 
   private String getSuperHash() {

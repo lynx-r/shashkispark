@@ -12,7 +12,7 @@ import static com.workingbit.share.util.Utils.RANDOM_ID_LENGTH;
 public class AppConstants {
   public static String[] VALID_FILTER_KEYS = new String[] {
       "articleStatus",
-      "userId"
+      "userId.id"
   };
   public static Pattern[] VALID_FILTER_VALUES = new Pattern[] {
       Pattern.compile(EnumArticleStatus.DRAFT.name()),

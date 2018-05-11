@@ -28,7 +28,7 @@ import static com.workingbit.share.util.JsonUtils.jsonToDataTypeRef;
 @Data
 public class AuthUser implements Payload, DeepClone {
 
-  private String userId;
+  private DomainId userId;
   private String username;
   private String accessToken;
   private String userSession;
@@ -54,12 +54,12 @@ public class AuthUser implements Payload, DeepClone {
         Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.ANONYMOUS)), null, null);
   }
 
-  public static AuthUser simpleAuthor(String userId, String username, String accessToken, String userSession) {
+  public static AuthUser simpleAuthor(DomainId userId, String username, String accessToken, String userSession) {
     return new AuthUser(userId, username, accessToken, userSession,
         Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.AUTHOR)), null, null);
   }
 
-  public static AuthUser simpleUser(String userId, String username, String accessToken, String userSession, Set<EnumAuthority> authorities) {
+  public static AuthUser simpleUser(DomainId userId, String username, String accessToken, String userSession, Set<EnumAuthority> authorities) {
     return new AuthUser(userId, username, accessToken, userSession,
         Utils.getTimestamp(), new ArrayList<>(), authorities, null, null);
   }

@@ -30,26 +30,34 @@ public class ArticleController {
 
   public static Route findArticleByHru = (req, res) ->
       ((ParamsHandlerFunc<ParamPayload>) (params, token) ->
-          articleService.findByHru(params.getParam().get(RequestConstants.HRU))
+          articleService.findByHru(params.getParam().get(RequestConstants.HRU), token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.ARTICLE_WITH_ID_NOT_FOUND))
       ).handleRequest(req, res, Authority.ARTICLE_BY_HRU);
 
-  public static Route removeArticleById = (req, res) ->
+  public static Route findCachedArticleByHru = (req, res) ->
       ((ParamsHandlerFunc<ParamPayload>) (params, token) ->
-          articleService.removeById(params.getParam().get(RequestConstants.ID), token)
+          articleService.findByHruCached(params.getParam().get(RequestConstants.HRU), params.getParam().get(RequestConstants.BBID), token)
+              .map(Answer::ok)
+              .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.ARTICLE_WITH_ID_NOT_FOUND))
+      ).handleRequest(req, res, Authority.ARTICLE_BY_HRU_CACHED);
+
+  public static Route removeArticleById = (req, res) ->
+      ((ModelHandlerFunc<DomainId>) (params, token) ->
+          articleService.removeById(params, token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_NOT_FOUND, ErrorMessages.ARTICLE_WITH_ID_NOT_FOUND))
       ).handleRequest(req, res,
-          Authority.ARTICLE_BY_ID_SECURE);
+          Authority.ARTICLE_REMOVE_PROTECTED,
+          DomainId.class);
 
   public static Route createArticleAndBoard = (req, res) ->
       ((ModelHandlerFunc<CreateArticlePayload>) (data, token) ->
-          articleService.createArticleResponse(data, token)
+          articleService.createArticle(data, token)
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_CREATE_ARTICLE))
       ).handleRequest(req, res,
-          Authority.ARTICLE,
+          Authority.ARTICLE_PROTECTED,
           CreateArticlePayload.class);
 
   public static Route saveArticle = (req, res) ->
@@ -58,7 +66,16 @@ public class ArticleController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_ARTICLE))
       ).handleRequest(req, res,
-          Authority.ARTICLE,
+          Authority.ARTICLE_PROTECTED,
+          Article.class);
+
+  public static Route cacheArticle = (req, res) ->
+      ((ModelHandlerFunc<Article>) (article, token) ->
+          articleService.cache((Article) article, token)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_ARTICLE))
+      ).handleRequest(req, res,
+          Authority.ARTICLE_CACHE,
           Article.class);
 
   public static Route importPdn = (req, res) ->
@@ -67,6 +84,6 @@ public class ArticleController {
               .map(Answer::created)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_IMPORT_NOTATION))
       ).handleRequest(req, res,
-          Authority.ARTICLE_IMPORT_PDN,
+          Authority.ARTICLE_IMPORT_PDN_PROTECTED,
           ImportPdnPayload.class);
 }

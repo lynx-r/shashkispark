@@ -38,7 +38,7 @@ public class ArticleDaoTest extends BaseTest {
 
     List<SimpleFilter> filters = new ArrayList<>();
     filters.add(new SimpleFilter("articleStatus", "DRAFT", " = ", "S"));
-    List<Article> published = articleDao.findPublished(100, filters);
+    List<Article> published = articleDao.findPublished(100, null, filters);
     assertTrue(published.contains(article));
   }
 }

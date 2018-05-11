@@ -7,6 +7,7 @@ public class RequestConstants {
   public static final String LIMIT = "limit";
   public static final String ID = ":id";
   public static final String HRU = ":hru";
+  public static final String BBID = ":bbid";
   public static final String SIGN = "sign";
   public static final String SIGN_REQUEST = "sign-request";
   public static final int SESSION_LENGTH = 20;

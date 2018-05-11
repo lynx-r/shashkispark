@@ -78,21 +78,24 @@ public class BoardEmbedded {
 
     path("/api", () ->
         path("/v1", () -> {
-          get(Authority.BOARD_BY_ID.getPath(), BoardBoxController.findBoardById);
+          // open api
+          post(Authority.BOARD_VIEW_BRANCH.getPath(), BoardBoxController.viewBranch);
+          post(Authority.BOARD_BY_ID.getPath(), BoardBoxController.findBoardById);
           post(Authority.BOARD_BY_IDS.getPath(), BoardBoxController.findBoardByIds);
-          post(Authority.BOARD_ADD_DRAUGHT.getPath(), BoardBoxController.addDraught);
-          post(Authority.BOARD.getPath(), BoardBoxController.createBoard);
-          put(Authority.BOARD_PUT.getPath(), BoardBoxController.saveBoard);
-          post(Authority.PARSE_PDN.getPath(), BoardBoxController.parsePdn);
-          post(Authority.BOARD_MOVE.getPath(), BoardBoxController.move);
-          post(Authority.BOARD_HIGHLIGHT.getPath(), BoardBoxController.highlightBoard);
-          post(Authority.BOARD_REDO.getPath(), BoardBoxController.redo);
-          post(Authority.BOARD_UNDO.getPath(), BoardBoxController.undo);
           post(Authority.BOARD_LOAD_PREVIEW.getPath(), BoardBoxController.loadPreviewBoard);
           post(Authority.BOARD_SWITCH.getPath(), BoardBoxController.switchNotation);
-          post(Authority.BOARD_FORK.getPath(), BoardBoxController.forkNotation);
-          post(Authority.BOARD_VIEW_BRANCH.getPath(), BoardBoxController.viewBranch);
-          post(Authority.CHANGE_TURN.getPath(), BoardBoxController.changeTurn);
+
+          // protected api
+          post(Authority.BOARD_PROTECTED.getPath(), BoardBoxController.createBoard);
+          post(Authority.PARSE_PDN_PROTECTED.getPath(), BoardBoxController.parsePdn);
+          put(Authority.BOARD_PUT_PROTECTED.getPath(), BoardBoxController.saveBoard);
+          post(Authority.BOARD_ADD_DRAUGHT_PROTECTED.getPath(), BoardBoxController.addDraught);
+          post(Authority.BOARD_MOVE_PROTECTED.getPath(), BoardBoxController.move);
+          post(Authority.BOARD_HIGHLIGHT_PROTECTED.getPath(), BoardBoxController.highlightBoard);
+          post(Authority.BOARD_REDO_PROTECTED.getPath(), BoardBoxController.redo);
+          post(Authority.BOARD_UNDO_PROTECTED.getPath(), BoardBoxController.undo);
+          post(Authority.BOARD_FORK_PROTECTED.getPath(), BoardBoxController.forkNotation);
+          post(Authority.CHANGE_TURN_PROTECTED.getPath(), BoardBoxController.changeTurn);
 
           exception(RequestException.class, ExceptionHandler.handle);
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));

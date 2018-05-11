@@ -154,141 +154,141 @@ functions:
 #          private: true
 
 # you can add CloudFormation api templates here
-resources:
-  Resources:
-    DynamoDbTableBoardBox:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: BoardBox
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: createdAt
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        GlobalSecondaryIndexes:
-        - IndexName: boardBoxIndex
-          KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
-          Projection:
-            ProjectionType: KEYS_ONLY
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-
-    DynamoDbTableBoard:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: Board
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: createdAt
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
-    DynamoDbTableNotation:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: Notation
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-          - AttributeName: createdAt
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
-    DynamoDBIamPolicyBoardBox:
-      Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTableBoardBox
-      Properties:
-        PolicyName: lambda-dynamodb-boardbox
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - dynamodb:DescribeTable
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:UpdateItem
-                - dynamodb:Scan
-                - dynamodb:Query
-              Resource: arn:aws:dynamodb:*:*:table/BoardBox
-        Roles:
-          - Ref: IamRoleLambdaExecution
-
-    DynamoDBIamPolicyBoard:
-      Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTableBoard
-      Properties:
-        PolicyName: lambda-dynamodb-board
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - dynamodb:DescribeTable
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:UpdateItem
-                - dynamodb:Scan
-                - dynamodb:Query
-              Resource: arn:aws:dynamodb:*:*:table/Board
-        Roles:
-          - Ref: IamRoleLambdaExecution
-
-    DynamoDBIamPolicyNotation:
-      Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTableNotation
-      Properties:
-        PolicyName: lambda-dynamodb-notation
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - dynamodb:DescribeTable
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:UpdateItem
-                - dynamodb:Scan
-                - dynamodb:Query
-              Resource: arn:aws:dynamodb:*:*:table/Notation
-        Roles:
-          - Ref: IamRoleLambdaExecution
-
-plugins:
-  - serverless-dynamodb-local
-#  - serverless-dynamodb-fixtures-plugin
-
-custom:
-  dynamodb:
-    start:
-      port: 8083
-      inMemory: true
-      migrate: true
+#resources:
+#  Resources:
+#    DynamoDbTableBoardBox:
+#      Type: AWS::DynamoDB::Table
+#      Properties:
+#        TableName: BoardBox
+#        AttributeDefinitions:
+#          - AttributeName: id
+#            AttributeType: S
+#          - AttributeName: createdAt
+#            AttributeType: S
+#        KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#          - AttributeName: createdAt
+#            KeyType: RANGE
+#        ProvisionedThroughput:
+#          ReadCapacityUnits: 1
+#          WriteCapacityUnits: 1
+#        GlobalSecondaryIndexes:
+#        - IndexName: boardBoxIndex
+#          KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#          - AttributeName: createdAt
+#            KeyType: RANGE
+#          Projection:
+#            ProjectionType: KEYS_ONLY
+#          ProvisionedThroughput:
+#            ReadCapacityUnits: 1
+#            WriteCapacityUnits: 1
+#
+#    DynamoDbTableBoard:
+#      Type: AWS::DynamoDB::Table
+#      Properties:
+#        TableName: Board
+#        AttributeDefinitions:
+#          - AttributeName: id
+#            AttributeType: S
+#          - AttributeName: createdAt
+#            AttributeType: S
+#        KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#          - AttributeName: createdAt
+#            KeyType: RANGE
+#        ProvisionedThroughput:
+#          ReadCapacityUnits: 1
+#          WriteCapacityUnits: 1
+#
+#    DynamoDbTableNotation:
+#      Type: AWS::DynamoDB::Table
+#      Properties:
+#        TableName: Notation
+#        AttributeDefinitions:
+#          - AttributeName: id
+#            AttributeType: S
+#          - AttributeName: createdAt
+#            AttributeType: S
+#        KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#          - AttributeName: createdAt
+#            KeyType: RANGE
+#        ProvisionedThroughput:
+#          ReadCapacityUnits: 1
+#          WriteCapacityUnits: 1
+#
+#    DynamoDBIamPolicyBoardBox:
+#      Type: AWS::IAM::Policy
+#      DependsOn: DynamoDbTableBoardBox
+#      Properties:
+#        PolicyName: lambda-dynamodb-boardbox
+#        PolicyDocument:
+#          Version: '2012-10-17'
+#          Statement:
+#            - Effect: Allow
+#              Action:
+#                - dynamodb:DescribeTable
+#                - dynamodb:GetItem
+#                - dynamodb:PutItem
+#                - dynamodb:UpdateItem
+#                - dynamodb:Scan
+#                - dynamodb:Query
+#              Resource: arn:aws:dynamodb:*:*:table/BoardBox
+#        Roles:
+#          - Ref: IamRoleLambdaExecution
+#
+#    DynamoDBIamPolicyBoard:
+#      Type: AWS::IAM::Policy
+#      DependsOn: DynamoDbTableBoard
+#      Properties:
+#        PolicyName: lambda-dynamodb-board
+#        PolicyDocument:
+#          Version: '2012-10-17'
+#          Statement:
+#            - Effect: Allow
+#              Action:
+#                - dynamodb:DescribeTable
+#                - dynamodb:GetItem
+#                - dynamodb:PutItem
+#                - dynamodb:UpdateItem
+#                - dynamodb:Scan
+#                - dynamodb:Query
+#              Resource: arn:aws:dynamodb:*:*:table/Board
+#        Roles:
+#          - Ref: IamRoleLambdaExecution
+#
+#    DynamoDBIamPolicyNotation:
+#      Type: AWS::IAM::Policy
+#      DependsOn: DynamoDbTableNotation
+#      Properties:
+#        PolicyName: lambda-dynamodb-notation
+#        PolicyDocument:
+#          Version: '2012-10-17'
+#          Statement:
+#            - Effect: Allow
+#              Action:
+#                - dynamodb:DescribeTable
+#                - dynamodb:GetItem
+#                - dynamodb:PutItem
+#                - dynamodb:UpdateItem
+#                - dynamodb:Scan
+#                - dynamodb:Query
+#              Resource: arn:aws:dynamodb:*:*:table/Notation
+#        Roles:
+#          - Ref: IamRoleLambdaExecution
+#
+#plugins:
+#  - serverless-dynamodb-local
+##  - serverless-dynamodb-fixtures-plugin
+#
+#custom:
+#  dynamodb:
+#    start:
+#      port: 8083
+#      inMemory: true
+#      migrate: true

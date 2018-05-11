@@ -1,6 +1,7 @@
 package com.workingbit.board.service;
 
 import com.workingbit.share.domain.impl.Notation;
+import com.workingbit.share.model.DomainId;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -27,8 +28,8 @@ public class NotationStoreService {
     store = cacheManager.getCache(notation, String.class, Notation.class);
   }
 
-  public Optional<Notation> get(String key, String notationId) {
-    return Optional.ofNullable(store.get(getKey(key, notationId)));
+  public Optional<Notation> get(String key, DomainId notationId) {
+    return Optional.ofNullable(store.get(getKey(key, notationId.getId())));
   }
 
   public void put(String key, Notation notation) {

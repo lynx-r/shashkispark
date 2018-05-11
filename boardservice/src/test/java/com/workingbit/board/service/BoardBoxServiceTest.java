@@ -84,7 +84,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    authUser = AuthUser.simpleAuthor(Utils.getRandomString20(), Utils.getRandomString20(), Utils.getRandomString20(),
+    authUser = AuthUser.simpleAuthor(DomainId.getRandomID(), Utils.getRandomString20(), Utils.getRandomString20(),
         Utils.getRandomString20());
     token = authUser;
   }
@@ -111,14 +111,14 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     BoardBox board = getBoardBoxWhiteNotFilledRUSSIAN();
     toDelete(board);
     assertNotNull(board.getId());
-    Optional<BoardBox> byId = boardBoxService().findById(board.getId(), token);
+    Optional<BoardBox> byId = boardBoxService().findById(board.getDomainId(), token);
     assertNotNull(byId.get());
   }
 
   @Test
   public void delete() throws Exception {
     BoardBox board = getBoardBoxWhiteNotFilledRUSSIAN();
-    String boardId = board.getId();
+    DomainId boardId = board.getDomainId();
     assertNotNull(boardId);
     boardBoxService().delete(boardId);
     Optional<BoardBox> byId = boardBoxService().findById(boardId, token);
@@ -141,7 +141,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomString20();
+      DomainId articleId = DomainId.getRandomID();
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
@@ -172,7 +172,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomString20();
+      DomainId articleId = DomainId.getRandomID();
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
@@ -203,7 +203,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomString20();
+      DomainId articleId = DomainId.getRandomID();
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
@@ -237,7 +237,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomString20();
+      DomainId articleId = DomainId.getRandomID();
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
@@ -281,7 +281,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomString20();
+      DomainId articleId = DomainId.getRandomID();
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
@@ -335,7 +335,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomString20();
+      DomainId articleId = DomainId.getRandomID();
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
@@ -412,7 +412,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomString20();
+      DomainId articleId = DomainId.getRandomID();
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
@@ -468,7 +468,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       boardDao.save(board);
 
       boardBoxCurrent.setBoard(board);
-      boardBoxCurrent.setBoardId(board.getId());
+      boardBoxCurrent.setBoardId(board.getDomainId());
       boardBoxDao.save(boardBoxCurrent);
 
 //      boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
@@ -580,7 +580,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomString20();
+      DomainId articleId = DomainId.getRandomID();
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
@@ -637,7 +637,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       Notation notation = notationParserService.parse(bufferedReader);
       notation.setRules(RUSSIAN);
 
-      String articleId = Utils.getRandomString20();
+      DomainId articleId = DomainId.getRandomID();
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
@@ -681,7 +681,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     Notation notation = notationParserService.parse(bufferedReader);
     notation.setRules(RUSSIAN);
 
-    String articleId = Utils.getRandomString20();
+    DomainId articleId = DomainId.getRandomID();
     String boardBoxId = Utils.getRandomString20();
 
     // Create BoardBox from Notation
@@ -751,7 +751,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     notation.setRules(RUSSIAN);
     notation.getNotationHistory().printPdn();
 
-    String articleId = Utils.getRandomString20();
+    DomainId articleId = DomainId.getRandomID();
     String boardBoxId = Utils.getRandomString20();
 
     // Create BoardBox from Notation
@@ -858,7 +858,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @After
   public void tearUp() {
-    boards.forEach(board -> boardBoxService().delete(board.getId()));
+    boards.forEach(board -> boardBoxService().delete(board.getDomainId()));
   }
 
   private List<BoardBox> boards = new ArrayList<>();
@@ -879,7 +879,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void parsePdn() throws IOException {
     var parsePdn = ImportPdnPayload.createBoardPayload();
-    parsePdn.setArticleId(Utils.getRandomID());
+    parsePdn.setArticleId(DomainId.getRandomID());
     parsePdn.setRules(EnumRules.RUSSIAN);
     InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/parse_simple.pdn");
     StringWriter writer = new StringWriter();
@@ -939,10 +939,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     createBoard();
     List<BoardBox> boardBoxes = boardBoxDao.findAll(2);
     assertEquals(2, boardBoxes.size());
-    Set<DomainId> collect = boardBoxes
+    List<DomainId> collect = boardBoxes
         .stream()
         .map(DomainId::new)
-        .collect(Collectors.toSet());
+        .collect(Collectors.toList());
     DomainIds domainIds = new DomainIds();
     domainIds.addAll(collect);
     BoardBoxes boardBoxes2 = boardBoxService.findByIds(domainIds, token).get();

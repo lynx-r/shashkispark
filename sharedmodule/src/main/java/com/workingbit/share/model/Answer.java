@@ -11,11 +11,12 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 @NoArgsConstructor
 @Data
-public class Answer extends SecurePayload {
+public class Answer {
 
   private String id;
   private int statusCode;
   private Payload body;
+  private AuthUser authUser;
   private MessageResponse message;
 
   @JsonCreator

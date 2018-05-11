@@ -12,5 +12,11 @@ import lombok.NoArgsConstructor;
 @Data
 public class NotationSimpleMove {
   private String notation;
-  private String boardId;
+  private DomainId boardId;
+  private boolean cursor;
+
+  public NotationSimpleMove(String notation, DomainId boardId) {
+    this.notation = notation;
+    this.boardId = boardId;
+  }
 }

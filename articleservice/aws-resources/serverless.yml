@@ -115,6 +115,8 @@ resources:
             AttributeType: S
           - AttributeName: humanReadableUrl
             AttributeType: S
+          - AttributeName: articleStatus
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -124,23 +126,30 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         GlobalSecondaryIndexes:
-        - IndexName: humanReadableUrlIndex
+        - IndexName: articleIdIndex
           KeySchema:
-          - AttributeName: humanReadableUrl
+          - AttributeName: id
             KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
-        - IndexName: articleIndex
+        - IndexName: articleStatusIndex
           KeySchema:
-          - AttributeName: id
+          - AttributeName: articleStatus
             KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+        - IndexName: humanReadableUrlIndex
+          KeySchema:
+          - AttributeName: humanReadableUrl
+            KeyType: HASH
+#          - AttributeName: createdAt
+#            KeyType: RANGE
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:

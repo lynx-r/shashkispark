@@ -146,7 +146,7 @@ public class NotationHistory implements DeepClone {
       notation.forEach(this::resetMovesCursor);
       NotationMoves moves = notation.getLast().getMoves();
       if (!moves.isEmpty()) {
-        moves.getLast().setCursor(true);
+        moves.getLastMove().setCursor(true);
       }
     }
 
@@ -284,12 +284,12 @@ public class NotationHistory implements DeepClone {
 
     NotationDrive lastNot = notation.getLast();
     if (!lastNot.getMoves().isEmpty()) {
-      lastNot.getMoves().getLast().setCursor(true);
+      lastNot.getMoves().getLastMove().setCursor(true);
     }
   }
 
   private void resetMovesCursor(NotationDrive drive) {
-    drive.getMoves().forEach(m -> m.setCursor(false));
+    drive.getMoves().forEach(m -> m.getMove().forEach(move -> move.setCursor(false)));
   }
 
   private void setCurrentMarkerForNotationDrive(NotationDrive variant, NotationDrive lastHist) {
@@ -330,7 +330,7 @@ public class NotationHistory implements DeepClone {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public Optional<String> getLastNotationBoardId() {
+  public Optional<DomainId> getLastNotationBoardId() {
     try {
       NotationDrive notationLast = history.getLast();
       if (notationLast.isRoot()) {

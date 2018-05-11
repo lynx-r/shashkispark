@@ -2,7 +2,7 @@ package com.workingbit.security.controller;
 
 import com.workingbit.orchestrate.function.ModelHandlerFunc;
 import com.workingbit.orchestrate.function.ParamsHandlerFunc;
-import com.workingbit.security.config.SecureAuthority;
+import com.workingbit.security.config.Authority;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.model.*;
 import spark.Route;
@@ -44,19 +44,19 @@ public class SecurityController {
           secureUserService.userInfo((AuthUser) data)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
-      ).handleRequest(req, res, SecureAuthority.USER_INFO, AuthUser.class);
+      ).handleRequest(req, res, Authority.USER_INFO_PROTECTED, AuthUser.class);
 
   public static Route saveUserInfo = (req, res) ->
       ((ModelHandlerFunc<UserInfo>) (data, token) ->
           secureUserService.saveUserInfo(data, token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_AUTHENTICATE))
-      ).handleRequest(req, res, SecureAuthority.USER_INFO, UserInfo.class);
+      ).handleRequest(req, res, Authority.USER_INFO_PROTECTED, UserInfo.class);
 
   public static Route logout = (req, res) ->
       ((ParamsHandlerFunc<ParamPayload>) (params, token) ->
           secureUserService.logout(token)
               .map(Answer::ok)
               .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_LOGOUT))
-      ).handleRequest(req, res, SecureAuthority.LOGOUT);
+      ).handleRequest(req, res, Authority.LOGOUT_PROTECTED);
 }

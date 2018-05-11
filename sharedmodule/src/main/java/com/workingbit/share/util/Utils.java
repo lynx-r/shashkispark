@@ -133,18 +133,6 @@ public class Utils {
   public static int RANDOM_ID_LENGTH = 20;
   public static int RANDOM_STRING_LENGTH = 7;
 
-  public static boolean isBlank(String s) {
-    if (s == null) {
-      return true;
-    }
-    for (int i = 0; i < s.length(); i++) {
-      if (!Character.isWhitespace(s.charAt(i))) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   public static String getRandomID() {
     return getRandomString(RANDOM_ID_LENGTH);
   }
@@ -183,7 +171,7 @@ public class Utils {
 
   public static void setArticleUrlAndIdAndCreatedAt(Article article, boolean present) {
     article.setId(getRandomID());
-    article.setSelectedBoardBoxId(getRandomID());
+    article.setSelectedBoardBoxId(DomainId.getRandomID());
     article.setHumanReadableUrl(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString4() : ""));
     article.setCreatedAt(LocalDateTime.now());
   }

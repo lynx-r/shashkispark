@@ -62,7 +62,7 @@ public class BaseServiceTest {
     BoardBox boardBox = new BoardBox();
     boardBox.setId(Utils.getRandomString20());
     boardBox.setCreatedAt(LocalDateTime.now());
-    boardBox.setArticleId(Utils.getRandomString20());
+    boardBox.setArticleId(DomainId.getRandomID());
     return boardBoxService.save(boardBox, token).get();
   }
 
@@ -103,12 +103,15 @@ public class BaseServiceTest {
 
   protected CreateBoardPayload getCreateBoardRequest(boolean black, boolean fillBoard, EnumRules rules,
                                                      EnumEditBoardBoxMode editMode) {
+    DomainId boardBoxId = DomainId.getRandomID();
+    DomainId articleId = DomainId.getRandomID();
+
     CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
     createBoardPayload.setBlack(black);
     createBoardPayload.setFillBoard(fillBoard);
     createBoardPayload.setRules(rules);
-    createBoardPayload.setArticleId(Utils.getRandomString20());
-    createBoardPayload.setBoardBoxId(Utils.getRandomString20());
+    createBoardPayload.setArticleId(articleId);
+    createBoardPayload.setBoardBoxId(boardBoxId);
     createBoardPayload.setEditMode(editMode);
     return createBoardPayload;
   }
@@ -155,7 +158,7 @@ public class BaseServiceTest {
   protected Board move(Board board, Square selectedSquare, NotationHistory notationHistory) {
     boolean blackTurn = board.isBlackTurn();
     MovesList capturedSquares = getHighlightedBoard(blackTurn, board);
-    return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getId(), notationHistory);
+    return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getDomainId(), notationHistory);
   }
 
   protected Board move(Board board, String fromNotation, String toNotation, boolean blackTurn, NotationHistory notationHistory) {

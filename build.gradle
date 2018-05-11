@@ -99,6 +99,8 @@ project(':articleservice') {
     mainClassName = 'com.workingbit.article.ArticleApplication'
 
     dependencies {
+        compile 'org.ehcache:ehcache:3.5.2'
+
         compile project(':orchestratemodule')
     }
 }

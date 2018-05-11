@@ -7,7 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.Select;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.DomainIds;
 import com.workingbit.share.model.SimpleFilter;
 import com.workingbit.share.util.Utils;
@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.workingbit.share.util.Utils.getRandomString;
-import static com.workingbit.share.util.Utils.isBlank;
 import static java.lang.String.format;
 
 /**
@@ -123,50 +122,38 @@ public class BaseDao<T extends BaseDomain> {
 //    return Optional.empty();
 //  }
 
-  public Optional<T> findById(String entityKey) {
-    if (StringUtils.isBlank(entityKey)) {
+  public Optional<T> findById(DomainId entityKey) {
+    if (entityKey == null) {
       logger.info("Entity key is null");
       return Optional.empty();
     }
     logger.info("Find by key: " + entityKey);
-
-    Map<String, AttributeValue> eav = new HashMap<>();
-    eav.put(":entityKey", new AttributeValue().withS(entityKey));
-
-    DynamoDBQueryExpression<T> queryExpression = new DynamoDBQueryExpression<T>()
-        .withKeyConditionExpression("id = :entityKey")
-        .withExpressionAttributeValues(eav);
-
-    PaginatedQueryList<T> queryList = dynamoDBMapper.query(clazz, queryExpression);
-    if (!queryList.isEmpty()) {
-      return Optional.of(queryList.get(0));
-    }
-    return Optional.empty();
+    return Optional.ofNullable(dynamoDBMapper.load(clazz, entityKey.getId(), entityKey.getCreatedAt()));
   }
 
-  public void delete(final String entityId) {
-    if (isBlank(entityId)) {
+  public void delete(final DomainId entityId) {
+    if (entityId == null) {
       return;
     }
     findById(entityId)
         .ifPresent(dynamoDBMapper::delete);
   }
 
-  public List<BoardBox> findByIds(DomainIds ids) {
+  public List<T> findByIds(DomainIds ids) {
     logger.info(String.format("Find by ids %s", ids));
     Map<Class<?>, List<KeyPair>> itemsToGet = new HashMap<>(ids.getIds().size());
-    itemsToGet.put(BoardBox.class, ids.getIds().stream()
+    itemsToGet.put(clazz, ids.getIds().stream()
         .map(id -> new KeyPair().withHashKey(id.getId()).withRangeKey(id.getCreatedAt()))
         .collect(Collectors.toList()));
     Map<String, List<Object>> batchLoad = getDynamoDBMapper().batchLoad(itemsToGet);
     if (!batchLoad.isEmpty()) {
-      return Utils.listObjectsToListT(batchLoad.get(BoardBox.class.getSimpleName()), BoardBox.class);
+      return Utils.listObjectsToListT(batchLoad.get(clazz.getSimpleName()), clazz);
     }
     return Collections.emptyList();
   }
 
   public Optional<T> find(T obj) {
-    return findById(obj.getId());
+    return findById(obj.getDomainId());
   }
 
   protected Optional<T> findByAttributeIndex(String attribute, String attributeName, String indexName) {
@@ -192,44 +179,41 @@ public class BaseDao<T extends BaseDomain> {
     return Optional.empty();
   }
 
-  protected List<T> findByFilter(int limit, List<SimpleFilter> filters, String defaultFilterExpression,
+  protected List<T> findByFilter(int limit,
+                                 List<SimpleFilter> filters,
+                                 String defaultFilterExpression,
                                  Map<String, AttributeValue> eav,
                                  String[] validFilterKeys, Pattern[] validFilterValues) {
     String filterExpression = createFilterAndPutValues(filters, eav, validFilterKeys, validFilterValues);
-    logger.info("Apply filter: " + filterExpression);
-
-    DynamoDBScanExpression dynamoDBQueryExpression = new DynamoDBScanExpression();
     String filter = chooseFilterExpression(filterExpression, defaultFilterExpression);
-    dynamoDBQueryExpression
-        .withFilterExpression(filter)
-        .withExpressionAttributeValues(eav)
-        .withSelect(Select.ALL_ATTRIBUTES);
-    try {
-      DynamoDBIndexHashKey indexAnnotation = clazz.getDeclaredField("id").getAnnotation(DynamoDBIndexHashKey.class);
-      if (indexAnnotation != null) {
-        String indexName = indexAnnotation.globalSecondaryIndexName();
-        dynamoDBQueryExpression
-            .withIndexName(indexName);
-      }
-    } catch (NoSuchFieldException e) {
-      logger.info("No DynamoDBIndexHashKey annotation on class " + getClass().getCanonicalName(), e);
+
+    if (StringUtils.isBlank(filter)) {
+      return Collections.emptyList();
     }
 
-    List<T> result = getDynamoDBMapper().scanPage(clazz, dynamoDBQueryExpression)
-        .getResults();
-    if (limit < result.size()) {
-      result = result.subList(0, limit);
+    DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+    scanExpression.withFilterExpression(filter);
+    scanExpression.withExpressionAttributeValues(eav);
+
+    logger.info("Apply filter: " + filter);
+    List<T> list = getDynamoDBMapper().scanPage(clazz, scanExpression).getResults();
+    if (limit < list.size()) {
+      list = list.subList(0, limit);
     }
-    result.sort((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()));
-    return result;
+    list.sort((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()));
+    return list;
   }
 
-  private String chooseFilterExpression(String filterExpression, String defaultFilterExpression) {
-    String userFilter = StringUtils.isNotBlank(filterExpression) ? filterExpression : "";
-    if (StringUtils.isNotBlank(userFilter)) {
-      defaultFilterExpression = userFilter;
+  private String chooseFilterExpression(String filterExpression, String defaultAndFilterExpression) {
+    if (StringUtils.isBlank(filterExpression)) {
+      if (StringUtils.isBlank(defaultAndFilterExpression)) {
+        return "";
+      } else {
+        return defaultAndFilterExpression.substring(0, defaultAndFilterExpression.indexOf(" and"));
+      }
+    } else {
+      return defaultAndFilterExpression + filterExpression;
     }
-    return defaultFilterExpression;
   }
 
   @SuppressWarnings("unchecked")
@@ -240,9 +224,9 @@ public class BaseDao<T extends BaseDomain> {
         .stream()
         .filter((filter) -> validFilter(filter, validFilterKeys, validFilterValues))
         .forEach(filter -> {
-          String key = formatSub(filter.getKey());
-          if (eav.containsKey(key)) {
-            key += getRandomString(3);
+          String sub = formatSub(filter.getKey());
+          if (eav.containsKey(sub) && !filter.getKey().equals("userId.id")) {
+            sub += getRandomString(3);
           }
           AttributeValue value = new AttributeValue();
           switch (filter.getType()) {
@@ -252,9 +236,12 @@ public class BaseDao<T extends BaseDomain> {
             case "SS":
               value.setSS((Collection<String>) filter.getValue());
               break;
+            case "M":
+              value.setM((Map<String, AttributeValue>) filter.getValue());
+              break;
           }
-          eav.put(key, value);
-          filterExpression.add(filter.getKey() + filter.getOperator() + key);
+          eav.put(sub, value);
+          filterExpression.add(filter.getKey() + filter.getOperator() + sub);
         });
     Optional<String> userId = filterExpression.stream()
         .filter(f -> f.contains("userId"))
@@ -281,6 +268,6 @@ public class BaseDao<T extends BaseDomain> {
   }
 
   private String formatSub(String sub) {
-    return ":" + sub.toLowerCase();
+    return ":" + sub.toLowerCase().replace(".", "");
   }
 }
