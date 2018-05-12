@@ -106,16 +106,6 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "readonly")
   private boolean readonly;
 
-//  @JsonIgnore
-//  @DynamoDBTypeConvertedJson(targetType = NotationHistory.class)
-//  @DynamoDBAttribute(attributeName = "notationHistory")
-//  private NotationHistory notationHistory;
-
-//  public Board() {
-//    notationHistory = NotationHistory.createWithRoot();
-//  }
-
-
   public Board() {
   }
 
@@ -124,22 +114,6 @@ public class Board extends BaseDomain implements Payload {
     this.black = black;
     this.rules = rules;
   }
-
-//  public String popPreviousBoard() {
-//    return previousBoards.isEmpty() ? null : previousBoards.pop().getBoardId();
-//  }
-//
-//  public void pushPreviousBoard(String boardId, String anchorNotation, String possibleNotation) {
-//    this.previousBoards.push(new BoardIdNotation(boardId, anchorNotation, possibleNotation));
-//  }
-
-//  public String popNextBoard() {
-//    return nextBoards.isEmpty() ? null : nextBoards.pop().getBoardId();
-//  }
-//
-//  public void pushNextBoard(String boardId, String anchorNotation, String possibleNotation) {
-//    nextBoards.push(new BoardIdNotation(boardId, anchorNotation, possibleNotation));
-//  }
 
   public void addBlackDraughts(String notation, Draught draught) {
     blackDraughts.put(notation, draught);

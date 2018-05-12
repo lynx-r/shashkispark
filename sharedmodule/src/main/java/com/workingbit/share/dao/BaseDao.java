@@ -142,9 +142,11 @@ public class BaseDao<T extends BaseDomain> {
   public List<T> findByIds(DomainIds ids) {
     logger.info(String.format("Find by ids %s", ids));
     Map<Class<?>, List<KeyPair>> itemsToGet = new HashMap<>(ids.getIds().size());
-    itemsToGet.put(clazz, ids.getIds().stream()
+    List<KeyPair> findByKeys = ids.getIds()
+        .stream()
         .map(id -> new KeyPair().withHashKey(id.getId()).withRangeKey(id.getCreatedAt()))
-        .collect(Collectors.toList()));
+        .collect(Collectors.toList());
+    itemsToGet.put(clazz, findByKeys);
     Map<String, List<Object>> batchLoad = getDynamoDBMapper().batchLoad(itemsToGet);
     if (!batchLoad.isEmpty()) {
       return Utils.listObjectsToListT(batchLoad.get(clazz.getSimpleName()), clazz);

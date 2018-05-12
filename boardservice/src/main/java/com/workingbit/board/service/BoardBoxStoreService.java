@@ -13,11 +13,11 @@ import java.util.Optional;
 /**
  * Created by Aleksey Popryadukhin on 17/04/2018.
  */
-public class BoardStoreService {
+public class BoardBoxStoreService {
 
   private Cache<String, BoardBox> store;
 
-  public BoardStoreService() {
+  public BoardBoxStoreService() {
     String board = "board";
     CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
         .withCache(board,

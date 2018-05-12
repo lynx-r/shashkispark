@@ -7,7 +7,7 @@ import com.workingbit.board.dao.BoardBoxDao;
 import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.dao.NotationDao;
 import com.workingbit.board.service.BoardBoxService;
-import com.workingbit.board.service.BoardStoreService;
+import com.workingbit.board.service.BoardBoxStoreService;
 import com.workingbit.board.service.NotationParserService;
 import com.workingbit.board.service.NotationStoreService;
 import com.workingbit.orchestrate.OrchestrateModule;
@@ -34,7 +34,7 @@ public class BoardEmbedded {
   // Declare dependencies
   public static BoardBoxService boardBoxService;
   public static NotationParserService notationParserService;
-  public static BoardStoreService boardStoreService;
+  public static BoardBoxStoreService boardBoxStoreService;
   public static NotationStoreService notationStoreService;
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
@@ -49,7 +49,7 @@ public class BoardEmbedded {
 
     boardBoxService = new BoardBoxService();
     notationParserService = new NotationParserService();
-    boardStoreService = new BoardStoreService();
+    boardBoxStoreService = new BoardBoxStoreService();
     notationStoreService = new NotationStoreService();
 
     boardBoxDao = new BoardBoxDao(appProperties);

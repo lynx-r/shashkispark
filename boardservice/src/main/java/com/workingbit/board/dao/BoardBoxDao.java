@@ -15,7 +15,7 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
 
 //  public List<BoardBox> findByUserAndIds(int limit, String userId, Set<String> boardBoxIds) {
 //    List<SimpleFilter> filterList = new ArrayList<>();
-//    filterList.add(new SimpleFilter("userId", userId," = ", "S"));
+//    filterList.push(new SimpleFilter("userId", userId," = ", "S"));
 //    return findByFilter(limit, filterList, null, new HashMap<>(), null, null);
 //  }
 

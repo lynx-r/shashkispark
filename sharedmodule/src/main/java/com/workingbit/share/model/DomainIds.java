@@ -3,8 +3,7 @@ package com.workingbit.share.model;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 /**
  * Created by Aleksey Popryaduhin on 09:40 28/09/2017.
@@ -12,10 +11,10 @@ import java.util.List;
 @JsonTypeName("DomainIds")
 @Data
 public class DomainIds implements Payload {
-  private List<DomainId> ids;
+  private LinkedList<DomainId> ids;
 
   public DomainIds() {
-    this.ids = new ArrayList<>();
+    this.ids = new LinkedList<>();
   }
 
   public int size() {
@@ -26,11 +25,7 @@ public class DomainIds implements Payload {
     return ids.get(index);
   }
 
-  public void add(DomainId element) {
-    ids.add(element);
-  }
-
-  public void addAll(List<DomainId> domainIds) {
-    ids.addAll(domainIds);
+  public void add(DomainId elem) {
+    ids.add(elem);
   }
 }

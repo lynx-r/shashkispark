@@ -944,7 +944,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
         .map(DomainId::new)
         .collect(Collectors.toList());
     DomainIds domainIds = new DomainIds();
-    domainIds.addAll(collect);
+    collect.forEach(domainIds::add);
     BoardBoxes boardBoxes2 = boardBoxService.findByIds(domainIds, token).get();
     assertEquals(2, boardBoxes2.getBoardBoxes().size());
   }

@@ -21,6 +21,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class DomainId extends BaseDomain implements Payload {
 
   @DynamoDBAttribute(attributeName = "id")

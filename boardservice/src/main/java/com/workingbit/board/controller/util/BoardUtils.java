@@ -335,21 +335,21 @@ public class BoardUtils {
     if (!isContinueCapture && isBlackTurn) {
       lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE);
       // take previous square notation
-      // and put it in selected moves
+      // and push it in selected moves
       lastCapturedMove.getMove().add(new NotationSimpleMove(previousNotation, prevBoardId));
       LinkedList<NotationSimpleMove> lastMove = lastCapturedMove.getMove();
       // take current notation
       String currentNotation = board.getSelectedSquare().getNotation();
       DomainId currentBoardId = board.getDomainId();
-      // and put it in selected moves
+      // and push it in selected moves
       lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId, true));
       lastCapturedMove.setMove(lastMove);
-      // put selected moves in selected drive
+      // push selected moves in selected drive
       moves.add(lastCapturedMove);
     } else {
       if (moves.isEmpty()) {
         lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE);
-        // put it in selected moves
+        // push it in selected moves
         lastCapturedMove.getMove().add(new NotationSimpleMove(previousNotation, prevBoardId));
         moves.add(lastCapturedMove);
       }
@@ -358,7 +358,7 @@ public class BoardUtils {
       LinkedList<NotationSimpleMove> lastMove = lastCapturedMove.getMove();
       String currentNotation = board.getSelectedSquare().getNotation();
       DomainId currentBoardId = board.getDomainId();
-      // add selected move to selected drive
+      // push selected move to selected drive
       lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId, true));
     }
     notationHistory.syncLastDrive();

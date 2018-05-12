@@ -9,7 +9,7 @@ import org.junit.Test;
  */
 public class BoardStoreServiceTest {
 
-  private BoardStoreService store = new BoardStoreService();
+  private BoardBoxStoreService store = new BoardBoxStoreService();
 
   @Test
   public void test_cache() {

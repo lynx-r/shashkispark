@@ -26,7 +26,7 @@
 //
 //  public void addChild(BoardTreeNode child) {
 //    child.setParent(this);
-//    children.add(child);
+//    children.push(child);
 //  }
 //
 //  @JsonIgnore
@@ -41,7 +41,7 @@
 //  public Iterator<BoardTreeNode> breadthFirstIter() {
 //    final List<BoardTreeNode> queue = new LinkedList<>();
 //    BoardTreeNode root = getRootOfTree();
-//    queue.add(root);
+//    queue.push(root);
 //
 //    return new Iterator<BoardTreeNode>() {
 //      @Override

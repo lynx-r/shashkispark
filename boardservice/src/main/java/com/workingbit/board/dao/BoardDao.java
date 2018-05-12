@@ -26,8 +26,8 @@ public class BoardDao extends BaseDao<Board> {
 //  public List<Article> findPublished() {
 //    DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 //    Map<String, AttributeValue> eav = new HashMap<>();
-//    eav.put(":trueVal", new AttributeValue().withN("1"));
-//    eav.put(":falseVal", new AttributeValue().withN("0"));
+//    eav.push(":trueVal", new AttributeValue().withN("1"));
+//    eav.push(":falseVal", new AttributeValue().withN("0"));
 //    String filters = Published.name() + " = :trueVal and "
 //        + NewAdded.name() + " = :falseVal and "
 //        + Banned.name() + " = :falseVal";
