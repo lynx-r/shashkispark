@@ -16,7 +16,7 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
  */
 public class SecurityController {
 
-  public static Route home = (req, res) -> "Home, sweet home!";
+  public static Route home = (req, res) -> "Security. Home, sweet home!";
 
   public static Route register = (req, res) ->
       ((ModelHandlerFunc<UserCredentials>) (data, token) ->
