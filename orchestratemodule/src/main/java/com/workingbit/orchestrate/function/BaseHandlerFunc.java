@@ -8,8 +8,6 @@ import com.workingbit.share.model.Payload;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.IAuthority;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 
@@ -26,8 +24,6 @@ import static java.net.HttpURLConnection.*;
  * Created by Aleksey Popryaduhin on 16:37 01/10/2017.
  */
 public interface BaseHandlerFunc<T extends Payload> {
-
-  Logger logger = LoggerFactory.getLogger(BaseHandlerFunc.class);
 
   Answer process(T data, AuthUser token) throws RequestException;
 

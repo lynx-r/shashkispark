@@ -1,11 +1,15 @@
 package com.workingbit.orchestrate.util;
 
+import com.workingbit.orchestrate.function.BaseHandlerFunc;
 import com.workingbit.share.exception.RequestException;
+import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.IAuthority;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 
@@ -25,6 +29,9 @@ import static com.workingbit.share.common.RequestConstants.*;
  * Created by Aleksey Popryaduhin on 16:37 01/10/2017.
  */
 public class AuthRequestUtil {
+
+  private static Logger logger = LoggerFactory.getLogger(BaseHandlerFunc.class);
+
   private static ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
   private static Validator validator;
 
@@ -35,7 +42,7 @@ public class AuthRequestUtil {
   public static Optional<AuthUser> isAuthenticated(AuthUser authUser) throws RequestException {
     return orchestralService
         .internal(authUser, "authenticateAnswer", authUser)
-        .map(answer -> answer.getAuthUser());
+        .map(Answer::getAuthUser);
   }
 
   public static boolean hasAuthorities(Set<EnumAuthority> clientAuthorities, Set<EnumAuthority> allowedAuthorities) {
@@ -68,13 +75,13 @@ public class AuthRequestUtil {
   }
 
   public static void logRequest(Request request) {
-    System.out.println(String.format("REQUEST: %s %s %s %s %s",
+    logger.info(String.format("REQUEST: %s %s %s %s %s",
         LocalDateTime.now(),
         request.requestMethod(), request.url(), request.host(), request.userAgent()));
   }
 
   public static void logResponse(String url, Response response, AuthUser token) {
-    System.out.println(String.format("RESPONSE: %s %s %s %s",
+    logger.info(String.format("RESPONSE: %s %s %s %s",
         url,
         LocalDateTime.now(),
         response.status(), token));

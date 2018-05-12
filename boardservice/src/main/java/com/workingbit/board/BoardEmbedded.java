@@ -59,7 +59,7 @@ public class BoardEmbedded {
 
   public static void main(String[] args) {
     int port = appProperties.port();
-    System.out.println("Listening on port: " + port);
+    LOG.info("Listening on port: " + port);
     port(port);
 
     Logger logger = LoggerFactory.getLogger(BoardApplication.class);
