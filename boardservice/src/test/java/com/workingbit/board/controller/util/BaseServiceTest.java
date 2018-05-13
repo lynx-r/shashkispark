@@ -8,10 +8,7 @@ import com.workingbit.board.service.BoardBoxService;
 import com.workingbit.board.service.BoardService;
 import com.workingbit.board.service.NotationParserService;
 import com.workingbit.share.domain.ICoordinates;
-import com.workingbit.share.domain.impl.Board;
-import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.domain.impl.Draught;
-import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumRules;
@@ -22,6 +19,7 @@ import org.junit.Before;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
@@ -55,7 +53,9 @@ public class BaseServiceTest {
   protected BoardBox getBoardBox(boolean fillBoard) {
     Board board = BoardUtils.initBoard(fillBoard, false, EnumRules.RUSSIAN);
     Utils.setRandomIdAndCreatedAt(board);
-    return new BoardBox(board);
+    BoardBox boardBox = new BoardBox(board);
+    boardBox.setNotation(new Notation());
+    return boardBox;
   }
 
   protected BoardBox getSavedBoardBoxEmpty() {
@@ -63,7 +63,7 @@ public class BaseServiceTest {
     boardBox.setId(Utils.getRandomString20());
     boardBox.setCreatedAt(LocalDateTime.now());
     boardBox.setArticleId(DomainId.getRandomID());
-    return boardBoxService.save(boardBox, token).get();
+    return boardBoxService.save(boardBox, token);
   }
 
   protected Board getBoard() {
@@ -142,7 +142,7 @@ public class BaseServiceTest {
     board.setSelectedSquare(added);
   }
 
-  protected void testCollection(String notations, List<Square> items) {
+  protected void testCollection(String notations, Set<Square> items) {
     List<String> collection = items.stream().map(ICoordinates::getNotation).collect(Collectors.toList());
     String[] notation = notations.split(",");
     Arrays.stream(notation).forEach(n -> {

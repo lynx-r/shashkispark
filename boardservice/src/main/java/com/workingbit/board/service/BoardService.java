@@ -21,7 +21,7 @@ import static com.workingbit.board.controller.util.BoardUtils.*;
 public class BoardService {
 
   Board createBoard(CreateBoardPayload newBoardRequest) {
-    Board board = initBoard(newBoardRequest.getFillBoard(), newBoardRequest.getBlack(),
+    Board board = initBoard(newBoardRequest.isFillBoard(), newBoardRequest.isBlack(),
         newBoardRequest.getRules());
     board.setBoardBoxId(board.getBoardBoxId());
     Utils.setRandomIdAndCreatedAt(board);
@@ -37,20 +37,34 @@ public class BoardService {
     return newBoard;
   }
 
-  void createBoardFromNotation(NotationHistory genNotationHistory, NotationHistory fillNotationHistory, EnumRules rules) {
+  /**
+   * Create temp board and use it to emulate moves to populate notation
+   *  @param boardBoxId
+   * @param genNotationHistory
+   * @param fillNotationHistory
+   * @param rules
+   */
+  void fillNotation(DomainId boardBoxId, NotationHistory genNotationHistory, NotationHistory fillNotationHistory, EnumRules rules) {
     Board board = initBoard(true, false, rules);
     board.setBoardBoxId(board.getBoardBoxId());
-    Utils.setRandomIdAndCreatedAt(board);
-    syncBoardWithNotation(board, genNotationHistory, fillNotationHistory);
+    List<Board> batchBoards = new ArrayList<>();
+    board.setBoardBoxId(boardBoxId);
+    populateBoardWithNotation(board, genNotationHistory, fillNotationHistory, batchBoards);
+    fillNotationHistory.setRules(board.getRules());
+    if (!genNotationHistory.isEqual(fillNotationHistory)) {
+      throw new BoardServiceException(ErrorMessages.UNABLE_TO_PARSE_PDN);
+    }
+    boardDao.batchSave(batchBoards);
   }
 
-  Optional<Board> findById(DomainId boardId) {
-    Optional<Board> boardOptional = boardDao.findById(boardId);
-    return boardOptional.map(this::updateBoard);
+  Board findById(DomainId boardId) {
+    Board board = boardDao.findById(boardId);
+    updateBoard(board);
+    return board;
   }
 
   Board resetHighlightAndUpdate(Board board) {
-    board = updateBoard(board);
+    updateBoard(board);
     resetBoardHighlight(board);
     return board;
   }
@@ -67,7 +81,7 @@ public class BoardService {
     BoardUtils.updateMoveSquaresHighlightAndDraught(serverBoard, clientBoard);
     Square selectedSquare = serverBoard.getSelectedSquare();
     if (isValidHighlight(selectedSquare)) {
-      throw new BoardServiceException("Invalid getHighlight square");
+      throw new BoardServiceException(ErrorMessages.INVALID_HIGHLIGHT);
     }
     MovesList movesList = getHighlightedBoard(serverBoard.isBlackTurn(), serverBoard);
     return Map.of("serverBoard", serverBoard, "movesList", movesList);
@@ -78,18 +92,22 @@ public class BoardService {
         || !selectedSquare.isOccupied();
   }
 
+  public Board move(Board serverBoard, Board clientBoard, NotationHistory notationHistory) {
+    return move(serverBoard, clientBoard, notationHistory, true);
+  }
+
   /**
    * @param serverBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
-   *                     {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
-   *                     h - distance for move horizontal (minus left), targetSquare is a new square with
+   *                    {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
+   *                    h - distance for move horizontal (minus left), targetSquare is a new square with
    * @param clientBoard
    */
-  public Board move(Board serverBoard, Board clientBoard, NotationHistory notationHistory) {
+  public Board move(Board serverBoard, Board clientBoard, NotationHistory notationHistory, boolean save) {
     Map highlight = getHighlight(serverBoard, clientBoard);
     serverBoard = (Board) highlight.get("serverBoard");
     MovesList movesList = (MovesList) highlight.get("movesList");
-    List<Square> allowed = movesList.getAllowed();
-    List<Square> captured = movesList.getCaptured();
+    Set<Square> allowed = movesList.getAllowed();
+    Set<Square> captured = movesList.getCaptured();
     if (allowed.isEmpty()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
@@ -98,16 +116,19 @@ public class BoardService {
       serverBoard.getNextSquare().setHighlight(clientBoard.getNextSquare().isHighlight());
     }
     serverBoard.getSelectedSquare().getDraught().setHighlight(false);
-    boardDao.save(serverBoard);
+    if (save) {
+      boardDao.save(serverBoard);
+    }
 
     Board nextBoard = serverBoard.deepClone();
     Utils.setRandomIdAndCreatedAt(nextBoard);
-
-    DomainId boardId = serverBoard.getDomainId();
+    DomainId boardId = nextBoard.getDomainId();
     // MOVE DRAUGHT
     nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId, notationHistory);
 
-    boardDao.save(nextBoard);
+    if (save) {
+      boardDao.save(nextBoard);
+    }
     return nextBoard;
   }
 
@@ -164,38 +185,122 @@ public class BoardService {
 //        ? currentBoard.getPreviousSquare() : currentBoard.getNextSquare();
 //  }
 
-  Board updateBoard(Board board) {
-    return BoardUtils.updateBoard(board);
+  void updateBoard(Board board) {
+    Board boardUpdated = BoardUtils.updateBoard(board);
+    board.setSquares(boardUpdated.getSquares());
+    board.setPreviousSquare(boardUpdated.getPreviousSquare());
+    board.setNextSquare(boardUpdated.getNextSquare());
+    board.setSelectedSquare(boardUpdated.getSelectedSquare());
+    board.setAssignedSquares(boardUpdated.getAssignedSquares());
   }
 
-  private void syncBoardWithNotation(Board board, NotationHistory genNotationHistory, NotationHistory fillNotationHistory) {
+  private void populateBoardWithNotation(Board board, NotationHistory genNotationHistory,
+                                         NotationHistory fillNotationHistory,
+                                         List<Board> batchBoards) {
+    NotationHistory recursiveFillNotationHistory = NotationHistory.createWithRoot();
+    populateBoardWithNotation(board, genNotationHistory, recursiveFillNotationHistory, fillNotationHistory, batchBoards, 0);
+    fillNotationHistory.setHistory(fillNotationHistory.getNotation());
+  }
+
+  private void populateBoardWithNotation(Board board,
+                                         NotationHistory genNotationHistory,
+                                         NotationHistory recursiveNotationHistory,
+                                         NotationHistory fillNotationHistory,
+                                         List<Board> batchBoards,
+                                         int deep
+  ) {
+    ++deep;
+    Board recursiveBoard = board;
+    if (deep == 1) {
+      recursiveBoard = board.deepClone();
+    }
+    NotationDrives innerNotations = new NotationDrives();
     for (NotationDrive notationDrive : genNotationHistory.getNotation()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
-        board = emulateMove(drive, board, fillNotationHistory);
+        recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
+      }
+      if (!notationDrive.getVariants().isEmpty()) {
+        NotationDrives variants = notationDrive.getVariants();
+        NotationDrives recurNotations = new NotationDrives();
+        for (NotationDrive vDrive : variants) {
+          // create history from current drive's variant
+          NotationHistory variantsNotationHistory = NotationHistory.create();
+          variantsNotationHistory.setNotation(vDrive.getVariants());
+
+          // sync populate notation
+          NotationHistory tempNotationHistory = NotationHistory.createWithRoot();
+          populateBoardWithNotation(recursiveBoard, variantsNotationHistory, tempNotationHistory, fillNotationHistory, batchBoards, deep);
+          NotationDrives tNotation = tempNotationHistory.getNotation();
+          tNotation.removeFirst();
+          if (tNotation.isEmpty()) {
+            NotationDrive topDrive = recursiveNotationHistory.getNotation().getLast();
+            NotationDrive topVariant = new NotationDrive();
+            topVariant.getVariants().addAll(fillNotationHistory.getNotation());
+            topDrive.getVariants().add(topVariant);
+            innerNotations.add(topDrive);
+            fillNotationHistory.getNotation().clear();
+            continue;
+          }
+          NotationHistory tNotationHistory = NotationHistory.create();
+          tNotationHistory.setNotation(tNotation);
+          NotationDrive tDrive = vDrive.deepClone();
+          tDrive.setMoves(tNotation.getFirst().getMoves());
+          tDrive.setVariants(tNotation);
+          recurNotations.add(tDrive);
+        }
+        if (recurNotations.isEmpty()) {
+          continue;
+        }
+        NotationDrive tvDrive = notationDrive.deepClone();
+        if (!notationDrive.getMoves().isEmpty()) {
+          tvDrive.setMoves(recursiveNotationHistory.getLast().getMoves());
+        }
+        tvDrive.setVariants(recurNotations);
+        innerNotations.add(tvDrive);
+      } else if (deep == 1) {
+        innerNotations.add(recursiveNotationHistory.getLast());
       }
     }
+    fillNotationHistory.getNotation().addAll(innerNotations);
   }
 
-  private Board emulateMove(NotationMove notationMove, Board board, NotationHistory notationHistory) {
+  private Board emulateMove(NotationMove notationMove, Board serverBoard, NotationHistory notationHistory, List<Board> batchBoards) {
     if (notationMove == null) {
-      return board;
+      return serverBoard;
     }
-    List<String> moves = notationMove.getMoveNotations();
+    serverBoard = serverBoard.deepClone();
+    List<String> moves = notationMove.getMoveNotationsPdn();
     Iterator<String> iterator = moves.iterator();
-    for (String move = iterator.next(); iterator.hasNext();) {
-      Square selected = findSquareByNotation(move, board).deepClone();
-      board.setSelectedSquare(selected.deepClone());
+    Utils.setRandomIdAndCreatedAt(serverBoard);
+    batchBoards.add(serverBoard);
+    for (String move = iterator.next(); iterator.hasNext(); ) {
+      Square selected = findSquareByNotation(move, serverBoard).deepClone();
+      serverBoard.setSelectedSquare(selected.deepClone());
       move = iterator.next();
-      Square next = findSquareByNotation(move, board).deepClone();
+      Square next = findSquareByNotation(move, serverBoard).deepClone();
       next.setHighlight(true);
-      board.setNextSquare(next);
-      board = move(board, board.deepClone(), notationHistory);
+      serverBoard.setNextSquare(next);
+      Board clientBoard = serverBoard.deepClone();
+      serverBoard = move(serverBoard, clientBoard, notationHistory, false);
+      batchBoards.add(serverBoard);
+
+      selected = findSquareByNotation(selected.getNotation(), serverBoard).deepClone();
+      next = findSquareByNotation(next.getNotation(), serverBoard).deepClone();
+
+      if (selected.isOccupied()) {
+        System.out.println(selected);
+      }
+      if (!next.isOccupied()) {
+        System.out.println(next);
+      }
+
       if (!iterator.hasNext()) {
         break;
       }
     }
-    return board;
+//    notationHistory.setFormat(EnumNotationFormat.PDN);
+    return serverBoard;
   }
 
   public Board clearBoard(Board board) {
@@ -209,6 +314,7 @@ public class BoardService {
     board.setSquares(new ArrayList<>());
 
     save(board);
-    return updateBoard(board);
+    updateBoard(board);
+    return board;
   }
 }

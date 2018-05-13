@@ -37,7 +37,7 @@ ASTERISK         = "*"
 SETUP            = <</[^\/]*/>>
 STRING           = <<"([^"]|\\")*">>
 COMMENT          = <<\{([^}]|(\\\}))*\}>>
-IDENTIFIER       = <<[A-Z][a-zA-Z0-9_]*>>
+IDENTIFIER       = <<[A-Z][a-zA-Z0-9_\u0080-\u9fff]*>>
 WHITESPACE       = <<[ \t\n\r]+>> %ignore%
 LINECOMMENT      = <<%.*>> %ignore%
 

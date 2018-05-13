@@ -3,6 +3,7 @@ package com.workingbit.share.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.workingbit.share.dao.DaoFilters;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.SecureUtils;
@@ -12,9 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static com.workingbit.share.util.JsonUtils.jsonToDataTypeRef;
@@ -33,7 +32,7 @@ public class AuthUser implements Payload, DeepClone {
   private String accessToken;
   private String userSession;
   private long timestamp;
-  private List<SimpleFilter> filters = new ArrayList<>();
+  private DaoFilters filters = new DaoFilters();
   private Set<EnumAuthority> authorities = new HashSet<>();
   private String superHash;
   // произвольные данные
@@ -53,17 +52,17 @@ public class AuthUser implements Payload, DeepClone {
 
   public static AuthUser anonymous() {
     return new AuthUser(null, null, null, null,
-        Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.ANONYMOUS)), null, null, null);
+        Utils.getTimestamp(), new DaoFilters(), new HashSet<>(Set.of(EnumAuthority.ANONYMOUS)), null, null, null);
   }
 
   public static AuthUser simpleAuthor(DomainId userId, String username, String accessToken, String userSession) {
     return new AuthUser(userId, username, accessToken, userSession,
-        Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.AUTHOR)), null, null, null);
+        Utils.getTimestamp(), new DaoFilters(), new HashSet<>(Set.of(EnumAuthority.AUTHOR)), null, null, null);
   }
 
   public static AuthUser simpleUser(DomainId userId, String username, String accessToken, String userSession, Set<EnumAuthority> authorities) {
     return new AuthUser(userId, username, accessToken, userSession,
-        Utils.getTimestamp(), new ArrayList<>(), authorities, null, null, null);
+        Utils.getTimestamp(), new DaoFilters(), authorities, null, null, null);
   }
 
   public void setAuthorities(Set<EnumAuthority> authorities) {
@@ -93,7 +92,7 @@ public class AuthUser implements Payload, DeepClone {
   @SuppressWarnings("unchecked")
   public void parseFilters(String filterExpression) {
     if (StringUtils.isNotBlank(filterExpression)) {
-      TypeReference<List<SimpleFilter>> typeRef = new TypeReference<>() {
+      TypeReference<DaoFilters> typeRef = new TypeReference<>() {
       };
       filters = jsonToDataTypeRef(filterExpression, typeRef);
     }

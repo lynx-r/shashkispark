@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.domain.impl.Article;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,6 +15,10 @@ import java.util.List;
 @Data
 public class Articles implements Payload {
   private List<Article> articles;
+
+  public Articles() {
+    this.articles = new ArrayList<>();
+  }
 
   public void addAll(Collection<Article> articles) {
     this.articles.addAll(articles);

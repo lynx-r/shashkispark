@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotation;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +17,7 @@ import java.util.Objects;
  */
 @AllArgsConstructor
 @Data
-public class NotationDrive implements DeepClone, ToPdn {
+public class NotationDrive implements DeepClone, NotationFormat {
 
   /**
    * Number of drive in notation
@@ -31,9 +32,14 @@ public class NotationDrive implements DeepClone, ToPdn {
   private NotationDrives variants;
   private boolean ellipses;
   /**
-   * Does notation in numeric format like 1. 12-21
+   * Does notation in notationFormat format like 1. 12-21
    */
-  private boolean numeric;
+  @DynamoDBIgnore
+  private EnumNotationFormat notationFormat;
+
+  @DynamoDBIgnore
+  private int boardDimension;
+
   private String comment;
   /**
    * Mark drive as first in list
@@ -59,7 +65,7 @@ public class NotationDrive implements DeepClone, ToPdn {
     moves = new NotationMoves();
   }
 
-  public NotationDrive(boolean root) {
+  NotationDrive(boolean root) {
     this();
     this.root = root;
   }
@@ -72,7 +78,7 @@ public class NotationDrive implements DeepClone, ToPdn {
   }
 
   public static void copyMetaOf(NotationDrive orig, NotationDrive target) {
-    target.numeric = orig.numeric;
+    target.notationFormat = orig.notationFormat;
   }
 
   public static void copyOf(NotationDrive orig, NotationDrive target) {
@@ -132,10 +138,10 @@ public class NotationDrive implements DeepClone, ToPdn {
   public void parseNameFromPdn(String name) {
     switch (name) {
       case "NUMERICMOVE":
-        numeric = true;
+        notationFormat = EnumNotationFormat.PDN;
         break;
       case "ALPHANUMERICMOVE":
-        numeric = false;
+        notationFormat = EnumNotationFormat.CLASSIC;
         break;
       case "ELLIPSES":
         ellipses = true;
@@ -143,13 +149,15 @@ public class NotationDrive implements DeepClone, ToPdn {
     }
   }
 
-  public void addMoveFromPdn(String move, String boardId) {
+  public void addMoveFromPdn(String move) {
     NotationMove atom = NotationMove.fromPdn(move);
     moves.add(atom);
   }
 
-  public void addMoveFromPdn(String move) {
-    addMoveFromPdn(move, null);
+  public void setBoardDimension(int boardDimension) {
+    this.boardDimension = boardDimension;
+    moves.setBoardDimension(boardDimension);
+    variants.setDimension(boardDimension);
   }
 
   public String print(String prefix) {
@@ -164,19 +172,30 @@ public class NotationDrive implements DeepClone, ToPdn {
         .append(prefix).append("\t").append("notationMoves: ").append(moves.print(prefix + "\t"))
         .append(prefix).append("\t").append("variants: ").append(variants.print(prefix + "\t"))
         .append(prefix).append("\t").append("ellipses: ").append(ellipses)
-        .append(prefix).append("\t").append("numeric: ").append(numeric)
+        .append(prefix).append("\t").append("notationFormat: ").append(notationFormat)
         .append(prefix).append("\t").append("comment: ").append(comment)
         .append("\n")
         .toString();
   }
 
-  public String toPdn() {
+  @Override
+  public String asString() {
     if (root) {
       return variants.variantsToPdn();
     }
-    return (StringUtils.isNotBlank(notationNumber) ? notationNumber + " " : "" ) +
-        (!moves.isEmpty() ? moves.toPdn() + " " : "") +
+    return (StringUtils.isNotBlank(notationNumber) ? notationNumber : "") +
+        (!moves.isEmpty() ? moves.asString() + " " : "") +
         (!variants.isEmpty() ? variants.variantsToPdn() : "");
+  }
+
+  @Override
+  public String asTree(String indent, String tabulation) {
+    if (root) {
+      return variants.variantsToTreePdn(indent + tabulation, tabulation);
+    }
+    return (StringUtils.isNotBlank(notationNumber) ? indent + notationNumber : "") +
+        (!moves.isEmpty() ? moves.asString() + " " : "") +
+        (!variants.isEmpty() ? variants.variantsToTreePdn(indent + tabulation, tabulation) : "\n");
   }
 
   @Override
@@ -197,5 +216,11 @@ public class NotationDrive implements DeepClone, ToPdn {
 
   public NotationDrive removeLastVariant() {
     return variants.removeLast();
+  }
+
+  public void setNotationFormat(EnumNotationFormat format) {
+    this.notationFormat = format;
+    moves.setNotationFormat(format);
+    variants.setNotationFormat(format);
   }
 }

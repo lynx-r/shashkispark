@@ -3,6 +3,8 @@ package com.workingbit.share.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
+import com.workingbit.share.model.enumarable.EnumRules;
 
 import java.util.Iterator;
 import java.util.List;
@@ -95,6 +97,12 @@ public class NotationHistory implements DeepClone {
 
   @JsonIgnore
   @DynamoDBIgnore
+  public NotationDrive getFirst() {
+    return notation.getFirst();
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
   public NotationDrive getLast() {
     return notation.getLast();
   }
@@ -120,9 +128,7 @@ public class NotationHistory implements DeepClone {
     }
     int indexFork = indexOf(forkFromNotationDrive);
     NotationDrives cutpoint = subListHistory(indexFork, size());
-    NotationDrives cutNotationDrives = NotationDrives.Builder.getInstance()
-        .addAll(cutpoint)
-        .build();
+    NotationDrives cutNotationDrives = cutpoint.deepClone();
 
     notation.removeAll(cutNotationDrives);
     resetNotationSelected(notation);
@@ -134,7 +140,7 @@ public class NotationHistory implements DeepClone {
     NotationDrive cutFirst = cutNotationDrives.getFirst();
     NotationDrive variant = cutFirst.deepClone();
     NotationDrive lastHist = history.getLast();
-    Optional<NotationDrive> continueDrive = variantHasContinue(lastHist, variant);
+    Optional<NotationDrive> continueDrive = variantHasContinue(lastHist, variant, cutNotationDrives);
     if (!continueDrive.isPresent()) {
       variant.setVariants(cutNotationDrives);
       resetCurrentAndSetPresious(lastHist);
@@ -197,7 +203,7 @@ public class NotationHistory implements DeepClone {
       history.removeAll(forkedNotationDrives);
 
       NotationDrive variant = forkedNotationDrives.getFirst().deepClone();
-      Optional<NotationDrive> continueDrive = variantHasContinue(history.getLast(), variant);
+      Optional<NotationDrive> continueDrive = variantHasContinue(history.getLast(), variant, forkedNotationDrives);
       // if not duplicated
       if (!continueDrive.isPresent()) {
         variant.setVariants(forkedNotationDrives);
@@ -234,14 +240,14 @@ public class NotationHistory implements DeepClone {
     return true;
   }
 
-  private Optional<NotationDrive> variantHasContinue(NotationDrive currentDrive, NotationDrive variant) {
+  private Optional<NotationDrive> variantHasContinue(NotationDrive currentDrive, NotationDrive variant, NotationDrives cutNotationDrives) {
     if (currentDrive.getVariants().isEmpty() && variant.getVariants().isEmpty()) {
       return isNotationDriveMovesEqual(currentDrive, variant) ? Optional.of(currentDrive) : Optional.empty();
     }
     for (NotationDrive current : currentDrive.getVariants()) {
       if (isNotationDriveMovesEqual(current, variant)) {
-        NotationDrive firstVariant = current.getVariants().getFirst();
-        if (variantHasContinuePair(firstVariant, variant)) {
+        NotationDrives currentVariants = current.getVariants();
+        if (variantHasContinuePair(currentVariants, cutNotationDrives)) {
           return Optional.of(current);
         }
       }
@@ -249,16 +255,16 @@ public class NotationHistory implements DeepClone {
     return Optional.empty();
   }
 
-  private boolean variantHasContinuePair(NotationDrive current, NotationDrive variant) {
-    NotationDrives currents = current.getVariants();
-    NotationDrives variants = variant.getVariants();
-    if (variants.isEmpty() && currents.isEmpty()) {
-      return current.getMoves().equals(variant.getMoves());
-    }
+  private boolean variantHasContinuePair(NotationDrives currents, NotationDrives variants) {
     Iterator<NotationDrive> iteratorCurrent = currents.iterator();
     Iterator<NotationDrive> iteratorVariant = variants.iterator();
     while ((iteratorCurrent.hasNext() && iteratorVariant.hasNext())) {
-      if (variantHasContinuePair(iteratorCurrent.next(), iteratorVariant.next())) {
+      NotationDrive current = iteratorCurrent.next();
+      NotationDrive variant = iteratorVariant.next();
+      if (current.getVariants().isEmpty() && variant.getVariants().isEmpty()) {
+        return currents.size() == variants.size() && current.getMoves().equals(variant.getMoves());
+      }
+      if (variantHasContinuePair(current.getVariants(), variant.getVariants())) {
         return true;
       }
     }
@@ -293,11 +299,12 @@ public class NotationHistory implements DeepClone {
   }
 
   private void setCurrentMarkerForNotationDrive(NotationDrive variant, NotationDrive lastHist) {
-    lastHist.getVariants()
-        .stream()
-        .filter(h -> variantHasContinuePair(h, variant))
-        .findFirst()
-        .ifPresent(v -> v.setCurrent(true));
+    // todo
+//    lastHist.getVariants()
+//        .stream()
+//        .filter(h -> variantHasContinuePair(h, variant))
+//        .findFirst()
+//        .ifPresent(v -> v.setCurrent(true));
   }
 
   @JsonIgnore
@@ -320,12 +327,16 @@ public class NotationHistory implements DeepClone {
     return new NotationHistory(true);
   }
 
-  public String variantsToPdn() {
-    return notation.toPdn();
+  public String notationToPdn() {
+    return history.asString();
+  }
+
+  public String notationToTreePdn(String indent, String tabulation) {
+    return history.asTree(indent, tabulation);
   }
 
   public void printPdn() {
-    System.out.println(variantsToPdn());
+    System.out.println(notationToPdn());
   }
 
   @JsonIgnore
@@ -362,13 +373,13 @@ public class NotationHistory implements DeepClone {
     return Optional.empty();
   }
 
-  public String pdnString() {
+  public String debugPdnString() {
     return "\n" +
         "HISTORY: " +
-        history.toPdn() +
+        history.asString() +
         "\n" +
         "NOTATION: " +
-        notation.toPdn();
+        notation.asString();
   }
 
   public void syncLastDrive() {
@@ -376,5 +387,36 @@ public class NotationHistory implements DeepClone {
     lastNotation.setSelected(true);
     NotationDrive lastHistory = history.getLast();
     NotationDrive.copyOf(lastNotation, lastHistory);
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  public Optional<DomainId> getFirstNotationBoardId() {
+    if (size() > 1 && !get(1).getMoves().isEmpty()) {
+      return Optional.of(get(1).getMoves().getFirst().getMove().getFirst().getBoardId());
+    }
+    return Optional.empty();
+  }
+
+  public void setRules(EnumRules rules) {
+    notation.setDimension(rules.getDimension());
+    history.setDimension(rules.getDimension());
+  }
+
+  public void setFormat(EnumNotationFormat format) {
+    notation.setNotationFormat(format);
+    history.setNotationFormat(format);
+  }
+
+
+  public boolean isEqual(NotationHistory that) {
+    EnumNotationFormat formatThat = that.getNotation().getFirst().getNotationFormat();
+    EnumNotationFormat formatThis = this.getNotation().getFirst().getNotationFormat();
+    that.setFormat(EnumNotationFormat.PDN);
+    this.setFormat(EnumNotationFormat.PDN);
+    boolean equals = that.notationToPdn().equals(this.notationToPdn());
+    that.setFormat(formatThat);
+    this.setFormat(formatThis);
+    return equals;
   }
 }

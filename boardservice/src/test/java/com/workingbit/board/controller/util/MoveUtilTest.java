@@ -7,6 +7,7 @@ import com.workingbit.share.model.MovesList;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.*;
@@ -252,7 +253,7 @@ public class MoveUtilTest extends BaseServiceTest {
         .filter(Square::isHighlight)
         .sorted()
         .collect(Collectors.toList());
-    List<Square> allowed = highlight.getAllowed();
+    Set<Square> allowed = highlight.getAllowed();
     if (allowed.size() != highlighted.size()) {
       return false;
     }

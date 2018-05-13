@@ -2,13 +2,12 @@ package com.workingbit.security.service;
 
 
 import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.UserCredentials;
+import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.Utils;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
@@ -31,39 +30,39 @@ public class SecureUserServiceTest {
     UserCredentials userCredentials = new UserCredentials(username, password);
     AuthUser authUser = new AuthUser();
     authUser.setUserSession(Utils.getRandomString20());
-    Optional<AuthUser> register = secureUserService.register(userCredentials);
-    assertTrue(register.isPresent());
-    AuthUser registered = register.get();
+    AuthUser register = secureUserService.register(userCredentials);
+    assertTrue(register != null);
+    AuthUser registered = register;
     System.out.println("REGISTERED USER " + registered);
 
-    Optional<AuthUser> authenticatedOpt = secureUserService.authenticate(register.get());
-    assertTrue(authenticatedOpt.isPresent());
-    AuthUser authenticated = authenticatedOpt.get();
+    AuthUser authenticatedOpt = secureUserService.authenticate(register);
+    assertTrue(authenticatedOpt != null);
+    AuthUser authenticated = authenticatedOpt;
     assertEquals(registered, authenticated);
 
-    authenticatedOpt = secureUserService.authenticate(register.get());
-    assertTrue(authenticatedOpt.isPresent());
-    authenticated = authenticatedOpt.get();
+    authenticatedOpt = secureUserService.authenticate(register);
+    assertTrue(authenticatedOpt != null);
+    authenticated = authenticatedOpt;
     assertEquals(registered, authenticated);
 
-    Optional<AuthUser> authorizedOpt = secureUserService.authorize(userCredentials);
-    assertTrue(authorizedOpt.isPresent());
-    AuthUser authorized = authorizedOpt.get();
+    AuthUser authorizedOpt = secureUserService.authorize(userCredentials);
+    assertTrue(authorizedOpt != null);
+    AuthUser authorized = authorizedOpt;
     System.out.println("AUTHORIZED USER " + authorized);
 
     assertNotEquals(registered, authorized);
     assertNotEquals(registered.getAccessToken(), authorized.getAccessToken());
 
-    Optional<AuthUser> authenticated2Opt = secureUserService.authenticate(authorizedOpt.get());
-    assertTrue(authenticated2Opt.isPresent());
+    AuthUser authenticated2Opt = secureUserService.authenticate(authorizedOpt);
+    assertTrue(authenticated2Opt != null);
 
-    Optional<AuthUser> authenticated3Opt = secureUserService.authenticate(authorizedOpt.get());
-    assertTrue(authenticated3Opt.isPresent());
-    assertEquals(authenticated2Opt.get().getAccessToken(), authenticated3Opt.get().getAccessToken());
+    AuthUser authenticated3Opt = secureUserService.authenticate(authorizedOpt);
+    assertTrue(authenticated3Opt != null);
+    assertEquals(authenticated2Opt.getAccessToken(), authenticated3Opt.getAccessToken());
 
-    Optional<AuthUser> authenticated4Opt = secureUserService.authenticate(authorizedOpt.get());
-    assertTrue(authenticated4Opt.isPresent());
-    assertEquals(authenticated2Opt.get().getAccessToken(), authenticated4Opt.get().getAccessToken());
+    AuthUser authenticated4Opt = secureUserService.authenticate(authorizedOpt);
+    assertTrue(authenticated4Opt != null);
+    assertEquals(authenticated2Opt.getAccessToken(), authenticated4Opt.getAccessToken());
   }
 
   @Test
@@ -79,20 +78,20 @@ public class SecureUserServiceTest {
     AuthUser authUser = new AuthUser();
     authUser.setUserSession(Utils.getRandomString20());
     UserCredentials userCredentials = new UserCredentials(username, password);
-    Optional<AuthUser> register = secureUserService.register(userCredentials);
-    assertTrue(register.isPresent());
+    AuthUser register = secureUserService.register(userCredentials);
+    assertTrue(register != null);
 
-    Optional<AuthUser> loggedoutOpt = secureUserService.logout(register.get());
-    assertTrue(loggedoutOpt.isPresent());
-    AuthUser loggedout = loggedoutOpt.get();
+    AuthUser loggedoutOpt = secureUserService.logout(register);
+    assertTrue(loggedoutOpt != null);
+    AuthUser loggedout = loggedoutOpt;
     assertEquals(Collections.singleton(EnumAuthority.ANONYMOUS), loggedout.getAuthorities());
 
-    Optional<AuthUser> forbiddenOpt = secureUserService.authenticate(loggedoutOpt.get());
-    assertFalse(forbiddenOpt.isPresent());
+    AuthUser forbiddenOpt = secureUserService.authenticate(loggedoutOpt);
+    assertFalse(forbiddenOpt != null);
 
-    Optional<AuthUser> authorizedOpt = secureUserService.authorize(userCredentials);
-    assertTrue(authorizedOpt.isPresent());
-    AuthUser authorized = authorizedOpt.get();
+    AuthUser authorizedOpt = secureUserService.authorize(userCredentials);
+    assertTrue(authorizedOpt != null);
+    AuthUser authorized = authorizedOpt;
     System.out.println("AUTHORIZED USER " + authorized);
   }
 }

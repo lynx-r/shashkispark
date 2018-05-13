@@ -1,5 +1,7 @@
 package com.workingbit.share.model;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
 
@@ -27,5 +29,11 @@ public class DomainIds implements Payload {
 
   public void add(DomainId elem) {
     ids.add(elem);
+  }
+
+  @DynamoDBIgnore
+  @JsonIgnore
+  public boolean isEmpty() {
+    return ids.isEmpty();
   }
 }

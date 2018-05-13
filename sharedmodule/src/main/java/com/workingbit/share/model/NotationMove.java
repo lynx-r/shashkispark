@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotation;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,13 +18,13 @@ import static com.workingbit.share.model.enumarable.EnumNotation.SIMPLE;
 
 /**
  * Moves like e1-b2 or a1:e2
- *
+ * <p>
  * Created by Aleksey Popryaduhin on 21:33 03/10/2017.
  */
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class NotationMove implements DeepClone, ToPdn {
+public class NotationMove implements DeepClone, NotationFormat {
 
   private EnumNotation type;
   /**
@@ -32,10 +33,19 @@ public class NotationMove implements DeepClone, ToPdn {
   private LinkedList<NotationSimpleMove> move = new LinkedList<>();
   private String moveStrength;
 
+  /**
+   * Num of squares on a side
+   */
+  @DynamoDBIgnore
+  private int boardDimension;
+
+  @DynamoDBIgnore
+  private EnumNotationFormat notationFormat;
+
   @JsonIgnore
   @DynamoDBIgnore
-  public String getNotation() {
-    return getMoveNotations()
+  public String getNotationInFormat(EnumNotationFormat notationFormat) {
+    return getMoveNotations(notationFormat)
         .stream()
         .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getSimple() : CAPTURE.getSimple()));
   }
@@ -43,22 +53,41 @@ public class NotationMove implements DeepClone, ToPdn {
   @JsonIgnore
   @DynamoDBIgnore
   private String getNotationPdn() {
-    return getMoveNotations()
+    return getMoveNotations(EnumNotationFormat.PDN)
         .stream()
         .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdn() : CAPTURE.getPdn()));
   }
 
   @JsonIgnore
   @DynamoDBIgnore
-  public List<String> getMoveNotations() {
+  private List<String> getMoveNotations(EnumNotationFormat format) {
     return move
         .stream()
-        .map(NotationSimpleMove::getNotation)
+        .map(move -> move.getNotation())
+        .collect(Collectors.toList());
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  public List<String> getMoveNotationsPdn() {
+    return move
+        .stream()
+        .map(move -> move.getNotation())
         .collect(Collectors.toList());
   }
 
   @SuppressWarnings("unused")
   public void setNotation(String ignore) {
+  }
+
+  public void setNotationFormat(EnumNotationFormat format) {
+    this.notationFormat = format;
+    move.forEach(m -> m.setFormat(format));
+  }
+
+  public void setBoardDimension(int dimension) {
+    this.boardDimension = dimension;
+    move.forEach(m -> m.setBoardDimension(dimension));
   }
 
   @Override
@@ -77,23 +106,27 @@ public class NotationMove implements DeepClone, ToPdn {
     return Objects.hash(super.hashCode(), type, move);
   }
 
-  public static NotationMove fromPdn(String stroke) {
+  static NotationMove fromPdn(String stroke) {
     NotationMove notationMove = new NotationMove();
-    boolean capture = stroke.contains(CAPTURE.getPdn());
-    if (capture) {
+    checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getPdn(), SIMPLE.getPdn());
+    checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getSimple(), SIMPLE.getSimple());
+    return notationMove;
+  }
+
+  private static void checkAndAddMoveForPdn(String stroke, NotationMove notationMove, String capture, String simple) {
+    boolean isCapture = stroke.contains(capture);
+    if (isCapture) {
       notationMove.setType(CAPTURE);
-      notationMove.setMoveKeysForPdn(stroke.split(CAPTURE.getPdn()));
+      notationMove.setMoveKeysForPdn(stroke.split(capture));
     } else {
       notationMove.setType(SIMPLE);
-      notationMove.setMoveKeysForPdn(stroke.split(SIMPLE.getPdn()));
+      notationMove.setMoveKeysForPdn(stroke.split(simple));
     }
-    return notationMove;
   }
 
   public static NotationMove create(EnumNotation type) {
     NotationMove notationMove = new NotationMove();
     notationMove.setType(type);
-//    notationMove.setCursor(cursor);
     return notationMove;
   }
 
@@ -107,9 +140,14 @@ public class NotationMove implements DeepClone, ToPdn {
         .toString();
   }
 
-  public String toPdn() {
-    String stroke = getNotationPdn() + (moveStrength != null ? " " + moveStrength : " ");
+  public String asString() {
+    String stroke = getNotationInFormat(notationFormat) + (moveStrength != null ? " " + moveStrength : " ");
     return String.format("%1$-10s", stroke);
+  }
+
+  @Override
+  public String asTree(String indent, String tabulation) {
+    return asString();
   }
 
   @Override
@@ -145,6 +183,6 @@ public class NotationMove implements DeepClone, ToPdn {
   }
 
   public void resetCursor() {
-    move.forEach(m->m.setCursor(false));
+    move.forEach(m -> m.setCursor(false));
   }
 }

@@ -1,4 +1,4 @@
-package com.workingbit.board.grammar;/*
+/*
  * PdnReadingConstants.java
  *
  * THIS FILE HAS BEEN GENERATED AUTOMATICALLY. DO NOT EDIT!
@@ -8,6 +8,8 @@ package com.workingbit.board.grammar;/*
  *
  * Copyright (c) 2009-2012 Wieger Wesselink.
  */
+
+package com.workingbit.board.grammar;
 
 /**
  * An interface with constants for the parser and tokenizer.

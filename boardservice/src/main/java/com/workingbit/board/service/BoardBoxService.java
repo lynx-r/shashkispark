@@ -4,6 +4,8 @@ import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.*;
+import com.workingbit.share.exception.DaoException;
+import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
@@ -28,7 +30,7 @@ public class BoardBoxService {
   private final static BoardService boardService = new BoardService();
   private final static NotationService notationService = new NotationService();
 
-  public Optional<BoardBox> createBoardBox(CreateBoardPayload createBoardPayload, AuthUser authUser) {
+  public BoardBox createBoardBox(CreateBoardPayload createBoardPayload, AuthUser authUser) {
     Board board = boardService.createBoard(createBoardPayload);
 
     BoardBox boardBox = new BoardBox(board);
@@ -43,223 +45,202 @@ public class BoardBoxService {
 
     saveAndFillBoard(authUser, boardBox);
 
-    return Optional.of(boardBox);
+    return boardBox;
   }
 
-  public Optional<BoardBox> parsePdn(ImportPdnPayload importPdnPayload, AuthUser authUser) {
+  public BoardBox parsePdn(ImportPdnPayload importPdnPayload, AuthUser authUser) {
     try {
       Notation notation = notationParserService.parse(importPdnPayload.getPdn());
       notation.setRules(importPdnPayload.getRules());
-      Optional<BoardBox> boardBoxFromNotation = createBoardBoxFromNotation(importPdnPayload.getArticleId(), notation, authUser);
-      return boardBoxFromNotation.map(boardBox ->
-          boardBox.getNotation().getNotationHistory().getLastNotationBoardId()
-              .map(s -> {
-                boardBox.setBoardId(s);
-                boardBoxDao.save(boardBox);
-                return updateBoardBox(authUser, boardBox);
-              })
-              .orElseThrow(BoardServiceException::new)
-      );
+      return createBoardBoxFromNotation(importPdnPayload.getArticleId(), notation, authUser);
     } catch (ParserLogException | ParserCreationException e) {
       logger.error("PARSE ERROR: " + e.getMessage(), e);
-      throw new BoardServiceException(ErrorMessages.UNPARSABLE_PDN_CONTENT);
+      throw RequestException.internalServerError(ErrorMessages.UNPARSABLE_PDN_CONTENT, e.getMessage());
+    } catch (BoardServiceException be) {
+      logger.error("PARSE ERROR: " + be.getMessage(), be);
+      throw RequestException.internalServerError(be.getMessage());
     }
   }
 
-  Optional<BoardBox> createBoardBoxFromNotation(DomainId articleId, Notation fromNotation, AuthUser authUser) {
+  BoardBox createBoardBoxFromNotation(DomainId articleId, Notation parsedNotation, AuthUser authUser) {
     BoardBox boardBox = new BoardBox();
     boardBox.setArticleId(articleId);
+    boardBox.setUserId(authUser.getUserId());
     Utils.setRandomIdAndCreatedAt(boardBox);
 
-    NotationHistory notationHistory = new NotationHistory();
-    boardService.createBoardFromNotation(fromNotation.getNotationHistory(),
-        notationHistory, fromNotation.getRules());
-    fromNotation.setNotationHistory(notationHistory);
+    NotationHistory toFillNotationHistory = NotationHistory.create();
+    boardService.fillNotation(boardBox.getDomainId(), parsedNotation.getNotationHistory(), toFillNotationHistory, parsedNotation.getRules());
+    parsedNotation.setNotationHistory(toFillNotationHistory);
+    Utils.setRandomIdAndCreatedAt(parsedNotation);
+    notationService.save(authUser, parsedNotation);
 
     // switch boardBox to the first board
-    if (notationHistory.size() > 1
-        && !notationHistory.get(1).getMoves().isEmpty()) {
-      DomainId firstBoardId = notationHistory.get(1).getMoves().getFirst().getMove().getFirst().getBoardId();
-      return boardDao.findById(firstBoardId)
-          .map(firstBoard -> {
-            Utils.setRandomIdAndCreatedAt(fromNotation);
-            boardBox.setNotationId(fromNotation.getDomainId());
-            boardBox.setNotation(fromNotation.deepClone());
-            boardBox.setBoardId(firstBoardId);
-            boardBox.setBoard(firstBoard);
-            return boardBox;
-          })
-          .map((b) -> saveAndFillBoard(authUser, b));
-    }
-    return Optional.empty();
+    return toFillNotationHistory.getLastNotationBoardId()
+        .map(firstBoardId -> {
+          var firstBoard = boardDao.findById(firstBoardId);
+          boardService.updateBoard(firstBoard);
+
+          boardBox.setNotationId(parsedNotation.getDomainId());
+          boardBox.setNotation(parsedNotation);
+          boardBox.setBoardId(firstBoardId);
+          boardBox.setBoard(firstBoard);
+          boardBoxDao.save(boardBox);
+          return boardBox;
+        })
+        .orElseThrow(() -> RequestException.internalServerError(ErrorMessages.UNABLE_TO_PARSE_PDN));
   }
 
-  Optional<BoardBox> find(BoardBox boardBox, AuthUser authUser) {
-    Optional<BoardBox> board = findBoardAndPutInStore(authUser, boardBox);
+  BoardBox find(BoardBox boardBox, AuthUser authUser) {
+    BoardBox board = findBoardAndPutInStore(authUser, boardBox);
     boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     if (secure) {
-      return board.map(b -> b.readonly(false))
-          .map(bb -> updateBoardBox(authUser, bb));
+      board.setReadonly(false);
     } else {
-      return board.map(b -> b.readonly(true))
-          .map(bb -> updateBoardBox(authUser, bb));
+      board.setReadonly(true);
     }
+    return updateBoardBox(authUser, board);
   }
 
-  public Optional<BoardBox> findById(DomainId boardBoxId, AuthUser authUser) {
-    BoardBox boardBoxResult = boardBoxStoreService.get(authUser.getUserSession(), boardBoxId)
+  public BoardBox findById(DomainId boardBoxId, AuthUser authUser) {
+    return boardBoxStoreService.get(authUser.getUserSession(), boardBoxId)
         .map(boardBox -> updateBoardBox(authUser, boardBox))
-        .orElseGet(() ->
-            boardBoxDao.findById(boardBoxId)
-                .map(boardBox -> updateBoardBox(authUser, boardBox))
-                .orElseThrow(BoardServiceException::new)
-        );
-    return Optional.of(boardBoxResult);
+        .orElseGet(() -> {
+          var boardBox = boardBoxDao.findById(boardBoxId);
+          updateBoardBox(authUser, boardBox);
+          return boardBox;
+        });
   }
 
-  public Optional<BoardBoxes> findByIds(DomainIds boardBoxIds, AuthUser authUser) {
-    List<BoardBox> byUserAndIds = boardBoxDao.findByIds(boardBoxIds);
+  public BoardBoxes findByArticle(DomainId articleId, AuthUser authUser) {
+    List<BoardBox> byUserAndIds;
+    try {
+      byUserAndIds = boardBoxDao.findByArticleId(articleId);
+    } catch (DaoException e) {
+      logger.error(e.getMessage());
+      throw RequestException.noContent();
+    }
+    return fillBoardBoxes(authUser, byUserAndIds);
+  }
+
+  public BoardBoxes findPublicByArticleId(DomainId articleId, AuthUser authUser) {
+    List<BoardBox> byUserAndIds;
+    try {
+      byUserAndIds = boardBoxDao.findPublicByArticleId(articleId);
+    } catch (DaoException e) {
+      logger.error(e.getMessage());
+      throw RequestException.noContent();
+    }
 
     // fill BoardBox
-    for (BoardBox boardBox : byUserAndIds) {
-      Optional<BoardBox> fromStore = boardBoxStoreService.get(authUser.getUserSession(), boardBox.getDomainId());
-      if (fromStore.isPresent()) {
-        fromStore.ifPresent(bb -> {
-          boardBox.setBoard(bb.getBoard());
-          boardBox.setNotation(bb.getNotation());
-        });
-      } else {
-        updateBoardBox(authUser, boardBox);
-      }
-    }
-
-    BoardBoxes boardBoxes = new BoardBoxes();
-    byUserAndIds.forEach(boardBoxes::push);
-    boardBoxes.order();
-    return Optional.of(boardBoxes);
+    return fillBoardBoxes(authUser, byUserAndIds);
   }
 
   void delete(DomainId boardBoxId) {
-    boardBoxDao.findById(boardBoxId)
-        .map(boardBox -> {
-          boardService.delete(boardBox.getBoardId());
-          boardBoxDao.delete(boardBox.getDomainId());
-          return null;
-        });
+    var boardBox = boardBoxDao.findById(boardBoxId);
+    boardService.delete(boardBox.getBoardId());
+    boardBoxDao.delete(boardBox.getDomainId());
   }
 
-  public Optional<BoardBox> highlight(BoardBox boardBox, AuthUser authUser) {
-    return find(boardBox, authUser)
-        .map(updatedBoardBox -> {
-              BoardBox userBoardBox = updatedBoardBox.deepClone();
-              Board clientBoard = boardBox.getBoard();
-              if (resetHighlightIfNotLastBoard(userBoardBox)) {
-                Board noHighlight = boardService.resetHighlightAndUpdate(clientBoard);
-                boardBox.setBoard(noHighlight);
-                return boardBox;
-              }
-              Board currentBoard = userBoardBox.getBoard();
-              Square selectedSquare = clientBoard.getSelectedSquare();
-              if (!selectedSquare.isOccupied()) {
-                return userBoardBox;
-              }
-              try {
-                var highlight = boardService.getHighlight(currentBoard, clientBoard);
-                currentBoard = (Board) highlight.get("serverBoard");
-              } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-                return null;
-              }
-              userBoardBox.setBoard(currentBoard);
-              boardBoxStoreService.put(authUser.getUserSession(), userBoardBox);
-              return userBoardBox;
-            }
-        );
+  public BoardBox highlight(BoardBox boardBox, AuthUser authUser) {
+    var updatedBoardBox = find(boardBox, authUser);
+    BoardBox serverBoardBox = updatedBoardBox.deepClone();
+    Board clientBoard = boardBox.getBoard();
+    if (resetHighlightIfNotLastBoard(serverBoardBox)) {
+      Board noHighlight = boardService.resetHighlightAndUpdate(clientBoard);
+      boardBox.setBoard(noHighlight);
+      return boardBox;
+    }
+    Board currentBoard = serverBoardBox.getBoard();
+    Square selectedSquare = clientBoard.getSelectedSquare();
+    if (!selectedSquare.isOccupied()) {
+      return serverBoardBox;
+    }
+    try {
+      var highlight = boardService.getHighlight(currentBoard, clientBoard);
+      currentBoard = (Board) highlight.get("serverBoard");
+    } catch (BoardServiceException e) {
+      logger.error(e.getMessage());
+      throw RequestException.badRequest(e.getMessage());
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
+      throw RequestException.badRequest();
+    }
+    serverBoardBox.setBoard(currentBoard);
+    boardBoxStoreService.put(authUser.getUserSession(), serverBoardBox);
+    return serverBoardBox;
   }
 
-  public Optional<BoardBox> move(BoardBox boardBox, AuthUser authUser) {
-    return find(boardBox, authUser)
-        .map(updatedBoxOrig -> {
-              BoardBox userBoardBox = updatedBoxOrig.deepClone();
-              if (isNotEditMode(boardBox)) {
-                return null;
-              }
+  public BoardBox move(BoardBox boardBox, AuthUser authUser) {
+    var updatedBoxOrig = find(boardBox, authUser);
+    BoardBox userBoardBox = updatedBoxOrig.deepClone();
+    if (isNotEditMode(boardBox)) {
+      return null;
+    }
 
-              Board serverBoard = userBoardBox.getBoard();
-              Notation notation = userBoardBox.getNotation();
-              NotationHistory notationBoardBox = notation.getNotationHistory();
-              serverBoard.setDriveCount(notationBoardBox.size() - 1);
-              try {
-                Board clientBoard = boardBox.getBoard();
-                serverBoard = boardService.move(serverBoard, clientBoard, notationBoardBox);
-              } catch (BoardServiceException e) {
-                logger.error("Error while moving", e);
-                return null;
-              }
+    Board serverBoard = userBoardBox.getBoard();
+    Notation notation = userBoardBox.getNotation();
+    NotationHistory notationBoardBox = notation.getNotationHistory();
+    serverBoard.setDriveCount(notationBoardBox.size() - 1);
+    try {
+      Board clientBoard = boardBox.getBoard();
+      serverBoard = boardService.move(serverBoard, clientBoard, notationBoardBox);
+    } catch (BoardServiceException e) {
+      logger.error("Error while moving", e);
+      throw RequestException.badRequest(e.getMessage());
+    }
 
-              userBoardBox.setBoard(serverBoard);
-              userBoardBox.setBoardId(serverBoard.getDomainId());
-              notationService.save(authUser, notation);
+    userBoardBox.setBoard(serverBoard);
+    userBoardBox.setBoardId(serverBoard.getDomainId());
+    notationService.save(authUser, notation);
 
-              logger.info("Notation after move: " + notation.getNotationHistory().pdnString());
+    logger.info("Notation after move: " + notation.getNotationHistory().debugPdnString());
 
-              boardBoxDao.save(userBoardBox);
-              return userBoardBox;
-            }
-        );
+    boardBoxDao.save(userBoardBox);
+    return userBoardBox;
   }
 
-  public Optional<BoardBox> changeTurn(BoardBox boardBox, AuthUser authUser) {
-    return find(boardBox, authUser)
-        .map(updatedBox -> {
-          Board inverted = boardBox.getBoard();
-          inverted.setSelectedSquare(null);
-          inverted.setBlackTurn(!inverted.isBlackTurn());
-          boardService.save(inverted);
+  public BoardBox changeTurn(BoardBox boardBox, AuthUser authUser) {
+    var updatedBox = find(boardBox, authUser);
+    Board inverted = boardBox.getBoard();
+    inverted.setSelectedSquare(null);
+    inverted.setBlackTurn(!inverted.isBlackTurn());
+    boardService.save(inverted);
 
-          Board board = boardService.updateBoard(inverted);
-          updatedBox.setBoard(board);
-          boardBoxDao.save(updatedBox);
-          return updatedBox;
-        });
+    boardService.updateBoard(inverted);
+    updatedBox.setBoard(inverted);
+    boardBoxDao.save(updatedBox);
+    return updatedBox;
   }
 
-  public Optional<BoardBox> initBoard(BoardBox boardBox, AuthUser authUser) {
-    return boardBoxDao.find(boardBox).map(bb -> {
-      // reset board
-      DomainId boardId = bb.getBoardId();
-      return boardDao.findById(boardId)
-          .map(board -> {
-            board = boardService.initWithDraughtsOnBoard(board);
-            bb.setBoardId(board.getDomainId());
-            bb.setBoard(board);
+  public BoardBox initBoard(BoardBox boardBox, AuthUser authUser) {
+    throw404IfNotFound(boardBox);
+    // reset board
+    DomainId boardId = boardBox.getBoardId();
+    var board = boardDao.findById(boardId);
+    board = boardService.initWithDraughtsOnBoard(board);
+    boardBox.setBoardId(board.getDomainId());
+    boardBox.setBoard(board);
 
-            // clear notation
-            return notationService.clearNotationInBoardBox(bb);
-          })
-          .orElse(null);
-    });
+    // clear notation
+    return notationService.clearNotationInBoardBox(boardBox);
   }
 
-  public Optional<BoardBox> clearBoard(BoardBox boardBox, AuthUser authUser) {
-    return boardBoxDao.find(boardBox).map(bb -> {
-      // clear board
-      DomainId boardId = bb.getBoardId();
-      return boardDao.findById(boardId)
-          .map(board -> {
-            board = boardService.clearBoard(board);
-            bb.setBoardId(board.getDomainId());
-            bb.setBoard(board);
+  public BoardBox clearBoard(BoardBox boardBox, AuthUser authUser) {
+    throw404IfNotFound(boardBox);
+    // clear board
+    DomainId boardId = boardBox.getBoardId();
+    var board = boardDao.findById(boardId);
+    board = boardService.clearBoard(board);
+    boardBox.setBoardId(board.getDomainId());
+    boardBox.setBoard(board);
 
-            // clear notation
-            return notationService.clearNotationInBoardBox(bb);
-          })
-          .orElse(null);
-    });
+    // clear notation
+    return notationService.clearNotationInBoardBox(boardBox);
   }
 
-  public Optional<BoardBox> save(BoardBox boardBox, AuthUser authUser) {
-    return boardBoxDao.find(boardBox).map(bb -> saveAndFillBoard(authUser, boardBox));
+  public BoardBox save(BoardBox boardBox, AuthUser authUser) {
+    throw404IfNotFound(boardBox);
+    return saveAndFillBoard(authUser, boardBox);
   }
 
   public Optional<BoardBox> loadPreviewBoard(BoardBox boardBox, AuthUser authUser) {
@@ -269,79 +250,68 @@ public class BoardBoxService {
     return Optional.of(boardBox);
   }
 
-  public Optional<BoardBox> addDraught(BoardBox boardBox, AuthUser authUser) {
+  public BoardBox addDraught(BoardBox boardBox, AuthUser authUser) {
     Square selectedSquare = boardBox.getBoard().getSelectedSquare();
     if (selectedSquare == null
         || !selectedSquare.isOccupied()
         || !boardBox.getEditMode().equals(EnumEditBoardBoxMode.PLACE)) {
-      return Optional.empty();
+      throw RequestException.badRequest(ErrorMessages.UNABLE_TO_ADD_DRAUGHT);
     }
     Draught draught = selectedSquare.getDraught();
-    return find(boardBox, authUser)
-        .map(updated -> {
-          Board currentBoard = updated.getBoard();
-          Square squareLink = BoardUtils.findSquareByLink(selectedSquare, currentBoard);
-          if (squareLink == null) {
-            logger.error("Unable to add a draught");
-            return null;
-          }
-          try {
-            currentBoard = boardService.addDraught(currentBoard, squareLink.getNotation(), draught);
-          } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return null;
-          }
-          updated.setBoardId(currentBoard.getDomainId());
-          updated.setBoard(currentBoard);
-          saveAndFillBoard(authUser, updated);
-          return updated;
-        });
+    var updated = find(boardBox, authUser);
+    Board currentBoard = updated.getBoard();
+    Square squareLink = BoardUtils.findSquareByLink(selectedSquare, currentBoard);
+    if (squareLink == null) {
+      logger.error("Unable to add a draught");
+      throw RequestException.badRequest(ErrorMessages.UNABLE_TO_ADD_DRAUGHT);
+    }
+    try {
+      currentBoard = boardService.addDraught(currentBoard, squareLink.getNotation(), draught);
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
+      throw RequestException.badRequest(e.getMessage());
+    }
+    updated.setBoardId(currentBoard.getDomainId());
+    updated.setBoard(currentBoard);
+    saveAndFillBoard(authUser, updated);
+    return updated;
   }
 
-  public Optional<BoardBox> undo(BoardBox boardBox, AuthUser authUser) {
-    return find(boardBox, authUser)
-        .map(filledBoardBox -> {
-          NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
-          NotationDrive forkToDrive = history.getLast().deepClone();
-          return forkNotationFor(authUser, filledBoardBox, forkToDrive);
-        })
-        .orElse(null);
+  public BoardBox undo(BoardBox boardBox, AuthUser authUser) {
+    var filledBoardBox = find(boardBox, authUser);
+    NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
+    NotationDrive forkToDrive = history.getLast().deepClone();
+    return forkNotationForVariants(filledBoardBox, forkToDrive, authUser);
   }
 
-  public Optional<BoardBox> redo(BoardBox boardBox, AuthUser authUser) {
-    return
-        find(boardBox, authUser)
-            .map(filledBoardBox -> {
-              NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
-              NotationDrive switchToDrive = history.getLast().deepClone();
-              return switchNotationTo(authUser, filledBoardBox, switchToDrive, null);
-            })
-            .orElse(null);
+  public BoardBox redo(BoardBox boardBox, AuthUser authUser) {
+    var filledBoardBox = find(boardBox, authUser);
+    NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
+    NotationDrive switchToDrive = history.getLast().deepClone();
+    return switchNotationToVariant(authUser, filledBoardBox, switchToDrive, null);
   }
 
-  public Optional<BoardBox> forkNotation(BoardBox boardBox, AuthUser authUser) {
+  public BoardBoxes viewBranch(BoardBox boardBox, AuthUser token) {
+    switchNotation(boardBox, token);
+    List<BoardBox> byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
+    return fillBoardBoxes(token, byArticleId);
+  }
+
+  public BoardBoxes forkNotation(BoardBox boardBox, AuthUser authUser) {
     NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
-    return forkNotationFor(authUser, boardBox, currentNotationDrive);
+    var filledBoardBox = find(boardBox, authUser);
+    forkNotationForVariants(filledBoardBox, currentNotationDrive, authUser);
+    List<BoardBox> byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
+    return fillBoardBoxes(authUser, byArticleId);
   }
 
-  public Optional<BoardBox> viewBranch(BoardBox boardBox, AuthUser token) {
-    return switchNotation(boardBox, token);
-  }
-
-  public Optional<BoardBox> switchNotation(BoardBox boardBox, AuthUser authUser) {
+  public BoardBoxes switchNotation(BoardBox boardBox, AuthUser authUser) {
     NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
     NotationDrive variantNotationDrive = boardBox.getNotation().getNotationHistory().getVariantNotationDrive();
-    return switchNotationTo(authUser, boardBox, currentNotationDrive, variantNotationDrive);
-  }
-
-  private Optional<BoardBox> forkNotationFor(AuthUser token, BoardBox boardBox, NotationDrive forkFromNotationDrive) {
-    return find(boardBox, token)
-        .map(bb -> forkNotationForVariants(token, bb, forkFromNotationDrive));
-  }
-
-  private Optional<BoardBox> switchNotationTo(AuthUser authUser, BoardBox boardBox, NotationDrive currentNotationDrive, NotationDrive variantNotationDrive) {
-    return find(boardBox, authUser)
-        .map(bb -> switchNotationToVariant(authUser, bb, currentNotationDrive, variantNotationDrive));
+    var filledBoardBox = find(boardBox, authUser);
+    switchNotationToVariant(authUser, filledBoardBox, currentNotationDrive, variantNotationDrive);
+    List<BoardBox> byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
+    return fillBoardBoxes(authUser, byArticleId);
   }
 
   private BoardBox switchNotationToVariant(AuthUser authUser, BoardBox boardBox,
@@ -360,7 +330,7 @@ public class BoardBoxService {
         .orElse(null);
   }
 
-  private BoardBox forkNotationForVariants(AuthUser token, BoardBox boardBox, NotationDrive forkFromNotationDrive) {
+  private BoardBox forkNotationForVariants(BoardBox boardBox, NotationDrive forkFromNotationDrive, AuthUser authUser) {
     Notation notation = boardBox.getNotation();
     NotationHistory notationDrives = notation.getNotationHistory();
     boolean success = notationDrives.forkAt(forkFromNotationDrive);
@@ -368,28 +338,25 @@ public class BoardBoxService {
     if (success) {
       return notationDrives
           .getLastNotationBoardId()
-          .map(boardId -> saveBoardBoxAfterSwitchFork(token, boardBox, boardId))
+          .map(boardId -> saveBoardBoxAfterSwitchFork(authUser, boardBox, boardId))
           .orElse(null);
     }
     return null;
   }
 
   private BoardBox saveBoardBoxAfterSwitchFork(AuthUser authUser, BoardBox boardBox, DomainId boardId) {
-    return boardDao.findById(boardId)
-        .map(board -> {
-          board = boardService.resetHighlightAndUpdate(board);
-          boardDao.save(board);
-          boardBox.setBoard(board);
-          boardBox.setBoardId(board.getDomainId());
-          if (boardBox.isReadonly() && authUser != null) {
-            boardBoxStoreService.put(authUser.getUserSession(), boardBox);
-          } else {
-            boardBoxDao.save(boardBox);
-          }
-          notationService.save(authUser, boardBox.getNotation());
-          return boardBox;
-        })
-        .orElse(null);
+    var board = boardDao.findById(boardId);
+    board = boardService.resetHighlightAndUpdate(board);
+    boardDao.save(board);
+    boardBox.setBoard(board);
+    boardBox.setBoardId(board.getDomainId());
+    if (boardBox.isReadonly() && authUser != null) {
+      boardBoxStoreService.put(authUser.getUserSession(), boardBox);
+    } else {
+      boardBoxDao.save(boardBox);
+    }
+    notationService.save(authUser, boardBox.getNotation());
+    return boardBox;
   }
 
   private boolean isNotEditMode(BoardBox boardBox) {
@@ -403,21 +370,15 @@ public class BoardBoxService {
   }
 
   private BoardBox updateBoardBox(AuthUser authUser, BoardBox boardBox) {
-    Optional<Board> boardOptional = boardService.findById(boardBox.getBoardId());
-    Optional<Notation> notationOptional = notationService.findById(authUser, boardBox.getNotationId());
-    return boardOptional
-        .map(board -> {
-          board = boardService.resetHighlightAndUpdate(board);
-          board.setReadonly(boardBox.isReadonly());
-          boardBox.setBoard(board);
-          notationOptional.ifPresent(notation -> {
-            boardBox.setNotation(notation);
-            boardBox.setNotationId(notation.getDomainId());
-          });
-          boardBoxStoreService.put(authUser.getUserSession(), boardBox);
-          return boardBox;
-        })
-        .orElse(null);
+    Board board = boardService.findById(boardBox.getBoardId());
+    Notation notation = notationService.findById(authUser, boardBox.getNotationId());
+    board = boardService.resetHighlightAndUpdate(board);
+    board.setReadonly(boardBox.isReadonly());
+    boardBox.setBoard(board);
+    boardBox.setNotation(notation);
+    boardBox.setNotationId(notation.getDomainId());
+    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
+    return boardBox;
   }
 
   private BoardBox saveAndFillBoard(AuthUser authUser, BoardBox boardBox) {
@@ -431,21 +392,42 @@ public class BoardBoxService {
     return boardBox;
   }
 
-  private Optional<BoardBox> findBoardAndPutInStore(AuthUser authUser, BoardBox boardBox) {
+  private BoardBox findBoardAndPutInStore(AuthUser authUser, BoardBox boardBox) {
     Optional<BoardBox> fromStore = boardBoxStoreService.get(authUser.getUserSession(), boardBox.getDomainId());
     Supplier<BoardBox> fromDb = () -> {
-      Optional<BoardBox> boardBoxOptional = boardBoxDao.find(boardBox);
-      if (boardBoxOptional.isPresent()) {
-        boardBoxStoreService.put(authUser.getUserSession(), boardBoxOptional.get());
-        return boardBoxOptional.get();
-      }
-      return null;
+      BoardBox resultBoardBox = boardBoxDao.find(boardBox);
+      boardBoxStoreService.put(authUser.getUserSession(), resultBoardBox);
+      return resultBoardBox;
     };
     boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     if (secure) {
-      return Optional.ofNullable(fromDb.get());
+      return fromDb.get();
     } else {
-      return Optional.of(fromStore.orElseGet(fromDb));
+      return fromStore.orElseGet(fromDb);
     }
+  }
+
+  private BoardBoxes fillBoardBoxes(AuthUser authUser, List<BoardBox> byUserAndIds) {
+    // fill BoardBox
+    for (BoardBox boardBox : byUserAndIds) {
+      Optional<BoardBox> fromStore = boardBoxStoreService.get(authUser.getUserSession(), boardBox.getDomainId());
+      if (fromStore.isPresent()) {
+        fromStore.ifPresent(bb -> {
+          boardBox.setBoard(bb.getBoard());
+          boardBox.setNotation(bb.getNotation());
+        });
+      } else {
+        updateBoardBox(authUser, boardBox);
+      }
+    }
+
+    BoardBoxes boardBoxes = new BoardBoxes();
+    byUserAndIds.forEach(boardBoxes::push);
+    boardBoxes.order();
+    return boardBoxes;
+  }
+
+  private void throw404IfNotFound(BoardBox boardBox) {
+    boardBoxDao.find(boardBox);
   }
 }

@@ -68,7 +68,6 @@ public class BoardUtils {
     boardClone.setWhiteDraughts(whiteDraughts);
 
     boardClone.setAssignedSquares(boardSquares);
-//    updateMoveSquaresDimensionAndDiagonals(boardClone);
     updateMoveSquaresHighlightAndDraught(boardClone, board);
 
     List<Square> squares = getSquares(boardSquares, rules.getDimension());
@@ -233,7 +232,7 @@ public class BoardUtils {
     addDraught(board, notation, black, false, true);
   }
 
-  public static Board moveDraught(Board board, List<Square> capturedSquares, DomainId prevBoardId,
+  public static Board moveDraught(Board board, Set<Square> capturedSquares, DomainId prevBoardId,
                                   NotationHistory notationHistory) {
     notationHistory.getNotation().getLast().setSelected(false);
     performMoveDraught(board, capturedSquares);
@@ -431,8 +430,8 @@ public class BoardUtils {
    */
   public static MovesList getHighlightedBoard(boolean blackTurn, Board board) {
     MovesList movesList = getHighlightedAssignedMoves(board.getSelectedSquare());
-    List<Square> allowed = movesList.getAllowed();
-    List<Square> captured = movesList.getCaptured();
+    Set<Square> allowed = movesList.getAllowed();
+    Set<Square> captured = movesList.getCaptured();
     boolean isCapturedFound = !captured.isEmpty();
     if (isCapturedFound) {
       highlightCaptured(board, allowed, captured);
@@ -442,7 +441,7 @@ public class BoardUtils {
     }
   }
 
-  private static MovesList getHighlightSimple(Board board, MovesList movesList, List<Square> allowed, boolean blackTurn) {
+  private static MovesList getHighlightSimple(Board board, MovesList movesList, Set<Square> allowed, boolean blackTurn) {
     Set<String> draughtsNotations;
     if (blackTurn) {
       draughtsNotations = board.getBlackDraughts().keySet();
@@ -481,7 +480,7 @@ public class BoardUtils {
     return movesList;
   }
 
-  private static void highlightCaptured(Board board, List<Square> allowed, List<Square> captured) {
+  private static void highlightCaptured(Board board, Set<Square> allowed, Set<Square> captured) {
     board.getAssignedSquares().forEach((Square square) -> {
       square.setHighlight(false);
       if (square.isOccupied()) {
@@ -499,7 +498,7 @@ public class BoardUtils {
     });
   }
 
-  private static void performMoveDraught(Board board, List<Square> capturedSquares) {
+  private static void performMoveDraught(Board board, Set<Square> capturedSquares) {
     Square sourceSquare = board.getSelectedSquare();
     Square targetSquare = board.getNextSquare();
     if (!targetSquare.isHighlight()
@@ -531,7 +530,7 @@ public class BoardUtils {
     replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
   }
 
-  private static void markCapturedDraught(List<Square> capturedSquares, Board board,
+  private static void markCapturedDraught(Set<Square> capturedSquares, Board board,
                                           Square sourceSquare, Square targetSquare) {
     if (!capturedSquares.isEmpty()) {
       List<Square> toBeatSquares = findCapturedSquare(sourceSquare, targetSquare);
@@ -604,6 +603,20 @@ public class BoardUtils {
   }
 
   public static void updateMoveSquaresHighlightAndDraught(Board currentBoard, Board origBoard) {
+    List<Square> squares = currentBoard.getSquares();
+    List<Square> origBoardSquares = origBoard.getSquares();
+    // restore the captured draught mark
+    for (int i = 0; i < squares.size(); i++) {
+      Square square = squares.get(i);
+      if (square != null && square.isOccupied()) {
+        Square origSquare = origBoardSquares.get(i);
+        if (origSquare.isOccupied()) {
+          square.getDraught().setCaptured(origSquare.getDraught().isCaptured());
+          square.getDraught().setMarkCaptured(origSquare.getDraught().isMarkCaptured());
+        }
+      }
+    }
+
     int dim = currentBoard.getRules().getDimension();
     Square selectedSquare = findSquareByLink(origBoard.getSelectedSquare(), currentBoard);
     if (selectedSquare != null) {

@@ -3,6 +3,9 @@ package com.workingbit.article.controller;
 import com.despegar.http.client.*;
 import com.despegar.sparkjava.test.SparkServer;
 import com.workingbit.article.ArticleEmbedded;
+import com.workingbit.share.dao.DaoFilters;
+import com.workingbit.share.dao.Unary;
+import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.model.*;
@@ -17,10 +20,14 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import spark.servlet.SparkApplication;
+import spark.utils.IOUtils;
 
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.workingbit.article.config.Authority.*;
 import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
 import static com.workingbit.orchestrate.util.AuthRequestUtil.hasAuthorities;
 import static com.workingbit.share.common.RequestConstants.*;
@@ -36,7 +43,7 @@ import static org.junit.Assert.*;
  */
 public class ArticleControllerTest {
 
-  private static String articleUrl = "/api/v1/article";
+  private static String articleUrl = "/api/v1";
   private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
 
   @Before
@@ -79,10 +86,10 @@ public class ArticleControllerTest {
   public void create_article() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
     // can't create
-    post("", createArticlePayload, AuthUser.anonymous(), HTTP_FORBIDDEN);
+    post(ARTICLE_PROTECTED.getPath(), createArticlePayload, AuthUser.anonymous(), HTTP_FORBIDDEN);
 
     AuthUser headers = register();
-    CreateArticleResponse articleAnswer = (CreateArticleResponse) post("", createArticlePayload, headers, HTTP_CREATED).getBody();
+    CreateArticleResponse articleAnswer = (CreateArticleResponse) post(ARTICLE_PROTECTED.getPath(), createArticlePayload, headers, HTTP_CREATED).getBody();
 
     assertNotNull(articleAnswer);
     Article article = articleAnswer.getArticle();
@@ -101,7 +108,7 @@ public class ArticleControllerTest {
   public void save_article() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
     AuthUser headers = register();
-    Answer answer = post("", createArticlePayload, headers);
+    Answer answer = post(ARTICLE_PROTECTED.getPath(), createArticlePayload, headers);
     assertEquals(HTTP_CREATED, answer.getStatusCode());
 
     Article article = ((CreateArticleResponse) answer.getBody()).getArticle();
@@ -109,7 +116,7 @@ public class ArticleControllerTest {
     article.setTitle(title);
     String content = Utils.getRandomString20();
     article.setContent(content);
-    MessageResponse articleNotAuthorized = put("", article).getMessage();
+    MessageResponse articleNotAuthorized = put(ARTICLE_PROTECTED.getPath(), article).getMessage();
     assertEquals(HTTP_FORBIDDEN, articleNotAuthorized.getCode());
 
     UserInfo userInfo = orchestralService
@@ -120,7 +127,7 @@ public class ArticleControllerTest {
     UserInfo savedUserInfo = (UserInfo) answer.getBody();
     headers = answer.getAuthUser();
     assertTrue(savedUserInfo.getAuthorities().contains(EnumAuthority.BANNED));
-    articleNotAuthorized = put("", article, headers).getMessage();
+    articleNotAuthorized = put(ARTICLE_PROTECTED.getPath(), article, headers).getMessage();
     assertEquals(HTTP_FORBIDDEN, articleNotAuthorized.getCode());
 
     headers = answer.getAuthUser();
@@ -129,7 +136,7 @@ public class ArticleControllerTest {
     headers = answer.getAuthUser();
     assertTrue(headers.getAuthorities().contains(EnumAuthority.BANNED));
 
-    answer = put("", article, headers);
+    answer = put(ARTICLE_PROTECTED.getPath(), article, headers);
     assertEquals(HTTP_FORBIDDEN, answer.getStatusCode());
 
     AuthUser admin = register();
@@ -150,13 +157,13 @@ public class ArticleControllerTest {
     String newContent = Utils.getRandomString20();
     article.setTitle(newTitle);
     article.setContent(newContent);
-    article = (Article) put("", article, headers).getBody();
+    article = (Article) put(ARTICLE_PROTECTED.getPath(), article, headers).getBody();
 
-    article = (Article) put("", article, headers).getBody();
+    article = (Article) put(ARTICLE_PROTECTED.getPath(), article, headers).getBody();
 
     assertEquals(newTitle, article.getTitle());
 
-    article = (Article) get("/" + article.getHumanReadableUrl()).getBody();
+    article = (Article) get(ARTICLE_PROTECTED.getPath() + "/" + article.getHumanReadableUrl()).getBody();
     assertEquals(article.getTitle(), newTitle);
     assertNotNull(article.getContent(), newContent);
   }
@@ -171,18 +178,46 @@ public class ArticleControllerTest {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
     AuthUser headers = register();
 
-    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, headers).getBody();
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post(ARTICLE_PROTECTED.getPath(), createArticlePayload, headers).getBody();
     Article article = articleResponse.getArticle();
     BoardBox board = articleResponse.getBoard();
     assertNotNull(article.getId());
     assertNotNull(article.getSelectedBoardBoxId());
     assertNotNull(board.getId());
 
-    article = (Article) get("/" + article.getHumanReadableUrl()).getBody();
+    article = (Article) get(ARTICLE_PROTECTED.getPath() + "/" + article.getHumanReadableUrl()).getBody();
     assertNotNull(article);
 
-    article = (Article) get("/" + article.getHumanReadableUrl()).getBody();
+    article = (Article) get(ARTICLE_PROTECTED.getPath() + "/" + article.getHumanReadableUrl()).getBody();
     assertNotNull(article);
+  }
+
+  @Test
+  public void find_public_board_ids() throws Exception {
+    CreateArticlePayload createArticlePayload = getCreateArticlePayload();
+    AuthUser headers = register();
+
+    Answer articleResponseAnswer = post(ARTICLE_PROTECTED.getPath(), createArticlePayload, headers);
+    CreateArticleResponse articleResponse = (CreateArticleResponse) articleResponseAnswer.getBody();
+    Article article = articleResponse.getArticle();
+    BoardBox board = articleResponse.getBoard();
+    assertNotNull(article.getId());
+    assertNotNull(article.getSelectedBoardBoxId());
+    assertNotNull(board.getId());
+    headers = articleResponseAnswer.getAuthUser();
+
+    var parsePdn = ImportPdnPayload.createBoardPayload();
+    parsePdn.setArticleId(article.getDomainId());
+    parsePdn.setRules(EnumRules.RUSSIAN);
+    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/parse_simple.pdn");
+    StringWriter writer = new StringWriter();
+    IOUtils.copy(resourceAsStream, writer);
+    parsePdn.setPdn(writer.toString());
+
+    Answer answer = post(ARTICLE_IMPORT_PDN_PROTECTED.getPath(), parsePdn, headers, HTTP_CREATED);
+    headers = answer.getAuthUser();
+    articleResponse = (CreateArticleResponse) answer.getBody();
+//    assertEquals(2, articleResponse.getArticle().getBoardBoxIds().size());
   }
 
   /**
@@ -199,7 +234,7 @@ public class ArticleControllerTest {
     AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 
-    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post(ARTICLE_PROTECTED.getPath(), createArticlePayload, registered).getBody();
     Article article = articleResponse.getArticle();
     BoardBox board = articleResponse.getBoard();
     assertNotNull(article.getId());
@@ -207,14 +242,14 @@ public class ArticleControllerTest {
     assertNotNull(board.getId());
 
     article.setArticleStatus(EnumArticleStatus.PUBLISHED);
-    article = (Article) put("", article, registered).getBody();
+    article = (Article) put(ARTICLE_PROTECTED.getPath(), article, registered).getBody();
 
-    Articles articles = (Articles) get("s").getBody();
+    Articles articles = (Articles) get(ARTICLES.getPath()).getBody();
     String articleId = article.getId();
     article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(articleId))).findFirst().get();
     assertNotNull(article);
 
-    articles = (Articles) get("s").getBody();
+    articles = (Articles) get(ARTICLES.getPath()).getBody();
     article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(articleId))).findFirst().get();
     assertNotNull(article);
 
@@ -224,7 +259,7 @@ public class ArticleControllerTest {
     assertTrue(hasAuthorities(singleton(EnumAuthority.ANONYMOUS), loggedout.getAuthorities()));
 
     createArticlePayload = getCreateArticlePayload();
-    int statusCode = post("", createArticlePayload, registered).getStatusCode();
+    int statusCode = post(ARTICLE_PROTECTED.getPath(), createArticlePayload, registered).getStatusCode();
     assertEquals(HTTP_FORBIDDEN, statusCode);
 
     AuthUser loggedIn = orchestralService.authorize(userCredentials).get();
@@ -243,35 +278,38 @@ public class ArticleControllerTest {
     AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 
-     post("", createArticlePayload, registered).getBody();
-    List<SimpleFilter> filters = new ArrayList<>();
-    filters.add(new SimpleFilter("articleStatus", "DRAFT", " = ", "S"));
+    post(ARTICLE_PROTECTED.getPath(), createArticlePayload, registered).getBody();
+    DaoFilters filters = new DaoFilters();
+    filters.add(new ValueFilter("articleStatus", "DRAFT", " = ", "S"));
     registered.parseFilters(dataToJson(filters));
-    Answer answer = get("s", registered, HTTP_OK);
+    Answer answer = get(ARTICLES.getPath(), registered, HTTP_OK);
     Articles articles = (Articles) answer.getBody();
     assertEquals(1, articles.getArticles().size());
     registered = answer.getAuthUser();
 
     createArticlePayload = getCreateArticlePayload();
-    CreateArticleResponse articleResponse = (CreateArticleResponse) post("", createArticlePayload, registered).getBody();
+    CreateArticleResponse articleResponse = (CreateArticleResponse) post(ARTICLE_PROTECTED.getPath(), createArticlePayload, registered).getBody();
     Article article = articleResponse.getArticle();
 
     article.setArticleStatus(EnumArticleStatus.PUBLISHED);
-    article = (Article) put("", article, registered).getBody();
+    article = (Article) put(ARTICLE_PROTECTED.getPath(), article, registered).getBody();
 
-    filters = new ArrayList<>();
-    filters.add(new SimpleFilter("articleStatus", "PUBLISHED", " = ", "S"));
+    filters = new DaoFilters();
+    filters.add(new ValueFilter("articleStatus", "PUBLISHED", " = ", "S"));
     registered.parseFilters(dataToJson(filters));
-    answer = get("s", registered, HTTP_OK);
+    answer = get(ARTICLES.getPath(), registered, HTTP_OK);
     articles = (Articles) answer.getBody();
     assertEquals(1, articles.getArticles().size());
     registered = answer.getAuthUser();
 
-    filters = new ArrayList<>();
-    filters.add(new SimpleFilter("articleStatus", "DRAFT", " = ", "S"));
-    filters.add(new SimpleFilter("articleStatus", "PUBLISHED", " = ", "S"));
+    filters = new DaoFilters();
+    filters.add(new Unary("("));
+    filters.add(new ValueFilter("articleStatus", "DRAFT", " = ", "S"));
+    filters.add(new Unary("or"));
+    filters.add(new ValueFilter("articleStatus", "PUBLISHED", " = ", "S"));
+    filters.add(new Unary(")"));
     registered.parseFilters(dataToJson(filters));
-    articles = (Articles) get("s", registered, HTTP_OK).getBody();
+    articles = (Articles) get(ARTICLES.getPath(), registered, HTTP_OK).getBody();
     assertEquals(2, articles.getArticles().size());
   }
 
@@ -289,7 +327,7 @@ public class ArticleControllerTest {
   }
 
   private Answer post(String path, Object payload, AuthUser authUser) throws HttpClientException {
-    Map<String, String> headers = new HashMap<String, String>() {{
+    Map<String, String> headers = new HashMap<>() {{
       put(ACCESS_TOKEN_HEADER, authUser.getAccessToken());
       put(USER_SESSION_HEADER, authUser.getUserSession());
     }};

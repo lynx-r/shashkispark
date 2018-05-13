@@ -55,6 +55,7 @@ public class NotationParserService {
       logger.error("Parse error ", e);
     }
 
+    notationDrives.setHistory(notationDrives.getNotation());
     notation.setTags(headers);
     notation.setNotationHistory(notationDrives);
 
@@ -90,7 +91,8 @@ public class NotationParserService {
                 gameMoveNumber = 0;
 
                 String moveNumber = ((Token) gameMove).getImage();
-                notationDrive.setNotationNumber(moveNumber);
+                int notationNumberInt = Integer.parseInt(moveNumber.substring(0, moveNumber.indexOf(".")));
+                notationDrive.setNotationNumberInt(notationNumberInt);
                 break;
               case MOVE:
                 gameMoveNumber++;

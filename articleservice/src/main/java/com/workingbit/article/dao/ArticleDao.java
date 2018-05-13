@@ -5,16 +5,18 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.workingbit.article.config.AppProperties;
 import com.workingbit.share.dao.BaseDao;
+import com.workingbit.share.dao.DaoFilters;
+import com.workingbit.share.dao.Unary;
+import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.SimpleFilter;
-import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
-
-import static com.workingbit.article.config.AppConstants.VALID_FILTER_KEYS;
-import static com.workingbit.article.config.AppConstants.VALID_FILTER_VALUES;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Aleksey Popryaduhin on 18:16 09/08/2017.
@@ -25,10 +27,10 @@ public class ArticleDao extends BaseDao<Article> {
     super(Article.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
   }
 
-  public Optional<Article> findActiveById(String entityKey) {
+  public Article findActiveById(String entityKey) {
     if (StringUtils.isBlank(entityKey)) {
       logger.info("Entity key is null");
-      return Optional.empty();
+      throw RequestException.notFound404();
     }
     logger.info("Find by key: " + entityKey);
 
@@ -40,10 +42,10 @@ public class ArticleDao extends BaseDao<Article> {
         .withExpressionAttributeValues(eav);
 
     PaginatedQueryList<Article> queryList = getDynamoDBMapper().query(Article.class, queryExpression);
-    if (!queryList.isEmpty()) {
-      return Optional.of(queryList.get(0));
+    if (queryList.isEmpty()) {
+      throw RequestException.notFound404();
     }
-    return Optional.empty();
+    return queryList.get(0);
   }
 
   //    @Override
@@ -56,22 +58,40 @@ public class ArticleDao extends BaseDao<Article> {
 //    save(board);
 //  }
 
-  public List<Article> findPublished(int limit, AuthUser authUser, List<SimpleFilter> filters) {
+  public List<Article> findPublishedBy(int limit, AuthUser authUser) {
     logger.info("Find all published with limit " + limit);
-    Map<String, AttributeValue> eav = new HashMap<>();
-    String filter = "";
-    if (filters.isEmpty()) {
-      eav.put(":published", new AttributeValue().withS(EnumArticleStatus.PUBLISHED.name()));
-      filter = "articleStatus = :published and ";
-    }
-    return findByFilter(limit, filters, filter, eav, VALID_FILTER_KEYS, VALID_FILTER_VALUES);
+    DaoFilters filters = authUser.getFilters();
+//    if (authUser.getFilters().isEmpty()) {
+//      filters.add(new ValueFilter("articleStatus", EnumArticleStatus.PUBLISHED.name(), "=", "S"));
+//    }
+    addUserFilter(filters, authUser.getUserId().getId());
+    List<Article> articles = findByFilter(filters);
+    articles.sort(Comparator.comparing(Article::getArticleStatus));
+    return articles;
+  }
+
+  public List<Article> findPublished(int limit) {
+    logger.info("Find all published with limit " + limit);
+    List<Article> articles = findByFilter(new DaoFilters());
+    articles.sort(Comparator.comparing(Article::getArticleStatus));
+    return articles;
   }
 
 //  public List<Article> findPublished(int limit) {
 //    return findPublished(limit, null);
 //  }
 
-  public Optional<Article> findByHru(String articleHru) {
+  public Article findByHru(String articleHru) {
     return findByAttributeIndex(articleHru, "humanReadableUrl", "humanReadableUrlIndex");
+  }
+
+  private DaoFilters addUserFilter(DaoFilters filters, String userId) {
+    if (!filters.containsKey("userId.id")) {
+      if (!filters.isEmpty()) {
+        filters.add(new Unary("and"));
+      }
+      filters.add(new ValueFilter("userId.id", userId, "=", "S"));
+    }
+    return filters;
   }
 }

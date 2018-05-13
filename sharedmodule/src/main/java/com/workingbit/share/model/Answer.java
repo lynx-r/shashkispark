@@ -2,6 +2,7 @@ package com.workingbit.share.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.util.Utils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -48,6 +49,10 @@ public class Answer {
   public static Answer empty() {
     return new Answer(null, null)
         .statusCode(HTTP_OK);
+  }
+
+  public static Answer requestException(RequestException exception) {
+    return error(exception.getCode(), exception.getMessages());
   }
 
   public Answer statusCode(int statusCode) {

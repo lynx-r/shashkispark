@@ -1,4 +1,4 @@
-package com.workingbit.board.grammar;/*
+/*
  * PdnReadingParser.java
  *
  * THIS FILE HAS BEEN GENERATED AUTOMATICALLY. DO NOT EDIT!
@@ -9,9 +9,15 @@ package com.workingbit.board.grammar;/*
  * Copyright (c) 2009-2012 Wieger Wesselink.
  */
 
-import net.percederberg.grammatica.parser.*;
+package com.workingbit.board.grammar;
 
 import java.io.Reader;
+
+import net.percederberg.grammatica.parser.ParserCreationException;
+import net.percederberg.grammatica.parser.ProductionPattern;
+import net.percederberg.grammatica.parser.ProductionPatternAlternative;
+import net.percederberg.grammatica.parser.RecursiveDescentParser;
+import net.percederberg.grammatica.parser.Tokenizer;
 
 /**
  * A token stream parser.

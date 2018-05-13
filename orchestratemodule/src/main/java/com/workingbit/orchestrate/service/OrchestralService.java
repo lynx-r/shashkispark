@@ -12,6 +12,7 @@ import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.UnirestUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -26,6 +27,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import static com.workingbit.orchestrate.util.RedisUtil.putInternalRequest;
+import static com.workingbit.share.common.DBConstants.DATE_TIME_FORMATTER;
 import static com.workingbit.share.util.Utils.getRandomString20;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -152,7 +154,13 @@ public class OrchestralService {
       Class[] classParams = Arrays.stream(params).map(Object::getClass).toArray(Class[]::new);
       Method method = getClass().getMethod(methodName, classParams);
       return (Optional<Answer>) method.invoke(this, params);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+    }catch(InvocationTargetException te) {
+      logger.error("INTERNAL REQUEST EXCEPTION: " + te.getMessage());
+      if (te.getTargetException() instanceof RequestException) {
+        throw ((RequestException) te.getTargetException());
+      }
+      throw RequestException.forbidden();
+    } catch (NoSuchMethodException | IllegalAccessException e) {
       logger.error("INTERNAL CALL FAIL: " + e.getMessage());
       throw RequestException.forbidden();
     }
@@ -164,6 +172,15 @@ public class OrchestralService {
 
   private Map<String, String> getAuthHeaders(AuthUser authUser) {
     return new HashMap<>() {{
+      DomainId userId = authUser.getUserId();
+      if (userId != null) {
+        put(RequestConstants.USER_ID_HEADER, userId.getId());
+        put(RequestConstants.USER_CREATED_AT_HEADER, userId.getCreatedAt().format(DATE_TIME_FORMATTER));
+      }
+      String username = authUser.getUsername();
+      if (StringUtils.isNotBlank(username)) {
+        put(RequestConstants.USERNAME_HEADER, username);
+      }
       put(RequestConstants.ACCESS_TOKEN_HEADER, authUser.getAccessToken());
       put(RequestConstants.USER_SESSION_HEADER, authUser.getUserSession());
       put(RequestConstants.INTERNAL_KEY_HEADER, authUser.getInternalKey());
@@ -180,7 +197,7 @@ public class OrchestralService {
       if (response.getStatus() == HTTP_OK || response.getStatus() == HTTP_CREATED) {
         return Optional.of(response.getBody());
       }
-      throw RequestException.forbidden();
+      throw RequestException.requestException(response.getBody().getMessage());
     } catch (UnirestException e) {
       logger.error("Unirest exception", e);
     }

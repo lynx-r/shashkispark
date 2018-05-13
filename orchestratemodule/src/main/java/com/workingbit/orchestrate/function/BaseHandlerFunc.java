@@ -32,7 +32,7 @@ public interface BaseHandlerFunc<T extends Payload> {
     if (authUser.getInternalKey() != null) {
       boolean isAuthUserValid = checkInternalRequest(authUser.getInternalKey(), authUser);
       if (!isAuthUserValid) {
-        throw RequestException.invalidInternalRequest();
+        throw RequestException.badRequest();
       }
     }
     if (!hasAuthorities(authUser.getAuthorities(), Set.of(EnumAuthority.INTERNAL))) {
@@ -100,10 +100,6 @@ public interface BaseHandlerFunc<T extends Payload> {
       processed = process(data, authenticated);
       processed.setAuthUser(authenticated);
     } else {
-      return Answer.error(HTTP_BAD_REQUEST, violations.toArray(new String[0]));
-    }
-    boolean isResponseSuccess = processed.getStatusCode() != HTTP_OK || processed.getStatusCode() != HTTP_CREATED;
-    if (!isResponseSuccess) {
       return Answer.error(HTTP_BAD_REQUEST, violations.toArray(new String[0]));
     }
     return processed;

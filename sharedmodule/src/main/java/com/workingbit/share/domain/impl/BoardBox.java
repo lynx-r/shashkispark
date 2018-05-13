@@ -69,8 +69,15 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "readonly")
   private boolean readonly;
 
+  /**
+   * Показывать ли эту доску в просмотре статьи когда пользователь не залогинен
+   */
+  @DynamoDBAttribute(attributeName = "visiblePublic")
+  private boolean visiblePublic;
+
   public BoardBox() {
     editMode = EnumEditBoardBoxMode.EDIT;
+    visiblePublic = true;
   }
 
   public BoardBox(Board board) {

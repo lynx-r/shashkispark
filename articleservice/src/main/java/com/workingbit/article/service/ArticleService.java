@@ -1,7 +1,9 @@
 package com.workingbit.article.service;
 
+import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
@@ -16,6 +18,7 @@ import java.util.Optional;
 import static com.workingbit.article.ArticleEmbedded.*;
 import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
 import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 /**
  * Created by Aleksey Popryaduhin on 09:05 28/09/2017.
@@ -24,14 +27,19 @@ public class ArticleService {
 
   private final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
-  public Optional<CreateArticleResponse> createArticle(CreateArticlePayload articleAndBoard, AuthUser authUser) throws RequestException {
+  public CreateArticleResponse createArticle(CreateArticlePayload articleAndBoard, AuthUser authUser) throws RequestException {
     var article = articleAndBoard.getArticle();
     article.setUserId(authUser.getUserId());
 
     Optional<Answer> userInfoAnswer = orchestralService.internal(authUser, "userInfoAnswer", authUser);
     userInfoAnswer.ifPresent(answer -> article.setAuthor(((UserInfo) answer.getBody()).getUsername()));
 
-    boolean present = articleDao.findByHru(article.getHumanReadableUrl()).isPresent();
+    boolean present = true;
+    try {
+      articleDao.findByHru(article.getHumanReadableUrl());
+    } catch (DaoException e) {
+      present = false;
+    }
     Utils.setArticleUrlAndIdAndCreatedAt(article, present);
     article.setArticleStatus(EnumArticleStatus.DRAFT);
 
@@ -47,120 +55,120 @@ public class ArticleService {
       createArticleResponse.setArticle(article);
       createArticleResponse.setBoard(boardBox);
 
-      article.getBoardBoxIds().add(new DomainId(boardBox));
+//      article.getBoardBoxIds().add(new DomainId(boardBox));
       articleDao.save(article);
     } else {
       logger.error("Unable to create board");
-      return Optional.empty();
+      throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CREATE_BOARD);
     }
-    return Optional.of(createArticleResponse);
+    return createArticleResponse;
   }
 
-  public Optional<Article> save(Article articleClient) {
-    return articleDao.find(articleClient)
-        .map(article -> {
-          if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
-            return null;
-          }
-          if (StringUtils.isNotBlank(articleClient.getTitle())) {
-            String title = articleClient.getTitle().trim();
-            article.setTitle(title);
-          }
-          if (StringUtils.isNotBlank(articleClient.getContent())) {
-            String content = articleClient.getContent().trim();
-            article.setContent(content);
-          }
-          article.setArticleStatus(articleClient.getArticleStatus());
-          article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
-          articleDao.save(article);
-          return article;
-        });
+  public Article save(Article articleClient) {
+    var article = articleDao.find(articleClient);
+    if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
+      throw RequestException.badRequest(ErrorMessages.ARTICLE_IS_DELETED);
+    }
+    if (StringUtils.isNotBlank(articleClient.getTitle())) {
+      String title = articleClient.getTitle().trim();
+      article.setTitle(title);
+    }
+    if (StringUtils.isNotBlank(articleClient.getContent())) {
+      String content = articleClient.getContent().trim();
+      article.setContent(content);
+    }
+    article.setArticleStatus(articleClient.getArticleStatus());
+    article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
+    articleDao.save(article);
+    return article;
   }
 
-  public Optional<Article> cache(Article articleClient, AuthUser token) {
-    return articleDao.find(articleClient)
-        .map(article -> {
-          if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
-            return null;
-          }
-          article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
-          articleStoreService.put(token.getUserSession(), article);
-          return article;
-        });
+  public Article cache(Article articleClient, AuthUser token) {
+    var article = articleDao.find(articleClient);
+    if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
+      return null;
+    }
+    article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
+    articleStoreService.put(token.getUserSession(), article);
+    return article;
   }
 
-  public Optional<CreateArticleResponse> importPdn(ImportPdnPayload importPdnPayload, AuthUser authUser) {
-    return articleDao.findById(importPdnPayload.getArticleId())
-        .map(article -> {
-          if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
-            return null;
-          }
+  public CreateArticleResponse importPdn(ImportPdnPayload importPdnPayload, AuthUser authUser) {
+    var article = articleDao.findById(importPdnPayload.getArticleId());
+    if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
+      throw RequestException.badRequest(ErrorMessages.ARTICLE_IS_DELETED);
+    }
 
-          Optional<Answer> boardBoxAnswer = orchestralService.internal(authUser, "parsePdnAnswer", importPdnPayload, authUser);
-          if (boardBoxAnswer.isPresent() && boardBoxAnswer.get().getStatusCode() == HTTP_CREATED) {
-            BoardBox boardBox = (BoardBox) boardBoxAnswer.get().getBody();
-            article.setSelectedBoardBoxId(boardBox.getDomainId());
-            article.getBoardBoxIds().add(new DomainId(boardBox));
-            articleDao.save(article);
+    Optional<Answer> boardBoxAnswer;
+    if (StringUtils.isBlank(importPdnPayload.getPdn())) {
+      CreateBoardPayload boardRequest = CreateBoardPayload.createBoardPayload();
+      article.setSelectedBoardBoxId(DomainId.getRandomID());
+      boardRequest.setBoardBoxId(article.getSelectedBoardBoxId());
+      boardRequest.setArticleId(article.getDomainId());
+      boardRequest.setUserId(article.getUserId());
+      boardRequest.setRules(importPdnPayload.getRules());
+      boardBoxAnswer = orchestralService.internal(authUser, "createBoardBoxAnswer", boardRequest, authUser);
+    } else {
+      boardBoxAnswer = orchestralService.internal(authUser, "parsePdnAnswer", importPdnPayload, authUser);
+    }
 
-            CreateArticleResponse articleResponse = CreateArticleResponse.createArticleResponse();
-            articleResponse.setArticle(article);
-            articleResponse.setBoard(boardBox);
-            return articleResponse;
-          }
-          return null;
-        });
+    if (boardBoxAnswer.isPresent() && boardBoxAnswer.get().getStatusCode() == HTTP_CREATED) {
+      BoardBox boardBox = (BoardBox) boardBoxAnswer.get().getBody();
+      article.setSelectedBoardBoxId(boardBox.getDomainId());
+//      article.getBoardBoxIds().add(new DomainId(boardBox));
+      articleDao.save(article);
+
+      CreateArticleResponse articleResponse = CreateArticleResponse.createArticleResponse();
+      articleResponse.setArticle(article);
+      articleResponse.setBoard(boardBox);
+      return articleResponse;
+    }
+    throw RequestException.notFound404();
   }
 
-  public Optional<Articles> findAll(String limitStr, AuthUser authUser) {
+  public Articles findAll(String limitStr, AuthUser authUser) {
     int limit = appProperties.articlesFetchLimit();
     if (!StringUtils.isBlank(limitStr)) {
       limit = Integer.parseInt(limitStr);
     }
     Articles articles = new Articles();
-    List<SimpleFilter> filters = getUserFilter(authUser);
-    List<Article> published = articleDao.findPublished(limit, authUser, filters);
-    articles.setArticles(published);
-    return Optional.of(articles);
+    try {
+      List<Article> published;
+      if (authUser.getUserId() == null) {
+        published = articleDao.findPublished(limit);
+      } else {
+        published = articleDao.findPublishedBy(limit, authUser);
+      }
+      articles.setArticles(published);
+      return articles;
+    } catch (DaoException e) {
+      if (e.getCode() == HTTP_NOT_FOUND) {
+        logger.info(e.getMessage());
+        return articles;
+      }
+      throw RequestException.badRequest();
+    }
   }
 
-  public Optional<Article> findById(String articleId) {
-    return articleDao.findActiveById(articleId);
-  }
-
-  public Optional<Article> findByHru(String articleHru, AuthUser token) {
+  public Article findByHru(String articleHru, AuthUser token) {
     return articleDao.findByHru(articleHru);
   }
 
-  public Optional<Article> findByHruCached(String articleHru, String selectedBoardBoxId, AuthUser token) {
-    Optional<Article> article = articleStoreService.get(token.getUserSession(), articleHru, selectedBoardBoxId);
-    return Optional
-        .ofNullable(article
-            .orElseGet(() -> findByHru(articleHru, token).orElse(null))
-        );
+  public Article findByHruCached(String articleHru, String selectedBoardBoxId, AuthUser token) {
+    return articleStoreService
+        .get(token.getUserSession(), articleHru, selectedBoardBoxId)
+        .orElseGet(() -> findByHru(articleHru, token));
   }
 
-  public Optional<Articles> removeById(DomainId articleId, AuthUser authUser) {
-    Optional<Article> articleOpt = articleDao.findById(articleId);
-    return articleOpt.map(article -> {
-      article.setArticleStatus(EnumArticleStatus.REMOVED);
-      articleDao.save(article);
+  public Articles removeById(DomainId articleId, AuthUser authUser) {
+    Article article = articleDao.findById(articleId);
+    article.setArticleStatus(EnumArticleStatus.REMOVED);
+    articleDao.save(article);
 
-      int limit = appProperties.articlesFetchLimit();
-      List<SimpleFilter> filters = getUserFilter(authUser);
-      List<Article> published = articleDao.findPublished(limit, authUser, filters);
-      Articles articles = new Articles();
-      articles.setArticles(published);
-      return articles;
-    });
-  }
-
-  private List<SimpleFilter> getUserFilter(AuthUser authUser) {
-    List<SimpleFilter> filters = authUser.getFilters();
-    if (authUser.getUserId() != null) {
-      SimpleFilter simpleFilter = new SimpleFilter("userId.id", authUser.getUserId().getId(), " = ", "S");
-      filters.add(simpleFilter);
-    }
-    return filters;
+    int limit = appProperties.articlesFetchLimit();
+    List<Article> published = articleDao.findPublishedBy(limit, authUser);
+    Articles articles = new Articles();
+    articles.setArticles(published);
+    return articles;
   }
 }

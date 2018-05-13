@@ -1,5 +1,6 @@
 package com.workingbit.board.service;
 
+import com.amazonaws.util.StringInputStream;
 import com.workingbit.board.controller.util.BaseServiceTest;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
@@ -7,6 +8,7 @@ import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
 import net.percederberg.grammatica.parser.ParserCreationException;
@@ -26,8 +28,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.share.model.enumarable.EnumRules.*;
@@ -92,7 +95,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void createBoard() {
     BoardBox boardBox = boardBoxService().createBoardBox(
-        getCreateBoardRequest(false, false, RUSSIAN, EnumEditBoardBoxMode.EDIT), token).get();
+        getCreateBoardRequest(false, false, RUSSIAN, EnumEditBoardBoxMode.EDIT), token);
     toDelete(boardBox);
     assertNotNull(boardBox.getId());
   }
@@ -111,8 +114,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     BoardBox board = getBoardBoxWhiteNotFilledRUSSIAN();
     toDelete(board);
     assertNotNull(board.getId());
-    Optional<BoardBox> byId = boardBoxService().findById(board.getDomainId(), token);
-    assertNotNull(byId.get());
+    BoardBox byId = boardBoxService().findById(board.getDomainId(), token);
+    assertNotNull(byId);
   }
 
   @Test
@@ -121,8 +124,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     DomainId boardId = board.getDomainId();
     assertNotNull(boardId);
     boardBoxService().delete(boardId);
-    Optional<BoardBox> byId = boardBoxService().findById(boardId, token);
-    assertTrue(!byId.isPresent());
+    BoardBox byId = boardBoxService().findById(boardId, token);
+    assertNotNull(byId);
   }
 
   protected BoardBox getBoardBoxWhiteNotFilledRUSSIAN() {
@@ -145,7 +148,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
       // Test create BoardBox moving draughts
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
@@ -155,8 +158,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
           current = moveStrokes(current, move);
         }
       }
-      String newPdn = current.getNotation().toPdn();
-      String oldPdn = boardBox.getNotation().toPdn();
+      String newPdn = current.getNotation().asString();
+      String oldPdn = boardBox.getNotation().asString();
       assertEquals(oldPdn, newPdn);
     }
   }
@@ -176,19 +179,19 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
 
       NotationDrive forkDrive = notationDrives.get(forkNumber);
 
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
+      BoardBox boardBoxVariant = getForkNotation(boardBox);
 
       NotationHistory nds = boardBoxVariant.getNotation().getNotationHistory();
       NotationDrive nd = nds.get(forkNumber - 1);
       assertEquals(nd.getVariants().getLast().getVariants().size(), notationDrives.size() - forkNumber);
-      System.out.println("Prev: " + notationDrives.variantsToPdn());
-      System.out.println("New: " + nds.variantsToPdn());
+      System.out.println("Prev: " + notationDrives.notationToPdn());
+      System.out.println("New: " + nds.notationToPdn());
     }
   }
 
@@ -207,21 +210,21 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
+      BoardBox boardBoxVariant = getForkNotation(boardBox);
 
       // get previous drive
       NotationHistory nds = boardBoxVariant.getNotation().getNotationHistory();
       NotationDrive nd = nds.get(forkNumber - 1);
 
       // switch
-      BoardBox switched = boardBoxService.switchNotation(boardBoxVariant, token).get();
+      BoardBox switched = getSwitched(boardBoxVariant);
       switched.getNotation().print();
-      System.out.println(switched.getNotation().toPdn());
+      System.out.println(switched.getNotation().asString());
     }
   }
 
@@ -241,14 +244,14 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
+      BoardBox boardBoxVariant = getForkNotation(boardBox);
 
-      System.out.println(boardBoxVariant.getNotation().getNotationHistory().variantsToPdn());
+      System.out.println(boardBoxVariant.getNotation().getNotationHistory().notationToPdn());
 
       Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
       NotationDrive forwardDrive = forwardNotation.getNotationHistory().get(1);
@@ -258,7 +261,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
         current = moveStrokes(current, move);
       }
 
-      System.out.println(current.getNotation().getNotationHistory().variantsToPdn());
+      System.out.println(current.getNotation().getNotationHistory().notationToPdn());
     }
   }
 
@@ -275,7 +278,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       lines.removeAll(forwardNotationLines);
       forwardNotationLines.remove(0);
 
-      BufferedReader bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
+      BufferedReader bufferedReader = getBufferedReaderForNotation(lines);
 
       // Parse Notation
       Notation notation = notationParserService.parse(bufferedReader);
@@ -285,12 +288,12 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
+      BoardBox boardBoxVariant = getForkNotation(boardBox);
 
       Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
       NotationDrive forwardDrive = forwardNotation.getNotationHistory().get(1);
@@ -300,20 +303,32 @@ public class BoardBoxServiceTest extends BaseServiceTest {
         current = moveStrokes(current, move);
       }
 
-      System.out.println(current.getNotation().getNotationHistory().variantsToPdn());
+      System.out.println(current.getNotation().getNotationHistory().notationToPdn());
 
       // get previous drive
       NotationHistory nds = current.getNotation().getNotationHistory();
       NotationDrive nd = nds.get(forkNumber - 1);
 
       boardBox = current.deepClone();
-      BoardBox switched = boardBoxService.switchNotation(current, token).get();
+      BoardBox switched = getSwitched(current);
 
-      System.out.println(switched.getNotation().getNotationHistory().variantsToPdn());
+      System.out.println(switched.getNotation().getNotationHistory().notationToPdn());
 
-      boardBox = boardBoxService.find(boardBox, token).get();
-      System.out.println("SWITCH: " + boardBox.getNotation().getNotationHistory().variantsToPdn());
+      boardBox = boardBoxService.find(boardBox, token);
+      System.out.println("SWITCH: " + boardBox.getNotation().getNotationHistory().notationToPdn());
     }
+  }
+
+  public BoardBox getSwitched(BoardBox current) {
+    BoardBoxes boardBoxes = boardBoxService.switchNotation(current, token);
+    for (int i = 0; i < boardBoxes.getBoardBoxes().size(); i++) {
+      var bb = boardBoxes.getBoardBoxes().get(i);
+      BoardBox boardBox = boardBoxes.getBoardBoxes().get(bb);
+      if (boardBox.getId().equals(current.getId())) {
+        return boardBox;
+      }
+    }
+    return null;
   }
 
   @Test
@@ -329,7 +344,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       lines.removeAll(forwardNotationLines);
       forwardNotationLines.remove(0);
 
-      BufferedReader bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
+      BufferedReader bufferedReader = getBufferedReaderForNotation(lines);
 
       // Parse Notation
       Notation notation = notationParserService.parse(bufferedReader);
@@ -339,12 +354,12 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
       // forkNumber notation by index from test file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
-      BoardBox fork1 = boardBoxService.forkNotation(boardBox, token).get();
+      BoardBox fork1 = getForkNotation(boardBox);
 
       Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
       NotationDrive forwardDrive = forwardNotation.getNotationHistory().get(1);
@@ -354,24 +369,24 @@ public class BoardBoxServiceTest extends BaseServiceTest {
         current = moveStrokes(current, move);
       }
 
-      System.out.println(current.getNotation().getNotationHistory().variantsToPdn());
+      System.out.println(current.getNotation().getNotationHistory().notationToPdn());
 
       // get previous drive
       NotationHistory nds = current.getNotation().getNotationHistory();
       NotationDrive nd = nds.get(forkNumber - 1);
 
       boardBox = current.deepClone();
-      BoardBox switch1 = boardBoxService.switchNotation(current, token).get();
+      BoardBox switch1 = getSwitched(current);
 
-      System.out.println(switch1.getNotation().getNotationHistory().variantsToPdn());
+      System.out.println(switch1.getNotation().getNotationHistory().notationToPdn());
 
-      boardBox = boardBoxService.find(boardBox, token).get();
-      System.out.println("SWITCH: " + boardBox.getNotation().getNotationHistory().variantsToPdn());
+      boardBox = boardBoxService.find(boardBox, token);
+      System.out.println("SWITCH: " + boardBox.getNotation().getNotationHistory().notationToPdn());
 
       // forkNumber notation by index from test file
       notationDrives = boardBox.getNotation().getNotationHistory();
       forkDrive = notationDrives.get(forkNumber);
-      BoardBox fork2 = boardBoxService.forkNotation(boardBox, token).get();
+      BoardBox fork2 = getForkNotation(boardBox);
 
       forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
       forwardDrive = forwardNotation.getNotationHistory().get(1);
@@ -385,15 +400,25 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       nds = current.getNotation().getNotationHistory();
       nd = nds.get(forkNumber - 1);
 
-      BoardBox switched2 = boardBoxService.switchNotation(current, token).get();
+      BoardBox switched2 = getSwitched(current);
 
-      System.out.println(switched2.getNotation().getNotationHistory().variantsToPdn());
+      System.out.println(switched2.getNotation().getNotationHistory().notationToPdn());
 
       assertEquals(fork1.getNotation().getNotationHistory().getNotation(),
           fork2.getNotation().getNotationHistory().getNotation());
 
       assertEquals(switch1.getNotation().getNotationHistory().getNotation(),
           switched2.getNotation().getNotationHistory().getNotation());
+    }
+  }
+
+  public BufferedReader getBufferedReaderForNotation(List<String> lines) {
+    try {
+      InputStreamReader in = new InputStreamReader(new StringInputStream(StringUtils.join(lines, "\n")), "UTF-8");
+      return new BufferedReader(in);
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 
@@ -406,7 +431,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       List<String> lines = Files.readAllLines(path);
       String startVariantDriveMove = lines.remove(0);
 
-      BufferedReader bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
+      BufferedReader bufferedReader = getBufferedReaderForNotation(lines);
 
       // Parse Notation
       Notation notation = notationParserService.parse(bufferedReader);
@@ -416,36 +441,48 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
       // forkNumber notation by index from test file
       int forkDriveIndex = Integer.parseInt(startVariantDriveMove);
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkDriveIndex);
-      BoardBox boardBoxVariant = boardBoxService.forkNotation(boardBox, token).get();
-      String firstForkPdn = boardBoxVariant.getNotation().toPdn();
+      BoardBox boardBoxVariant = getForkNotation(boardBox);
+      String firstForkPdn = boardBoxVariant.getNotation().asString();
 
       // get previous drive
       NotationHistory nds = boardBoxVariant.getNotation().getNotationHistory();
       NotationDrive nd = nds.get(forkDriveIndex - 1);
 
       // switch
-      BoardBox switched = boardBoxService.switchNotation(boardBoxVariant, token).get();
+      BoardBox switched = getSwitched(boardBoxVariant);
 
-      BoardBox doubleFork = boardBoxService.forkNotation(switched, token).get();
-      String secondForkPdn = doubleFork.getNotation().toPdn();
+      BoardBox doubleFork = getForkNotation(switched);
+      String secondForkPdn = doubleFork.getNotation().asString();
       doubleFork.getNotation().print();
-      System.out.println(doubleFork.getNotation().toPdn());
+      System.out.println(doubleFork.getNotation().asString());
       assertEquals(firstForkPdn, secondForkPdn);
     }
+  }
+
+  public BoardBox getForkNotation(BoardBox switched) {
+    BoardBoxes boardBoxes = boardBoxService.forkNotation(switched, token);
+    for (int i = 0; i < boardBoxes.getBoardBoxes().size(); i++) {
+      var bb = boardBoxes.getBoardBoxes().get(i);
+      BoardBox boardBox = boardBoxes.getBoardBoxes().get(bb);
+      if (boardBox.getId().equals(switched.getId())) {
+        return boardBox;
+      }
+    }
+    return null;
   }
 
   private BoardBox undoMove(BoardBox boardBoxCurrent, NotationMove notationMove) {
     LinkedList<NotationSimpleMove> move = notationMove.getMove();
     for (NotationSimpleMove m : move) {
-      boardBoxCurrent = boardBoxService.save(boardBoxCurrent, token).get();
-      boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent, token).get();
-      boardBoxCurrent = boardBoxService.undo(boardBoxCurrent, token).get();
+      boardBoxCurrent = boardBoxService.save(boardBoxCurrent, token);
+      boardBoxCurrent = boardBoxService.highlight(boardBoxCurrent, token);
+      boardBoxCurrent = boardBoxService.undo(boardBoxCurrent, token);
     }
     return boardBoxCurrent;
   }
@@ -454,7 +491,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     NotationSimpleMove[] move = notationMove.getMove().toArray(new NotationSimpleMove[0]);
     for (int i = 0; i < move.length - 1; i++) {
 //      String boardId = notationMove.getBoardId();
-      Board board = boardBoxCurrent.getBoard(); /*boardBoxService.find(boardId).get();*/
+      Board board = boardBoxCurrent.getBoard(); /*boardBoxService.find(boardId);*/
 
       String selMove = move[i].getNotation();
       Square selected = findSquareByNotation(selMove, board);
@@ -471,9 +508,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       boardBoxCurrent.setBoardId(board.getDomainId());
       boardBoxDao.save(boardBoxCurrent);
 
-//      boardBoxCurrent = boardBoxService.save(boardBoxCurrent).get();
-//      boardBoxCurrent = boardBoxService.getHighlight(boardBoxCurrent).get();
-      boardBoxCurrent = boardBoxService.move(boardBoxCurrent, token).get();
+//      boardBoxCurrent = boardBoxService.save(boardBoxCurrent);
+//      boardBoxCurrent = boardBoxService.getHighlight(boardBoxCurrent);
+      boardBoxCurrent = boardBoxService.move(boardBoxCurrent, token);
     }
     return boardBoxCurrent;
   }
@@ -487,7 +524,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       BufferedReader bufferedReader = Files.newBufferedReader(path);
 
       Notation notation = notationParserService.parse(bufferedReader);
-      String reparsed = notation.toPdn();
+      String reparsed = notation.asString();
       List<String> lines = Files.readAllLines(path);
       String origin = StringUtils.join(lines, "\n");
       assertEquals(origin, reparsed);
@@ -508,45 +545,45 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
     boardBox.setBoard(board);
-    boolean isPresent = boardBoxService.addDraught(boardBox, token).isPresent();
-    assertFalse(isPresent);
+    BoardBox isPresent = boardBoxService.addDraught(boardBox, token);
+    assertNotNull(isPresent);
   }
 
   @Test
   public void test_add_draught_in_place_mode() {
     BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
     boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
-    boardBox = boardBoxService.save(boardBox, token).get();
+    boardBox = boardBoxService.save(boardBox, token);
 
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
     boardBox.setBoard(board);
-    boolean isPresent = boardBoxService.addDraught(boardBox, token).isPresent();
-    assertTrue(isPresent);
+    BoardBox isPresent = boardBoxService.addDraught(boardBox, token);
+    assertNotNull(isPresent);
   }
 
   @Test
   public void test_capture_on_placed_board() {
     BoardBox boardBox = getBoardBoxWhiteNotFilledRUSSIAN();
     boardBox.setEditMode(EnumEditBoardBoxMode.PLACE);
-    boardBox = boardBoxService.save(boardBox, token).get();
+    boardBox = boardBoxService.save(boardBox, token);
 
     Board board = boardBox.getBoard();
     board = addWhiteDraught(board, "c3");
     boardBox.setBoard(board);
-    boardBox = boardBoxService.addDraught(boardBox, token).get();
+    boardBox = boardBoxService.addDraught(boardBox, token);
 
     board = boardBox.getBoard();
     board = addBlackDraught(board, "d4");
     boardBox.setBoard(board);
-    boardBox = boardBoxService.addDraught(boardBox, token).get();
+    boardBox = boardBoxService.addDraught(boardBox, token);
 
     // because place mode
-    boolean isPresent = boardBoxService.move(boardBox, token).isPresent();
-    assertFalse(isPresent);
+    BoardBox isPresent = boardBoxService.move(boardBox, token);
+    assertNotNull(isPresent);
 
     boardBox.setEditMode(EnumEditBoardBoxMode.MOVE);
-    boardBox = boardBoxService.save(boardBox, token).get();
+    boardBox = boardBoxService.save(boardBox, token);
 
     board = boardBox.getBoard();
 
@@ -557,14 +594,14 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     board.setNextSquare(e5);
     boardBox.setBoard(board);
 
-    boardBox = boardBoxService.move(boardBox, token).get();
+    boardBox = boardBoxService.move(boardBox, token);
     board = boardBox.getBoard();
     Square e5n = getSquare(board, "e5");
     Square c3n = getSquare(board, "c3");
     assertNotNull(e5n.getDraught());
     assertNull(c3n.getDraught());
 
-    String pdn = boardBox.getNotation().getNotationHistory().variantsToPdn();
+    String pdn = boardBox.getNotation().getNotationHistory().notationToPdn();
     assertTrue(pdn.contains("c3xe5"));
   }
 
@@ -584,12 +621,12 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
 //      String firstBoardId = boardBox.getNotation().getNotationHistory().get(1).getMoves().getFirst().getBoardId();
-//      Board board = boardDao.findById(firstBoardId).get();
+//      Board board = boardDao.findById(firstBoardId);
 //      String initBoardId = board.getPreviousBoards().getLastOrCreateIfRoot().getBoardId();
-//      board = boardDao.findById(initBoardId).get();
+//      board = boardDao.findById(initBoardId);
 //      board.setNotationHistory(NotationHistory.createWithRoot());
 //      boardBox.setBoard(board);
 //      boardBox.getNotation().setNotationHistory(board.getNotationHistory());
@@ -603,7 +640,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 //        current = moveStrokes(current, move);
 //      }
 
-//      System.out.println(current.getNotation().getNotationHistory().variantsToPdn());
+//      System.out.println(current.getNotation().getNotationHistory().notationToPdn());
 
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
 
@@ -615,12 +652,11 @@ public class BoardBoxServiceTest extends BaseServiceTest {
         }
       }
 
-      boardBox = boardBoxService.undo(boardBox, token).get();
-      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      boardBox = boardBoxService.undo(boardBox, token);
+      System.out.println("UNDO: " + boardBox.getNotation().asString());
       assertEquals(0, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
-      boolean undoNotPossible = !boardBoxService.undo(boardBox, token).isPresent();
-      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
-      assertTrue(undoNotPossible);
+      BoardBox undoNotPossible = boardBoxService.undo(boardBox, token);
+      assertNull(undoNotPossible);
       break;
     }
   }
@@ -641,7 +677,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       String boardBoxId = Utils.getRandomString20();
 
       // Create BoardBox from Notation
-      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
 
@@ -653,18 +689,18 @@ public class BoardBoxServiceTest extends BaseServiceTest {
         }
       }
 
-      boardBox = boardBoxService.undo(boardBox, token).get();
-      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      boardBox = boardBoxService.undo(boardBox, token);
+      System.out.println("UNDO: " + boardBox.getNotation().asString());
       assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
-      boardBox = boardBoxService.undo(boardBox, token).get();
-      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      boardBox = boardBoxService.undo(boardBox, token);
+      System.out.println("UNDO: " + boardBox.getNotation().asString());
       assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
 
-      boardBox = boardBoxService.redo(boardBox, token).get();
-      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      boardBox = boardBoxService.redo(boardBox, token);
+      System.out.println("UNDO: " + boardBox.getNotation().asString());
       assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
-      boardBox = boardBoxService.redo(boardBox, token).get();
-      System.out.println("UNDO: " + boardBox.getNotation().toPdn());
+      boardBox = boardBoxService.redo(boardBox, token);
+      System.out.println("UNDO: " + boardBox.getNotation().asString());
       assertEquals(0, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
       break;
     }
@@ -685,7 +721,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     String boardBoxId = Utils.getRandomString20();
 
     // Create BoardBox from Notation
-    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
     BoardBox boardBoxOrig = boardBox.deepClone();
 
@@ -701,17 +737,17 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
     boardBox.getNotation().getNotationHistory().printPdn();
 
-    boardBox = boardBoxService.undo(boardBox, token).get();
+    boardBox = boardBoxService.undo(boardBox, token);
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
-    boardBox = boardBoxService.undo(boardBox, token).get();
+    boardBox = boardBoxService.undo(boardBox, token);
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
 
     boardBox = redo(boardBox);
     boardBox = redo(boardBox);
-    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().toPdn(),
-        boardBox.getNotation().getNotationHistory().getNotation().toPdn());
+    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().asString(),
+        boardBox.getNotation().getNotationHistory().getNotation().asString());
 
     // MOVE FORWARD
     Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
@@ -720,16 +756,16 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     for (NotationDrive forwardDrive : forwardNotation.getNotationHistory().getNotation()) {
       for (NotationMove move : forwardDrive.getMoves()) {
         current = moveStrokes(current, move);
-        System.out.println(move.toPdn());
+        System.out.println(move.asString());
       }
     }
 
     boardBoxOrig = current.deepClone();
 
-    boardBox = boardBoxService.undo(boardBox, token).get();
+    boardBox = boardBoxService.undo(boardBox, token);
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
-    boardBox = boardBoxService.undo(boardBox, token).get();
+    boardBox = boardBoxService.undo(boardBox, token);
     System.out.print("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
 
@@ -755,7 +791,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     String boardBoxId = Utils.getRandomString20();
 
     // Create BoardBox from Notation
-    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser).get();
+    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, notation, authUser);
 
     BoardBox boardBoxOrig = boardBox.deepClone();
 
@@ -771,29 +807,29 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
     boardBox.getNotation().getNotationHistory().printPdn();
 
-//    boardBox = boardBoxService.undo(boardBox).get();
+//    boardBox = boardBoxService.undo(boardBox);
 //    System.out.print("UNDO ");
 //    boardBox.getNotation().getNotationHistory().printPdn();
     boardBox = undo(boardBox);
 
-//    boardBox = boardBoxService.redo(boardBox).get();
+//    boardBox = boardBoxService.redo(boardBox);
 //    System.out.print("REDO ");
 //    boardBox.getNotation().getNotationHistory().printPdn();
-//    boardBox = boardBoxService.redo(boardBox).get();
+//    boardBox = boardBoxService.redo(boardBox);
 //    System.out.print("REDO ");
 //    boardBox.getNotation().getNotationHistory().printPdn();
-//    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().toPdn(),
-//        boardBox.getNotation().getNotationHistory().getNotation().toPdn());
+//    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().asTreeString(),
+//        boardBox.getNotation().getNotationHistory().getNotation().asTreeString());
 
-//    boardBox = boardBoxService.undo(boardBox).get();
+//    boardBox = boardBoxService.undo(boardBox);
 //    System.out.print("UNDO ");
 //    boardBox.getNotation().getNotationHistory().printPdn();
-//    boardBox = boardBoxService.undo(boardBox).get();
+//    boardBox = boardBoxService.undo(boardBox);
 //    System.out.print("UNDO ");
 //    boardBox.getNotation().getNotationHistory().printPdn();
 
     boardBox = redo(boardBox);
-//    boardBox = boardBoxService.redo(boardBox).get();
+//    boardBox = boardBoxService.redo(boardBox);
 //    System.out.print("REDO ");
 //    boardBox.getNotation().getNotationHistory().printPdn();
 //    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation(),
@@ -806,7 +842,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     for (NotationDrive forwardDrive : forwardNotation.getNotationHistory().getNotation()) {
       for (NotationMove move : forwardDrive.getMoves()) {
         current = moveStrokes(current, move);
-        System.out.println(move.toPdn());
+        System.out.println(move.asString());
       }
     }
     boardBoxOrig = current.deepClone();
@@ -838,19 +874,21 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     boardBox = redo(boardBox);
     boardBox = redo(boardBox);
 
-    assertEquals(orig2.getNotation().getNotationHistory().pdnString(),
-        boardBox.getNotation().getNotationHistory().pdnString());
+    assertEquals(orig2.getNotation().getNotationHistory().debugPdnString(),
+        boardBox.getNotation().getNotationHistory().debugPdnString());
+
+    System.out.println(boardBox.getNotation().getAsTreeString());
   }
 
   public BoardBox redo(BoardBox boardBox) {
-    boardBox = boardBoxService.redo(boardBox, token).get();
+    boardBox = boardBoxService.redo(boardBox, token);
     System.out.println("REDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
     return boardBox;
   }
 
   public BoardBox undo(BoardBox boardBox) {
-    boardBox = boardBoxService.undo(boardBox, token).get();
+    boardBox = boardBoxService.undo(boardBox, token);
     System.out.println("UNDO ");
     boardBox.getNotation().getNotationHistory().printPdn();
     return boardBox;
@@ -869,7 +907,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   protected BoardBox getBoardBox(boolean black, boolean fillBoard, EnumRules rules, EnumEditBoardBoxMode editMode) {
     CreateBoardPayload createBoardPayload = getCreateBoardRequest(black, fillBoard, rules, editMode);
-    return boardBoxService().createBoardBox(createBoardPayload, token).get();
+    return boardBoxService().createBoardBox(createBoardPayload, token);
   }
 
   @Test
@@ -881,12 +919,61 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     var parsePdn = ImportPdnPayload.createBoardPayload();
     parsePdn.setArticleId(DomainId.getRandomID());
     parsePdn.setRules(EnumRules.RUSSIAN);
-    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/parse_simple.pdn");
+    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/generated_here_1.pdn");
     StringWriter writer = new StringWriter();
     IOUtils.copy(resourceAsStream, writer);
     parsePdn.setPdn(writer.toString());
-    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token).get();
-    System.out.println(boardBox.getNotation().toPdn());
+    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
+    Notation notation = boardBox.getNotation();
+    notation.setFormat(EnumNotationFormat.PDN);
+    System.out.println(notation.asTreeString());
+  }
+
+  @Test
+  public void parsePdnNested() throws IOException {
+    var parsePdn = ImportPdnPayload.createBoardPayload();
+    parsePdn.setArticleId(DomainId.getRandomID());
+    parsePdn.setRules(EnumRules.RUSSIAN);
+    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/example_multivariants2.pdn");
+    InputStreamReader in = new InputStreamReader(resourceAsStream, "UTF-8");
+    StringWriter writer = new StringWriter();
+    IOUtils.copy(in, writer);
+    parsePdn.setPdn(writer.toString());
+    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
+    System.out.println(boardBox.getNotation().asString());
+    System.out.println(boardBox.getNotation().asTreeString());
+  }
+
+  @Test
+  public void parsePdnNested2() throws IOException {
+    var parsePdn = ImportPdnPayload.createBoardPayload();
+    parsePdn.setArticleId(DomainId.getRandomID());
+    parsePdn.setRules(EnumRules.RUSSIAN);
+    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/example_multivariants1.pdn");
+    InputStreamReader in = new InputStreamReader(resourceAsStream, "UTF-8");
+    StringWriter writer = new StringWriter();
+    IOUtils.copy(in, writer);
+    parsePdn.setPdn(writer.toString());
+    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
+    System.out.println(boardBox.getNotation().asString());
+    System.out.println(boardBox.getNotation().asTreeString());
+  }
+
+  @Test
+  public void printPdnNestedAsTree() throws IOException, ParserLogException, ParserCreationException {
+    var parsePdn = ImportPdnPayload.createBoardPayload();
+    parsePdn.setArticleId(DomainId.getRandomID());
+    parsePdn.setRules(EnumRules.RUSSIAN);
+    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/example_multivariants1.pdn");
+    InputStreamReader in = new InputStreamReader(resourceAsStream, "UTF-8");
+    StringWriter writer = new StringWriter();
+    IOUtils.copy(in, writer);
+    parsePdn.setPdn(writer.toString());
+    Notation parse = notationParserService.parse(writer.toString());
+    System.out.println(parse.asTreeString());
+//    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
+//    System.out.println(boardBox.getNotation().asTreeString());
+//    System.out.println(boardBox.getNotation().asTreeString());
   }
 
   @Test
@@ -933,21 +1020,21 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   public void switchNotation() {
   }
 
-  @Test
-  public void boardPreviewByIds() {
-    createBoard();
-    createBoard();
-    List<BoardBox> boardBoxes = boardBoxDao.findAll(2);
-    assertEquals(2, boardBoxes.size());
-    List<DomainId> collect = boardBoxes
-        .stream()
-        .map(DomainId::new)
-        .collect(Collectors.toList());
-    DomainIds domainIds = new DomainIds();
-    collect.forEach(domainIds::add);
-    BoardBoxes boardBoxes2 = boardBoxService.findByIds(domainIds, token).get();
-    assertEquals(2, boardBoxes2.getBoardBoxes().size());
-  }
+//  @Test
+//  public void boardPreviewByIds() {
+//    createBoard();
+//    createBoard();
+//    List<BoardBox> boardBoxes = boardBoxDao.findAll(2);
+//    assertEquals(2, boardBoxes.size());
+//    List<DomainId> collect = boardBoxes
+//        .stream()
+//        .map(DomainId::new)
+//        .collect(Collectors.toList());
+//    DomainIds domainIds = new DomainIds();
+//    collect.forEach(domainIds::add);
+//    BoardBoxes boardBoxes2 = boardBoxService.findByArticle(domainIds, token);
+//    assertEquals(2, boardBoxes2.getBoardBoxes().size());
+//  }
 
   private class LoadNotationForkNumberAndForwardMoves {
     private String fileName;
@@ -982,7 +1069,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       lines.removeAll(forwardNotationLines);
       forwardNotationLines.remove(0);
 
-      bufferedReader = new BufferedReader(new StringReader(StringUtils.join(lines, "\n")));
+      bufferedReader = getBufferedReaderForNotation(lines);
       return this;
     }
   }

@@ -2,37 +2,31 @@ package com.workingbit.board.service;
 
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Notation;
+import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.Utils;
 
 import java.util.LinkedList;
-import java.util.Optional;
 
-import static com.workingbit.board.BoardEmbedded.boardBoxDao;
-import static com.workingbit.board.BoardEmbedded.notationDao;
-import static com.workingbit.board.BoardEmbedded.notationStoreService;
+import static com.workingbit.board.BoardEmbedded.*;
 
 /**
  * Created by Aleksey Popryadukhin on 14/04/2018.
  */
 class NotationService {
 
-  Optional<Notation> findById(AuthUser authUser, DomainId notationId) {
+  Notation findById(AuthUser authUser, DomainId notationId) {
     if (authUser == null) {
-      return Optional.empty();
+      throw RequestException.notFound404();
     }
 
-    Optional<Notation> notationOptional = notationDao.findById(notationId);
+    var notation = notationDao.findById(notationId);
     boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     if (secure) {
-      return notationOptional;
+      return notation;
     } else {
-      if (notationOptional.isPresent()) {
-        Notation notation = findNotationAndPutInStore(authUser, notationOptional.get(), notationId);
-        return Optional.of(notation);
-      }
-      return Optional.empty();
+      return findNotationAndPutInStore(authUser, notation, notationId);
     }
   }
 
@@ -40,6 +34,8 @@ class NotationService {
     if (authUser == null) {
       return;
     }
+    notation.setAsTreeString(notation.asTreeString());
+    notation.setAsString(notation.asString());
     boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     if (secure) {
       notation.setReadonly(false);
@@ -52,9 +48,9 @@ class NotationService {
   private Notation findNotationAndPutInStore(AuthUser authUser, Notation notation, DomainId notationId) {
     return notationStoreService.get(authUser.getUserSession(), notationId)
         .orElseGet(() -> {
-            notation.setReadonly(true);
-            notationStoreService.put(authUser.getUserSession(), notation);
-            return notation;
+          notation.setReadonly(true);
+          notationStoreService.put(authUser.getUserSession(), notation);
+          return notation;
         });
   }
 
@@ -87,14 +83,11 @@ class NotationService {
 
   public BoardBox clearNotationInBoardBox(BoardBox bb) {
     // clear notation
-    return notationDao.findById(bb.getNotationId())
-        .map(notation -> {
-          clearNotation(notation);
-          bb.setNotation(notation);
-          boardBoxDao.save(bb);
-          return bb;
-        })
-        .orElse(null);
+    var notation = notationDao.findById(bb.getNotationId());
+    clearNotation(notation);
+    bb.setNotation(notation);
+    boardBoxDao.save(bb);
+    return bb;
   }
 
   private void clearNotation(Notation notation) {

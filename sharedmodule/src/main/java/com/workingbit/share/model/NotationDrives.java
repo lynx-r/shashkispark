@@ -1,34 +1,58 @@
 package com.workingbit.share.model;
 
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.util.Utils;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by Aleksey Popryadukhin on 02/04/2018.
  */
-public class NotationDrives extends LinkedList<NotationDrive> implements ToPdn, DeepClone {
+public class NotationDrives extends LinkedList<NotationDrive> implements NotationFormat, DeepClone {
+
+  public NotationDrives() {
+  }
+
+  public NotationDrives(List<NotationDrive> notationDrives) {
+    addAll(notationDrives);
+  }
 
   public static NotationDrives create() {
     return new NotationDrives();
   }
 
-  public String toPdn() {
+  @Override
+  public String asString() {
     return Utils.listToPdn(new ArrayList<>(this));
+  }
+
+  @Override
+  public String asTree(String indent, String tabulation) {
+    return Utils.listToTreePdn(new ArrayList<>(this), indent, tabulation);
   }
 
   public String variantsToPdn() {
     return Utils.notationDrivesToPdn(this);
   }
 
+  public String variantsToTreePdn(String indent, String tabulation) {
+    return Utils.notationDrivesToTreePdn(this, indent, tabulation);
+  }
+
   public String print(String prefix) {
     return stream()
         .map(notationStroke -> notationStroke.print(prefix + "\t"))
         .collect(Collectors.joining("\n"));
+  }
+
+  public void setNotationFormat(EnumNotationFormat format) {
+    forEach(notationDrive -> notationDrive.setNotationFormat(format));
+  }
+
+  public void setDimension(int dimension) {
+    forEach(notationDrive -> notationDrive.setBoardDimension(dimension));
   }
 
   public static class Builder {

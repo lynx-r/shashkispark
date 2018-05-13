@@ -7,10 +7,11 @@ import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.converter.NotationHistoryConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.DomainId;
+import com.workingbit.share.model.NotationFormat;
 import com.workingbit.share.model.NotationHistory;
 import com.workingbit.share.model.Payload;
-import com.workingbit.share.model.ToPdn;
 import com.workingbit.share.model.enumarable.EnumNotation;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +32,7 @@ import static com.workingbit.share.common.NotationConstants.NOTATION_DEFAULT_TAG
 @Setter
 @ToString
 @DynamoDBTable(tableName = DBConstants.NOTATION_TABLE)
-public class Notation extends BaseDomain implements Payload, ToPdn {
+public class Notation extends BaseDomain implements Payload, NotationFormat {
 
   @DynamoDBHashKey(attributeName = "id")
   private String id;
@@ -64,45 +65,61 @@ public class Notation extends BaseDomain implements Payload, ToPdn {
   @DynamoDBAttribute(attributeName = "tags")
   private ListOrderedMap<String, String> tags;
 
-  @DynamoDBTypeConvertedEnum
-  @DynamoDBAttribute(attributeName = "rules")
-  private EnumRules rules;
-
   @DynamoDBTypeConverted(converter = NotationHistoryConverter.class)
   @DynamoDBAttribute(attributeName = "notationHistory")
   private NotationHistory notationHistory;
 
+  @DynamoDBAttribute(attributeName = "asTreeString")
+  private String asTreeString;
+
+  @DynamoDBAttribute(attributeName = "asString")
+  private String asString;
+
   @DynamoDBAttribute(attributeName = "readonly")
   private boolean readonly;
+
+  @DynamoDBTypeConvertedEnum
+  @DynamoDBAttribute(attributeName = "rules")
+  private EnumRules rules;
+
+  @DynamoDBTypeConvertedEnum
+  @DynamoDBAttribute(attributeName = "format")
+  private EnumNotationFormat format;
+
+  @DynamoDBIgnore
+  private EnumNotationFormat[] formats;
 
   public Notation() {
     setTags(new ListOrderedMap<>());
     notationHistory = NotationHistory.createWithRoot();
+    format = EnumNotationFormat.CLASSIC;
+    formats = EnumNotationFormat.values();
   }
 
-//  public Notation(ListOrderedMap<String, String> tags, EnumRules rules, NotationHistory notationHistory) {
-//    this();
-//    setTags(tags);
-//    this.rules = rules;
-//    this.notationHistory = notationHistory;
-//  }
-
-  public String toPdn() {
+  @Override
+  public String asString() {
     StringBuilder stringBuilder = new StringBuilder();
-    if (tags != null && !tags.isEmpty()) {
-      tags.forEach((key, value) -> stringBuilder.append("[")
-          .append(key)
-          .append(" ")
-          .append(value)
-          .append("]")
-          .append("\n")
-      );
-    }
-    String moves = notationHistory.variantsToPdn();
+    tagsAsString(stringBuilder);
+    String moves = notationHistory.notationToPdn();
     stringBuilder.append("\n")
         .append(moves)
         .append(EnumNotation.END_GAME_SYMBOL.getPdn());
     return stringBuilder.toString();
+  }
+
+  @Override
+  public String asTree(String indent, String tabulation) {
+    StringBuilder stringBuilder = new StringBuilder();
+    tagsAsString(stringBuilder);
+    String moves = notationHistory.notationToTreePdn(indent, tabulation);
+    stringBuilder.append("\n")
+        .append(moves)
+        .append(EnumNotation.END_GAME_SYMBOL.getPdn());
+    return stringBuilder.toString();
+  }
+
+  public String asTreeString() {
+    return asTree("", "  ");
   }
 
   public void print() {
@@ -118,5 +135,39 @@ public class Notation extends BaseDomain implements Payload, ToPdn {
     });
     this.tags = new ListOrderedMap<>();
     this.tags.putAll(map);
+  }
+
+  public void setRules(EnumRules rules) {
+    this.rules = rules;
+    notationHistory.setRules(rules);
+  }
+
+  public void setFormat(EnumNotationFormat format) {
+    this.format = format;
+    notationHistory.setFormat(format);
+  }
+
+  private void tagsAsString(StringBuilder stringBuilder) {
+    if (tags != null && !tags.isEmpty()) {
+      tags.forEach((key, value) -> {
+        if (StringUtils.isNotBlank(value)) {
+          if (!value.startsWith("\"")) {
+            value = "\"" + value;
+          }
+          if (!value.endsWith("\"")) {
+            value = value + "\"";
+          }
+        } else {
+          value = "\"\"";
+        }
+        stringBuilder.append("[")
+                .append(key)
+                .append(" ")
+                .append(value)
+                .append("]")
+                .append("\n");
+          }
+      );
+    }
   }
 }

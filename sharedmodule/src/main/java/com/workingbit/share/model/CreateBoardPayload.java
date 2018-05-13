@@ -15,8 +15,8 @@ import lombok.Data;
 public class CreateBoardPayload implements Payload {
   private DomainId articleId;
 
-  private Boolean fillBoard;
-  private Boolean black;
+  private boolean fillBoard;
+  private boolean black;
   private EnumRules rules;
   private DomainId boardBoxId;
   private DomainId userId;

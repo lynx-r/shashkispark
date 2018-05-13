@@ -1,11 +1,12 @@
 package com.workingbit.article.dao;
 
 import com.workingbit.article.BaseTest;
+import com.workingbit.share.dao.DaoFilters;
+import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.Article;
-import com.workingbit.share.model.SimpleFilter;
+import com.workingbit.share.model.AuthUser;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -36,9 +37,11 @@ public class ArticleDaoTest extends BaseTest {
     Article article = createArticle();
     articleDao.save(article);
 
-    List<SimpleFilter> filters = new ArrayList<>();
-    filters.add(new SimpleFilter("articleStatus", "DRAFT", " = ", "S"));
-    List<Article> published = articleDao.findPublished(100, null, filters);
+    AuthUser authUser = new AuthUser();
+    DaoFilters filters = new DaoFilters();
+    filters.add(new ValueFilter("articleStatus", "DRAFT", "=", "S"));
+    authUser.setFilters(filters);
+    List<Article> published = articleDao.findPublishedBy(100, authUser);
     assertTrue(published.contains(article));
   }
 }

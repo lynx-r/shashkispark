@@ -12,8 +12,9 @@ public enum Authority implements IAuthority {
 
   // open api
   BOARD_VIEW_BRANCH("/board/view-branch", Constants.INSECURE_ROLES),
-  BOARD_BY_ID("/by-id/:id", Constants.INSECURE_ROLES),
-  BOARD_BY_IDS("/board/by-ids", Constants.INSECURE_ROLES),
+  BOARD_BY_ID("/board/by-id/:id", Constants.INSECURE_ROLES),
+  BOARD_BY_ARTICLE("/board/by-article", Constants.INSECURE_ROLES),
+  BOARD_PUBLIC_BY_ARTICLE_ID("/board/public-by-article", Constants.INSECURE_ROLES),
   BOARD_LOAD_PREVIEW("/board/load-board-preview", Constants.INSECURE_ROLES),
   BOARD_SWITCH("/board/switch", Constants.INSECURE_ROLES),
 

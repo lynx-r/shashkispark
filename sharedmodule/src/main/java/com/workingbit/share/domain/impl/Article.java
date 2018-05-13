@@ -5,11 +5,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.common.DBConstants;
-import com.workingbit.share.converter.DomainIdsConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.DomainId;
-import com.workingbit.share.model.DomainIds;
 import com.workingbit.share.model.Payload;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import lombok.Getter;
@@ -62,9 +60,9 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "selectedBoardBoxId")
   private DomainId selectedBoardBoxId;
 
-  @DynamoDBTypeConverted(converter = DomainIdsConverter.class)
-  @DynamoDBAttribute(attributeName = "boardBoxIds")
-  private DomainIds boardBoxIds;
+//  @DynamoDBTypeConverted(converter = DomainIdsConverter.class)
+//  @DynamoDBAttribute(attributeName = "boardBoxIds")
+//  private DomainIds boardBoxIds;
 
   @DynamoDBIndexHashKey(globalSecondaryIndexName = "articleStatusIndex")
   @DynamoDBTypeConvertedEnum
@@ -75,7 +73,7 @@ public class Article extends BaseDomain implements Payload {
   private boolean readonly;
 
   public Article() {
-    this.boardBoxIds = new DomainIds();
+//    this.boardBoxIds = new DomainIds();
   }
 
   public Article(String author, String title, String content) {
@@ -92,7 +90,7 @@ public class Article extends BaseDomain implements Payload {
                  @JsonProperty("title") String title,
                  @JsonProperty("content") String content,
                  @JsonProperty("selectedBoardBoxId") DomainId selectedBoardBoxId,
-                 @JsonProperty("boardBoxIds") DomainIds boardBoxIds,
+//                 @JsonProperty("boardBoxIds") DomainIds boardBoxIds,
                  @JsonProperty("articleStatus") EnumArticleStatus articleStatus,
                  @JsonProperty("humanReadableUrl") String humanReadableUrl
   ) {
@@ -102,7 +100,7 @@ public class Article extends BaseDomain implements Payload {
     this.title = title;
     this.content = content;
     this.selectedBoardBoxId = selectedBoardBoxId;
-    this.boardBoxIds = boardBoxIds == null ? new DomainIds() : boardBoxIds;
+//    this.boardBoxIds = boardBoxIds == null ? new DomainIds() : boardBoxIds;
     this.articleStatus = articleStatus;
     this.humanReadableUrl = humanReadableUrl;
   }

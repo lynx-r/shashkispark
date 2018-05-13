@@ -42,19 +42,14 @@ class HighlightMoveUtil {
    * Entry point for initially selected square
    */
   private MovesList highlightAllAssignedMoves() {
-    List<Square> allowedMoves = new ArrayList<>();
-    List<Square> capturedMoves = new ArrayList<>();
+    Set<Square> allowedMoves = new HashSet<>();
+    Set<Square> capturedMoves = new HashSet<>();
     Draught draught = selectedSquare.getDraught();
     boolean down = draught.isBlack();
     boolean queen = draught.isQueen();
     findCapturedMovesOnDiagonalsOfSelectedSquare(selectedSquare, down, queen, capturedMoves, allowedMoves);
     if (capturedMoves.isEmpty()) {
       findAllowedMoves(selectedSquare, allowedMoves, down, queen);
-    } else {
-      capturedMoves = capturedMoves
-          .stream()
-          .distinct()
-          .collect(Collectors.toList());
     }
     MovesList movesList = new MovesList();
     movesList.setCaptured(capturedMoves);
@@ -64,7 +59,7 @@ class HighlightMoveUtil {
   }
 
   private void findCapturedMovesOnDiagonalsOfSelectedSquare(Square selectedSquare, boolean black, boolean queen,
-                                                            List<Square> capturedMoves, List<Square> allowedMoves) {
+                                                            Set<Square> capturedMoves, Set<Square> allowedMoves) {
     List<List<Square>> diagonals = selectedSquare.getDiagonals();
     int indexOfSelected;
     for (List<Square> diagonal : diagonals) {
@@ -76,7 +71,7 @@ class HighlightMoveUtil {
   }
 
   private void walkOnDiagonal(Square selectedSquare, boolean down, boolean queen, List<Square> diagonal,
-                              List<Square> capturedMoves, List<Square> allowedMoves) {
+                              Set<Square> capturedMoves, Set<Square> allowedMoves) {
     Tree<Square> treeCaptured = Tree.empty();
     Tree.Node<Square> capturedMovesEmpty = treeCaptured.asNode();
     findCapturedMovesOnHalfDiagonal(diagonal, selectedSquare, down, queen, 0, true,
@@ -91,7 +86,7 @@ class HighlightMoveUtil {
 
   private void findCapturedMovesOnHalfDiagonal(List<Square> diagonal, Square selectedSquare, boolean down,
                                                boolean queen, int deep, boolean cross, Tree.Node<Square> capturedMoves,
-                                               List<Square> allowedMoves) {
+                                               Set<Square> allowedMoves) {
     if (queen) {
       findCapturedMovesForQueen(diagonal, selectedSquare, down, deep, cross, capturedMoves, allowedMoves);
     } else {
@@ -100,14 +95,15 @@ class HighlightMoveUtil {
   }
 
   private void findCapturedMovesForQueen(List<Square> diagonal, Square selectedSquare, boolean down, int deep,
-                                         boolean cross, Tree.Node<Square> capturedMoves, List<Square> allowedMoves) {
+                                         boolean cross, Tree.Node<Square> capturedMoves, Set<Square> allowedMoves) {
     int indexOfSelected = diagonal.indexOf(selectedSquare);
     ListIterator<Square> squareListIterator = diagonal.listIterator(indexOfSelected);
-    List<Square> walkAllowedMoves = new ArrayList<>();
+    Set<Square> walkAllowedMoves = new HashSet<>();
     Square next, previous = selectedSquare;
     deep++;
     AtomicBoolean first = new AtomicBoolean();
     first.set(down);
+    List<Square> tail = new ArrayList<>();
     boolean mustBeat;
     do {
       if (hasNotNextMove(down, squareListIterator)) {
@@ -130,6 +126,7 @@ class HighlightMoveUtil {
       if (hasCapturedAndCanMove(capturedMoves, next)) {
         if (cross) {
           walkCross(down, deep, capturedMoves, allowedMoves, walkAllowedMoves, next, previous);
+          tail.add(next);
         }
       }
       previous = next;
@@ -139,22 +136,27 @@ class HighlightMoveUtil {
     if (hasQueenWalkedThereOrMovesWithBeatInOneSquare(walkAllowedMoves, previous)) {
       allowedMoves.addAll(walkAllowedMoves);
     }
-  }
-
-  private void walkCross(boolean down, int deep, Tree.Node<Square> capturedMoves, List<Square> allowedMoves,
-                         List<Square> walkAllowedMoves, Square next, Square previous) {
-    List<Tree.Node<Square>> children = capturedMoves.getChildren();
-    Tree.Node<Square> newCapturedMoves = children.get(children.size() - 1);
-    walkCrossDiagonalForCaptured(next, previous, down, deep, true, newCapturedMoves, allowedMoves);
-    if (hasCapturedOnCrossDiagonal(next, previous)) {
-      addAllowedMove(next, allowedMoves);
-    } else if (newCapturedMoves.getChildren().isEmpty()) {
-      addAllowedMove(next, walkAllowedMoves);
+    if (!tail.isEmpty() && !capturedMoves.getChildren().isEmpty() && capturedMoves.asTree().getMaxDepth() == 1) {
+      allowedMoves.addAll(tail);
     }
   }
 
+  private void walkCross(boolean down, int deep, Tree.Node<Square> capturedMoves, Set<Square> allowedMoves,
+                         Set<Square> walkAllowedMoves, Square next, Square previous) {
+    List<Tree.Node<Square>> children = capturedMoves.getChildren();
+    Tree.Node<Square> newCapturedMoves = children.get(children.size() - 1);
+    Set<Square> crossAllowed = new HashSet<>();
+    walkCrossDiagonalForCaptured(next, previous, down, deep, true, newCapturedMoves, crossAllowed);
+    if (hasCapturedOnCrossDiagonal(next, previous)) {
+      addAllowedMove(next, allowedMoves);
+    } else if (newCapturedMoves.getChildren().isEmpty() && !crossAllowed.isEmpty()) {
+      addAllowedMove(next, walkAllowedMoves);
+    }
+    allowedMoves.addAll(crossAllowed);
+  }
+
   private void findCapturedMovesForDraught(List<Square> diagonal, Square selectedSquare, boolean down, int deep,
-                                           Tree.Node<Square> capturedMoves, List<Square> allowedMoves) {
+                                           Tree.Node<Square> capturedMoves, Set<Square> allowedMoves) {
     int indexOfSelected = diagonal.indexOf(selectedSquare);
     deep++;
     int moveCounter = 0;
@@ -164,7 +166,7 @@ class HighlightMoveUtil {
   }
 
   private void walkOnDiagonalForDraught(boolean down, int deep, Square previous, int moveCounter,
-                                        ListIterator<Square> squareListIterator, List<Square> allowedMoves,
+                                        ListIterator<Square> squareListIterator, Set<Square> allowedMoves,
                                         Tree.Node<Square> capturedMoves) {
     Square next;
     AtomicBoolean first = new AtomicBoolean();
@@ -199,7 +201,7 @@ class HighlightMoveUtil {
   }
 
   private void walkCrossDiagonalForCaptured(Square next, Square previous, boolean down, int deep, boolean queen,
-                                            Tree.Node<Square> capturedMoves, List<Square> allowedMoves) {
+                                            Tree.Node<Square> capturedMoves, Set<Square> allowedMoves) {
     for (List<Square> diagonal : next.getDiagonals()) {
       if (!isSubDiagonal(Arrays.asList(previous, next), diagonal)) {
         findCapturedMovesOnHalfDiagonal(diagonal, next, down, queen, deep, false, capturedMoves, allowedMoves);
@@ -208,7 +210,7 @@ class HighlightMoveUtil {
     }
   }
 
-  private void findAllowedMoves(Square selectedSquare, List<Square> allowedMoves, boolean down, boolean queen) {
+  private void findAllowedMoves(Square selectedSquare, Set<Square> allowedMoves, boolean down, boolean queen) {
     List<List<Square>> diagonals = selectedSquare.getDiagonals();
     for (List<Square> diagonal : diagonals) {
       if (isDraughtOnDiagonal(selectedSquare, diagonal)) {
@@ -223,7 +225,7 @@ class HighlightMoveUtil {
   }
 
   private void findAllowedForQueen(List<Square> diagonal, Square selectedSquare, boolean down,
-                                   List<Square> allowedMoves) {
+                                   Set<Square> allowedMoves) {
     ListIterator<Square> squareListIterator = diagonal.listIterator(diagonal.indexOf(selectedSquare));
     Square previous = new Square();
     AtomicBoolean first = new AtomicBoolean();
@@ -239,7 +241,7 @@ class HighlightMoveUtil {
     }
   }
 
-  private void findAllowed(List<Square> diagonal, Square selectedSquare, boolean down, List<Square> allowedMoves) {
+  private void findAllowed(List<Square> diagonal, Square selectedSquare, boolean down, Set<Square> allowedMoves) {
     int index = diagonal.indexOf(selectedSquare);
     if (down) {
       index++;
@@ -248,7 +250,7 @@ class HighlightMoveUtil {
     findAllowedUsingIterator(down, allowedMoves, squareListIterator);
   }
 
-  private void findAllowedUsingIterator(boolean down, List<Square> allowedMoves,
+  private void findAllowedUsingIterator(boolean down, Set<Square> allowedMoves,
                                         ListIterator<Square> squareListIterator) {
     Square next;
     if (down) {
@@ -276,7 +278,7 @@ class HighlightMoveUtil {
     capturedMoves.addChild(previous);
   }
 
-  private void addAllowedMove(Square next, List<Square> allowedMoves) {
+  private void addAllowedMove(Square next, Set<Square> allowedMoves) {
     if (next == null) {
       return;
     }
@@ -336,7 +338,7 @@ class HighlightMoveUtil {
    * that I have deal with a stream that breaks on previous move. E.g. I move from e1 and have two opponent draughts
    * on f2 and f4 then allowed move will be the move that contains g3.
    */
-  private boolean hasQueenWalkedThereOrMovesWithBeatInOneSquare(List<Square> walkAllowedMoves, Square previous) {
+  private boolean hasQueenWalkedThereOrMovesWithBeatInOneSquare(Set<Square> walkAllowedMoves, Square previous) {
     return !walkAllowedMoves.isEmpty() && walkAllowedMoves.contains(previous)
         || previous != null && (previous.isOccupied() || previous.isHighlight());
   }

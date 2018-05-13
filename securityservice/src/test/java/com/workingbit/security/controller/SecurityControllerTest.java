@@ -264,7 +264,7 @@ public class SecurityControllerTest {
 
     userInfo.addAuthority(EnumAuthority.ADMIN);
     authUser.addAuthority(EnumAuthority.ADMIN);
-    answer = post("/save-user-info", userInfo, authUser, HTTP_BAD_REQUEST);
+    answer = post("/save-user-info", userInfo, authUser, HTTP_FORBIDDEN);
 
     userInfo.addAuthority(EnumAuthority.ADMIN);
     authUser.addAuthority(EnumAuthority.ADMIN);

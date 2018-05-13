@@ -203,12 +203,12 @@ public class BoardUndoRedoTest extends BaseServiceTest {
   }
 
   public Board undo(BoardBox boardBox) {
-    return boardBoxService().undo(boardBox, token).get().getBoard();
+    return boardBoxService().undo(boardBox, token).getBoard();
   }
 
   public Board move(BoardBox boardBox) {
     Board board;
-    boardBox = boardBoxService().move(boardBox, token).get();
+    boardBox = boardBoxService().move(boardBox, token);
     board = boardBox.getBoard();
     return board;
   }

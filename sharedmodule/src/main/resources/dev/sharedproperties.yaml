@@ -1,0 +1,2 @@
+shared:
+  validFilters: id,visiblePublic,userId.id,articleStatus,articleId.id

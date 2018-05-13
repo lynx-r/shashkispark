@@ -4,8 +4,8 @@ import com.workingbit.share.domain.impl.Square;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * MovesList
@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 public class MovesList {
-  private List<Square> allowed = new ArrayList<>();
-  private List<Square> captured = new ArrayList<>();
+  private Set<Square> allowed = new HashSet<>();
+  private Set<Square> captured = new HashSet<>();
 }
 

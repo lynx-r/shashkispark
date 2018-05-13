@@ -4,6 +4,7 @@ import com.workingbit.orchestrate.function.BaseHandlerFunc;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.IAuthority;
 import com.workingbit.share.util.Utils;
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
+import static com.workingbit.share.common.DBConstants.DATE_TIME_FORMATTER;
 import static com.workingbit.share.common.RequestConstants.*;
 
 /**
@@ -89,6 +91,9 @@ public class AuthRequestUtil {
 
   public static AuthUser getAuthUser(Request request, Response response) {
     String userSession = getOrCreateSession(request, response);
+    String userId = request.headers(USER_ID_HEADER);
+    String username = request.headers(USERNAME_HEADER);
+    String userCreatedAt = request.headers(USER_CREATED_AT_HEADER);
     String accessToken = request.headers(ACCESS_TOKEN_HEADER);
     String internalKey = request.headers(INTERNAL_KEY_HEADER);
     String superHash = request.headers(SUPER_HASH_HEADER);
@@ -97,10 +102,14 @@ public class AuthRequestUtil {
       return new AuthUser(userSession).addAuthorities(EnumAuthority.ANONYMOUS);
     }
     AuthUser authUser = new AuthUser(accessToken, userSession);
+    authUser.setUsername(username);
     authUser.setSuperHash(superHash);
     if (StringUtils.isNotBlank(internalKey)) {
       authUser.setInternalKey(internalKey);
       authUser.addAuthorities(EnumAuthority.INTERNAL);
+      if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(userCreatedAt)) {
+        authUser.setUserId(new DomainId(userId, LocalDateTime.parse(userCreatedAt, DATE_TIME_FORMATTER)));
+      }
     }
     return authUser;
   }

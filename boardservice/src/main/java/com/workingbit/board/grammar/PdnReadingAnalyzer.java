@@ -1,4 +1,4 @@
-package com.workingbit.board.grammar;/*
+/*
  * PdnReadingAnalyzer.java
  *
  * THIS FILE HAS BEEN GENERATED AUTOMATICALLY. DO NOT EDIT!
@@ -8,6 +8,8 @@ package com.workingbit.board.grammar;/*
  *
  * Copyright (c) 2009-2012 Wieger Wesselink.
  */
+
+package com.workingbit.board.grammar;
 
 import net.percederberg.grammatica.parser.Analyzer;
 import net.percederberg.grammatica.parser.Node;
@@ -148,7 +150,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -300,7 +302,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -324,7 +326,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -348,7 +350,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -372,7 +374,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -396,7 +398,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -420,7 +422,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -445,7 +447,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -469,7 +471,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -493,7 +495,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -517,7 +519,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -542,7 +544,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -569,7 +571,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -594,7 +596,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -618,7 +620,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -642,7 +644,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -666,7 +668,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -690,7 +692,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -714,7 +716,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -738,7 +740,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -762,7 +764,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -786,7 +788,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -810,7 +812,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -834,7 +836,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -858,7 +860,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -897,7 +899,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -937,7 +939,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -976,7 +978,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -1017,7 +1019,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -1055,7 +1057,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -1094,7 +1096,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -1133,7 +1135,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -1173,7 +1175,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -1212,7 +1214,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -1252,7 +1254,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -1290,7 +1292,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors
@@ -1329,7 +1331,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @param node           the node being exited
      *
-     * @return the node to push to the parse tree, or
+     * @return the node to add to the parse tree, or
      *         null if no parse tree should be created
      *
      * @throws ParseException if the node analysis discovered errors

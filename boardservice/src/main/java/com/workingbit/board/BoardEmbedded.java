@@ -81,7 +81,8 @@ public class BoardEmbedded {
           // open api
           post(Authority.BOARD_VIEW_BRANCH.getPath(), BoardBoxController.viewBranch);
           post(Authority.BOARD_BY_ID.getPath(), BoardBoxController.findBoardById);
-          post(Authority.BOARD_BY_IDS.getPath(), BoardBoxController.findBoardByIds);
+          post(Authority.BOARD_BY_ARTICLE.getPath(), BoardBoxController.findBoardByIds);
+          post(Authority.BOARD_PUBLIC_BY_ARTICLE_ID.getPath(), BoardBoxController.findPublicBoardByArticleId);
           post(Authority.BOARD_LOAD_PREVIEW.getPath(), BoardBoxController.loadPreviewBoard);
           post(Authority.BOARD_SWITCH.getPath(), BoardBoxController.switchNotation);
 

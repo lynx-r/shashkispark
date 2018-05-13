@@ -20,4 +20,7 @@ public class RequestConstants {
   public static final String ACCESS_TOKEN_HEADER = "access-token";
   public static final String INTERNAL_KEY_HEADER = "internal-key";
   public static final String SUPER_HASH_HEADER = "super-hash";
+  public static final String USER_ID_HEADER = "user-id";
+  public static final String USERNAME_HEADER = "username";
+  public static final String USER_CREATED_AT_HEADER = "user-created-at";
 }

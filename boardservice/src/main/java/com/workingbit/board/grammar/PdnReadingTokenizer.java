@@ -1,4 +1,4 @@
-package com.workingbit.board.grammar;/*
+/*
  * PdnReadingTokenizer.java
  *
  * THIS FILE HAS BEEN GENERATED AUTOMATICALLY. DO NOT EDIT!
@@ -9,11 +9,13 @@ package com.workingbit.board.grammar;/*
  * Copyright (c) 2009-2012 Wieger Wesselink.
  */
 
+package com.workingbit.board.grammar;
+
+import java.io.Reader;
+
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.TokenPattern;
 import net.percederberg.grammatica.parser.Tokenizer;
-
-import java.io.Reader;
 
 /**
  * A character stream tokenizer.
@@ -182,7 +184,7 @@ class PdnReadingTokenizer extends Tokenizer {
         pattern = new TokenPattern(PdnReadingConstants.IDENTIFIER,
                                    "IDENTIFIER",
                                    TokenPattern.REGEXP_TYPE,
-                                   "[A-Z][a-zA-Z0-9_]*");
+                                   "[A-Z][a-zA-Z0-9_\\u0080-\\u9fff]*");
         addPattern(pattern);
 
         pattern = new TokenPattern(PdnReadingConstants.WHITESPACE,

@@ -24,12 +24,13 @@ public class ErrorMessages {
   public static final String UNABLE_TO_SAVE_BOARD = "Не удалось сохранить доску";
   public static final String UNABLE_TO_LOAD_BOARD = "Не удалось загрузить доску";
   public static final String UNABLE_TO_REGISTER = "Не удалось зарегистрироваться или имя %s уже занято";
-  public static final String UNABLE_TO_AUTHORIZE = "Не верный логин или пароль";
+  public static final String INVALID_USERNAME_OR_PASSWORD = "Не верный логин или пароль";
   public static final String UNABLE_TO_AUTHENTICATE = "Ваш аккаунт не найден на сайте";
   public static final String UNABLE_TO_ASSIGN_ROLE = "Не удалось назначить роль";
   public static final String UNABLE_TO_LOGOUT = "Не удалось выйти с сайта";
   public static final String NOT_OWNER = "Не владелец";
   public static final String RESOURCE_NOT_FOUND = "Запрашиваемый ресурс не найден";
+  public static final String ENITY_NOT_FOUND = "Запрашиваемый объект не найден";
   public static final String INTERNAL_SERVER_ERROR = "Ошибка на сервере";
   public static final String FORBIDDEN = "Доступ запрещён";
   public static final String USERNAME_NOT_NULL = "Поле <Имя пользователя> не может быть пустым";
@@ -40,4 +41,10 @@ public class ErrorMessages {
   public static final String UNPARSABLE_PDN_CONTENT = "Не удалось обработать pdn";
   public static final String UNABLE_TO_PARSE_PDN = "Не удалось обработать pdn";
   public static final String UNABLE_TO_IMPORT_NOTATION = "Не удалось импортировать нотацию";
+  public static final String NO_CONTENT = "Нет контента";
+  public static final String USERNAME_IS_BUSY = "Имя пользователя занято";
+  public static final String ARTICLE_IS_DELETED = "Статья удалена";
+  public static final String INVALID_HIGHLIGHT = "Ходы шашки не могут быть подсвечены";
+  public static final String UNSUPPORTED_ENCODING = "Кодировка не поддерживается";
+  public static final String UNABLE_TO_SAVE_ENTITY = "Не удалось сохранить объект";
 }
