@@ -4,10 +4,12 @@ import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
+import com.workingbit.share.util.Utils;
 
 import java.util.LinkedList;
 import java.util.Optional;
 
+import static com.workingbit.board.BoardEmbedded.boardBoxDao;
 import static com.workingbit.board.BoardEmbedded.notationDao;
 import static com.workingbit.board.BoardEmbedded.notationStoreService;
 
@@ -72,5 +74,31 @@ class NotationService {
         }
       }
     }
+  }
+
+  public void createNotationForBoardBox(BoardBox boardBox) {
+    Notation notation = new Notation();
+    Utils.setRandomIdAndCreatedAt(notation);
+    notation.setBoardBoxId(boardBox.getDomainId());
+    notation.setRules(boardBox.getBoard().getRules());
+    boardBox.setNotationId(notation.getDomainId());
+    boardBox.setNotation(notation);
+  }
+
+  public BoardBox clearNotationInBoardBox(BoardBox bb) {
+    // clear notation
+    return notationDao.findById(bb.getNotationId())
+        .map(notation -> {
+          clearNotation(notation);
+          bb.setNotation(notation);
+          boardBoxDao.save(bb);
+          return bb;
+        })
+        .orElse(null);
+  }
+
+  private void clearNotation(Notation notation) {
+    notation.setNotationHistory(NotationHistory.createWithRoot());
+    notationDao.save(notation);
   }
 }

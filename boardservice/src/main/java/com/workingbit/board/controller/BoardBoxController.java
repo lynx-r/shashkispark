@@ -38,6 +38,26 @@ public class BoardBoxController {
           Authority.PARSE_PDN_PROTECTED.setAuthorities(Authority.Constants.SECURE_ROLES),
           ImportPdnPayload.class);
 
+  public static Route initBoard = (req, res) ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
+          boardBoxService
+              .initBoard(data, token)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_BOARD))
+      ).handleRequest(req, res,
+          Authority.BOARD_INIT_PROTECTED,
+          BoardBox.class);
+
+  public static Route clearBoard = (req, res) ->
+      ((ModelHandlerFunc<BoardBox>) (data, token) ->
+          boardBoxService
+              .clearBoard(data, token)
+              .map(Answer::created)
+              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_SAVE_BOARD))
+      ).handleRequest(req, res,
+          Authority.BOARD_CLEAR_PROTECTED,
+          BoardBox.class);
+
   public static Route saveBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token) ->
           boardBoxService

@@ -10,10 +10,7 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.workingbit.board.BoardEmbedded.boardDao;
 import static com.workingbit.board.controller.util.BoardUtils.*;
@@ -30,6 +27,14 @@ public class BoardService {
     Utils.setRandomIdAndCreatedAt(board);
     save(board);
     return board;
+  }
+
+  Board initWithDraughtsOnBoard(Board board) {
+    Board newBoard = initBoard(true, board.isBlack(), board.getRules());
+    board.setBoardBoxId(board.getBoardBoxId());
+    newBoard.setDomainId(board.getDomainId());
+    save(newBoard);
+    return newBoard;
   }
 
   void createBoardFromNotation(NotationHistory genNotationHistory, NotationHistory fillNotationHistory, EnumRules rules) {
@@ -191,5 +196,19 @@ public class BoardService {
       }
     }
     return board;
+  }
+
+  public Board clearBoard(Board board) {
+    board.setNextSquare(null);
+    board.setSelectedSquare(null);
+    board.setPreviousSquare(null);
+    board.setWhiteDraughts(new HashMap<>());
+    board.setBlackDraughts(new HashMap<>());
+    board.setDriveCount(0);
+    board.setBlackTurn(false);
+    board.setSquares(new ArrayList<>());
+
+    save(board);
+    return updateBoard(board);
   }
 }

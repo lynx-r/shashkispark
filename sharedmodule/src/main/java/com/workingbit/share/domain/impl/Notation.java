@@ -27,7 +27,6 @@ import static com.workingbit.share.common.NotationConstants.NOTATION_DEFAULT_TAG
 /**
  * Created by Aleksey Popryaduhin on 21:30 03/10/2017.
  */
-//@JsonTypeName("Notation")
 @Getter
 @Setter
 @ToString

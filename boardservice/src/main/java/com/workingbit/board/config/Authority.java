@@ -19,9 +19,11 @@ public enum Authority implements IAuthority {
 
   // must be protected
   BOARD_PROTECTED("/board", Constants.SECURE_ROLES),
+  BOARD_INIT_PROTECTED("/board-init", Constants.SECURE_ROLES),
+  BOARD_CLEAR_PROTECTED("/board-clear", Constants.SECURE_ROLES),
   PARSE_PDN_PROTECTED("/parse-pdn", Constants.SECURE_ROLES),
   BOARD_PUT_PROTECTED("/board", Constants.SECURE_ROLES),
-  BOARD_ADD_DRAUGHT_PROTECTED("/board/push-draught", Constants.SECURE_ROLES),
+  BOARD_ADD_DRAUGHT_PROTECTED("/board/add-draught", Constants.SECURE_ROLES),
   BOARD_MOVE_PROTECTED("/board/move", Constants.SECURE_ROLES),
   BOARD_HIGHLIGHT_PROTECTED("/board/highlight", Constants.SECURE_ROLES),
   BOARD_REDO_PROTECTED("/board/redo", Constants.SECURE_ROLES),

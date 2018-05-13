@@ -39,7 +39,8 @@ public class BoardBoxService {
     DomainId userId = createBoardPayload.getUserId();
     boardBox.setUserId(userId);
 
-    createNewNotation(boardBox, authUser);
+    notationService.createNotationForBoardBox(boardBox);
+
     saveAndFillBoard(authUser, boardBox);
 
     return Optional.of(boardBox);
@@ -208,15 +209,6 @@ public class BoardBoxService {
         );
   }
 
-  private void createNewNotation(BoardBox boardBox, AuthUser authUser) {
-    Notation notation = new Notation();
-    Utils.setRandomIdAndCreatedAt(notation);
-    notation.setBoardBoxId(boardBox.getDomainId());
-    notation.setRules(boardBox.getBoard().getRules());
-    boardBox.setNotationId(notation.getDomainId());
-    boardBox.setNotation(notation);
-  }
-
   public Optional<BoardBox> changeTurn(BoardBox boardBox, AuthUser authUser) {
     return find(boardBox, authUser)
         .map(updatedBox -> {
@@ -232,8 +224,42 @@ public class BoardBoxService {
         });
   }
 
+  public Optional<BoardBox> initBoard(BoardBox boardBox, AuthUser authUser) {
+    return boardBoxDao.find(boardBox).map(bb -> {
+      // reset board
+      DomainId boardId = bb.getBoardId();
+      return boardDao.findById(boardId)
+          .map(board -> {
+            board = boardService.initWithDraughtsOnBoard(board);
+            bb.setBoardId(board.getDomainId());
+            bb.setBoard(board);
+
+            // clear notation
+            return notationService.clearNotationInBoardBox(bb);
+          })
+          .orElse(null);
+    });
+  }
+
+  public Optional<BoardBox> clearBoard(BoardBox boardBox, AuthUser authUser) {
+    return boardBoxDao.find(boardBox).map(bb -> {
+      // clear board
+      DomainId boardId = bb.getBoardId();
+      return boardDao.findById(boardId)
+          .map(board -> {
+            board = boardService.clearBoard(board);
+            bb.setBoardId(board.getDomainId());
+            bb.setBoard(board);
+
+            // clear notation
+            return notationService.clearNotationInBoardBox(bb);
+          })
+          .orElse(null);
+    });
+  }
+
   public Optional<BoardBox> save(BoardBox boardBox, AuthUser authUser) {
-    return Optional.of(saveAndFillBoard(authUser, boardBox));
+    return boardBoxDao.find(boardBox).map(bb -> saveAndFillBoard(authUser, boardBox));
   }
 
   public Optional<BoardBox> loadPreviewBoard(BoardBox boardBox, AuthUser authUser) {
@@ -256,7 +282,7 @@ public class BoardBoxService {
           Board currentBoard = updated.getBoard();
           Square squareLink = BoardUtils.findSquareByLink(selectedSquare, currentBoard);
           if (squareLink == null) {
-            logger.error("Unable to push a draught");
+            logger.error("Unable to add a draught");
             return null;
           }
           try {

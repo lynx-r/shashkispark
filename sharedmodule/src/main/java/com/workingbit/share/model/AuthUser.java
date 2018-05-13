@@ -36,6 +36,8 @@ public class AuthUser implements Payload, DeepClone {
   private List<SimpleFilter> filters = new ArrayList<>();
   private Set<EnumAuthority> authorities = new HashSet<>();
   private String superHash;
+  // произвольные данные
+  private Object data;
 
   @JsonIgnore
   private String internalKey;
@@ -51,17 +53,17 @@ public class AuthUser implements Payload, DeepClone {
 
   public static AuthUser anonymous() {
     return new AuthUser(null, null, null, null,
-        Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.ANONYMOUS)), null, null);
+        Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.ANONYMOUS)), null, null, null);
   }
 
   public static AuthUser simpleAuthor(DomainId userId, String username, String accessToken, String userSession) {
     return new AuthUser(userId, username, accessToken, userSession,
-        Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.AUTHOR)), null, null);
+        Utils.getTimestamp(), new ArrayList<>(), new HashSet<>(Set.of(EnumAuthority.AUTHOR)), null, null, null);
   }
 
   public static AuthUser simpleUser(DomainId userId, String username, String accessToken, String userSession, Set<EnumAuthority> authorities) {
     return new AuthUser(userId, username, accessToken, userSession,
-        Utils.getTimestamp(), new ArrayList<>(), authorities, null, null);
+        Utils.getTimestamp(), new ArrayList<>(), authorities, null, null, null);
   }
 
   public void setAuthorities(Set<EnumAuthority> authorities) {

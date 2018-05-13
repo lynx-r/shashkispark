@@ -608,7 +608,9 @@ public class BoardUtils {
     Square selectedSquare = findSquareByLink(origBoard.getSelectedSquare(), currentBoard);
     if (selectedSquare != null) {
       selectedSquare.setDim(dim);
-      selectedSquare.getDraught().setDim(dim);
+      if (selectedSquare.getDraught() != null) {
+        selectedSquare.getDraught().setDim(dim);
+      }
       currentBoard.setSelectedSquare(selectedSquare);
     }
     Square origNextSquare = origBoard.getNextSquare();

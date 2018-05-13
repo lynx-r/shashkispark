@@ -87,6 +87,8 @@ public class BoardEmbedded {
 
           // protected api
           post(Authority.BOARD_PROTECTED.getPath(), BoardBoxController.createBoard);
+          post(Authority.BOARD_INIT_PROTECTED.getPath(), BoardBoxController.initBoard);
+          post(Authority.BOARD_CLEAR_PROTECTED.getPath(), BoardBoxController.clearBoard);
           post(Authority.PARSE_PDN_PROTECTED.getPath(), BoardBoxController.parsePdn);
           put(Authority.BOARD_PUT_PROTECTED.getPath(), BoardBoxController.saveBoard);
           post(Authority.BOARD_ADD_DRAUGHT_PROTECTED.getPath(), BoardBoxController.addDraught);
