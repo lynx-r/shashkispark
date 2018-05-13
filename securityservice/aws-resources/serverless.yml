@@ -104,10 +104,10 @@ functions:
 # CloudFormation resource templates here
 resources:
   Resources:
-    DynamoDbTableSHASHKIWIKI_SecureUser:
+    DynamoDbTableSHASHKIWIKISecureUser:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: SHASHKIWIKI_SecureUser
+        TableName: SHASHKIWIKISecureUser
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -148,11 +148,11 @@ resources:
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
-    DynamoDBIamPolicySHASHKIWIKI_SecureUser:
+    DynamoDBIamPolicySHASHKIWIKISecureUser:
       Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTableSHASHKIWIKI_SecureUser
+      DependsOn: DynamoDbTableSHASHKIWIKISecureUser
       Properties:
-        PolicyName: lambda-dynamodb-shashkiwiki_secureuser
+        PolicyName: lambda-dynamodb-sHASHKIWIKISecureUser
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -164,7 +164,7 @@ resources:
                 - dynamodb:UpdateItem
                 - dynamodb:Scan
                 - dynamodb:Query
-              Resource: arn:aws:dynamodb:*:*:table/SHASHKIWIKI_SecureUser
+              Resource: arn:aws:dynamodb:*:*:table/SHASHKIWIKISecureUser
         Roles:
           - Ref: IamRoleLambdaExecution
 
