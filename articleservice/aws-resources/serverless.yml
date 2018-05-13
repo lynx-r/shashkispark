@@ -104,10 +104,10 @@ functions:
 
 resources:
   Resources:
-    DynamoDbTableArticle:
+    DynamoDbTableSHASHKIWIKI_Article:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: Article
+        TableName: SHASHKIWIKI_Article
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -155,11 +155,11 @@ resources:
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
-    DynamoDBIamPolicyArticle:
+    DynamoDBIamPolicySHASHKIWIKI_Article:
       Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTableArticle
+      DependsOn: DynamoDbTableSHASHKIWIKI_Article
       Properties:
-        PolicyName: lambda-dynamodb-article
+        PolicyName: lambda-dynamodb-shashkiwiki_article
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -171,7 +171,7 @@ resources:
                 - dynamodb:UpdateItem
                 - dynamodb:Scan
                 - dynamodb:Query
-              Resource: arn:aws:dynamodb:*:*:table/Article
+              Resource: arn:aws:dynamodb:*:*:table/SHASHKIWIKI_Article
         Roles:
           - Ref: IamRoleLambdaExecution
 

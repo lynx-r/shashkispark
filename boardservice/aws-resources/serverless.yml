@@ -103,10 +103,10 @@ functions:
 
 resources:
   Resources:
-    DynamoDbTableBoardBox:
+    DynamoDbTableSHASHKIWIKI_BoardBox:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: BoardBox
+        TableName: SHASHKIWIKI_BoardBox
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -133,10 +133,10 @@ resources:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
 
-    DynamoDbTableBoard:
+    DynamoDbTableSHASHKIWIKI_Board:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: Board
+        TableName: SHASHKIWIKI_Board
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -151,10 +151,10 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
 
-    DynamoDbTableNotation:
+    DynamoDbTableSHASHKIWIKI_Notation:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: Notation
+        TableName: SHASHKIWIKI_Notation
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -169,11 +169,11 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
 
-    DynamoDBIamPolicyBoardBox:
+    DynamoDBIamPolicySHASHKIWIKI_BoardBox:
       Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTableBoardBox
+      DependsOn: DynamoDbTableSHASHKIWIKI_BoardBox
       Properties:
-        PolicyName: lambda-dynamodb-boardbox
+        PolicyName: lambda-dynamodb-shashkiwiki_boardbox
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -185,15 +185,15 @@ resources:
                 - dynamodb:UpdateItem
                 - dynamodb:Scan
                 - dynamodb:Query
-              Resource: arn:aws:dynamodb:*:*:table/BoardBox
+              Resource: arn:aws:dynamodb:*:*:table/SHASHKIWIKI_BoardBox
         Roles:
           - Ref: IamRoleLambdaExecution
 
-    DynamoDBIamPolicyBoard:
+    DynamoDBIamPolicySHASHKIWIKI_Board:
       Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTableBoard
+      DependsOn: DynamoDbTableSHASHKIWIKI_Board
       Properties:
-        PolicyName: lambda-dynamodb-board
+        PolicyName: lambda-dynamodb-shashkiwiki_board
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -205,15 +205,15 @@ resources:
                 - dynamodb:UpdateItem
                 - dynamodb:Scan
                 - dynamodb:Query
-              Resource: arn:aws:dynamodb:*:*:table/Board
+              Resource: arn:aws:dynamodb:*:*:table/SHASHKIWIKI_Board
         Roles:
           - Ref: IamRoleLambdaExecution
 
-    DynamoDBIamPolicyNotation:
+    DynamoDBIamPolicySHASHKIWIKI_Notation:
       Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTableNotation
+      DependsOn: DynamoDbTableSHASHKIWIKI_Notation
       Properties:
-        PolicyName: lambda-dynamodb-notation
+        PolicyName: lambda-dynamodb-shashkiwiki_notation
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -225,7 +225,7 @@ resources:
                 - dynamodb:UpdateItem
                 - dynamodb:Scan
                 - dynamodb:Query
-              Resource: arn:aws:dynamodb:*:*:table/Notation
+              Resource: arn:aws:dynamodb:*:*:table/SHASHKIWIKI_Notation
         Roles:
           - Ref: IamRoleLambdaExecution
 
