@@ -149,7 +149,8 @@ public class BaseDao<T extends BaseDomain> {
     itemsToGet.put(clazz, findByKeys);
     Map<String, List<Object>> batchLoad = getDynamoDBMapper().batchLoad(itemsToGet);
     if (!batchLoad.isEmpty()) {
-      return Utils.listObjectsToListT(batchLoad.get(clazz.getSimpleName()), clazz);
+      String tableName = clazz.getAnnotation(DynamoDBTable.class).tableName();
+      return Utils.listObjectsToListT(batchLoad.get(tableName), clazz);
     }
     return Collections.emptyList();
   }
