@@ -7,7 +7,7 @@
         </layout>
     </appender>
 
-    <logger name="com.workingbit" level="DEBUG"/>
+    <logger name="com.workingbit" level="TRACE"/>
     <logger name="org.apache.catalina" level="ERROR"/>
     <logger name="org.apache.coyote" level="ERROR"/>
 
