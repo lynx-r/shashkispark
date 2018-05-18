@@ -9,6 +9,8 @@ import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -19,6 +21,8 @@ import static com.workingbit.board.controller.util.BoardUtils.*;
  * Created by Aleksey Popryaduhin on 13:45 09/08/2017.
  */
 public class BoardService {
+
+  private Logger logger = LoggerFactory.getLogger(BoardService.class);
 
   Board createBoard(CreateBoardPayload newBoardRequest) {
     Board board = initBoard(newBoardRequest.isFillBoard(), newBoardRequest.isBlack(),
@@ -218,6 +222,7 @@ public class BoardService {
     for (NotationDrive notationDrive : genNotationHistory.getNotation()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
+        logger.trace("EMULATE MOVE: " + drive.asString());
         recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
       }
       if (!notationDrive.getVariants().isEmpty()) {
