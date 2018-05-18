@@ -5,20 +5,36 @@ app:
   test: false
 
   # article
-  articleResource: https://api.shashki.online/article/api/v1/article
-  articlesResource: https://api.shashki.online/article/api/v1/articles
+  articleResource: https://localhost:8443/article/api/v1/article
+  articlesResource: https://localhost:8443/article/api/v1/articles
 
   # board
-  boardboxResource: https://api.shashki.online/board/api/v1/board
-  parsePdnResource: https://api.shashki.online/board/api/v1/parse-pdn
+  boardboxResource: https://localhost:8443/board/api/v1/board
+  parsePdnResource: https://localhost:8443/board/api/v1/parse-pdn
 
   # security
-  registerResource: https://api.shashki.online/security/api/v1/register
-  authorizeResource: https://api.shashki.online/security/api/v1/authorize
-  authenticateResource: https://api.shashki.online/security/api/v1/authenticate
-  userInfoResource: https://api.shashki.online/security/api/v1/user-info
-  saveUserInfoResource: https://api.shashki.online/security/api/v1/save-user-info
-  logoutResource: https://api.shashki.online/security/api/v1/logout
+  registerResource: https://localhost:8443/security/api/v1/register
+  authorizeResource: https://localhost:8443/security/api/v1/authorize
+  authenticateResource: https://localhost:8443/security/api/v1/authenticate
+  userInfoResource: https://localhost:8443/security/api/v1/user-info
+  saveUserInfoResource: https://localhost:8443/security/api/v1/save-user-info
+  logoutResource: https://localhost:8443/security/api/v1/logout
+
+#  # article
+#  articleResource: https://api.shashki.online/article/api/v1/article
+#  articlesResource: https://api.shashki.online/article/api/v1/articles
+#
+#  # board
+#  boardboxResource: https://api.shashki.online/board/api/v1/board
+#  parsePdnResource: https://api.shashki.online/board/api/v1/parse-pdn
+#
+#  # security
+#  registerResource: https://api.shashki.online/security/api/v1/register
+#  authorizeResource: https://api.shashki.online/security/api/v1/authorize
+#  authenticateResource: https://api.shashki.online/security/api/v1/authenticate
+#  userInfoResource: https://api.shashki.online/security/api/v1/user-info
+#  saveUserInfoResource: https://api.shashki.online/security/api/v1/save-user-info
+#  logoutResource: https://api.shashki.online/security/api/v1/logout
 
   redisHost: 127.0.0.1
   redisPort: 6379
