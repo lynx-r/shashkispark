@@ -12,6 +12,7 @@ import java.io.IOException;
 public class UnirestUtil {
 
   public static void configureSerialization() {
+    Unirest.setTimeouts(3 * 60 * 1000, 3 * 60 * 1000);
     Unirest.setObjectMapper(new ObjectMapper() {
       private final com.fasterxml.jackson.databind.ObjectMapper mapper;
 
