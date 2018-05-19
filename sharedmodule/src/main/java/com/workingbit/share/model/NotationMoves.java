@@ -27,6 +27,10 @@ public class NotationMoves extends LinkedList<NotationMove> implements NotationF
     return null;
   }
 
+  public void resetCursors() {
+    forEach(NotationMove::resetCursor);
+  }
+
   public String asString() {
     return Utils.listToPdn(new ArrayList<>(this));
   }

@@ -219,8 +219,6 @@ public class NotationHistory implements DeepClone {
       variantToSwitch = variantNotationDrive;
     }
 
-//    removeVariantsFromLastNotation();
-
     // push varint's to switch notation to main notation drives
     if (variantToSwitch != null) {
       resetCurrentAndSetPresious(toSwitchDrive);
@@ -290,21 +288,20 @@ public class NotationHistory implements DeepClone {
 
     NotationDrive lastNot = notation.getLast();
     if (!lastNot.getMoves().isEmpty()) {
-      lastNot.getMoves().getLastMove().setCursor(true);
+      lastNot.getMoves().getLast().setCursor(true);
     }
   }
 
   private void resetMovesCursor(NotationDrive drive) {
-    drive.getMoves().forEach(m -> m.getMove().forEach(move -> move.setCursor(false)));
+    drive.getMoves().resetCursors();
   }
 
   private void setCurrentMarkerForNotationDrive(NotationDrive variant, NotationDrive lastHist) {
-    // todo
-//    lastHist.getVariants()
-//        .stream()
-//        .filter(h -> variantHasContinuePair(h, variant))
-//        .findFirst()
-//        .ifPresent(v -> v.setCurrent(true));
+    lastHist.getVariants()
+        .stream()
+        .filter(h -> variantHasContinuePair(h.getVariants(), variant.getVariants()))
+        .findFirst()
+        .ifPresent(v -> v.setCurrent(true));
   }
 
   @JsonIgnore

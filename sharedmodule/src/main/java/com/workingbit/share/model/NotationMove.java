@@ -185,4 +185,8 @@ public class NotationMove implements DeepClone, NotationFormat {
   public void resetCursor() {
     move.forEach(m -> m.setCursor(false));
   }
+
+  public void setCursor(boolean cursor) {
+    move.forEach(m -> m.setCursor(cursor));
+  }
 }
