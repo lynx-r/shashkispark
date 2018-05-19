@@ -154,7 +154,7 @@ public class NotationHistory implements DeepClone {
       notation.forEach(this::resetMovesCursor);
       NotationMoves moves = notation.getLast().getMoves();
       if (!moves.isEmpty()) {
-        moves.getLastMove().setCursor(true);
+        moves.setCursor(true);
       }
     }
 
@@ -290,7 +290,7 @@ public class NotationHistory implements DeepClone {
 
     NotationDrive lastNot = notation.getLast();
     if (!lastNot.getMoves().isEmpty()) {
-      lastNot.getMoves().getLast().setCursor(true);
+      lastNot.getMoves().setCursor(true);
     }
   }
 
