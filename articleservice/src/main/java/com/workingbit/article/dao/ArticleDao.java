@@ -11,6 +11,7 @@ import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Comparator;
@@ -72,9 +73,9 @@ public class ArticleDao extends BaseDao<Article> {
 
   public List<Article> findPublished(int limit) {
     logger.info("Find all published with limit " + limit);
-    List<Article> articles = findByFilter(new DaoFilters());
-    articles.sort(Comparator.comparing(Article::getArticleStatus));
-    return articles;
+    DaoFilters filters = new DaoFilters();
+    filters.add(new ValueFilter("articleStatus", EnumArticleStatus.PUBLISHED.name(), "=", "S"));
+    return findByFilter(filters);
   }
 
 //  public List<Article> findPublished(int limit) {

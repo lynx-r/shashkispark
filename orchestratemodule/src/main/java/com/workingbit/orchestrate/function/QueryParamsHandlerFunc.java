@@ -26,7 +26,7 @@ public interface QueryParamsHandlerFunc<T extends Payload> extends BaseHandlerFu
     QueryPayload query = new QueryPayload(queryParamsMap);
 
     @SuppressWarnings("unchecked")
-    Answer answer = getAnswer(request, response, path, (T) query);
+    Answer answer = getAnswer(request, response, path, (T) query, query);
     response.status(answer.getStatusCode());
 
     logResponse(request.url(), response, answer.getAuthUser());

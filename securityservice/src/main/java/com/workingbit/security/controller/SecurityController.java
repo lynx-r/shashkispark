@@ -16,32 +16,32 @@ public class SecurityController {
   public static Route home = (req, res) -> "Security. Home, sweet home!";
 
   public static Route register = (req, res) ->
-      ((ModelHandlerFunc<UserCredentials>) (data, token) ->
+      ((ModelHandlerFunc<UserCredentials>) (data, token, param) ->
           Answer.ok(secureUserService.register((UserCredentials) data))
       ).handleAuthRequest(req, res, UserCredentials.class);
 
   public static Route authorize = (req, res) ->
-      ((ModelHandlerFunc<UserCredentials>) (data, token) ->
+      ((ModelHandlerFunc<UserCredentials>) (data, token, param) ->
           Answer.ok(secureUserService.authorize((UserCredentials) data))
       ).handleAuthRequest(req, res, UserCredentials.class);
 
   public static Route authenticate = (req, res) ->
-      ((ParamsHandlerFunc<ParamPayload>) (data, token) ->
+      ((ParamsHandlerFunc<ParamPayload>) (data, token, param) ->
           Answer.ok(secureUserService.authenticate(token))
       ).handleAuthRequest(req, res);
 
   public static Route userInfo = (req, res) ->
-      ((ModelHandlerFunc<AuthUser>) (data, token) ->
+      ((ModelHandlerFunc<AuthUser>) (data, token, param) ->
           Answer.ok(secureUserService.userInfo((AuthUser) data))
       ).handleRequest(req, res, Authority.USER_INFO_PROTECTED, AuthUser.class);
 
   public static Route saveUserInfo = (req, res) ->
-      ((ModelHandlerFunc<UserInfo>) (data, token) ->
+      ((ModelHandlerFunc<UserInfo>) (data, token, param) ->
           Answer.ok(secureUserService.saveUserInfo(data, token))
       ).handleRequest(req, res, Authority.USER_INFO_PROTECTED, UserInfo.class);
 
   public static Route logout = (req, res) ->
-      ((ParamsHandlerFunc<ParamPayload>) (params, token) ->
+      ((ParamsHandlerFunc<ParamPayload>) (params, token, param) ->
           Answer.ok(secureUserService.logout(token))
       ).handleRequest(req, res, Authority.LOGOUT_PROTECTED);
 }

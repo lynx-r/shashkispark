@@ -60,6 +60,8 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "selectedBoardBoxId")
   private DomainId selectedBoardBoxId;
 
+  @DynamoDBAttribute(attributeName = "boardBoxCount")
+  private int boardBoxCount;
 //  @DynamoDBTypeConverted(converter = DomainIdsConverter.class)
 //  @DynamoDBAttribute(attributeName = "boardBoxIds")
 //  private DomainIds boardBoxIds;

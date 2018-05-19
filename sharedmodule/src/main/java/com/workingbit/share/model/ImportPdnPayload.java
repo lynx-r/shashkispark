@@ -15,16 +15,19 @@ public class ImportPdnPayload implements Payload {
   private DomainId articleId;
   private String pdn;
   private EnumRules rules;
+  private int idInArticle;
 
   private ImportPdnPayload() {
   }
 
   @JsonCreator
   public ImportPdnPayload(@JsonProperty("articleId") DomainId articleId,
-                          @JsonProperty("pdn") String pdn
+                          @JsonProperty("pdn") String pdn,
+                          @JsonProperty("idInArticle") int idInArticle
   ) {
     this.articleId = articleId;
     this.pdn = pdn;
+    this.idInArticle = idInArticle;
   }
 
   public static ImportPdnPayload createBoardPayload() {

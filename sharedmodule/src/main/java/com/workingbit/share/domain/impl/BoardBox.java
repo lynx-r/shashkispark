@@ -47,6 +47,12 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "articleId")
   private DomainId articleId;
 
+  /**
+   * Id of boardBox in article. Used to find board box by this id in preview article
+   */
+  @DynamoDBAttribute(attributeName = "idInArticle")
+  private int idInArticle;
+
   @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "boardId")
   private DomainId boardId;
@@ -72,6 +78,7 @@ public class BoardBox extends BaseDomain implements Payload {
   /**
    * Показывать ли эту доску в просмотре статьи когда пользователь не залогинен
    */
+  @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
   @DynamoDBAttribute(attributeName = "visiblePublic")
   private boolean visiblePublic;
 

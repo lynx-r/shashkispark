@@ -67,7 +67,7 @@ public class ValueFilter implements BaseFilter {
     }
     AttributeValue attributeValue = new AttributeValue();
     switch (dataType) {
-      case "B":
+      case "BOOL":
         attributeValue.setBOOL((Boolean) value);
         break;
       case "S":

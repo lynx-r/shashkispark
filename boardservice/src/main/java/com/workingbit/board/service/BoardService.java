@@ -155,7 +155,7 @@ public class BoardService {
 //      return Optional.empty();
 //    }
 //    boardDao.save(currentBoard);
-//    return findById(previousId).map(undoneBoard -> {
+//    return findPublicById(previousId).map(undoneBoard -> {
 //      String selectedMove = currentBoard.getPreviousSquare().getNotation();
 //      String possibleMove = currentBoard.getSelectedSquare().getNotation();
 //      undoneBoard.pushNextBoard(currentBoard.getId(), selectedMove, possibleMove);
@@ -174,7 +174,7 @@ public class BoardService {
 //      return Optional.empty();
 //    }
 //    boardDao.save(currentBoard);
-//    return findById(nextId).map(redoneBoard -> {
+//    return findPublicById(nextId).map(redoneBoard -> {
 //      Square square = getNextOrPrevSquare(currentBoard);
 //      String notation = square != null ? square.getNotation() : null;
 //      redoneBoard.pushPreviousBoard(currentBoard.getId(),

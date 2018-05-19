@@ -6,9 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.map.ListOrderedMap;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @JsonTypeName("BoardBoxes")
 @Getter
 @Setter
@@ -26,23 +23,7 @@ public class BoardBoxes implements Payload {
   }
 
   public void push(BoardBox boardBox) {
-    boardBoxes.put(String.valueOf(boardBoxes.size() + 1), boardBox);
-  }
-
-  public void order() {
-    List<BoardBox> list = new ArrayList<>(boardBoxes.valueList());
-    // sort desc by date
-    list.sort((b1, b2) -> b2.getCreatedAt().compareTo(b1.getCreatedAt()));
-    ListOrderedMap<String, BoardBox> temp = new ListOrderedMap<>();
-    for (int i = 0; i < list.size(); i++) {
-      temp.put(String.valueOf(list.size() - i), list.get(i));
-    }
-    boardBoxes.clear();
-    boardBoxes.putAll(temp);
-  }
-
-  public void put(String key, BoardBox boardBox) {
-    boardBoxes.put(key, boardBox);
+    boardBoxes.put(String.valueOf(boardBox.getIdInArticle()), boardBox);
   }
 
   public void putAll(ListOrderedMap<String, BoardBox> boardBoxes) {

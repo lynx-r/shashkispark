@@ -47,4 +47,5 @@ public class ErrorMessages {
   public static final String INVALID_HIGHLIGHT = "Ходы шашки не могут быть подсвечены";
   public static final String UNSUPPORTED_ENCODING = "Кодировка не поддерживается";
   public static final String UNABLE_TO_SAVE_ENTITY = "Не удалось сохранить объект";
+  public static final String EXPECTED_ONE_RESULT = "Ожидается один результат, получено много";
 }

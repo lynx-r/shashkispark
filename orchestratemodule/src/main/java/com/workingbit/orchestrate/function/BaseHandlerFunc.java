@@ -2,9 +2,7 @@ package com.workingbit.orchestrate.function;
 
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.RequestException;
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.Payload;
+import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.IAuthority;
 import org.apache.commons.lang3.StringUtils;
@@ -25,9 +23,9 @@ import static java.net.HttpURLConnection.*;
  */
 public interface BaseHandlerFunc<T extends Payload> {
 
-  Answer process(T data, AuthUser token) throws RequestException;
+  Answer process(T data, AuthUser token, QueryPayload query) throws RequestException;
 
-  default Answer getAnswer(Request request, Response response, IAuthority path, T data) throws RequestException {
+  default Answer getAnswer(Request request, Response response, IAuthority path, T data, QueryPayload query) {
     AuthUser authUser = getAuthUser(request, response);
     if (authUser.getInternalKey() != null) {
       boolean isAuthUserValid = checkInternalRequest(authUser.getInternalKey(), authUser);
@@ -69,7 +67,7 @@ public interface BaseHandlerFunc<T extends Payload> {
         if (StringUtils.isNotBlank(filterExpression)) {
           authed.parseFilters(filterExpression);
         }
-        return getAnswerForChecked(request, data, authed);
+        return getAnswerForChecked(request, data, authed, query);
       }
       return getForbiddenAnswer(response);
     }
@@ -80,6 +78,10 @@ public interface BaseHandlerFunc<T extends Payload> {
     return getAnswerForChecked(request, data, authUser);
   }
 
+  default Answer getAnswer(Request request, Response response, IAuthority path, T data) throws RequestException {
+    return getAnswer(request, response, path, data, null);
+  }
+
   default Answer getAnswerForAuth(Request request, Response response, T data) throws RequestException {
     AuthUser authUser = getAuthUser(request, response);
     Answer answerForAuth = getAnswerForChecked(request, data, authUser);
@@ -87,17 +89,21 @@ public interface BaseHandlerFunc<T extends Payload> {
     return answerForAuth;
   }
 
-  private Answer getAnswerForChecked(Request request, T data, AuthUser authUser) throws RequestException {
-    Answer securedAnswer = getSecureAnswer(data, authUser);
-    orchestralService.cacheRequest(request, securedAnswer, authUser);
+  private Answer getAnswerForChecked(Request request, T data, AuthUser authed, QueryPayload query) {
+    Answer securedAnswer = getSecureAnswer(data, authed, query);
+    orchestralService.cacheRequest(request, securedAnswer, authed);
     return securedAnswer;
   }
 
-  private Answer getSecureAnswer(T data, AuthUser authenticated) throws RequestException {
+  private Answer getAnswerForChecked(Request request, T data, AuthUser authUser) throws RequestException {
+    return getAnswerForChecked(request, data, authUser, null);
+  }
+
+  private Answer getSecureAnswer(T data, AuthUser authenticated, QueryPayload query) {
     Set<String> violations = violations(data);
     Answer processed;
     if (violations.isEmpty()) {
-      processed = process(data, authenticated);
+      processed = process(data, authenticated, query);
       processed.setAuthUser(authenticated);
     } else {
       return Answer.error(HTTP_BAD_REQUEST, violations.toArray(new String[0]));

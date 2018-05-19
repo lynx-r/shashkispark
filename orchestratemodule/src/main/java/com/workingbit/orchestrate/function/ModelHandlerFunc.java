@@ -3,7 +3,9 @@ package com.workingbit.orchestrate.function;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.Payload;
+import com.workingbit.share.model.QueryPayload;
 import com.workingbit.share.model.enumarable.IAuthority;
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 
@@ -24,7 +26,10 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> 
     String json = request.body();
     T data = jsonToData(json, clazz);
 
-    Answer answer = getAnswer(request, response, path, data);
+    QueryParamsMap queryParamsMap = request.queryMap();
+    QueryPayload query = new QueryPayload(queryParamsMap);
+
+    Answer answer = getAnswer(request, response, path, data, query);
     response.status(answer.getStatusCode());
 
     logResponse(request.url(), response, answer.getAuthUser());

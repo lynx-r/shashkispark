@@ -31,4 +31,8 @@ public class DaoException extends RuntimeException {
   public static DaoException unableToSave() {
     return new DaoException(0, ErrorMessages.UNABLE_TO_SAVE_ENTITY);
   }
+
+  public static DaoException expectedOneResult() {
+    return new DaoException(0, ErrorMessages.EXPECTED_ONE_RESULT);
+  }
 }

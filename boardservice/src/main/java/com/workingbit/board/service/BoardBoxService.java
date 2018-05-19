@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static com.workingbit.board.BoardEmbedded.*;
+import static com.workingbit.share.common.RequestConstants.IS_PUBLIC_QUERY;
 
 /**
  * Created by Aleksey Popryaduhin on 07:00 22/09/2017.
@@ -40,6 +41,7 @@ public class BoardBoxService {
     boardBox.setArticleId(articleId);
     DomainId userId = createBoardPayload.getUserId();
     boardBox.setUserId(userId);
+    boardBox.setIdInArticle(createBoardPayload.getIdInArticle());
 
     notationService.createNotationForBoardBox(boardBox);
 
@@ -52,7 +54,7 @@ public class BoardBoxService {
     try {
       Notation notation = notationParserService.parse(importPdnPayload.getPdn());
       notation.setRules(importPdnPayload.getRules());
-      return createBoardBoxFromNotation(importPdnPayload.getArticleId(), notation, authUser);
+      return createBoardBoxFromNotation(importPdnPayload.getArticleId(), importPdnPayload.getIdInArticle(), notation, authUser);
     } catch (ParserLogException | ParserCreationException e) {
       logger.error("PARSE ERROR: " + e.getMessage(), e);
       throw RequestException.internalServerError(ErrorMessages.UNPARSABLE_PDN_CONTENT, e.getMessage());
@@ -62,10 +64,11 @@ public class BoardBoxService {
     }
   }
 
-  BoardBox createBoardBoxFromNotation(DomainId articleId, Notation parsedNotation, AuthUser authUser) {
+  BoardBox createBoardBoxFromNotation(DomainId articleId, int idInArticle, Notation parsedNotation, AuthUser authUser) {
     BoardBox boardBox = new BoardBox();
     boardBox.setArticleId(articleId);
     boardBox.setUserId(authUser.getUserId());
+    boardBox.setIdInArticle(idInArticle);
     Utils.setRandomIdAndCreatedAt(boardBox);
 
     NotationHistory toFillNotationHistory = NotationHistory.create();
@@ -101,7 +104,13 @@ public class BoardBoxService {
     return updateBoardBox(authUser, board);
   }
 
-  public BoardBox findById(DomainId boardBoxId, AuthUser authUser) {
+  public BoardBox findById(DomainId boardBoxId, AuthUser authUser, String publicQuery) {
+    if (publicQuery.equals(IS_PUBLIC_QUERY)) {
+      return findPublicById(boardBoxId, authUser);
+    }
+    if (!EnumAuthority.hasAuthorAuthorities(authUser)) {
+      throw RequestException.forbidden();
+    }
     return boardBoxStoreService.get(authUser.getUserSession(), boardBoxId)
         .map(boardBox -> updateBoardBox(authUser, boardBox))
         .orElseGet(() -> {
@@ -111,7 +120,23 @@ public class BoardBoxService {
         });
   }
 
-  public BoardBoxes findByArticle(DomainId articleId, AuthUser authUser) {
+  BoardBox findPublicById(DomainId boardBoxId, AuthUser authUser) {
+    return boardBoxStoreService.getPublic(authUser.getUserSession(), boardBoxId)
+        .map(boardBox -> updateBoardBox(authUser, boardBox))
+        .orElseGet(() -> {
+          var boardBox = boardBoxDao.findPublicById(boardBoxId);
+          updateBoardBox(authUser, boardBox);
+          return boardBox;
+        });
+  }
+
+  public BoardBoxes findByArticleId(DomainId articleId, AuthUser authUser, String queryValue) {
+    if (queryValue.equals(IS_PUBLIC_QUERY)) {
+      return findPublicByArticleId(articleId, authUser);
+    }
+    if (!EnumAuthority.hasAuthorAuthorities(authUser)) {
+      throw RequestException.forbidden();
+    }
     List<BoardBox> byUserAndIds;
     try {
       byUserAndIds = boardBoxDao.findByArticleId(articleId);
@@ -122,7 +147,7 @@ public class BoardBoxService {
     return fillBoardBoxes(authUser, byUserAndIds);
   }
 
-  public BoardBoxes findPublicByArticleId(DomainId articleId, AuthUser authUser) {
+  private BoardBoxes findPublicByArticleId(DomainId articleId, AuthUser authUser) {
     List<BoardBox> byUserAndIds;
     try {
       byUserAndIds = boardBoxDao.findPublicByArticleId(articleId);
@@ -423,7 +448,6 @@ public class BoardBoxService {
 
     BoardBoxes boardBoxes = new BoardBoxes();
     byUserAndIds.forEach(boardBoxes::push);
-    boardBoxes.order();
     return boardBoxes;
   }
 

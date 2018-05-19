@@ -33,7 +33,6 @@ public class BoardBoxesTest {
     System.out.println(boardBox);
 
     System.out.println();
-    boardBoxes.order();
     boardBoxes.getBoardBoxes().valueList().forEach(System.out::println);
     boardBoxes.getBoardBoxes().keyList().forEach(System.out::println);
   }

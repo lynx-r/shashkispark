@@ -39,4 +39,8 @@ public class BoardBoxStoreService {
   private String getKey(String key, String boardId) {
     return key + ":" + boardId;
   }
+
+  public Optional<BoardBox> getPublic(String key, DomainId boardBoxId) {
+    return get(key, boardBoxId).filter(BoardBox::isVisiblePublic);
+  }
 }

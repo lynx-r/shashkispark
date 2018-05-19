@@ -6,6 +6,7 @@ import com.workingbit.share.dao.DaoFilters;
 import com.workingbit.share.dao.Unary;
 import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.DomainIds;
@@ -23,7 +24,7 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
 
   public List<BoardBox> findPublicByIds(DomainIds boardBoxIds) {
     DaoFilters filterPublic = new DaoFilters();
-    filterPublic.add(new ValueFilter("visiblePublic", true, "=", "B"));
+    filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
     filterPublic.add(new Unary("("));
     boardBoxIds.getIds().forEach(id ->
         filterPublic.add(new ValueFilter("id", id.getId(), "=", "S")));
@@ -43,7 +44,7 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
     }
     boardBoxIds.getIds().forEach(id ->
         filterPublic.add(new ValueFilter("id", id.getId(), "=", "S"))
-        .add(new Unary("or"))
+            .add(new Unary("or"))
     );
     if (!boardBoxIds.isEmpty()) {
       filterPublic.removeLast();
@@ -62,9 +63,25 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
 
   public List<BoardBox> findPublicByArticleId(DomainId articleId) {
     DaoFilters filterPublic = new DaoFilters();
-    filterPublic.add(new ValueFilter("visiblePublic", true, "=", "B"));
+    filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
+    filterPublic.add(new Unary("and"));
     filterPublic.add(new ValueFilter("articleId.id", articleId.getId(), "=", "S"));
     return findByFilter(filterPublic);
+  }
+
+  public BoardBox findPublicById(DomainId boardBoxId) {
+    DaoFilters filterPublic = new DaoFilters();
+    filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
+    filterPublic.add(new Unary("and"));
+    filterPublic.add(new ValueFilter("id", boardBoxId.getId(), "=", "S"));
+    List<BoardBox> byFilter = findByFilter(filterPublic);
+    if (byFilter.isEmpty()) {
+      throw DaoException.notFound();
+    }
+    if (byFilter.size() > 1) {
+      throw DaoException.expectedOneResult();
+    }
+    return byFilter.get(0);
   }
 
 //  public List<BoardBox> findByUserAndIds(int limit, String userId, Set<String> boardBoxIds) {

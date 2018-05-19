@@ -47,6 +47,7 @@ public class ArticleService {
     boardRequest.setBoardBoxId(article.getSelectedBoardBoxId());
     boardRequest.setArticleId(article.getDomainId());
     boardRequest.setUserId(article.getUserId());
+    boardRequest.setIdInArticle(1);
 
     Optional<Answer> boardBoxAnswer = orchestralService.internal(authUser, "createBoardBoxAnswer", boardRequest, authUser);
     CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();
@@ -55,7 +56,7 @@ public class ArticleService {
       createArticleResponse.setArticle(article);
       createArticleResponse.setBoard(boardBox);
 
-//      article.getBoardBoxIds().add(new DomainId(boardBox));
+      article.setBoardBoxCount(1);
       articleDao.save(article);
     } else {
       logger.error("Unable to create board");
@@ -100,6 +101,7 @@ public class ArticleService {
     }
 
     Optional<Answer> boardBoxAnswer;
+    int boardBoxCount = article.getBoardBoxCount() + 1;
     if (StringUtils.isBlank(importPdnPayload.getPdn())) {
       CreateBoardPayload boardRequest = CreateBoardPayload.createBoardPayload();
       article.setSelectedBoardBoxId(DomainId.getRandomID());
@@ -107,15 +109,17 @@ public class ArticleService {
       boardRequest.setArticleId(article.getDomainId());
       boardRequest.setUserId(article.getUserId());
       boardRequest.setRules(importPdnPayload.getRules());
+      boardRequest.setIdInArticle(boardBoxCount);
       boardBoxAnswer = orchestralService.internal(authUser, "createBoardBoxAnswer", boardRequest, authUser);
     } else {
+      importPdnPayload.setIdInArticle(boardBoxCount);
       boardBoxAnswer = orchestralService.internal(authUser, "parsePdnAnswer", importPdnPayload, authUser);
     }
 
     if (boardBoxAnswer.isPresent() && boardBoxAnswer.get().getStatusCode() == HTTP_CREATED) {
       BoardBox boardBox = (BoardBox) boardBoxAnswer.get().getBody();
       article.setSelectedBoardBoxId(boardBox.getDomainId());
-//      article.getBoardBoxIds().add(new DomainId(boardBox));
+      article.setBoardBoxCount(boardBoxCount);
       articleDao.save(article);
 
       CreateArticleResponse articleResponse = CreateArticleResponse.createArticleResponse();
