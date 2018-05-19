@@ -255,7 +255,7 @@ public class BoardService {
           tDrive.setMoves(tNotation.getFirst().getMoves());
           int idInVariants = recurNotations.size() + 1;
           tDrive.setIdInVariants(idInVariants);
-          tNotation.forEach(tn -> tn.setIdInVariants(tDrive.getIdInVariants()));
+          tNotation.setIdInVariants(idInVariants);
           tDrive.setVariants(tNotation);
           recurNotations.add(tDrive);
         }

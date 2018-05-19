@@ -55,6 +55,10 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
     forEach(notationDrive -> notationDrive.setBoardDimension(dimension));
   }
 
+  public void setIdInVariants(int idInVariants) {
+    forEach(tn -> tn.setIdInVariants(idInVariants));
+  }
+
   public static class Builder {
 
     private NotationDrives drives;

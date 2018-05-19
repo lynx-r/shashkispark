@@ -203,4 +203,15 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     testCollection("f6", highlight.getCaptured());
   }
 
+  @Test
+  public void jump_to_far_for_draught() {
+    Board board = getBoard();
+    Board updatedBoard = addBlackDraught(board, "d8");
+    updatedBoard = addWhiteDraught(updatedBoard, "c7");
+    updatedBoard = addWhiteDraught(updatedBoard, "d4");
+    MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "d8"));
+    testCollection("b6", highlight.getAllowed());
+    testCollection("c7", highlight.getCaptured());
+  }
+
 }

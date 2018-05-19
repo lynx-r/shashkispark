@@ -103,7 +103,7 @@ class HighlightMoveUtil {
     deep++;
     AtomicBoolean first = new AtomicBoolean();
     first.set(down);
-    List<Square> tail = new ArrayList<>();
+    Set<Square> tail = new HashSet<>();
     boolean mustBeat;
     do {
       if (hasNotNextMove(down, squareListIterator)) {
@@ -136,9 +136,11 @@ class HighlightMoveUtil {
     if (hasQueenWalkedThereOrMovesWithBeatInOneSquare(walkAllowedMoves, previous)) {
       allowedMoves.addAll(walkAllowedMoves);
     }
-    if (!tail.isEmpty() && !capturedMoves.getChildren().isEmpty() && capturedMoves.asTree().getMaxDepth() == 1) {
+    boolean hasTail = !tail.isEmpty() && !capturedMoves.getChildren().isEmpty() && capturedMoves.asTree().getMaxDepth() == 1;
+    if (hasTail) {
       allowedMoves.addAll(tail);
     }
+    allowTailIfMoreThenOneHighlightedOnItsDepth(deep, capturedMoves, allowedMoves, tail);
   }
 
   private void walkCross(boolean down, int deep, Tree.Node<Square> capturedMoves, Set<Square> allowedMoves,
@@ -147,7 +149,7 @@ class HighlightMoveUtil {
     Tree.Node<Square> newCapturedMoves = children.get(children.size() - 1);
     Set<Square> crossAllowed = new HashSet<>();
     walkCrossDiagonalForCaptured(next, previous, down, deep, true, newCapturedMoves, crossAllowed);
-    if (hasCapturedOnCrossDiagonal(next, previous)) {
+    if (hasMarkedToCaptureOnCrossDiagonal(next, previous)) {
       addAllowedMove(next, allowedMoves);
     } else if (newCapturedMoves.getChildren().isEmpty() && !crossAllowed.isEmpty()) {
       addAllowedMove(next, walkAllowedMoves);
@@ -179,6 +181,9 @@ class HighlightMoveUtil {
       if (isCanNotMoveNextAndNextIsCaptured(previous, next)) {
         break;
       }
+      if (isDraughtStopMoveOrCapturingFinished(down, moveCounter, capturedMoves)) {
+        return;
+      }
       if (mustBeat(next, previous)) {
         if (leavesContain(capturedMoves, previous)) {
           return;
@@ -191,9 +196,9 @@ class HighlightMoveUtil {
       } else if (isDraughtWithSameColor(next)) {
         return;
       }
-      if (isDraughtStopMoveOrCapturingFinished(down, moveCounter, capturedMoves)) {
-        return;
-      }
+//      if (isDraughtStopMoveOrCapturingFinished(down, moveCounter, capturedMoves)) {
+//        return;
+//      }
       moveCounter++;
       previous = next;
     }
@@ -347,11 +352,24 @@ class HighlightMoveUtil {
     return !capturedMoves.getChildren().isEmpty() && isDraughtNotOccupied(next);
   }
 
-  private boolean hasCapturedOnCrossDiagonal(Square next, Square previous) {
+  private boolean hasMarkedToCaptureOnCrossDiagonal(Square next, Square previous) {
     for (List<Square> diagonal : next.getDiagonals()) {
       if (!isSubDiagonal(Arrays.asList(previous, next), diagonal)) {
         return diagonal.stream().anyMatch(square -> square.isOccupied()
             && square.getDraught().isMarkCaptured());
+      }
+    }
+    return false;
+  }
+
+  private boolean hasCapturedOnPrevDiagonal(Square selectedSquare, List<Square> curDiagonal) {
+    for (List<Square> d : selectedSquare.getDiagonals()) {
+      if (!isSubDiagonal(curDiagonal, d)) {
+        var f = d.stream()
+            .anyMatch(square -> square.isOccupied() && square.getDraught().isCaptured());
+        if (f) {
+          return true;
+        }
       }
     }
     return false;
@@ -385,7 +403,7 @@ class HighlightMoveUtil {
   }
 
   private boolean isDraughtStopMoveOrCapturingFinished(boolean down, int moveCounter, Tree.Node<Square> capturedMoves) {
-    return (moveCounter > 0 && (!down || capturedMoves.getChildren().isEmpty()))
+    return (moveCounter > 1 && (!down || capturedMoves.getChildren().isEmpty()))
         || moveCounter >= 2;
   }
 
@@ -402,5 +420,34 @@ class HighlightMoveUtil {
 
   private boolean isDraughtOnDiagonal(Square selectedSquare, List<Square> diagonal) {
     return diagonal.indexOf(selectedSquare) != -1;
+  }
+
+  /**
+   * Если на глубине квадрата хвоста есть больше одной захваченной шашки,
+   * тогда идем по диагонале захваченных шашек (они на одной диагноали)
+   * и если там есть клетка хвоста, то добавляем её
+   * @param deep глубина погружения в дерево
+   * @param capturedMoves сбитые шашки
+   * @param allowedMoves разрешенные ходы
+   * @param tail ходы которые были разрешены, но не были добавлены в процессе
+   *             обхода
+   */
+  private void allowTailIfMoreThenOneHighlightedOnItsDepth(int deep, Tree.Node<Square> capturedMoves, Set<Square> allowedMoves, Set<Square> tail) {
+    List<Square> capturedOnDepth = capturedMoves.asTree().getDepth(deep).collect(Collectors.toList());
+    if (capturedOnDepth.size() > 1) {
+      for (Square sTail : tail) {
+        NEXT_TAIL:
+        for (Square square : capturedOnDepth) {
+          for (List<Square> squares : square.getDiagonals()) {
+            if (isSubDiagonal(capturedOnDepth, squares)) {
+              if (squares.contains(sTail)) {
+                allowedMoves.add(sTail);
+                break NEXT_TAIL;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

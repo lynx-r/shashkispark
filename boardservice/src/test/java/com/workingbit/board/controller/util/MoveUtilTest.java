@@ -203,8 +203,7 @@ public class MoveUtilTest extends BaseServiceTest {
     assertTrue(testSameHighlight(board, highlight));
 
     board = move(board, "f2", "d4", false, boardBox.getNotation().getNotationHistory());
-    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d4"));
-    assertTrue(testSameHighlight(board, highlight));
+    assertTrue(testSameHighlight(board, new MovesList()));
 
     System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
   }

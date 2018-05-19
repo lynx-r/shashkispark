@@ -226,9 +226,10 @@ public class BoardBoxService {
 
   public BoardBox changeTurn(BoardBox boardBox, AuthUser authUser) {
     var updatedBox = find(boardBox, authUser);
-    Board inverted = boardBox.getBoard();
+    Board inverted = updatedBox.getBoard();
     inverted.setSelectedSquare(null);
-    inverted.setBlackTurn(!inverted.isBlackTurn());
+    Board clientBoard = boardBox.getBoard();
+    inverted.setBlackTurn(!clientBoard.isBlackTurn());
     boardService.save(inverted);
 
     boardService.updateBoard(inverted);
