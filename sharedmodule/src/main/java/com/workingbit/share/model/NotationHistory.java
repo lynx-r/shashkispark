@@ -409,8 +409,8 @@ public class NotationHistory implements DeepClone {
   public boolean isEqual(NotationHistory that) {
     EnumNotationFormat formatThat = that.getNotation().getFirst().getNotationFormat();
     EnumNotationFormat formatThis = this.getNotation().getFirst().getNotationFormat();
-    that.setFormat(EnumNotationFormat.PDN);
-    this.setFormat(EnumNotationFormat.PDN);
+    that.setFormat(EnumNotationFormat.ЧИСЛОВОЙ);
+    this.setFormat(EnumNotationFormat.ЧИСЛОВОЙ);
     boolean equals = that.notationToPdn().equals(this.notationToPdn());
     that.setFormat(formatThat);
     this.setFormat(formatThis);

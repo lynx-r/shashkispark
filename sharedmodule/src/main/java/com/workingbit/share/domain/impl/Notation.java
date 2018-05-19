@@ -92,7 +92,7 @@ public class Notation extends BaseDomain implements Payload, NotationFormat {
   public Notation() {
     setTags(new ListOrderedMap<>());
     notationHistory = NotationHistory.createWithRoot();
-    format = EnumNotationFormat.CLASSIC;
+    format = EnumNotationFormat.БУКВЕННЫЙ;
     formats = EnumNotationFormat.values();
   }
 

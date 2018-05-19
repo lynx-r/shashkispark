@@ -138,10 +138,10 @@ public class NotationDrive implements DeepClone, NotationFormat {
   public void parseNameFromPdn(String name) {
     switch (name) {
       case "NUMERICMOVE":
-        notationFormat = EnumNotationFormat.PDN;
+        notationFormat = EnumNotationFormat.ЧИСЛОВОЙ;
         break;
       case "ALPHANUMERICMOVE":
-        notationFormat = EnumNotationFormat.CLASSIC;
+        notationFormat = EnumNotationFormat.БУКВЕННЫЙ;
         break;
       case "ELLIPSES":
         ellipses = true;

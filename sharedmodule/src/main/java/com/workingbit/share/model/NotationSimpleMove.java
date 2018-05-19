@@ -60,9 +60,9 @@ public class NotationSimpleMove {
       return notation;
     }
     switch (format) {
-      case PDN:
+      case ЧИСЛОВОЙ:
         return getNotationNum();
-      case CLASSIC:
+      case БУКВЕННЫЙ:
         return getNotationAlpha();
       default:
         return notation;

@@ -304,7 +304,7 @@ public class BoardService {
         break;
       }
     }
-//    notationHistory.setFormat(EnumNotationFormat.PDN);
+//    notationHistory.setFormat(EnumNotationFormat.ЧИСЛОВОЙ);
     return serverBoard;
   }
 

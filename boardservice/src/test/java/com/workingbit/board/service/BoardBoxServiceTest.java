@@ -135,7 +135,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_create_board_from_pdn_notation() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
     for (String fileName : PDN_FILE_NAME_BOARDS) {
-      System.out.println("LOADED PDN FILE: " + fileName);
+      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       BufferedReader bufferedReader = Files.newBufferedReader(path);
@@ -268,7 +268,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_switch_to_variant_with_forward_move() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
     for (String fileName : PDN_FILE_NAME_VARIANT_WITH_FORWARD_MOVE) {
-      System.out.println("LOADED PDN FILE: " + fileName);
+      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       List<String> lines = Files.readAllLines(path);
@@ -334,7 +334,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_double_switch_to_variant_with_forward_move() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
     for (String fileName : PDN_FILE_NAME_VARIANT_WITH_FORWARD_MOVE) {
-      System.out.println("LOADED PDN FILE: " + fileName);
+      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       List<String> lines = Files.readAllLines(path);
@@ -425,7 +425,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_double_fork() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
     for (String fileName : PDN_FILE_NAME_VARIANT) {
-      System.out.println("LOADED PDN FILE: " + fileName);
+      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       List<String> lines = Files.readAllLines(path);
@@ -530,7 +530,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       assertEquals(origin, reparsed);
 
 
-      System.out.println("LOADED PDN FILE: " + fileName);
+      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
       System.out.println(reparsed);
       notation.print();
       System.out.println("---");
@@ -925,7 +925,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     parsePdn.setPdn(writer.toString());
     BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
     Notation notation = boardBox.getNotation();
-    notation.setFormat(EnumNotationFormat.PDN);
+    notation.setFormat(EnumNotationFormat.ЧИСЛОВОЙ);
     System.out.println(notation.asTreeString());
   }
 
@@ -1059,7 +1059,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     }
 
     public LoadNotationForkNumberAndForwardMoves invoke() throws URISyntaxException, IOException {
-      System.out.println("LOADED PDN FILE: " + fileName);
+      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       List<String> lines = Files.readAllLines(path);

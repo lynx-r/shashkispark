@@ -53,7 +53,7 @@ public class NotationMove implements DeepClone, NotationFormat {
   @JsonIgnore
   @DynamoDBIgnore
   private String getNotationPdn() {
-    return getMoveNotations(EnumNotationFormat.PDN)
+    return getMoveNotations(EnumNotationFormat.ЧИСЛОВОЙ)
         .stream()
         .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdn() : CAPTURE.getPdn()));
   }
