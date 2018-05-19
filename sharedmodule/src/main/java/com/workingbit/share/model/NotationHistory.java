@@ -142,6 +142,7 @@ public class NotationHistory implements DeepClone {
     NotationDrive lastHist = history.getLast();
     Optional<NotationDrive> continueDrive = variantHasContinue(lastHist, variant, cutNotationDrives);
     if (!continueDrive.isPresent()) {
+      variant.setIdInVariants(lastHist.getVariantsSize());
       variant.setVariants(cutNotationDrives);
       resetCurrentAndSetPresious(lastHist);
       variant.setCurrent(true);

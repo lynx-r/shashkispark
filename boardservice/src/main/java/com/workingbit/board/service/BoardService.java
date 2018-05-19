@@ -43,7 +43,8 @@ public class BoardService {
 
   /**
    * Create temp board and use it to emulate moves to populate notation
-   *  @param boardBoxId
+   *
+   * @param boardBoxId
    * @param genNotationHistory
    * @param fillNotationHistory
    * @param rules
@@ -242,6 +243,7 @@ public class BoardService {
             NotationDrive topDrive = recursiveNotationHistory.getNotation().getLast();
             NotationDrive topVariant = new NotationDrive();
             topVariant.getVariants().addAll(fillNotationHistory.getNotation());
+            topVariant.setIdInVariants(topDrive.getVariantsSize());
             topDrive.getVariants().add(topVariant);
             innerNotations.add(topDrive);
             fillNotationHistory.getNotation().clear();
@@ -251,6 +253,9 @@ public class BoardService {
           tNotationHistory.setNotation(tNotation);
           NotationDrive tDrive = vDrive.deepClone();
           tDrive.setMoves(tNotation.getFirst().getMoves());
+          int idInVariants = recurNotations.size() + 1;
+          tDrive.setIdInVariants(idInVariants);
+          tNotation.forEach(tn -> tn.setIdInVariants(tDrive.getIdInVariants()));
           tDrive.setVariants(tNotation);
           recurNotations.add(tDrive);
         }

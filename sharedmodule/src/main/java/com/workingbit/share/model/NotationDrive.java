@@ -60,6 +60,11 @@ public class NotationDrive implements DeepClone, NotationFormat {
    */
   private boolean previous;
 
+  /**
+   * Id drive in variants
+   */
+  private int idInVariants;
+
   public NotationDrive() {
     variants = NotationDrives.create();
     moves = new NotationMoves();
