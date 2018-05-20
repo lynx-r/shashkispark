@@ -143,7 +143,7 @@ public class BoardUtilsTest extends BaseServiceTest {
     Square d4 = BoardUtils.findSquareByNotation("d4", board);
     board.setNextSquare(d4);
 
-    board = move(board, c3, new NotationHistory());
+    board = move(board, "c3", "d4", false, new NotationHistory());
     c3 = BoardUtils.findSquareByNotation(c3.getNotation(), board);
     assertFalse(c3.isOccupied());
     d4 = BoardUtils.findSquareByNotation(d4.getNotation(), board);
@@ -151,7 +151,7 @@ public class BoardUtilsTest extends BaseServiceTest {
 
     Square e5 = BoardUtils.findSquareByNotation("e5", board);
     board.setNextSquare(e5);
-    board = move(board, d4, new NotationHistory());
+    board = move(board, "d4", "e5", false, new NotationHistory());
     d4 = BoardUtils.findSquareByNotation(d4.getNotation(), board);
     assertFalse(d4.isOccupied());
     e5 = BoardUtils.findSquareByNotation(e5.getNotation(), board);

@@ -9,7 +9,10 @@ import com.workingbit.board.service.BoardService;
 import com.workingbit.board.service.NotationParserService;
 import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.*;
-import com.workingbit.share.model.*;
+import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.model.CreateBoardPayload;
+import com.workingbit.share.model.DomainId;
+import com.workingbit.share.model.NotationHistory;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
@@ -22,8 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByVH;
-import static com.workingbit.board.controller.util.BoardUtils.getHighlightedBoard;
 import static com.workingbit.share.common.Config4j.configurationProvider;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
@@ -155,27 +158,52 @@ public class BaseServiceTest {
     return BoardUtils.findSquareByNotation(notation, board);
   }
 
-  protected Board move(Board board, Square selectedSquare, NotationHistory notationHistory) {
-    boolean blackTurn = board.isBlackTurn();
-    MovesList capturedSquares = getHighlightedBoard(blackTurn, board);
-    return BoardUtils.moveDraught(board, capturedSquares.getCaptured(), board.getDomainId(), notationHistory);
-  }
+//  protected Board move(Board board, Square selectedSquare, NotationHistory notationHistory) {
+//    boolean blackTurn = board.isBlackTurn();
+//    MovesList capturedSquares = getHighlightedBoard(blackTurn, board);
+//    return boardService.move(board, capturedSquares.getCaptured(), board.getDomainId(), notationHistory);
+//  }
 
-  protected Board move(Board board, String fromNotation, String toNotation, boolean blackTurn, NotationHistory notationHistory) {
-    Square from = BoardUtils.findSquareByNotation(fromNotation, board);
-    Square to = BoardUtils.findSquareByNotation(toNotation, board);
+  protected Board move(Board serverBoard, String fromNotation, String toNotation, boolean blackTurn, NotationHistory notationHistory) {
+    Square from = BoardUtils.findSquareByNotation(fromNotation, serverBoard);
+    Square to = BoardUtils.findSquareByNotation(toNotation, serverBoard);
     to.setHighlight(true);
-    board.setSelectedSquare(from);
-    board.setNextSquare(to);
-    board.setBlackTurn(blackTurn);
+    serverBoard.setSelectedSquare(from);
+    serverBoard.setNextSquare(to);
+    serverBoard.setBlackTurn(blackTurn);
 
-    board = move(board, from, notationHistory);
+    Board clientBoard = serverBoard.deepClone();
+    serverBoard = boardService.move(serverBoard, clientBoard, notationHistory);
 
-    from = BoardUtils.findSquareByNotation(fromNotation, board);
-    to = BoardUtils.findSquareByNotation(toNotation, board);
+    from = BoardUtils.findSquareByNotation(fromNotation, serverBoard);
+    to = BoardUtils.findSquareByNotation(toNotation, serverBoard);
 
     assertFalse(from.isOccupied());
     TestCase.assertTrue(to.isOccupied());
-    return board;
+    return serverBoard;
   }
+
+  protected Square getSquareWithWhiteDraught(Board board, String notation) {
+    return getSquareWithDraught(board, notation, false, false);
+  }
+
+  protected Square getSquareWithBlackDraught(Board board, String notation) {
+    return getSquareWithDraught(board, notation, true, false);
+  }
+
+  protected Square getSquareWithDraught(Board board, String notation, boolean black) {
+    return getSquareWithDraught(board, notation, black, false);
+  }
+
+  protected Square getSquareWithQueen(Board board, String notation, boolean black) {
+    return getSquareWithDraught(board, notation, black, true);
+  }
+
+  private Square getSquareWithDraught(Board board, String notation, boolean black, boolean queen) {
+    Square square = findSquareByNotation(notation, board);
+    Draught draught = new Draught(square.getV(), square.getH(), square.getDim(), black, queen);
+    square.setDraught(draught);
+    return square;
+  }
+
 }

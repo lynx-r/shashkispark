@@ -99,7 +99,7 @@ public class BoardBoxController {
 
   public static Route move = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token, param) ->
-          Answer.created(boardBoxService.move((BoardBox) data, token))
+          Answer.created(boardBoxService.moveSmart((BoardBox) data, token))
       ).handleRequest(req, res,
           Authority.BOARD_MOVE_PROTECTED,
           BoardBox.class);

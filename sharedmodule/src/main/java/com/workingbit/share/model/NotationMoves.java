@@ -31,10 +31,6 @@ public class NotationMoves extends LinkedList<NotationMove> implements NotationF
     forEach(NotationMove::resetCursor);
   }
 
-  public void setCursor(boolean cursor) {
-    forEach(notationMove -> notationMove.setCursor(cursor));
-  }
-
   public String asString() {
     return Utils.listToPdn(new ArrayList<>(this));
   }

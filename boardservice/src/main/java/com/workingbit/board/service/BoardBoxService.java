@@ -42,6 +42,7 @@ public class BoardBoxService {
     DomainId userId = createBoardPayload.getUserId();
     boardBox.setUserId(userId);
     boardBox.setIdInArticle(createBoardPayload.getIdInArticle());
+    boardBox.setEditMode(createBoardPayload.getEditMode());
 
     notationService.createNotationForBoardBox(boardBox);
 
@@ -193,6 +194,53 @@ public class BoardBoxService {
     serverBoardBox.setBoard(currentBoard);
     boardBoxStoreService.put(authUser.getUserSession(), serverBoardBox);
     return serverBoardBox;
+  }
+
+  public BoardBox moveSmart(BoardBox boardBox, AuthUser token) {
+    Board board = boardBox.getBoard();
+    Square nextSquare = board.getNextSquare();
+    if (nextSquare.isOccupied()) {
+      return null;
+    }
+    if (board.getSelectedSquare() != null) {
+      return move(boardBox, token);
+    }
+    boardService.updateBoard(board);
+    nextSquare = board.getNextSquare();
+    boolean black = board.isBlackTurn();
+    SET_SELECTED:
+    for (List<Square> diagonals : nextSquare.getDiagonals()) {
+      int nextI = diagonals.indexOf(nextSquare);
+      int tries = 0;
+      for (int i = nextI; i < diagonals.size(); i++) {
+        Square square = diagonals.get(i);
+        if (square.isOccupied() && square.getDraught().isBlack() == black) {
+          if (!square.getDraught().isQueen() && tries > 1) {
+            break SET_SELECTED;
+          }
+          board.setSelectedSquare(square);
+          break SET_SELECTED;
+        }
+        tries++;
+      }
+      tries = 0;
+      for (int i = nextI; i >= 0; i--) {
+        Square square = diagonals.get(i);
+        if (square.isOccupied() && square.getDraught().isBlack() == black) {
+          if (!square.getDraught().isQueen() && tries > 1) {
+            break SET_SELECTED;
+          }
+          board.setSelectedSquare(square);
+          break SET_SELECTED;
+        }
+        tries++;
+      }
+    }
+    if (board.getSelectedSquare() == null) {
+      throw RequestException.badRequest(ErrorMessages.UNABLE_TO_MOVE);
+    }
+    boardDao.save(board);
+    return move(boardBox, token);
   }
 
   public BoardBox move(BoardBox boardBox, AuthUser authUser) {

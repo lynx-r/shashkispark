@@ -34,7 +34,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    board = move(board, squareC3, boardBox.getNotation().getNotationHistory());
+    board = move(board, "c3", "d4", true, boardBox.getNotation().getNotationHistory());
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
@@ -90,7 +90,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setBlackTurn(false);
 
     try {
-      move(board, from, boardBox.getNotation().getNotationHistory());
+      board = move(board, "a1", "f6", true, boardBox.getNotation().getNotationHistory());
     } catch (Exception e) {
       assertEquals(UNABLE_TO_MOVE, e.getMessage());
     }
@@ -221,7 +221,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC3);
     board.setNextSquare(squareD4);
 
-    board = move(board, squareC3, boardBox.getNotation().getNotationHistory());
+    board = move(board, "c7", "d8", true, boardBox.getNotation().getNotationHistory());
     assertFalse(squareC3.isOccupied());
     assertTrue(squareD4.isOccupied());
   }
@@ -239,7 +239,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(squareC7);
     board.setNextSquare(squareD6);
 
-    board = move(board, squareC7, boardBox.getNotation().getNotationHistory());
+    board = move(board, "c7", "d6", true, boardBox.getNotation().getNotationHistory());
     squareC7 = BoardUtils.findSquareByNotation(c7, board);
     assertFalse(squareC7.isOccupied());
     squareD6 = BoardUtils.findSquareByNotation(d6, board);

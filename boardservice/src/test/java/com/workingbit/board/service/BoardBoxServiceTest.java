@@ -2,10 +2,7 @@ package com.workingbit.board.service;
 
 import com.amazonaws.util.StringInputStream;
 import com.workingbit.board.controller.util.BaseServiceTest;
-import com.workingbit.share.domain.impl.Board;
-import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.domain.impl.Notation;
-import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
@@ -582,7 +579,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     BoardBox isPresent = boardBoxService.move(boardBox, token);
     assertNotNull(isPresent);
 
-    boardBox.setEditMode(EnumEditBoardBoxMode.MOVE);
+    boardBox.setEditMode(EnumEditBoardBoxMode.EDIT);
     boardBox = boardBoxService.save(boardBox, token);
 
     board = boardBox.getBoard();
@@ -879,6 +876,54 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
     System.out.println(boardBox.getNotation().getAsTreeString());
   }
+
+  @Test
+  public void auto_move() {
+    BoardBox boardBox = getBoardBox(false, false, EnumRules.RUSSIAN, EnumEditBoardBoxMode.PLACE);
+
+    Board board = boardBox.getBoard();
+    Square square = getSquareWithBlackDraught(board, "c1");
+    boardBox.getBoard().setSelectedSquare(square);
+    boardBox = boardBoxService.addDraught(boardBox, token);
+
+    board = boardBox.getBoard();
+    square = getSquareWithWhiteDraught(board, "a1");
+    boardBox.getBoard().setSelectedSquare(square);
+    boardBox = boardBoxService.addDraught(boardBox, token);
+
+    board = boardBox.getBoard();
+    square = getSquareWithBlackDraught(board, "a3");
+    boardBox.getBoard().setSelectedSquare(square);
+    boardBox = boardBoxService.addDraught(boardBox, token);
+
+    board = boardBox.getBoard();
+    square = getSquareWithBlackDraught(board, "d8");
+    boardBox.getBoard().setSelectedSquare(square);
+    boardBox = boardBoxService.addDraught(boardBox, token);
+
+    board = boardBox.getBoard();
+    square = findSquareByNotation("a1", board);
+    board.setSelectedSquare(square);
+    square = findSquareByNotation("b2", board);
+    board.setNextSquare(square);
+    boardBox.setEditMode(EnumEditBoardBoxMode.EDIT);
+    boardBox = boardBoxService.save(boardBox, token);
+    boardBox = boardBoxService.moveSmart(boardBox, token);
+    board = boardBox.getBoard();
+    square = findSquareByNotation("b2", board);
+    assertTrue(square.isOccupied());
+
+    board = boardBox.getBoard();
+    square = findSquareByNotation("d8", board);
+    board.setSelectedSquare(square);
+    square = findSquareByNotation("c7", board);
+    board.setNextSquare(square);
+    boardBox = boardBoxService.moveSmart(boardBox, token);
+    board = boardBox.getBoard();
+    square = findSquareByNotation("c7", board);
+    assertTrue(square.isOccupied());
+  }
+
 
   public BoardBox redo(BoardBox boardBox) {
     boardBox = boardBoxService.redo(boardBox, token);

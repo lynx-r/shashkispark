@@ -232,25 +232,7 @@ public class BoardUtils {
     addDraught(board, notation, black, false, true);
   }
 
-  public static Board moveDraught(Board board, Set<Square> capturedSquares, DomainId prevBoardId,
-                                  NotationHistory notationHistory) {
-    notationHistory.getNotation().getLast().setSelected(false);
-    performMoveDraught(board, capturedSquares);
-    Board newBoard = board.deepClone();
-    boolean blackTurn = board.isBlackTurn();
-    MovesList nextMovesSquares = getHighlightedBoard(blackTurn, newBoard);
-    boolean previousCaptured = !capturedSquares.isEmpty();
-    boolean nextCaptured = !nextMovesSquares.getCaptured().isEmpty();
-    if (previousCaptured && nextCaptured) {
-      updateNotationMiddle(newBoard, prevBoardId, notationHistory);
-      return newBoard;
-    }
-    updateNotationEnd(board, prevBoardId, notationHistory, previousCaptured);
-    resetBoardHighlight(board);
-    return board;
-  }
-
-  private static void updateNotationMiddle(Board board, DomainId prevBoardId, NotationHistory notationHistory) {
+  public static void updateNotationMiddle(Board board, DomainId prevBoardId, NotationHistory notationHistory) {
     String previousNotation = board.getPreviousSquare().getNotation();
     boolean isContinueCapture = isContinueCapture(notationHistory, previousNotation);
     NotationMove move;
@@ -292,8 +274,8 @@ public class BoardUtils {
     notationHistory.syncLastDrive();
   }
 
-  private static void updateNotationEnd(Board board, DomainId prevBoardId, NotationHistory notationHistory,
-                                        boolean previousCaptured) {
+  public static void updateNotationEnd(Board board, DomainId prevBoardId, NotationHistory notationHistory,
+                                       boolean previousCaptured) {
     boolean blackTurn = board.isBlackTurn();
     int notationNumber = 0;
     if (!blackTurn) { // white move
@@ -498,7 +480,7 @@ public class BoardUtils {
     });
   }
 
-  private static void performMoveDraught(Board board, Set<Square> capturedSquares) {
+  public static void performMoveDraught(Board board, Set<Square> capturedSquares) {
     Square sourceSquare = board.getSelectedSquare();
     Square targetSquare = board.getNextSquare();
     if (!targetSquare.isHighlight()

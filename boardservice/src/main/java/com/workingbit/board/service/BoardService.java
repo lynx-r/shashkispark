@@ -116,10 +116,17 @@ public class BoardService {
     if (allowed.isEmpty()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
-    boolean isEmulate = serverBoard.getId().equals(clientBoard.getId());
-    if (isEmulate) {
-      serverBoard.getNextSquare().setHighlight(clientBoard.getNextSquare().isHighlight());
+    Square nextSquare = serverBoard.getNextSquare();
+    for (Square allow : allowed) {
+      if (allow.equals(nextSquare)) {
+        nextSquare.setHighlight(allow.isHighlight());
+        break;
+      }
     }
+//    boolean isEmulate = serverBoard.getId().equals(clientBoard.getId());
+//    if (isEmulate) {
+//      serverBoard.getNextSquare().setHighlight(clientBoard.getNextSquare().isHighlight());
+//    }
     serverBoard.getSelectedSquare().getDraught().setHighlight(false);
     if (save) {
       boardDao.save(serverBoard);
@@ -127,13 +134,14 @@ public class BoardService {
 
     Board nextBoard = serverBoard.deepClone();
     Utils.setRandomIdAndCreatedAt(nextBoard);
-    DomainId boardId = nextBoard.getDomainId();
+    DomainId previousBoardId = serverBoard.getDomainId();
     // MOVE DRAUGHT
-    nextBoard = BoardUtils.moveDraught(nextBoard, captured, boardId, notationHistory);
+    nextBoard = moveDraught(nextBoard, captured, previousBoardId, notationHistory);
 
     if (save) {
       boardDao.save(nextBoard);
     }
+    nextBoard.setSelectedSquare(null);
     return nextBoard;
   }
 
@@ -325,6 +333,24 @@ public class BoardService {
 
     save(board);
     updateBoard(board);
+    return board;
+  }
+
+  private Board moveDraught(Board board, Set<Square> capturedSquares, DomainId prevBoardId,
+                            NotationHistory notationHistory) {
+    notationHistory.getNotation().getLast().setSelected(false);
+    performMoveDraught(board, capturedSquares);
+    Board newBoard = board.deepClone();
+    boolean blackTurn = board.isBlackTurn();
+    MovesList nextMovesSquares = getHighlightedBoard(blackTurn, newBoard);
+    boolean previousCaptured = !capturedSquares.isEmpty();
+    boolean nextCaptured = !nextMovesSquares.getCaptured().isEmpty();
+    if (previousCaptured && nextCaptured) {
+      updateNotationMiddle(newBoard, prevBoardId, notationHistory);
+      return newBoard;
+    }
+    updateNotationEnd(board, prevBoardId, notationHistory, previousCaptured);
+    resetBoardHighlight(board);
     return board;
   }
 }
