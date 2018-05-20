@@ -145,4 +145,11 @@ public class BoardBoxController {
       ).handleRequest(req, res,
           Authority.CHANGE_TURN_PROTECTED,
           BoardBox.class);
+
+  public static Route changeBoardColor = (req, res) ->
+      ((ModelHandlerFunc<BoardBox>) (data, token, param) ->
+          Answer.created(boardBoxService.changeBoardColor((BoardBox) data, token))
+      ).handleRequest(req, res,
+          Authority.CHANGE_TURN_PROTECTED,
+          BoardBox.class);
 }

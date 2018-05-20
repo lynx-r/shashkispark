@@ -7,6 +7,7 @@ import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.domain.impl.TreeSquare;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumNotation;
 import com.workingbit.share.model.enumarable.EnumRules;
@@ -248,14 +249,13 @@ public class BoardUtils {
     }
 
     // using this var in Place mode
-    boolean isBlackTurn = board.isBlackTurn();
     if (isContinueCapture) {
       String currentNotation = board.getSelectedSquare().getNotation();
       NotationMove lastMove = notationHistory.getLastMove().orElseThrow(BoardServiceException::new);
       DomainId currentBoardId = board.getDomainId();
       lastMove.getMove().add(new NotationSimpleMove(currentNotation, currentBoardId));
     } else {
-      if (!isBlackTurn) {
+      if (!isFirstMove(board)) {
         int notationNumber = notationHistory.getLast().getNotationNumberInt() + 1;
         NotationMoves moves = NotationMoves.Builder.getInstance()
             .add(move)
@@ -278,7 +278,7 @@ public class BoardUtils {
                                        boolean previousCaptured) {
     boolean blackTurn = board.isBlackTurn();
     int notationNumber = 0;
-    if (!blackTurn) { // white move
+    if (!isFirstMove(board)) { // white move
       notationNumber = board.getDriveCount() + 1;
       board.setDriveCount(notationNumber);
     }
@@ -296,9 +296,9 @@ public class BoardUtils {
 
     NotationDrive notationDrive;
     String previousNotation = board.getPreviousSquare().getNotation();
-    boolean isBlackTurn = board.isBlackTurn();
+    boolean firstMove = isFirstMove(board);
     boolean isContinueCapture = isContinueCapture(notationHistory, previousNotation);
-    if (isBlackTurn) {
+    if (firstMove) {
       notationDrive = notationHistory.getLast();
     } else {
       if (!isContinueCapture) {
@@ -313,7 +313,7 @@ public class BoardUtils {
     }
     NotationMoves moves = notationDrive.getMoves();
     NotationMove lastCapturedMove;
-    if (!isContinueCapture && isBlackTurn) {
+    if (!isContinueCapture && firstMove) {
       lastCapturedMove = NotationMove.create(EnumNotation.CAPTURE);
       // take previous square notation
       // and push it in selected moves
@@ -323,8 +323,9 @@ public class BoardUtils {
       String currentNotation = board.getSelectedSquare().getNotation();
       DomainId currentBoardId = board.getDomainId();
       // and push it in selected moves
-      lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId, true));
+      lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId));
       lastCapturedMove.setMove(lastMove);
+      lastCapturedMove.setCursor(true);
       // push selected moves in selected drive
       moves.add(lastCapturedMove);
     } else {
@@ -413,7 +414,7 @@ public class BoardUtils {
   public static MovesList getHighlightedBoard(boolean blackTurn, Board board) {
     MovesList movesList = getHighlightedAssignedMoves(board.getSelectedSquare());
     Set<Square> allowed = movesList.getAllowed();
-    Set<Square> captured = movesList.getCaptured();
+    TreeSquare captured = movesList.getCaptured();
     boolean isCapturedFound = !captured.isEmpty();
     if (isCapturedFound) {
       highlightCaptured(board, allowed, captured);
@@ -425,44 +426,46 @@ public class BoardUtils {
 
   private static MovesList getHighlightSimple(Board board, MovesList movesList, Set<Square> allowed, boolean blackTurn) {
     Set<String> draughtsNotations;
-    if (blackTurn) {
-      draughtsNotations = board.getBlackDraughts().keySet();
-    } else {
-      draughtsNotations = board.getWhiteDraughts().keySet();
-    }
+//    if (blackTurn) {
+//      draughtsNotations = board.getBlackDraughts().keySet();
+//    } else {
+//      draughtsNotations = board.getWhiteDraughts().keySet();
+//    }
     // find squares occupied by current user
-    List<Square> draughtsSquares = board.getAssignedSquares()
-        .stream()
-        .filter(square -> !square.equals(board.getSelectedSquare()))
-        .filter(square -> draughtsNotations.contains(square.getNotation()))
-        .filter(Square::isOccupied)
-        .collect(Collectors.toList());
+//    List<Square> draughtsSquares = board.getAssignedSquares()
+//        .stream()
+//        .filter(square -> !square.equals(board.getSelectedSquare()))
+//        .filter(square -> draughtsNotations.contains(square.getNotation()))
+//        .filter(Square::isOccupied)
+//        .collect(Collectors.toList());
     // find all squares captured by current user
-    List<Square> allCaptured = draughtsSquares
-        .stream()
-        .flatMap(square -> getHighlightedAssignedMoves(square).getCaptured().stream())
-        .collect(Collectors.toList());
+//    TreeSquare allCaptured = new TreeSquare();
+//        .stream()
+//        .flatMap(square -> getHighlightedAssignedMoves(square).getCaptured().asNode())
+//        .collect(Collectors.toSet());
     // reset highlight
     board.getAssignedSquares()
         .stream()
         .filter(Square::isHighlight)
         .forEach(square -> square.setHighlight(false));
-    if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
-      board.getAssignedSquares()
-          .stream()
-          .peek((square -> {
-            // highlight selected draught
-            if (square.isOccupied() && square.equals(board.getSelectedSquare())) {
-              square.getDraught().setHighlight(true);
-            }
-          }))
-          .filter(allowed::contains)
-          .forEach(square -> square.setHighlight(true));
-    }
+//    if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
+    board.getAssignedSquares()
+        .stream()
+        .peek((square -> {
+          // highlight selected draught
+          if (square.isOccupied() && square.equals(board.getSelectedSquare())) {
+            square.getDraught().setHighlight(true);
+          }
+        }))
+        .filter(allowed::contains)
+        .forEach(square -> square.setHighlight(true));
+//    } else {
+//      movesList.setCaptured(allCaptured);
+//    }
     return movesList;
   }
 
-  private static void highlightCaptured(Board board, Set<Square> allowed, Set<Square> captured) {
+  private static void highlightCaptured(Board board, Set<Square> allowed, TreeSquare captured) {
     board.getAssignedSquares().forEach((Square square) -> {
       square.setHighlight(false);
       if (square.isOccupied()) {
@@ -480,7 +483,7 @@ public class BoardUtils {
     });
   }
 
-  public static void performMoveDraught(Board board, Set<Square> capturedSquares) {
+  public static void performMoveDraught(Board board, TreeSquare capturedSquares) {
     Square sourceSquare = board.getSelectedSquare();
     Square targetSquare = board.getNextSquare();
     if (!targetSquare.isHighlight()
@@ -512,7 +515,7 @@ public class BoardUtils {
     replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
   }
 
-  private static void markCapturedDraught(Set<Square> capturedSquares, Board board,
+  private static void markCapturedDraught(TreeSquare capturedSquares, Board board,
                                           Square sourceSquare, Square targetSquare) {
     if (!capturedSquares.isEmpty()) {
       List<Square> toBeatSquares = findCapturedSquare(sourceSquare, targetSquare);
@@ -613,7 +616,9 @@ public class BoardUtils {
     if (nextSquare != null) {
       nextSquare.setDim(dim);
       // нужно для эмуляции
-      nextSquare.setHighlight(origNextSquare.isHighlight());
+      if (origNextSquare.isHighlight()) {
+        nextSquare.setHighlight(origNextSquare.isHighlight());
+      }
       currentBoard.setNextSquare(nextSquare);
     }
     Square previousSquare = findSquareByLink(origBoard.getPreviousSquare(), currentBoard);
@@ -633,5 +638,9 @@ public class BoardUtils {
     } catch (JsonProcessingException e) {
       return "";
     }
+  }
+
+  private static boolean isFirstMove(Board board) {
+    return board.isBlackTurn() && !board.isBlack() || !board.isBlackTurn() && board.isBlack();
   }
 }

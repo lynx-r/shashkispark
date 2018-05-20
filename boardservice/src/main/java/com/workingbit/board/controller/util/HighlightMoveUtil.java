@@ -4,6 +4,7 @@ import com.github.rutledgepaulv.prune.Tree;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.domain.impl.TreeSquare;
 import com.workingbit.share.model.MovesList;
 
 import java.util.*;
@@ -43,7 +44,7 @@ class HighlightMoveUtil {
    */
   private MovesList highlightAllAssignedMoves() {
     Set<Square> allowedMoves = new HashSet<>();
-    Set<Square> capturedMoves = new HashSet<>();
+    TreeSquare capturedMoves = new TreeSquare();
     Draught draught = selectedSquare.getDraught();
     boolean down = draught.isBlack();
     boolean queen = draught.isQueen();
@@ -59,7 +60,7 @@ class HighlightMoveUtil {
   }
 
   private void findCapturedMovesOnDiagonalsOfSelectedSquare(Square selectedSquare, boolean black, boolean queen,
-                                                            Set<Square> capturedMoves, Set<Square> allowedMoves) {
+                                                            TreeSquare capturedMoves, Set<Square> allowedMoves) {
     List<List<Square>> diagonals = selectedSquare.getDiagonals();
     int indexOfSelected;
     for (List<Square> diagonal : diagonals) {
@@ -71,17 +72,17 @@ class HighlightMoveUtil {
   }
 
   private void walkOnDiagonal(Square selectedSquare, boolean down, boolean queen, List<Square> diagonal,
-                              Set<Square> capturedMoves, Set<Square> allowedMoves) {
+                              TreeSquare capturedMoves, Set<Square> allowedMoves) {
     Tree<Square> treeCaptured = Tree.empty();
     Tree.Node<Square> capturedMovesEmpty = treeCaptured.asNode();
     findCapturedMovesOnHalfDiagonal(diagonal, selectedSquare, down, queen, 0, true,
         capturedMovesEmpty, allowedMoves);
-    capturedMoves.addAll(flatTree(treeCaptured));
+    capturedMoves.addChildrenNodes(capturedMovesEmpty);
     treeCaptured = Tree.empty();
     capturedMovesEmpty = treeCaptured.asNode();
     findCapturedMovesOnHalfDiagonal(diagonal, selectedSquare, !down, queen, 0, true,
         capturedMovesEmpty, allowedMoves);
-    capturedMoves.addAll(flatTree(treeCaptured));
+    capturedMoves.addChildrenNodes(capturedMovesEmpty);
   }
 
   private void findCapturedMovesOnHalfDiagonal(List<Square> diagonal, Square selectedSquare, boolean down,
@@ -126,6 +127,7 @@ class HighlightMoveUtil {
       if (hasCapturedAndCanMove(capturedMoves, next)) {
         if (cross) {
           walkCross(down, deep, capturedMoves, allowedMoves, walkAllowedMoves, next, previous);
+          next.setHighlight(true);
           tail.add(next);
         }
       }
@@ -274,10 +276,6 @@ class HighlightMoveUtil {
     }
   }
 
-  private List<Square> flatTree(Tree<Square> treeCaptured) {
-    return treeCaptured.breadthFirstStream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
-  }
-
   private void addCapturedMove(Square previous, Tree.Node<Square> capturedMoves) {
     previous.getDraught().setMarkCaptured(true);
     capturedMoves.addChild(previous);
@@ -344,8 +342,9 @@ class HighlightMoveUtil {
    * on f2 and f4 then allowed move will be the move that contains g3.
    */
   private boolean hasQueenWalkedThereOrMovesWithBeatInOneSquare(Set<Square> walkAllowedMoves, Square previous) {
-    return !walkAllowedMoves.isEmpty() && walkAllowedMoves.contains(previous)
-        || previous != null && (previous.isOccupied() || previous.isHighlight());
+    return !walkAllowedMoves.isEmpty()
+        && (walkAllowedMoves.contains(previous)
+        || previous != null && (previous.isOccupied() || previous.isHighlight()));
   }
 
   private boolean hasCapturedAndCanMove(Tree.Node<Square> capturedMoves, Square next) {
@@ -426,11 +425,12 @@ class HighlightMoveUtil {
    * Если на глубине квадрата хвоста есть больше одной захваченной шашки,
    * тогда идем по диагонале захваченных шашек (они на одной диагноали)
    * и если там есть клетка хвоста, то добавляем её
-   * @param deep глубина погружения в дерево
+   *
+   * @param deep          глубина погружения в дерево
    * @param capturedMoves сбитые шашки
-   * @param allowedMoves разрешенные ходы
-   * @param tail ходы которые были разрешены, но не были добавлены в процессе
-   *             обхода
+   * @param allowedMoves  разрешенные ходы
+   * @param tail          ходы которые были разрешены, но не были добавлены в процессе
+   *                      обхода
    */
   private void allowTailIfMoreThenOneHighlightedOnItsDepth(int deep, Tree.Node<Square> capturedMoves, Set<Square> allowedMoves, Set<Square> tail) {
     List<Square> capturedOnDepth = capturedMoves.asTree().getDepth(deep).collect(Collectors.toList());

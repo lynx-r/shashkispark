@@ -100,6 +100,7 @@ public class BoardEmbedded {
           post(Authority.BOARD_UNDO_PROTECTED.getPath(), BoardBoxController.undo);
           post(Authority.BOARD_FORK_PROTECTED.getPath(), BoardBoxController.forkNotation);
           post(Authority.CHANGE_TURN_PROTECTED.getPath(), BoardBoxController.changeTurn);
+          post(Authority.CHANGE_COLOR_PROTECTED.getPath(), BoardBoxController.changeBoardColor);
 
           exception(RequestException.class, ExceptionHandler.handle);
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));

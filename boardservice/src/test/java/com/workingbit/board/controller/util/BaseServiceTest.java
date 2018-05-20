@@ -154,6 +154,15 @@ public class BaseServiceTest {
     assertEquals(collection.toString(), notation.length, collection.size());
   }
 
+  protected void testCollectionTree(String notations, TreeSquare items) {
+    List<String> collection = items.flatTree().stream().map(ICoordinates::getNotation).collect(Collectors.toList());
+    String[] notation = notations.split(",");
+    Arrays.stream(notation).forEach(n -> {
+      assertTrue(collection.toString(), collection.contains(n));
+    });
+    assertEquals(collection.toString(), notation.length, collection.size());
+  }
+
   protected Square getSquare(Board board, String notation) {
     return BoardUtils.findSquareByNotation(notation, board);
   }

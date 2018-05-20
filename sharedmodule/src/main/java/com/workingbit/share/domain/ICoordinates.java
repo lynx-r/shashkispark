@@ -30,6 +30,13 @@ public interface ICoordinates {
 
   void setDim(int dim);
 
+  default void invertCords() {
+    if (getDim() > 0) {
+      setV(getDim() - getV() - 1);
+      setH(getDim() - getH() - 1);
+    }
+  }
+
   default String getNotation() {
     return getDim() == EnumRules.INTERNATIONAL.getDimension()
         ? getPdnNumericNotation100()

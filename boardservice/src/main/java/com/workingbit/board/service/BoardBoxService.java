@@ -1,6 +1,5 @@
 package com.workingbit.board.service;
 
-import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.*;
@@ -15,11 +14,11 @@ import net.percederberg.grammatica.parser.ParserLogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static com.workingbit.board.BoardEmbedded.*;
+import static com.workingbit.board.controller.util.BoardUtils.findSquareByLink;
 import static com.workingbit.share.common.RequestConstants.IS_PUBLIC_QUERY;
 
 /**
@@ -202,43 +201,17 @@ public class BoardBoxService {
     if (nextSquare.isOccupied()) {
       return null;
     }
-    if (board.getSelectedSquare() != null) {
-      return move(boardBox, token);
+    Square selectedSquare = board.getSelectedSquare();
+    if (selectedSquare != null) {
+      boolean isSelectedSquareTurn = selectedSquare.getDraught().isBlack() == board.isBlackTurn();
+      if (selectedSquare.isOccupied() && isSelectedSquareTurn) {
+        return move(boardBox, token);
+      }
+      return null;
     }
     boardService.updateBoard(board);
-    nextSquare = board.getNextSquare();
-    boolean black = board.isBlackTurn();
-    SET_SELECTED:
-    for (List<Square> diagonals : nextSquare.getDiagonals()) {
-      int nextI = diagonals.indexOf(nextSquare);
-      int tries = 0;
-      for (int i = nextI; i < diagonals.size(); i++) {
-        Square square = diagonals.get(i);
-        if (square.isOccupied() && square.getDraught().isBlack() == black) {
-          if (!square.getDraught().isQueen() && tries > 1) {
-            break SET_SELECTED;
-          }
-          board.setSelectedSquare(square);
-          break SET_SELECTED;
-        }
-        tries++;
-      }
-      tries = 0;
-      for (int i = nextI; i >= 0; i--) {
-        Square square = diagonals.get(i);
-        if (square.isOccupied() && square.getDraught().isBlack() == black) {
-          if (!square.getDraught().isQueen() && tries > 1) {
-            break SET_SELECTED;
-          }
-          board.setSelectedSquare(square);
-          break SET_SELECTED;
-        }
-        tries++;
-      }
-    }
-    if (board.getSelectedSquare() == null) {
-      throw RequestException.badRequest(ErrorMessages.UNABLE_TO_MOVE);
-    }
+    selectedSquare = getPredictedSelectedSquare(board);
+    board.setSelectedSquare(selectedSquare);
     boardDao.save(board);
     return move(boardBox, token);
   }
@@ -246,7 +219,7 @@ public class BoardBoxService {
   public BoardBox move(BoardBox boardBox, AuthUser authUser) {
     var updatedBoxOrig = find(boardBox, authUser);
     BoardBox userBoardBox = updatedBoxOrig.deepClone();
-    if (isNotEditMode(boardBox)) {
+    if (isNotEditMode(updatedBoxOrig)) {
       return null;
     }
 
@@ -275,14 +248,28 @@ public class BoardBoxService {
   public BoardBox changeTurn(BoardBox boardBox, AuthUser authUser) {
     var updatedBox = find(boardBox, authUser);
     Board inverted = updatedBox.getBoard();
-    inverted.setSelectedSquare(null);
     Board clientBoard = boardBox.getBoard();
     inverted.setBlackTurn(!clientBoard.isBlackTurn());
     boardService.save(inverted);
 
-    boardService.updateBoard(inverted);
     updatedBox.setBoard(inverted);
     boardBoxDao.save(updatedBox);
+
+    boardService.updateBoard(inverted);
+    return updatedBox;
+  }
+
+  public BoardBox changeBoardColor(BoardBox boardBox, AuthUser authUser) {
+    var updatedBox = find(boardBox, authUser);
+    Board inverted = updatedBox.getBoard();
+    Board clientBoard = boardBox.getBoard();
+    inverted.setBlack(!clientBoard.isBlack());
+    boardService.save(inverted);
+
+    updatedBox.setBoard(inverted);
+    boardBoxDao.save(updatedBox);
+
+    boardService.updateBoard(inverted);
     return updatedBox;
   }
 
@@ -334,7 +321,7 @@ public class BoardBoxService {
     Draught draught = selectedSquare.getDraught();
     var updated = find(boardBox, authUser);
     Board currentBoard = updated.getBoard();
-    Square squareLink = BoardUtils.findSquareByLink(selectedSquare, currentBoard);
+    Square squareLink = findSquareByLink(selectedSquare, currentBoard);
     if (squareLink == null) {
       logger.error("Unable to add a draught");
       throw RequestException.badRequest(ErrorMessages.UNABLE_TO_ADD_DRAUGHT);
@@ -502,5 +489,54 @@ public class BoardBoxService {
 
   private void throw404IfNotFound(BoardBox boardBox) {
     boardBoxDao.find(boardBox);
+  }
+
+  private Square findSmartOnDiagonal(Square nextSquare, List<Square> diagonals, boolean black, boolean down) {
+    int nextI = diagonals.indexOf(nextSquare);
+    int tries = 0;
+    for (int i = nextI; down ? i >= 0 : i < diagonals.size(); ) {
+      Square square = diagonals.get(i);
+      if (square.isOccupied() && square.getDraught().isBlack() == black) {
+        if (!square.getDraught().isQueen() && tries > 1) {
+          if (down) {
+            i--;
+          } else {
+            i++;
+          }
+          continue;
+        }
+        return square;
+      }
+      if (down) {
+        i--;
+      } else {
+        i++;
+      }
+      if (!square.isOccupied()) {
+        tries++;
+      }
+    }
+    return null;
+  }
+
+  private Square getPredictedSelectedSquare(Board board) {
+    Square nextSquare;
+    nextSquare = board.getNextSquare();
+    boolean black = board.isBlackTurn();
+    List<Square> found = new ArrayList<>();
+    for (List<Square> diagonals : nextSquare.getDiagonals()) {
+      Square selected = findSmartOnDiagonal(nextSquare, diagonals, black, false);
+      if (selected != null) {
+        found.add(selected);
+      }
+      selected = findSmartOnDiagonal(nextSquare, diagonals, black, true);
+      if (selected != null) {
+        found.add(selected);
+      }
+    }
+    if (found.size() != 1) {
+      throw RequestException.badRequest(ErrorMessages.UNABLE_TO_MOVE);
+    }
+    return found.get(0);
   }
 }

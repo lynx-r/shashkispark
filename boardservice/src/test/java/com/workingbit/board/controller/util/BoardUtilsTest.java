@@ -7,6 +7,7 @@ import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.model.NotationHistory;
+import com.workingbit.share.util.Utils;
 import org.junit.Test;
 
 import java.util.List;
@@ -126,7 +127,9 @@ public class BoardUtilsTest extends BaseServiceTest {
   }
 
   private Board getBoardFilled() {
-    return BoardUtils.initBoard(true, false, EnumRules.RUSSIAN);
+    Board board = BoardUtils.initBoard(true, false, EnumRules.RUSSIAN);
+    Utils.setRandomIdAndCreatedAt(board);
+    return board;
   }
 
   private Draught getDraught(boolean black) {

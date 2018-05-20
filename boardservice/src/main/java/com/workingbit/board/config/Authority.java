@@ -31,7 +31,8 @@ public enum Authority implements IAuthority {
   BOARD_REDO_PROTECTED("/board/redo", Constants.SECURE_ROLES),
   BOARD_UNDO_PROTECTED("/board/undo", Constants.SECURE_ROLES),
   BOARD_FORK_PROTECTED("/board/fork", Constants.SECURE_ROLES),
-  CHANGE_TURN_PROTECTED("/board/change-turn", Constants.SECURE_ROLES)
+  CHANGE_TURN_PROTECTED("/board/change-turn", Constants.SECURE_ROLES),
+  CHANGE_COLOR_PROTECTED("/board/change-color", Constants.SECURE_ROLES),
   ;
 
   private String path;

@@ -110,8 +110,6 @@ project(':boardservice') {
     mainClassName = 'com.workingbit.board.BoardApplication'
 
     dependencies {
-        // tree
-        compile 'com.github.rutledgepaulv:prune:1.3'
 
         compile 'org.ehcache:ehcache:3.5.2'
 
@@ -158,6 +156,9 @@ project(':sharedmodule') {
 
         // https://mvnrepository.com/artifact/org.glassfish/javax.el
         compile group: 'org.glassfish', name: 'javax.el', version: '3.0.0'
+
+        // tree
+        compile 'com.github.rutledgepaulv:prune:1.3'
 
 //        compileOnly('org.projectlombok:lombok:1.16.20')
         compileOnly files('lib/lombok-edge.jar')

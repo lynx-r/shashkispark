@@ -35,8 +35,8 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setNextSquare(squareD4);
 
     board = move(board, "c3", "d4", true, boardBox.getNotation().getNotationHistory());
-    assertFalse(squareC3.isOccupied());
-    assertTrue(squareD4.isOccupied());
+    assertTrue(findSquareByNotation("d4", board).isOccupied());
+    assertFalse(findSquareByNotation("c3", board).isOccupied());
   }
 
   @Test
@@ -80,6 +80,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "c3", "d4", false, boardBox.getNotation().getNotationHistory());
     board = move(board, "f6", "e5", true, boardBox.getNotation().getNotationHistory());
     Square d4 = findSquareByNotation("d4", board);
+    board.setSelectedSquare(d4);
     MovesList movesList = getHighlightedBoard(board.isBlackTurn(), board);
     assertTrue(!movesList.getCaptured().isEmpty());
     Square from = BoardUtils.findSquareByNotation("a1", board);
@@ -128,16 +129,16 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "b2", "d4", false, boardBox.getNotation().getNotationHistory());
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d4"));
     testCollection("f6,d8,b6", highlight.getAllowed());
-    testCollection("e5,e7,c7,c5", highlight.getCaptured());
+    testCollectionTree("e5,e7,c7,c5", highlight.getCaptured());
     board = move(board, "d4", "f6", false, boardBox.getNotation().getNotationHistory());
     highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
     testCollection("d8,b6,d4", highlight.getAllowed());
-    testCollection("e7,c7,c5", highlight.getCaptured());
+    testCollectionTree("e7,c7,c5", highlight.getCaptured());
     board = move(board, "f6", "d8", false, boardBox.getNotation().getNotationHistory());
-    assertTrue(board.getSelectedSquare().getDraught().isQueen());
+    assertTrue(findSquareByNotation("d8", board).getDraught().isQueen());
     highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
     testCollection("d4,e3,f2,g1,b6", highlight.getAllowed());
-    testCollection("c5,c7", highlight.getCaptured());
+    testCollectionTree("c5,c7", highlight.getCaptured());
     System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
   }
 
@@ -222,16 +223,17 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setNextSquare(squareD4);
 
     board = move(board, "c7", "d8", true, boardBox.getNotation().getNotationHistory());
-    assertFalse(squareC3.isOccupied());
-    assertTrue(squareD4.isOccupied());
+    assertTrue(findSquareByNotation("d8", board).isOccupied());
+    assertFalse(findSquareByNotation("c7", board).isOccupied());
   }
 
   @Test
   public void should_move_black() {
     BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
+    board.setBlack(true);
     String c7 = "c7";
-    BoardUtils.addDraught(board, c7, getDraught(0, 0));
+    addBlackDraught(board, "c7");
     Square squareC7 = BoardUtils.findSquareByNotation(c7, board);
     String d6 = "d6";
     Square squareD6 = (Square) BoardUtils.findSquareByNotation(d6, board).deepClone();

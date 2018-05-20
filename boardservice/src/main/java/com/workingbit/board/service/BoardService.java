@@ -6,6 +6,7 @@ import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.domain.impl.TreeSquare;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
@@ -112,7 +113,7 @@ public class BoardService {
     serverBoard = (Board) highlight.get("serverBoard");
     MovesList movesList = (MovesList) highlight.get("movesList");
     Set<Square> allowed = movesList.getAllowed();
-    Set<Square> captured = movesList.getCaptured();
+    TreeSquare captured = movesList.getCaptured();
     if (allowed.isEmpty()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
@@ -123,10 +124,6 @@ public class BoardService {
         break;
       }
     }
-//    boolean isEmulate = serverBoard.getId().equals(clientBoard.getId());
-//    if (isEmulate) {
-//      serverBoard.getNextSquare().setHighlight(clientBoard.getNextSquare().isHighlight());
-//    }
     serverBoard.getSelectedSquare().getDraught().setHighlight(false);
     if (save) {
       boardDao.save(serverBoard);
@@ -135,13 +132,16 @@ public class BoardService {
     Board nextBoard = serverBoard.deepClone();
     Utils.setRandomIdAndCreatedAt(nextBoard);
     DomainId previousBoardId = serverBoard.getDomainId();
+    boolean blackTurn = nextBoard.isBlackTurn();
     // MOVE DRAUGHT
     nextBoard = moveDraught(nextBoard, captured, previousBoardId, notationHistory);
 
+    if (blackTurn != nextBoard.isBlackTurn()) {
+      nextBoard.setSelectedSquare(null);
+    }
     if (save) {
       boardDao.save(nextBoard);
     }
-    nextBoard.setSelectedSquare(null);
     return nextBoard;
   }
 
@@ -200,6 +200,8 @@ public class BoardService {
 
   void updateBoard(Board board) {
     Board boardUpdated = BoardUtils.updateBoard(board);
+    board.setWhiteDraughts(boardUpdated.getWhiteDraughts());
+    board.setBlackDraughts(boardUpdated.getBlackDraughts());
     board.setSquares(boardUpdated.getSquares());
     board.setPreviousSquare(boardUpdated.getPreviousSquare());
     board.setNextSquare(boardUpdated.getNextSquare());
@@ -336,7 +338,7 @@ public class BoardService {
     return board;
   }
 
-  private Board moveDraught(Board board, Set<Square> capturedSquares, DomainId prevBoardId,
+  private Board moveDraught(Board board, TreeSquare capturedSquares, DomainId prevBoardId,
                             NotationHistory notationHistory) {
     notationHistory.getNotation().getLast().setSelected(false);
     performMoveDraught(board, capturedSquares);

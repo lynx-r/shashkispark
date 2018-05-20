@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-public class Draught extends BaseDomain implements ICoordinates{
+public class Draught extends BaseDomain implements ICoordinates {
   /**
    * row
    */
