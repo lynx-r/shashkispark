@@ -173,7 +173,7 @@ resources:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableSHASHKIWIKIBoardBox
       Properties:
-        PolicyName: lambda-dynamodb-sHASHKIWIKIBoardBox
+        PolicyName: lambda-dynamodb-SHASHKIWIKIBoardBox
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -193,7 +193,7 @@ resources:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableSHASHKIWIKIBoard
       Properties:
-        PolicyName: lambda-dynamodb-sHASHKIWIKIBoard
+        PolicyName: lambda-dynamodb-SHASHKIWIKIBoard
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -213,7 +213,7 @@ resources:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableSHASHKIWIKINotation
       Properties:
-        PolicyName: lambda-dynamodb-sHASHKIWIKINotation
+        PolicyName: lambda-dynamodb-SHASHKIWIKINotation
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
