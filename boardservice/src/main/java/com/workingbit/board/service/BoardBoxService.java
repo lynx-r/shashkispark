@@ -121,13 +121,9 @@ public class BoardBoxService {
   }
 
   BoardBox findPublicById(DomainId boardBoxId, AuthUser authUser) {
-    return boardBoxStoreService.getPublic(authUser.getUserSession(), boardBoxId)
-        .map(boardBox -> updateBoardBox(authUser, boardBox))
-        .orElseGet(() -> {
-          var boardBox = boardBoxDao.findPublicById(boardBoxId);
-          updateBoardBox(authUser, boardBox);
-          return boardBox;
-        });
+    var boardBox = boardBoxDao.findPublicById(boardBoxId);
+    updatePublicBoardBox(authUser, boardBox);
+    return boardBox;
   }
 
   public BoardBoxes findByArticleId(DomainId articleId, AuthUser authUser, String queryValue) {
@@ -305,7 +301,6 @@ public class BoardBoxService {
   }
 
   public Optional<BoardBox> loadPreviewBoard(BoardBox boardBox, AuthUser authUser) {
-    notationService.setCursor(boardBox);
     notationService.save(authUser, boardBox.getNotation());
     updateBoardBox(authUser, boardBox);
     return Optional.of(boardBox);
@@ -442,6 +437,15 @@ public class BoardBoxService {
     return boardBox;
   }
 
+  private BoardBox updatePublicBoardBox(AuthUser authUser, BoardBox boardBox) {
+    fillWithBoards(boardBox);
+    Notation notation = notationService.findById(authUser, boardBox.getNotationId());
+    boardBox.setNotation(notation);
+    boardBox.setNotationId(notation.getDomainId());
+    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
+    return boardBox;
+  }
+
   private BoardBox saveAndFillBoard(AuthUser authUser, BoardBox boardBox) {
     boardBoxDao.save(boardBox);
     Board board = boardBox.getBoard();
@@ -471,15 +475,10 @@ public class BoardBoxService {
   private BoardBoxes fillBoardBoxes(AuthUser authUser, List<BoardBox> byUserAndIds) {
     // fill BoardBox
     for (BoardBox boardBox : byUserAndIds) {
-      Optional<BoardBox> fromStore = boardBoxStoreService.get(authUser.getUserSession(), boardBox.getDomainId());
-      if (fromStore.isPresent()) {
-        fromStore.ifPresent(bb -> {
-          boardBox.setBoard(bb.getBoard());
-          boardBox.setNotation(bb.getNotation());
-        });
-      } else {
-        updateBoardBox(authUser, boardBox);
-      }
+      Notation notation = notationService.findById(authUser, boardBox.getNotationId());
+      boardBox.setNotation(notation);
+      fillWithBoards(boardBox);
+      boardBoxStoreService.put(authUser.getUserSession(), boardBox);
     }
 
     BoardBoxes boardBoxes = new BoardBoxes();
@@ -494,7 +493,8 @@ public class BoardBoxService {
   private Square findSmartOnDiagonal(Square nextSquare, List<Square> diagonals, boolean black, boolean down) {
     int nextI = diagonals.indexOf(nextSquare);
     int tries = 0;
-    for (int i = nextI; down ? i >= 0 : i < diagonals.size(); ) {
+    int i = nextI;
+    while (down ? i >= 0 : i < diagonals.size()) {
       Square square = diagonals.get(i);
       if (square.isOccupied() && square.getDraught().isBlack() == black) {
         if (!square.getDraught().isQueen() && tries > 1) {
@@ -535,8 +535,36 @@ public class BoardBoxService {
       }
     }
     if (found.size() != 1) {
-      throw RequestException.badRequest(ErrorMessages.UNABLE_TO_MOVE);
+      Board serverBoard = board.deepClone();
+      List<Square> allowed = new ArrayList<>();
+      Set<Square> captured = new HashSet<>();
+      for (Square square : found) {
+        serverBoard.setSelectedSquare(square);
+        Map highlight = boardService.getHighlight(serverBoard, board);
+        MovesList movesList = (MovesList) highlight.get("movesList");
+        List<Square> moveCaptured = movesList.getCaptured().flatTree();
+        if (!movesList.getAllowed().isEmpty() && !captured.containsAll(moveCaptured)) {
+          captured.addAll(moveCaptured);
+          allowed.add(square);
+        }
+      }
+      if (allowed.size() != 1) {
+        throw RequestException.badRequest(ErrorMessages.UNABLE_TO_MOVE);
+      }
+      return allowed.get(0);
     }
     return found.get(0);
+  }
+
+  private void fillWithBoards(BoardBox boardBox) {
+    List<Board> boards = boardDao.findByBoardBoxId(boardBox.getDomainId());
+    for (Board board : boards) {
+      board = boardService.resetHighlightAndUpdate(board);
+      board.setReadonly(boardBox.isReadonly());
+      boardBox.getPublicBoards().add(board);
+      if (boardBox.getBoardId().getId().equals(board.getId())) {
+        boardBox.setBoard(board);
+      }
+    }
   }
 }

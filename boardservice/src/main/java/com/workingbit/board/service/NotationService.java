@@ -7,7 +7,7 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.Utils;
 
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
 
@@ -26,6 +26,14 @@ class NotationService {
     if (secure) {
       return notation;
     } else {
+      NotationDrives notTask = notation.getNotationHistory().getNotation()
+          .stream()
+          .filter(nd -> !nd.isTaskBelow())
+          .collect(Collectors.toCollection(NotationDrives::new));
+      if (notation.getNotationHistory().getNotation().size() != notTask.size()) {
+        notation.getNotationHistory().setNotation(notTask);
+        notationStoreService.put(authUser.getUserSession(), notation);
+      }
       return findNotationAndPutInStore(authUser, notation, notationId);
     }
   }
@@ -52,24 +60,6 @@ class NotationService {
           notationStoreService.put(authUser.getUserSession(), notation);
           return notation;
         });
-  }
-
-  public void setCursor(BoardBox boardBox) {
-    DomainId boardId = boardBox.getBoardId();
-    Notation notation = boardBox.getNotation();
-    for (NotationDrive notationDrive : notation.getNotationHistory().getNotation()) {
-      NotationMoves moves = notationDrive.getMoves();
-      for (NotationMove move : moves) {
-        LinkedList<NotationSimpleMove> simpleMoves = move.getMove();
-        for (NotationSimpleMove simpleMove : simpleMoves) {
-          if (simpleMove.getBoardId().equals(boardId)) {
-            simpleMove.setCursor(true);
-          } else {
-            simpleMove.setCursor(false);
-          }
-        }
-      }
-    }
   }
 
   public void createNotationForBoardBox(BoardBox boardBox) {

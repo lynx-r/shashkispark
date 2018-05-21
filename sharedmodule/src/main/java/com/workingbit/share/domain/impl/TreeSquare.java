@@ -38,4 +38,8 @@ public class TreeSquare {
       tree.asNode().addChildrenNodes(subTree);
     }
   }
+
+  public void addTree(TreeSquare subTree) {
+    addChildrenNodes(subTree.tree.asNode());
+  }
 }

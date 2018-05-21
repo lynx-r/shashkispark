@@ -7,6 +7,7 @@ import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
+import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -48,6 +49,11 @@ public class ArticleService {
     boardRequest.setArticleId(article.getDomainId());
     boardRequest.setUserId(article.getUserId());
     boardRequest.setIdInArticle(1);
+    if (boardRequest.isFillBoard()) {
+      boardRequest.setEditMode(EnumEditBoardBoxMode.EDIT);
+    } else {
+      boardRequest.setEditMode(EnumEditBoardBoxMode.PLACE);
+    }
 
     Optional<Answer> boardBoxAnswer = orchestralService.internal(authUser, "createBoardBoxAnswer", boardRequest, authUser);
     CreateArticleResponse createArticleResponse = CreateArticleResponse.createArticleResponse();
@@ -110,9 +116,11 @@ public class ArticleService {
       boardRequest.setUserId(article.getUserId());
       boardRequest.setRules(importPdnPayload.getRules());
       boardRequest.setIdInArticle(boardBoxCount);
+      boardRequest.setEditMode(EnumEditBoardBoxMode.PLACE);
       boardBoxAnswer = orchestralService.internal(authUser, "createBoardBoxAnswer", boardRequest, authUser);
     } else {
       importPdnPayload.setIdInArticle(boardBoxCount);
+      importPdnPayload.setEditMode(EnumEditBoardBoxMode.PLACE);
       boardBoxAnswer = orchestralService.internal(authUser, "parsePdnAnswer", importPdnPayload, authUser);
     }
 
@@ -155,7 +163,11 @@ public class ArticleService {
   }
 
   public Article findByHru(String articleHru, AuthUser token) {
-    return articleDao.findByHru(articleHru);
+    try {
+      return articleDao.findByHru(articleHru);
+    } catch (DaoException e) {
+      throw RequestException.notFound404();
+    }
   }
 
   public Article findByHruCached(String articleHru, String selectedBoardBoxId, AuthUser token) {

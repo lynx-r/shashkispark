@@ -1,0 +1,576 @@
+{
+  "history": [
+    {
+      "notationNumber": "0. ",
+      "moves": [],
+      "variants": [],
+      "ellipses": false,
+      "notationFormat": null,
+      "boardDimension": 8,
+      "comment": null,
+      "root": true,
+      "selected": true,
+      "current": false,
+      "previous": false,
+      "idInVariants": 0,
+      "taskBelow": false,
+      "notationNumberInt": 0
+    },
+    {
+      "notationNumber": "1. ",
+      "moves": [
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "g3",
+              "boardId": {
+                "type": "DomainId",
+                "id": "buJJW72p6Ac3D5RMuWNs",
+                "createdAt": "2018-05-21T13:17:12.931917",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "h4",
+              "boardId": {
+                "type": "DomainId",
+                "id": "U7HInKNu4TyiNxTq02wx",
+                "createdAt": "2018-05-21T13:17:36.193634",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        },
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "b6",
+              "boardId": {
+                "type": "DomainId",
+                "id": "U7HInKNu4TyiNxTq02wx",
+                "createdAt": "2018-05-21T13:17:36.193634",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "a5",
+              "boardId": {
+                "type": "DomainId",
+                "id": "hvc0B4fc2nXW8C9kY49y",
+                "createdAt": "2018-05-21T13:17:38.362332",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        }
+      ],
+      "variants": [],
+      "ellipses": false,
+      "notationFormat": null,
+      "boardDimension": 0,
+      "comment": null,
+      "root": false,
+      "selected": true,
+      "current": false,
+      "previous": false,
+      "idInVariants": 0,
+      "taskBelow": false,
+      "notationNumberInt": 1
+    },
+    {
+      "notationNumber": "2. ",
+      "moves": [
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "e3",
+              "boardId": {
+                "type": "DomainId",
+                "id": "hvc0B4fc2nXW8C9kY49y",
+                "createdAt": "2018-05-21T13:17:38.362332",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "f4",
+              "boardId": {
+                "type": "DomainId",
+                "id": "hxX8vGv235nMmFz9FMuf",
+                "createdAt": "2018-05-21T13:17:40.081632",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        },
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "d6",
+              "boardId": {
+                "type": "DomainId",
+                "id": "hxX8vGv235nMmFz9FMuf",
+                "createdAt": "2018-05-21T13:17:40.081632",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "c5",
+              "boardId": {
+                "type": "DomainId",
+                "id": "1CocatsRlkpFWhnygf8E",
+                "createdAt": "2018-05-21T13:17:41.644691",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        }
+      ],
+      "variants": [],
+      "ellipses": false,
+      "notationFormat": null,
+      "boardDimension": 0,
+      "comment": null,
+      "root": false,
+      "selected": true,
+      "current": false,
+      "previous": false,
+      "idInVariants": 0,
+      "taskBelow": false,
+      "notationNumberInt": 2
+    },
+    {
+      "notationNumber": "3. ",
+      "moves": [
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "c3",
+              "boardId": {
+                "type": "DomainId",
+                "id": "1CocatsRlkpFWhnygf8E",
+                "createdAt": "2018-05-21T13:17:41.644691",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "d4",
+              "boardId": {
+                "type": "DomainId",
+                "id": "oCAOCZNeYMO1QmZBoUQ5",
+                "createdAt": "2018-05-21T13:17:43.660418",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        },
+        {
+          "type": "CAPTURE",
+          "move": [
+            {
+              "notation": "c5",
+              "boardId": {
+                "type": "DomainId",
+                "id": "oCAOCZNeYMO1QmZBoUQ5",
+                "createdAt": "2018-05-21T13:17:43.660418",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": true,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "e3",
+              "boardId": {
+                "type": "DomainId",
+                "id": "77HFE16RGjff1q86YzKO",
+                "createdAt": "2018-05-21T13:17:45.903247",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": true,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "g5",
+              "boardId": {
+                "type": "DomainId",
+                "id": "kemjfxhh6q321l9GrcPm",
+                "createdAt": "2018-05-21T13:17:47.242022",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": true,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        }
+      ],
+      "variants": [],
+      "ellipses": false,
+      "notationFormat": null,
+      "boardDimension": 0,
+      "comment": null,
+      "root": false,
+      "selected": true,
+      "current": false,
+      "previous": false,
+      "idInVariants": 0,
+      "taskBelow": false,
+      "notationNumberInt": 3
+    }
+  ],
+  "notation": [
+    {
+      "notationNumber": "0. ",
+      "moves": [],
+      "variants": [],
+      "ellipses": false,
+      "notationFormat": null,
+      "boardDimension": 8,
+      "comment": null,
+      "root": true,
+      "selected": false,
+      "current": false,
+      "previous": false,
+      "idInVariants": 0,
+      "taskBelow": false,
+      "notationNumberInt": 0
+    },
+    {
+      "notationNumber": "1. ",
+      "moves": [
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "g3",
+              "boardId": {
+                "type": "DomainId",
+                "id": "buJJW72p6Ac3D5RMuWNs",
+                "createdAt": "2018-05-21T13:17:12.931917",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "h4",
+              "boardId": {
+                "type": "DomainId",
+                "id": "U7HInKNu4TyiNxTq02wx",
+                "createdAt": "2018-05-21T13:17:36.193634",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        },
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "b6",
+              "boardId": {
+                "type": "DomainId",
+                "id": "U7HInKNu4TyiNxTq02wx",
+                "createdAt": "2018-05-21T13:17:36.193634",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "a5",
+              "boardId": {
+                "type": "DomainId",
+                "id": "hvc0B4fc2nXW8C9kY49y",
+                "createdAt": "2018-05-21T13:17:38.362332",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        }
+      ],
+      "variants": [],
+      "ellipses": false,
+      "notationFormat": null,
+      "boardDimension": 0,
+      "comment": null,
+      "root": false,
+      "selected": false,
+      "current": false,
+      "previous": false,
+      "idInVariants": 0,
+      "taskBelow": false,
+      "notationNumberInt": 1
+    },
+    {
+      "notationNumber": "2. ",
+      "moves": [
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "e3",
+              "boardId": {
+                "type": "DomainId",
+                "id": "hvc0B4fc2nXW8C9kY49y",
+                "createdAt": "2018-05-21T13:17:38.362332",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "f4",
+              "boardId": {
+                "type": "DomainId",
+                "id": "hxX8vGv235nMmFz9FMuf",
+                "createdAt": "2018-05-21T13:17:40.081632",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        },
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "d6",
+              "boardId": {
+                "type": "DomainId",
+                "id": "hxX8vGv235nMmFz9FMuf",
+                "createdAt": "2018-05-21T13:17:40.081632",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "c5",
+              "boardId": {
+                "type": "DomainId",
+                "id": "1CocatsRlkpFWhnygf8E",
+                "createdAt": "2018-05-21T13:17:41.644691",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        }
+      ],
+      "variants": [],
+      "ellipses": false,
+      "notationFormat": null,
+      "boardDimension": 0,
+      "comment": null,
+      "root": false,
+      "selected": false,
+      "current": false,
+      "previous": false,
+      "idInVariants": 0,
+      "taskBelow": false,
+      "notationNumberInt": 2
+    },
+    {
+      "notationNumber": "3. ",
+      "moves": [
+        {
+          "type": "SIMPLE",
+          "move": [
+            {
+              "notation": "c3",
+              "boardId": {
+                "type": "DomainId",
+                "id": "1CocatsRlkpFWhnygf8E",
+                "createdAt": "2018-05-21T13:17:41.644691",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "d4",
+              "boardId": {
+                "type": "DomainId",
+                "id": "oCAOCZNeYMO1QmZBoUQ5",
+                "createdAt": "2018-05-21T13:17:43.660418",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": false,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        },
+        {
+          "type": "CAPTURE",
+          "move": [
+            {
+              "notation": "c5",
+              "boardId": {
+                "type": "DomainId",
+                "id": "oCAOCZNeYMO1QmZBoUQ5",
+                "createdAt": "2018-05-21T13:17:43.660418",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": true,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "e3",
+              "boardId": {
+                "type": "DomainId",
+                "id": "77HFE16RGjff1q86YzKO",
+                "createdAt": "2018-05-21T13:17:45.903247",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": true,
+              "format": null,
+              "boardDimension": 0
+            },
+            {
+              "notation": "g5",
+              "boardId": {
+                "type": "DomainId",
+                "id": "kemjfxhh6q321l9GrcPm",
+                "createdAt": "2018-05-21T13:17:47.242022",
+                "updatedAt": null,
+                "readonly": false
+              },
+              "cursor": true,
+              "format": null,
+              "boardDimension": 0
+            }
+          ],
+          "moveStrength": null,
+          "boardDimension": 0,
+          "notationFormat": null
+        }
+      ],
+      "variants": [],
+      "ellipses": false,
+      "notationFormat": null,
+      "boardDimension": 0,
+      "comment": null,
+      "root": false,
+      "selected": true,
+      "current": false,
+      "previous": false,
+      "idInVariants": 0,
+      "taskBelow": false,
+      "notationNumberInt": 3
+    }
+  ],
+  "currentNotationDrive": null,
+  "variantNotationDrive": null
+}

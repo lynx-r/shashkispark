@@ -46,7 +46,7 @@ public class Notation extends BaseDomain implements Payload, NotationFormat {
   private LocalDateTime updatedAt;
 
   @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
-  @DynamoDBAttribute(attributeName = "selectedBoardBoxId")
+  @DynamoDBAttribute(attributeName = "boardBoxId")
   private DomainId boardBoxId;
 
   /**

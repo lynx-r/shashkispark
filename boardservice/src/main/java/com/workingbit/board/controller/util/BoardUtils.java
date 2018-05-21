@@ -341,7 +341,8 @@ public class BoardUtils {
       String currentNotation = board.getSelectedSquare().getNotation();
       DomainId currentBoardId = board.getDomainId();
       // push selected move to selected drive
-      lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId, true));
+      lastMove.add(new NotationSimpleMove(currentNotation, currentBoardId));
+      lastCapturedMove.setCursor(true);
     }
     notationHistory.syncLastDrive();
   }
@@ -426,42 +427,41 @@ public class BoardUtils {
 
   private static MovesList getHighlightSimple(Board board, MovesList movesList, Set<Square> allowed, boolean blackTurn) {
     Set<String> draughtsNotations;
-//    if (blackTurn) {
-//      draughtsNotations = board.getBlackDraughts().keySet();
-//    } else {
-//      draughtsNotations = board.getWhiteDraughts().keySet();
-//    }
+    if (blackTurn) {
+      draughtsNotations = board.getBlackDraughts().keySet();
+    } else {
+      draughtsNotations = board.getWhiteDraughts().keySet();
+    }
     // find squares occupied by current user
-//    List<Square> draughtsSquares = board.getAssignedSquares()
-//        .stream()
-//        .filter(square -> !square.equals(board.getSelectedSquare()))
-//        .filter(square -> draughtsNotations.contains(square.getNotation()))
-//        .filter(Square::isOccupied)
-//        .collect(Collectors.toList());
+    List<Square> draughtsSquares = board.getAssignedSquares()
+        .stream()
+        .filter(square -> !square.equals(board.getSelectedSquare()))
+        .filter(square -> draughtsNotations.contains(square.getNotation()))
+        .filter(Square::isOccupied)
+        .collect(Collectors.toList());
     // find all squares captured by current user
-//    TreeSquare allCaptured = new TreeSquare();
-//        .stream()
-//        .flatMap(square -> getHighlightedAssignedMoves(square).getCaptured().asNode())
-//        .collect(Collectors.toSet());
+    TreeSquare allCaptured = new TreeSquare();
+    draughtsSquares
+        .forEach(square -> allCaptured.addTree(getHighlightedAssignedMoves(square).getCaptured()));
     // reset highlight
     board.getAssignedSquares()
         .stream()
         .filter(Square::isHighlight)
         .forEach(square -> square.setHighlight(false));
-//    if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
-    board.getAssignedSquares()
-        .stream()
-        .peek((square -> {
-          // highlight selected draught
-          if (square.isOccupied() && square.equals(board.getSelectedSquare())) {
-            square.getDraught().setHighlight(true);
-          }
-        }))
-        .filter(allowed::contains)
-        .forEach(square -> square.setHighlight(true));
-//    } else {
-//      movesList.setCaptured(allCaptured);
-//    }
+    if (allCaptured.isEmpty()) { // if there is no captured then highlight allowed
+      board.getAssignedSquares()
+          .stream()
+          .peek((square -> {
+            // highlight selected draught
+            if (square.isOccupied() && square.equals(board.getSelectedSquare())) {
+              square.getDraught().setHighlight(true);
+            }
+          }))
+          .filter(allowed::contains)
+          .forEach(square -> square.setHighlight(true));
+    } else {
+      movesList.setCaptured(allCaptured);
+    }
     return movesList;
   }
 

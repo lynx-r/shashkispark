@@ -18,5 +18,11 @@ public enum EnumArticleStatus {
   /**
    * Article published
    */
-  PUBLISHED
+  PUBLISHED,
+
+  /**
+   * Народное достояние
+   */
+  LEGACY,
+  ;
 }

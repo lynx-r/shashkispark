@@ -15,7 +15,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by Aleksey Popryaduhin on 19:54 12/08/2017.
@@ -57,6 +59,12 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "boardId")
   private DomainId boardId;
 
+  /**
+   * Используется в публичном API для хранения ВСЕХ досок boardbox'a
+   */
+  @DynamoDBIgnore
+  private Set<Board> publicBoards;
+
   @DynamoDBIgnore
   private Board board;
 
@@ -82,9 +90,17 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "visiblePublic")
   private boolean visiblePublic;
 
+  /**
+   * Whether this BoardBox contains task
+   */
+  @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
+  @DynamoDBAttribute(attributeName = "task")
+  private boolean task;
+
   public BoardBox() {
     editMode = EnumEditBoardBoxMode.EDIT;
     visiblePublic = true;
+    publicBoards = new HashSet<>();
   }
 
   public BoardBox(Board board) {

@@ -2,7 +2,12 @@ package com.workingbit.board.dao;
 
 import com.workingbit.board.config.AppProperties;
 import com.workingbit.share.dao.BaseDao;
+import com.workingbit.share.dao.DaoFilters;
+import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.Board;
+import com.workingbit.share.model.DomainId;
+
+import java.util.List;
 
 /**
  * Created by Aleksey Popryaduhin on 18:16 09/08/2017.
@@ -11,6 +16,12 @@ public class BoardDao extends BaseDao<Board> {
 
   public BoardDao(AppProperties properties) {
     super(Board.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
+  }
+
+  public List<Board> findByBoardBoxId(DomainId boardBoxDomainId) {
+    DaoFilters filterPublic = new DaoFilters();
+    filterPublic.add(new ValueFilter("boardBoxId.id", boardBoxDomainId.getId(), "=", "S"));
+    return findByFilter(filterPublic);
   }
 
 //  @Override

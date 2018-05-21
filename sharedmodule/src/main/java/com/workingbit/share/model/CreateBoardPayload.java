@@ -32,7 +32,7 @@ public class CreateBoardPayload implements Payload {
                             @JsonProperty("black") Boolean black,
                             @JsonProperty("idInArticle") int idInArticle,
                             @JsonProperty("rules") EnumRules rules,
-                            @JsonProperty("selectedBoardBoxId") DomainId boardBoxId,
+                            @JsonProperty("boardBoxId") DomainId boardBoxId,
                             @JsonProperty("editMode") EnumEditBoardBoxMode editMode
   ) {
     this.articleId = articleId;
