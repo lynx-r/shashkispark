@@ -32,9 +32,8 @@ class NotationService {
           .collect(Collectors.toCollection(NotationDrives::new));
       if (notation.getNotationHistory().getNotation().size() != notTask.size()) {
         notation.getNotationHistory().setNotation(notTask);
-        notationStoreService.put(authUser.getUserSession(), notation);
       }
-      return findNotationAndPutInStore(authUser, notation, notationId);
+      return notation;
     }
   }
 

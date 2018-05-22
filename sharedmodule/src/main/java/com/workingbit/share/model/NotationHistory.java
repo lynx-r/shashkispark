@@ -191,20 +191,20 @@ public class NotationHistory implements DeepClone {
 
   public boolean switchTo(NotationDrive currentNotationDrive,
                           NotationDrive variantNotationDrive) {
-    int indexFork = history.indexOf(currentNotationDrive);
+    int indexSwitch = history.indexOf(currentNotationDrive);
     NotationDrive toSwitchDrive;
     if (currentNotationDrive == null) {
       toSwitchDrive = getLastSafeHistory();
-      indexFork = history.indexOf(toSwitchDrive);
+      indexSwitch = history.indexOf(toSwitchDrive);
     } else {
-      toSwitchDrive = history.get(indexFork);
+      toSwitchDrive = history.get(indexSwitch);
     }
 
     NotationDrives switchVariants = toSwitchDrive.getVariants().deepClone();
 
     // push tail of notation to variants
-    if (indexFork + 1 < size()) {
-      List<NotationDrive> forked = subListHistory(indexFork + 1, size());
+    if (indexSwitch + 1 < size()) {
+      List<NotationDrive> forked = subListHistory(indexSwitch + 1, size());
       NotationDrives forkedNotationDrives = NotationDrives.Builder.getInstance()
           .addAll(forked)
           .build();
@@ -231,7 +231,6 @@ public class NotationHistory implements DeepClone {
       variantToSwitch = variantNotationDrive;
     }
 
-    // push varint's to switch notation to main notation drives
     if (variantToSwitch != null) {
       resetCurrentAndSetPresious(toSwitchDrive);
       addAllVariantsInHistoryAndNotation(variantToSwitch);

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByLink;
@@ -473,9 +474,19 @@ public class BoardBoxService {
   }
 
   private BoardBoxes fillBoardBoxes(AuthUser authUser, List<BoardBox> byUserAndIds) {
+    LinkedList<DomainId> collect = byUserAndIds
+        .stream()
+        .map(BoardBox::getNotationId)
+        .collect(Collectors.toCollection(LinkedList::new));
+    DomainIds domainIds = new DomainIds(collect);
+    List<Notation> notationByIds = notationDao.findByIds(domainIds);
+    Map<String, Notation> notationMap = notationByIds
+        .stream()
+        .collect(Collectors.toMap(o -> o.getBoardBoxId().getId(), o -> o));
+
     // fill BoardBox
     for (BoardBox boardBox : byUserAndIds) {
-      Notation notation = notationService.findById(authUser, boardBox.getNotationId());
+      Notation notation = notationMap.get(boardBox.getId());
       boardBox.setNotation(notation);
       fillWithBoards(boardBox);
       boardBoxStoreService.put(authUser.getUserSession(), boardBox);

@@ -19,6 +19,10 @@ public class DomainIds implements Payload {
     this.ids = new LinkedList<>();
   }
 
+  public DomainIds(LinkedList<DomainId> ids) {
+    this.ids = ids;
+  }
+
   public int size() {
     return ids.size();
   }
