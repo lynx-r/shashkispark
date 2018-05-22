@@ -36,6 +36,9 @@ public class ArticleService {
     if (humanReadableUrl.length() < 4) {
       throw RequestException.badRequest("В заголовке минимум 4 символа");
     }
+    if (humanReadableUrl.length() > 2000) {
+      throw RequestException.badRequest("В заголовке макимум 2000 символов");
+    }
     article.setHumanReadableUrl(humanReadableUrl);
     article.setUserId(authUser.getUserId());
 
