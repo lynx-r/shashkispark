@@ -142,6 +142,15 @@ public class NotationHistory implements DeepClone {
     NotationDrive lastHist = history.getLast();
     Optional<NotationDrive> continueDrive = variantHasContinue(lastHist, variant, cutNotationDrives);
     if (!continueDrive.isPresent()) {
+//      if (lastHist.getVariantsSize() == 0) {
+//        NotationDrive rootV = variant.deepClone();
+//        rootV.setIdInVariants(0);
+//        NotationDrives rootCut = cutNotationDrives.deepClone();
+//        rootCut.setIdInVariants(rootV.getIdInVariants());
+//        rootV.setVariants(rootCut);
+//        rootV.setCurrent(true);
+//        lastHist.addVariant(rootV);
+//      }
       variant.setIdInVariants(lastHist.getVariantsSize() + 1);
       cutNotationDrives.setIdInVariants(variant.getIdInVariants());
       variant.setVariants(cutNotationDrives);
@@ -208,6 +217,7 @@ public class NotationHistory implements DeepClone {
       Optional<NotationDrive> continueDrive = variantHasContinue(history.getLast(), variant, forkedNotationDrives);
       // if not duplicated
       if (!continueDrive.isPresent()) {
+        variant.setIdInVariants(history.getLast().getVariantsSize() + 1);
         variant.setVariants(forkedNotationDrives);
         history.getLast().addVariant(variant);
       }
