@@ -265,7 +265,7 @@ public class Utils {
   public static void setArticleUrlAndIdAndCreatedAt(Article article, boolean present) {
     article.setId(getRandomID());
     article.setSelectedBoardBoxId(DomainId.getRandomID());
-    article.setHumanReadableUrl(article.getTitle() + (present ? RANDOM_STR_SEP + getRandomString4() : ""));
+    article.setHumanReadableUrl(article.getHumanReadableUrl() + (present ? RANDOM_STR_SEP + getRandomString4() : ""));
     article.setCreatedAt(LocalDateTime.now());
   }
 

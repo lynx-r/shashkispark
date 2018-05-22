@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,12 @@ public class ArticleService {
 
   public CreateArticleResponse createArticle(CreateArticlePayload articleAndBoard, AuthUser authUser) throws RequestException {
     var article = articleAndBoard.getArticle();
+    article.setTitle(article.getTitle().trim());
+    String humanReadableUrl = article.getHumanReadableUrl().trim();
+    if (humanReadableUrl.length() < 4) {
+      throw RequestException.badRequest("В заголовке минимум 4 символа");
+    }
+    article.setHumanReadableUrl(humanReadableUrl);
     article.setUserId(authUser.getUserId());
 
     Optional<Answer> userInfoAnswer = orchestralService.internal(authUser, "userInfoAnswer", authUser);
@@ -182,7 +189,15 @@ public class ArticleService {
     articleDao.save(article);
 
     int limit = appProperties.articlesFetchLimit();
-    List<Article> published = articleDao.findPublishedBy(limit, authUser);
+    List<Article> published;
+    try {
+      published = articleDao.findPublishedBy(limit, authUser);
+    } catch (DaoException e) {
+      if (e.getCode() != HTTP_NOT_FOUND) {
+        throw RequestException.internalServerError();
+      }
+      published = new ArrayList<>();
+    }
     Articles articles = new Articles();
     articles.setArticles(published);
     return articles;
