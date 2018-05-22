@@ -97,6 +97,7 @@ public class ArticleService {
     article.setArticleStatus(articleClient.getArticleStatus());
     article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
     articleDao.save(article);
+    articleStoreService.remove(article.getId());
     return article;
   }
 
@@ -187,6 +188,7 @@ public class ArticleService {
   }
 
   public Articles removeById(DomainId articleId, AuthUser authUser) {
+    articleStoreService.remove(articleId.getId());
     Article article = articleDao.findById(articleId);
     article.setArticleStatus(EnumArticleStatus.REMOVED);
     articleDao.save(article);

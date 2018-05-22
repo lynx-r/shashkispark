@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.map.ListOrderedMap;
 
+import java.util.List;
+
 @JsonTypeName("BoardBoxes")
 @Getter
 @Setter
@@ -14,6 +16,11 @@ public class BoardBoxes implements Payload {
 
   public BoardBoxes() {
     this.boardBoxes = new ListOrderedMap<>();
+  }
+
+  public BoardBoxes(List<BoardBox> boardBoxList) {
+    this();
+    boardBoxList.forEach(this::push);
   }
 
   public static BoardBoxes create(ListOrderedMap<String, BoardBox> collection) {

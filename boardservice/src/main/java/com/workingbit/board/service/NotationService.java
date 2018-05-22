@@ -21,11 +21,14 @@ class NotationService {
       throw RequestException.notFound404();
     }
 
-    var notation = notationDao.findById(notationId);
     boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     if (secure) {
-      return notation;
+      return notationDao.findById(notationId);
     } else {
+      var notation = notationStoreService
+          .get(authUser.getUserSession(), notationId)
+          .orElseGet(() -> notationDao.findById(notationId));
+
       NotationDrives notTask = notation.getNotationHistory().getNotation()
           .stream()
           .filter(nd -> !nd.isTaskBelow())
@@ -33,6 +36,7 @@ class NotationService {
       if (notation.getNotationHistory().getNotation().size() != notTask.size()) {
         notation.getNotationHistory().setNotation(notTask);
       }
+      notationStoreService.put(authUser.getUserSession(), notation);
       return notation;
     }
   }
@@ -47,6 +51,7 @@ class NotationService {
     if (secure) {
       notation.setReadonly(false);
       notationDao.save(notation);
+      notationStoreService.remove(notation.getId());
     } else {
       notationStoreService.put(authUser.getUserSession(), notation);
     }

@@ -122,9 +122,10 @@ public class BoardBoxService {
   }
 
   BoardBox findPublicById(DomainId boardBoxId, AuthUser authUser) {
-    var boardBox = boardBoxDao.findPublicById(boardBoxId);
-    updatePublicBoardBox(authUser, boardBox);
-    return boardBox;
+    var boardBox = boardBoxStoreService
+        .get(authUser.getUserSession(), boardBoxId)
+        .orElseGet(() -> boardBoxDao.findPublicById(boardBoxId));
+    return updatePublicBoardBox(authUser, boardBox);
   }
 
   public BoardBoxes findByArticleId(DomainId articleId, AuthUser authUser, String queryValue) {
@@ -134,27 +135,22 @@ public class BoardBoxService {
     if (!EnumAuthority.hasAuthorAuthorities(authUser)) {
       throw RequestException.forbidden();
     }
-    List<BoardBox> byUserAndIds;
     try {
-      byUserAndIds = boardBoxDao.findByArticleId(articleId);
+      BoardBoxes byUserAndIds = new BoardBoxes(boardBoxDao.findByArticleId(articleId));
+      return fillBoardBoxes(authUser, articleId, byUserAndIds);
     } catch (DaoException e) {
       logger.error(e.getMessage());
       throw RequestException.noContent();
     }
-    return fillBoardBoxes(authUser, byUserAndIds);
   }
 
   private BoardBoxes findPublicByArticleId(DomainId articleId, AuthUser authUser) {
-    List<BoardBox> byUserAndIds;
-    try {
-      byUserAndIds = boardBoxDao.findPublicByArticleId(articleId);
-    } catch (DaoException e) {
-      logger.error(e.getMessage());
-      throw RequestException.noContent();
-    }
+    BoardBoxes byUserAndIds = boardBoxStoreService
+        .getByArticleId(authUser.getUserSession(), articleId)
+        .orElseGet(() -> new BoardBoxes(boardBoxDao.findPublicByArticleId(articleId)));
 
     // fill BoardBox
-    return fillBoardBoxes(authUser, byUserAndIds);
+    return fillBoardBoxes(authUser, articleId, byUserAndIds);
   }
 
   void delete(DomainId boardBoxId) {
@@ -350,16 +346,16 @@ public class BoardBoxService {
 
   public BoardBoxes viewBranch(BoardBox boardBox, AuthUser token) {
     switchNotation(boardBox, token);
-    List<BoardBox> byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
-    return fillBoardBoxes(token, byArticleId);
+    BoardBoxes byArticleId = new BoardBoxes(boardBoxDao.findByArticleId(boardBox.getArticleId()));
+    return fillBoardBoxes(token, boardBox.getArticleId(), byArticleId);
   }
 
   public BoardBoxes forkNotation(BoardBox boardBox, AuthUser authUser) {
     NotationDrive currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentNotationDrive();
     var filledBoardBox = find(boardBox, authUser);
     forkNotationForVariants(filledBoardBox, currentNotationDrive, authUser);
-    List<BoardBox> byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
-    return fillBoardBoxes(authUser, byArticleId);
+    BoardBoxes byArticleId = new BoardBoxes(boardBoxDao.findByArticleId(boardBox.getArticleId()));
+    return fillBoardBoxes(authUser, boardBox.getArticleId(), byArticleId);
   }
 
   public BoardBoxes switchNotation(BoardBox boardBox, AuthUser authUser) {
@@ -367,8 +363,8 @@ public class BoardBoxService {
     NotationDrive variantNotationDrive = boardBox.getNotation().getNotationHistory().getVariantNotationDrive();
     var filledBoardBox = find(boardBox, authUser);
     switchNotationToVariant(authUser, filledBoardBox, currentNotationDrive, variantNotationDrive);
-    List<BoardBox> byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
-    return fillBoardBoxes(authUser, byArticleId);
+    BoardBoxes byArticleId = new BoardBoxes(boardBoxDao.findByArticleId(boardBox.getArticleId()));
+    return fillBoardBoxes(authUser, boardBox.getArticleId(), byArticleId);
   }
 
   private BoardBox switchNotationToVariant(AuthUser authUser, BoardBox boardBox,
@@ -455,6 +451,7 @@ public class BoardBoxService {
     Notation notation = boardBox.getNotation();
     notationService.save(authUser, notation);
     boardBox = updateBoardBox(authUser, boardBox);
+    boardBoxStoreService.remove(boardBox.getId());
     return boardBox;
   }
 
@@ -473,8 +470,10 @@ public class BoardBoxService {
     }
   }
 
-  private BoardBoxes fillBoardBoxes(AuthUser authUser, List<BoardBox> byUserAndIds) {
+  private BoardBoxes fillBoardBoxes(AuthUser authUser, DomainId articleId, BoardBoxes byUserAndIds) {
     LinkedList<DomainId> collect = byUserAndIds
+        .getBoardBoxes()
+        .valueList()
         .stream()
         .map(BoardBox::getNotationId)
         .collect(Collectors.toCollection(LinkedList::new));
@@ -485,16 +484,14 @@ public class BoardBoxService {
         .collect(Collectors.toMap(o -> o.getBoardBoxId().getId(), o -> o));
 
     // fill BoardBox
-    for (BoardBox boardBox : byUserAndIds) {
+    for (BoardBox boardBox : byUserAndIds.getBoardBoxes().valueList()) {
       Notation notation = notationMap.get(boardBox.getId());
       boardBox.setNotation(notation);
       fillWithBoards(boardBox);
-      boardBoxStoreService.put(authUser.getUserSession(), boardBox);
     }
 
-    BoardBoxes boardBoxes = new BoardBoxes();
-    byUserAndIds.forEach(boardBoxes::push);
-    return boardBoxes;
+    boardBoxStoreService.putByArticleId(authUser.getUserSession(), articleId, byUserAndIds);
+    return byUserAndIds;
   }
 
   private void throw404IfNotFound(BoardBox boardBox) {

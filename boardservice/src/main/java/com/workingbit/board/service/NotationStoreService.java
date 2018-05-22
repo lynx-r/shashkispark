@@ -8,6 +8,7 @@ import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -15,25 +16,35 @@ import java.util.Optional;
  */
 public class NotationStoreService {
 
-  private Cache<String, Notation> store;
+  private Cache<String, Map> store;
 
   public NotationStoreService() {
     String notation = "notation";
     CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
         .withCache(notation,
-            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Notation.class, ResourcePoolsBuilder.heap(10)))
+            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Map.class, ResourcePoolsBuilder.heap(10)))
         .build();
     cacheManager.init();
 
-    store = cacheManager.getCache(notation, String.class, Notation.class);
+    store = cacheManager.getCache(notation, String.class, Map.class);
   }
 
-  public Optional<Notation> get(String key, DomainId notationId) {
-    return Optional.ofNullable(store.get(getKey(key, notationId.getId())));
+  public Optional<Notation> get(String userSession, DomainId notationId) {
+    Map map = store.get(notationId.getId());
+    if (map != null) {
+      return Optional.ofNullable((Notation) map.get(getKey(userSession, notationId.getId())));
+    }
+    return Optional.empty();
   }
 
-  public void put(String key, Notation notation) {
-    store.put(getKey(key, notation.getId()), notation);
+  public void put(String userSession, Notation notation) {
+    String key = getKey(userSession, notation.getId());
+    Map map = Map.of(key, notation);
+    store.put(notation.getId(), map);
+  }
+
+  public void remove(String notationId) {
+    store.remove(notationId);
   }
 
   private String getKey(String key, String boardId) {

@@ -7,6 +7,7 @@ import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -14,25 +15,34 @@ import java.util.Optional;
  */
 public class ArticleStoreService {
 
-  private Cache<String, Article> store;
+  private Cache<String, Map> store;
 
   public ArticleStoreService() {
     String article = "article";
     CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
         .withCache(article,
-            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Article.class, ResourcePoolsBuilder.heap(10)))
+            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Map.class, ResourcePoolsBuilder.heap(10)))
         .build();
     cacheManager.init();
 
-    store = cacheManager.getCache(article, String.class, Article.class);
+    store = cacheManager.getCache(article, String.class, Map.class);
   }
 
-  public Optional<Article> get(String key, String articleHru, String selectedBoardBoxId) {
-    return Optional.ofNullable(store.get(getKey(key, articleHru, selectedBoardBoxId)));
+  public Optional<Article> get(String userSession, String articleHru, String selectedBoardBoxId) {
+    Map map = store.get(articleHru);
+    if (map != null) {
+      return Optional.ofNullable((Article) map.get(getKey(userSession, articleHru, selectedBoardBoxId)));
+    }
+    return Optional.empty();
   }
 
-  public void put(String key, Article article) {
-    store.put(getKey(key, article.getHumanReadableUrl(), article.getSelectedBoardBoxId().getId()), article);
+  public void put(String userSession, Article article) {
+    Map map = Map.of(getKey(userSession, article.getHumanReadableUrl(), article.getSelectedBoardBoxId().getId()), article);
+    store.put(article.getHumanReadableUrl(), map);
+  }
+
+  public void remove(String articleId) {
+    store.remove(articleId);
   }
 
   private String getKey(String key, String articleHru, String selectedBoardBoxId) {
