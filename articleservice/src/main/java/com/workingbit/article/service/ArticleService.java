@@ -175,7 +175,9 @@ public class ArticleService {
 
   public Article findByHru(String articleHru, AuthUser token) {
     try {
-      return articleDao.findByHru(articleHru);
+      Article byHru = articleDao.findByHru(articleHru);
+      articleStoreService.put(token.getUserSession(), byHru);
+      return byHru;
     } catch (DaoException e) {
       throw RequestException.notFound404();
     }

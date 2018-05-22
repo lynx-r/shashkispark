@@ -122,10 +122,14 @@ public class BoardBoxService {
   }
 
   BoardBox findPublicById(DomainId boardBoxId, AuthUser authUser) {
-    var boardBox = boardBoxStoreService
+    return boardBoxStoreService
         .get(authUser.getUserSession(), boardBoxId)
-        .orElseGet(() -> boardBoxDao.findPublicById(boardBoxId));
-    return updatePublicBoardBox(authUser, boardBox);
+        .orElseGet(() -> {
+          BoardBox publicById = boardBoxDao.findPublicById(boardBoxId);
+          publicById = updatePublicBoardBox(authUser, publicById);
+          boardBoxStoreService.put(authUser.getUserSession(), publicById);
+          return publicById;
+        });
   }
 
   public BoardBoxes findByArticleId(DomainId articleId, AuthUser authUser, String queryValue) {
@@ -145,12 +149,13 @@ public class BoardBoxService {
   }
 
   private BoardBoxes findPublicByArticleId(DomainId articleId, AuthUser authUser) {
-    BoardBoxes byUserAndIds = boardBoxStoreService
+    return boardBoxStoreService
         .getByArticleId(authUser.getUserSession(), articleId)
-        .orElseGet(() -> new BoardBoxes(boardBoxDao.findPublicByArticleId(articleId)));
-
-    // fill BoardBox
-    return fillBoardBoxes(authUser, articleId, byUserAndIds);
+        .orElseGet(() -> {
+          List<BoardBox> publicByArticleId = boardBoxDao.findPublicByArticleId(articleId);
+          BoardBoxes boardBoxes = new BoardBoxes(publicByArticleId);
+          return fillBoardBoxes(authUser, articleId, boardBoxes);
+        });
   }
 
   void delete(DomainId boardBoxId) {
@@ -452,6 +457,7 @@ public class BoardBoxService {
     notationService.save(authUser, notation);
     boardBox = updateBoardBox(authUser, boardBox);
     boardBoxStoreService.remove(boardBox.getId());
+    boardBoxStoreService.removeByArticleId(boardBox.getArticleId().getId());
     return boardBox;
   }
 

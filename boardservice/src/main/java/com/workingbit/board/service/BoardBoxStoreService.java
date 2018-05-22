@@ -33,7 +33,7 @@ public class BoardBoxStoreService {
   public Optional<BoardBox> get(String userSession, DomainId boardBoxId) {
     Map map = store.get(boardBoxId.getId());
     if (map != null) {
-      return Optional.ofNullable((BoardBox) map.get(store.get(getKey(userSession, boardBoxId.getId()))));
+      return Optional.ofNullable((BoardBox) map.get(getKey(userSession, boardBoxId.getId())));
     }
     return Optional.empty();
   }
@@ -56,10 +56,19 @@ public class BoardBoxStoreService {
   }
 
   public Optional<BoardBoxes> getByArticleId(String userSession, DomainId articleId) {
+    Map map = store.get(articleId.getId());
+    if (map != null) {
+      return Optional.ofNullable((BoardBoxes) map.get(getKey(userSession, articleId.getId())));
+    }
     return Optional.empty();
   }
 
   public void putByArticleId(String userSession, DomainId articleId, BoardBoxes boardBoxes) {
+    Map map = Map.of(getKey(userSession, articleId.getId()), boardBoxes);
+    store.put(articleId.getId(), map);
+  }
 
+  public void removeByArticleId(String articleId) {
+    store.remove(articleId);
   }
 }
