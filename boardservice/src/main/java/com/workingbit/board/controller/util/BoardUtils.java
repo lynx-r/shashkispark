@@ -358,7 +358,7 @@ public class BoardUtils {
         .stream()
         .filter(e -> e.getValue().isCaptured())
         .forEach(d -> removeDraught(board, d.getValue().getNotation(), d.getValue().isBlack()));
-    return board.getBlackDraughts()
+    return draughts
         .entrySet()
         .stream()
         .filter(e -> !e.getValue().isCaptured())
