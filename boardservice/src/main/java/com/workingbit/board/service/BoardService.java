@@ -3,6 +3,7 @@ package com.workingbit.board.service;
 import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.boardDao;
 import static com.workingbit.board.controller.util.BoardUtils.*;
@@ -125,6 +127,11 @@ public class BoardService {
       }
     }
     serverBoard.getSelectedSquare().getDraught().setHighlight(false);
+    Map<String, List<Square>> capturedMapped = captured.flatTree()
+        .stream()
+        .collect(Collectors.groupingBy(ICoordinates::getNotation));
+    updateBoardDraughts(capturedMapped, serverBoard.getWhiteDraughts(), serverBoard.getRules().getDimension());
+    updateBoardDraughts(capturedMapped, serverBoard.getBlackDraughts(), serverBoard.getRules().getDimension());
     if (save) {
       boardDao.save(serverBoard);
     }
@@ -143,6 +150,20 @@ public class BoardService {
       boardDao.save(nextBoard);
     }
     return nextBoard;
+  }
+
+  public void updateBoardDraughts(Map<String, List<Square>> capturedMapped, Map<String, Draught> whiteDraughts, int dimension) {
+    whiteDraughts
+        .values()
+        .forEach(draught -> {
+          draught.setDim(dimension);
+          List<Square> squares = capturedMapped.get(draught.getNotation());
+          if (squares != null && !squares.isEmpty()) {
+            Draught capturedDraught = squares.get(0).getDraught();
+            draught.setCaptured(capturedDraught.isCaptured());
+            draught.setMarkCaptured(capturedDraught.isMarkCaptured());
+          }
+        });
   }
 
   void save(Board board) {

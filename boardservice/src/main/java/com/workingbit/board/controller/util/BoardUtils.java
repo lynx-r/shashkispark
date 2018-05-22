@@ -345,6 +345,24 @@ public class BoardUtils {
       lastCapturedMove.setCursor(true);
     }
     notationHistory.syncLastDrive();
+
+    Map<String, Draught> notCaptured = getUpdateCapture(board, board.getBlackDraughts());
+    board.setBlackDraughts(notCaptured);
+    notCaptured = getUpdateCapture(board, board.getWhiteDraughts());
+    board.setWhiteDraughts(notCaptured);
+  }
+
+  private static Map<String, Draught> getUpdateCapture(Board board, Map<String, Draught> draughts) {
+    new HashMap<>(draughts)
+        .entrySet()
+        .stream()
+        .filter(e -> e.getValue().isCaptured())
+        .forEach(d -> removeDraught(board, d.getValue().getNotation(), d.getValue().isBlack()));
+    return board.getBlackDraughts()
+        .entrySet()
+        .stream()
+        .filter(e -> !e.getValue().isCaptured())
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   private static boolean isContinueCapture(NotationHistory notationDrives, String previousNotation) {
@@ -401,9 +419,6 @@ public class BoardUtils {
     board.getAssignedSquares()
         .forEach(square -> {
           square.setHighlight(false);
-          if (square.isOccupied() && square.getDraught().isCaptured()) {
-            removeDraught(board, square.getNotation(), square.getDraught().isBlack());
-          }
         });
   }
 
@@ -510,9 +525,6 @@ public class BoardUtils {
     board.setPreviousSquare(board.getSelectedSquare());
     board.getPreviousSquare().setDraught(null);
     board.setSelectedSquare(targetSquare.deepClone());
-
-    replaceDraught(board.getWhiteDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
-    replaceDraught(board.getBlackDraughts(), targetSquare.getNotation(), sourceSquare.getNotation());
   }
 
   private static void markCapturedDraught(TreeSquare capturedSquares, Board board,
@@ -577,30 +589,17 @@ public class BoardUtils {
     return target.getV() - source.getV() < 0;
   }
 
-  /**
-   * Move draught on whiteDraughts and blackDraughts lists
-   */
-  private static void replaceDraught(Map<String, Draught> draughts, String targetSquareNotation, String sourceSquareNotation) {
-    Draught draughtFromSource = draughts.remove(sourceSquareNotation);
-    if (draughtFromSource != null) {
-      draughts.put(targetSquareNotation, draughtFromSource);
-    }
-  }
-
   public static void updateMoveSquaresHighlightAndDraught(Board currentBoard, Board origBoard) {
-    List<Square> squares = currentBoard.getSquares();
-    List<Square> origBoardSquares = origBoard.getSquares();
+//    List<Square> squares = currentBoard.getSquares();
+//    List<Square> origBoardSquares = origBoard.getSquares();
     // restore the captured draught mark
-    for (int i = 0; i < squares.size(); i++) {
-      Square square = squares.get(i);
-      if (square != null && square.isOccupied()) {
-        Square origSquare = origBoardSquares.get(i);
-        if (origSquare.isOccupied()) {
-          square.getDraught().setCaptured(origSquare.getDraught().isCaptured());
-          square.getDraught().setMarkCaptured(origSquare.getDraught().isMarkCaptured());
-        }
-      }
-    }
+//    for (int i = 0; i < squares.size(); i++) {
+//      Square square = squares.get(i);
+//      Square origSquare = origBoardSquares.get(i);
+//      if (square != null && origSquare != null && origSquare.isOccupied()) {
+//        square.setDraught(origSquare.getDraught());
+//      }
+//    }
 
     int dim = currentBoard.getRules().getDimension();
     Square selectedSquare = findSquareByLink(origBoard.getSelectedSquare(), currentBoard);

@@ -12,9 +12,7 @@ import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.*;
 import static com.workingbit.share.common.ErrorMessages.UNABLE_TO_MOVE;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 /**
  * Created by Aleksey Popryaduhin on 21:13 11/08/2017.
@@ -210,6 +208,47 @@ public class MoveUtilTest extends BaseServiceTest {
   }
 
   @Test
+  public void should_capture_turk_stroke2_caraful() {
+    BoardBox boardBox = getBoardBox(false);
+    Board board = boardBox.getBoard();
+    board = addWhiteDraught(board, "d4");
+    board = addBlackDraught(board, "c5");
+    board = addBlackDraught(board, "c7");
+    board = addBlackDraught(board, "e7");
+    board = addBlackDraught(board, "e3");
+    board = addBlackDraught(board, "g5");
+    board = addBlackDraught(board, "g3");
+    Square d4 = findSquareByNotation("d4", board);
+    board.setSelectedSquare(d4);
+    board = move(board, "d4", "b6", false, boardBox.getNotation().getNotationHistory());
+    Set<String> allowed = Set.of("d8", "f6");
+    Set<String> captured = Set.of("c5");
+    assertTrue(testSameHighlightCustom(board, allowed, captured));
+
+    board = move(board, "b6", "d8", false, boardBox.getNotation().getNotationHistory());
+    allowed = Set.of("f6", "h4", "f2", "d4");
+    captured = Set.of("c5", "c7");
+    assertTrue(testSameHighlightCustom(board, allowed, captured));
+
+//    board = move(board, "d8", "f6", false, boardBox.getNotation().getNotationHistory());
+//    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
+//    assertTrue(testSameHighlight(board, highlight));
+//
+//    board = move(board, "f6", "h4", false, boardBox.getNotation().getNotationHistory());
+//    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "h4"));
+//    assertTrue(testSameHighlight(board, highlight));
+//
+//    board = move(board, "h4", "f2", false, boardBox.getNotation().getNotationHistory());
+//    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f2"));
+//    assertTrue(testSameHighlight(board, highlight));
+//
+//    board = move(board, "f2", "d4", false, boardBox.getNotation().getNotationHistory());
+//    assertTrue(testSameHighlight(board, new MovesList()));
+//
+//    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
+  }
+
+  @Test
   public void should_move_white_on_edge() {
     BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
@@ -264,4 +303,41 @@ public class MoveUtilTest extends BaseServiceTest {
         .collect(Collectors.toList());
     return highlighted.equals(allowedSorted);
   }
+
+  private boolean testSameHighlightCustom(Board board, Set<String> allowed, Set<String> captured) {
+    List<Square> highlighted = board.getAssignedSquares()
+        .stream()
+        .filter(Square::isHighlight)
+        .sorted()
+        .collect(Collectors.toList());
+    if (allowed.size() != highlighted.size()) {
+      return false;
+    }
+
+    List<Square> capt = board.getAssignedSquares()
+        .stream()
+        .filter(sq-> sq.isOccupied() && sq.getDraught().isCaptured())
+        .sorted()
+        .collect(Collectors.toList());
+    if (captured.size() != capt.size()) {
+      return false;
+    }
+
+    List<Square> captSorted = captured.stream()
+        .map(n-> findSquareByNotation(n, board))
+        .sorted()
+        .collect(Collectors.toList());
+
+    boolean capturedOk = captSorted.equals(capt);
+    if (!capturedOk) {
+      return false;
+    }
+
+    List<Square> allowedSorted = allowed.stream()
+        .map(n-> findSquareByNotation(n, board))
+        .sorted()
+        .collect(Collectors.toList());
+    return highlighted.equals(allowedSorted);
+  }
+
 }
