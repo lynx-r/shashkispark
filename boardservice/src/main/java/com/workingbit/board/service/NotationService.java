@@ -52,7 +52,7 @@ class NotationService {
       notation.setReadonly(false);
       notationDao.save(notation);
       if (publish) {
-        notationStoreService.remove(notation.getId());
+        notationStoreService.remove(notation);
       }
     } else {
       notationStoreService.put(authUser.getUserSession(), notation);

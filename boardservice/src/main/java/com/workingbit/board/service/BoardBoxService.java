@@ -456,8 +456,8 @@ public class BoardBoxService {
     Notation notation = boardBox.getNotation();
     notationService.save(authUser, notation, publish);
     boardBox = updateBoardBox(authUser, boardBox);
-    boardBoxStoreService.remove(boardBox.getId());
-    boardBoxStoreService.removeByArticleId(boardBox.getArticleId().getId());
+    boardBoxStoreService.remove(boardBox);
+    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
     return boardBox;
   }
 

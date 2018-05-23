@@ -43,8 +43,8 @@ public class BoardBoxStoreService {
     store.put(board.getId(), map);
   }
 
-  public void remove(String boardId) {
-    store.remove(boardId);
+  public void remove(BoardBox board) {
+    store.remove(board.getId());
   }
 
   private String getKey(String key, String boardId) {
@@ -68,7 +68,7 @@ public class BoardBoxStoreService {
     store.put(articleId.getId(), map);
   }
 
-  public void removeByArticleId(String articleId) {
-    store.remove(articleId);
+  public void removeByArticleId(DomainId articleId) {
+    store.remove(articleId.getId());
   }
 }

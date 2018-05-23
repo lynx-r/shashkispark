@@ -43,8 +43,8 @@ public class NotationStoreService {
     store.put(notation.getId(), map);
   }
 
-  public void remove(String notationId) {
-    store.remove(notationId);
+  public void remove(Notation notation) {
+    store.remove(notation.getId());
   }
 
   private String getKey(String key, String boardId) {

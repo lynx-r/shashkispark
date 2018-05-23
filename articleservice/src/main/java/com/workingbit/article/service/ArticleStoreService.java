@@ -54,8 +54,8 @@ public class ArticleStoreService {
     storeArticle.put(article.getHumanReadableUrl(), map);
   }
 
-  public void remove(String articleId) {
-    storeArticle.remove(articleId);
+  public void remove(Article article) {
+    storeArticle.remove(article.getHumanReadableUrl());
   }
 
   private String getKey(String key, String articleHru, String selectedBoardBoxId) {
