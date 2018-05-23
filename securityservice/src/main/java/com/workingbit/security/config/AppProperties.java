@@ -28,4 +28,6 @@ public interface AppProperties {
   String superHashEnvName();
 
   String passwordFileKey();
+
+  String passwordFilename();
 }

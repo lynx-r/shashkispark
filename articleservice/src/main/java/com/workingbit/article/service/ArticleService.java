@@ -78,13 +78,15 @@ public class ArticleService {
       logger.error("Unable to create board");
       throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CREATE_BOARD);
     }
+
+    // add new article to cache
     Articles all = findAll("50", authUser);
     all.add(article);
     articleStoreService.putAllArticles(all);
     return createArticleResponse;
   }
 
-  public Article save(Article articleClient) {
+  public Article save(Article articleClient, AuthUser token) {
     var article = articleDao.find(articleClient);
     if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
       throw RequestException.badRequest(ErrorMessages.ARTICLE_IS_DELETED);
@@ -100,9 +102,12 @@ public class ArticleService {
     article.setArticleStatus(articleClient.getArticleStatus());
     article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
     articleDao.save(article);
-    if (articleClient.getArticleStatus().equals(EnumArticleStatus.PUBLISHED)) {
-      articleStoreService.remove(article.getId());
-    }
+    articleStoreService.remove(article.getId());
+
+    // replace edited article
+    Articles all = findAll("50", token);
+    all.replace(article);
+    articleStoreService.putAllArticles(all);
     return article;
   }
 

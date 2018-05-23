@@ -27,4 +27,10 @@ public class Articles implements Payload {
   public void add(Article article) {
     articles.add(article);
   }
+
+  public void replace(Article article) {
+    int i = articles.indexOf(article);
+    articles.remove(i);
+    articles.add(i, article);
+  }
 }

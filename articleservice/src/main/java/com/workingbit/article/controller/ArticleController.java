@@ -52,7 +52,7 @@ public class ArticleController {
 
   public static Route saveArticle = (req, res) ->
       ((ModelHandlerFunc<Article>) (article, token, param) ->
-          Answer.created(articleService.save((Article) article))
+          Answer.created(articleService.save((Article) article, token))
       ).handleRequest(req, res,
           Authority.ARTICLE_PROTECTED,
           Article.class);

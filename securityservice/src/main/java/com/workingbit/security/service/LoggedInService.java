@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,24 +20,16 @@ import static com.workingbit.share.util.JsonUtils.jsonToData;
  */
 public class LoggedInService {
 
-  public void registerUser(SecureAuth secureAuth) throws CryptoException, IOException {
-    String key = appProperties.passwordFileKey();
-    URL registeredUsersPath = getClass().getResource("/RegisteredUsers/ShashkiUsers.pwd");
-    File encrypted = new File(registeredUsersPath.getFile());
-    File decryptedFile = File.createTempFile("shashkitemp", "pwd");
-    SecureUtils.decrypt(key, encrypted, decryptedFile);
+  void registerUser(SecureAuth secureAuth) throws CryptoException, IOException {
+    File decryptedFile = decryptFile();
     String json = dataToJson(secureAuth) + "\n";
     byte[] data = json.getBytes();
     FileUtils.writeByteArrayToFile(decryptedFile, data, true);
-    SecureUtils.encrypt(key, decryptedFile, encrypted);
+    encryptFile(decryptedFile);
   }
 
-  public SecureAuth findByUsername(String username) throws CryptoException, IOException {
-    String key = appProperties.passwordFileKey();
-    URL registeredUsersPath = getClass().getResource("/RegisteredUsers/ShashkiUsers.pwd");
-    File encrypted = new File(registeredUsersPath.getFile());
-    File decryptedFile = File.createTempFile("shashkitemp", "pwd");
-    SecureUtils.decrypt(key, encrypted, decryptedFile);
+  SecureAuth findByUsername(String username) throws CryptoException, IOException {
+    File decryptedFile = decryptFile();
     List<String> lines = FileUtils.readLines(decryptedFile);
     for (String line : lines) {
       SecureAuth secureAuth = jsonToData(line, SecureAuth.class);
@@ -49,12 +40,8 @@ public class LoggedInService {
     return null;
   }
 
-  public void replaceSecureAuth(SecureAuth secureAuth, SecureAuth secureAuthUpdated) throws CryptoException, IOException {
-    String key = appProperties.passwordFileKey();
-    URL registeredUsersPath = getClass().getResource("/RegisteredUsers/ShashkiUsers.pwd");
-    File encrypted = new File(registeredUsersPath.getFile());
-    File decryptedFile = File.createTempFile("shashkitemp", "pwd");
-    SecureUtils.decrypt(key, encrypted, decryptedFile);
+  void replaceSecureAuth(SecureAuth secureAuth, SecureAuth secureAuthUpdated) throws CryptoException, IOException {
+    File decryptedFile = decryptFile();
     List<String> lines = FileUtils.readLines(decryptedFile);
     int indexReplace = -1;
     for (int i = 0; i < lines.size(); i++) {
@@ -72,6 +59,33 @@ public class LoggedInService {
     lines.add(indexReplace, dataToJson(secureAuthUpdated));
     String data = lines.stream().collect(Collectors.joining("\n"));
     FileUtils.writeByteArrayToFile(decryptedFile, data.getBytes());
+    encryptFile(decryptedFile);
+  }
+
+  private void encryptFile(File decryptedFile) throws CryptoException, IOException {
+    String key = appProperties.passwordFileKey();
+    String passwdFilename = appProperties.passwordFilename();
+    File encrypted = getEncryptedFile(passwdFilename);
     SecureUtils.encrypt(key, decryptedFile, encrypted);
+  }
+
+  private File decryptFile() throws CryptoException, IOException {
+    String key = appProperties.passwordFileKey();
+    String passwdFilename = appProperties.passwordFilename();
+    File encrypted = getEncryptedFile(passwdFilename);
+    File decryptedFile = File.createTempFile("shashkitemp", "pwd");
+    SecureUtils.decrypt(key, encrypted, decryptedFile);
+    return decryptedFile;
+  }
+
+  private File getEncryptedFile(String passwdFilename) throws IOException {
+    File encrypted = new File(passwdFilename);
+    if (!encrypted.exists()) {
+      boolean newFile = encrypted.createNewFile();
+      if (!newFile) {
+        throw new SecurityException("Не удалось создать файл паролей");
+      }
+    }
+    return encrypted;
   }
 }
