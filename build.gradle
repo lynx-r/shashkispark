@@ -12,15 +12,31 @@ buildscript {
 // lombok configuration
 plugins {
     id 'net.ltgt.apt' version '0.15'
+    id  'com.github.spotbugs' version '1.6.1'
+}
+
+spotbugs {
+    toolVersion = '3.1.3'
+}
+
+// To generate an HTML report instead of XML
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
 }
 
 allprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'maven'
-
+    apply plugin: "pmd"
     group = 'com.workingbit'
 }
+
+def defaultEncoding = 'UTF-8'
+[compileJava, compileTestJava]*.options*.encoding = defaultEncoding
 
 subprojects { subproject ->
     if (subproject.name.endsWith('service')) {
@@ -67,10 +83,18 @@ configure(subprojects) {
 
         compile('com.sparkjava:spark-core:2.7.2')
 
+        compile 'com.github.spotbugs:spotbugs:3.1.3'
+        compileOnly 'net.jcip:jcip-annotations:1.0'
+        compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.3'
+
         testCompile group: 'junit', name: 'junit', version: '4.+'
 
         // test spark controllers
         testCompile "com.despegar:spark-test:1.1.6"
+
+        pmd 'net.sourceforge.pmd:pmd-java:6.4.0'
+        pmd 'org.ow2.asm:asm:6.2'
+//        compile 'com.qulice:qulice-gradle-plugin:0.17.3'
     }
 }
 
@@ -144,12 +168,12 @@ project(':sharedmodule') {
 
         compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.150'
 
-        compile 'com.fasterxml.jackson.core:jackson-core:2.8.5'
-        compile 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
-        compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.5'
-        compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1'
-        compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.1'
-        compile 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.1'
+        compile 'com.fasterxml.jackson.core:jackson-core:2.9.5'
+        compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+        compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.5'
+        compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.5'
+        compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.5'
+        compile 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.5'
 
         // https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
         compile group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.9.Final'
@@ -160,9 +184,11 @@ project(':sharedmodule') {
         // tree
         compile 'com.github.rutledgepaulv:prune:1.3'
 
-//        compileOnly('org.projectlombok:lombok:1.16.20')
-        compileOnly files('lib/lombok-edge.jar')
-        annotationProcessor files('lib/lombok-edge.jar')
+        compile 'com.intellij:annotations:+@jar'
+
+        compileOnly('org.projectlombok:lombok:1.16.22')
+//        compileOnly files('lib/lombok-edge.jar')
+//        annotationProcessor files('lib/lombok-edge.jar')
 
         compile 'uk.com.robust-it:cloning:1.9.10'
 
@@ -172,6 +198,8 @@ project(':sharedmodule') {
 
         compile 'org.slf4j:slf4j-api:1.8.0-beta2'
         compile 'ch.qos.logback:logback-classic:1.3.0-alpha4'
+
+//        compile 'com.qulice:qulice-pmd:0.17.3'
     }
 }
 
@@ -182,6 +210,58 @@ repositories {
     mavenCentral()
 }
 
-//task wrapper(type: Wrapper) {
-//    gradleVersion = '4.7'
-//}
+task writePom << {
+    pom {
+        project {
+            inceptionYear '2014'
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+        }
+    }.writeTo("$projectDir/pom.xml")
+}
+
+spotbugs {
+    ignoreFailures = true
+    toolVersion = "3.1.3"
+    sourceSets = [sourceSets.main]
+    reportsDir = file("$project.buildDir/reports/spotbugs")
+    effort = "max"
+}
+
+pmd {
+    ignoreFailures = true
+    sourceSets = [sourceSets.main]
+    reportsDir = file("$project.buildDir/reports/pmd")
+    ruleSets = [
+            "basic",
+            "braces"
+    ]
+}
+// add CPD to check
+check << {
+    File outDir = new File('build/reports/pmd/')
+    outDir.mkdirs()
+    ant.taskdef(name: 'cpd', classname: 'net.sourceforge.pmd.cpd.CPDTask',
+            classpath: configurations.pmd.asPath)
+    ant.cpd(minimumTokenCount: '100', format: 'xml',
+            outputFile: new File(outDir , 'cpd.xml')) {
+        def dir = new File("src/main/java")
+        if (dir.exists()) {
+            fileset(dir: "src/main/java") {
+                include(name: '**/*.java')
+            }
+        } else {
+            fileset(dir: "sharedmodule/src/main/java")
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.7'
+}
+

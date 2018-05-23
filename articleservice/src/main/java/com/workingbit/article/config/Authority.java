@@ -3,6 +3,7 @@ package com.workingbit.article.config;
 
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.IAuthority;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -41,19 +42,23 @@ public enum Authority implements IAuthority {
     return authorities;
   }
 
-  public Authority setAuthorities(Set<EnumAuthority> authorities) {
+  @NotNull
+  public Authority setAuthorities(@NotNull Set<EnumAuthority> authorities) {
     this.authorities.addAll(authorities);
     return this;
   }
 
+  @NotNull
   public Authority setAuthorities(EnumAuthority... roles) {
     this.authorities.addAll(Arrays.asList(roles));
     return this;
   }
 
   public static class Constants {
+    @NotNull
     static Set<EnumAuthority> SECURE_ROLES
         = new HashSet<>(Arrays.asList(EnumAuthority.ADMIN, EnumAuthority.AUTHOR));
+    @NotNull
     static Set<EnumAuthority> INSECURE_ROLES
         = new HashSet<>();
   }

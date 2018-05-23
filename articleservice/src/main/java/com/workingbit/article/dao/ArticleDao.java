@@ -13,6 +13,7 @@ import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ public class ArticleDao extends BaseDao<Article> {
 //    save(board);
 //  }
 
-  public List<Article> findPublishedBy(int limit, AuthUser authUser) {
+  public List<Article> findPublishedBy(int limit, @NotNull AuthUser authUser) {
     logger.info("Find all published with limit " + limit);
     DaoFilters filters = authUser.getFilters();
 //    if (authUser.getFilters().isEmpty()) {
@@ -86,6 +87,7 @@ public class ArticleDao extends BaseDao<Article> {
     return findByAttributeIndex(articleHru, "humanReadableUrl", "humanReadableUrlIndex");
   }
 
+  @NotNull
   private DaoFilters addUserFilter(DaoFilters filters, String userId) {
     if (!filters.containsKey("userId.id")) {
       if (!filters.isEmpty()) {

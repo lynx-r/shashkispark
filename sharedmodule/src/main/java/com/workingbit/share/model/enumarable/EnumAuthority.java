@@ -1,6 +1,7 @@
 package com.workingbit.share.model.enumarable;
 
 import com.workingbit.share.model.AuthUser;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +20,7 @@ public enum EnumAuthority {
   EnumAuthority() {
   }
 
-  public static boolean hasAuthorities(Set<EnumAuthority> clientAuthorities, Set<EnumAuthority> allowedAuthorities) {
+  public static boolean hasAuthorities(@NotNull Set<EnumAuthority> clientAuthorities, @NotNull Set<EnumAuthority> allowedAuthorities) {
     // находим пересечение множеств доступов, так чтобы разрешенные доступы содержали
     // в себе все клиентские
     Set<EnumAuthority> intersection = new HashSet<>(allowedAuthorities);
@@ -35,7 +36,7 @@ public enum EnumAuthority {
     return hasAuthorities(authUser.getAuthorities(), Set.of(ANONYMOUS));
   }
 
-  public static boolean isBanned(Set<EnumAuthority> authorities) {
+  public static boolean isBanned(@NotNull Set<EnumAuthority> authorities) {
     return hasAuthorities(authorities, Set.of(REMOVED));
   }
 }

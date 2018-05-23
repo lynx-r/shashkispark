@@ -60,9 +60,9 @@ public class NotationSimpleMove {
       return notation;
     }
     switch (format) {
-      case ЧИСЛОВОЙ:
+      case DIGITAL:
         return getNotationNum();
-      case БУКВЕННЫЙ:
+      case ALPHANUMERIC:
         return getNotationAlpha();
       default:
         return notation;
@@ -70,7 +70,7 @@ public class NotationSimpleMove {
   }
 
   private String getNotationAlpha() {
-    return boardDimension == EnumRules.INTERNATIONAL.getDimension()
+    return boardDimension == EnumRules.INTERNATIONAL.getDimensionAbs()
         ? getAlphanumericNotation100()
         : getAlphanumericNotation64();
   }
@@ -81,7 +81,7 @@ public class NotationSimpleMove {
   }
 
   private String getNotationNum() {
-    return boardDimension == EnumRules.INTERNATIONAL.getDimension()
+    return boardDimension == EnumRules.INTERNATIONAL.getDimensionAbs()
         ? getPdnNumericNotation100()
         : getPdnNumericNotation64();
   }

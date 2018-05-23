@@ -1,5 +1,7 @@
 package com.workingbit.article.config;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.net.URL;
 
 /**
@@ -7,21 +9,21 @@ import java.net.URL;
  */
 public interface AppProperties {
 
-  String regionDynamoDB();
+  @NotNull String regionDynamoDB();
 
-  URL endpointDynamoDB();
+  @NotNull URL endpointDynamoDB();
 
-  Boolean test();
+  @NotNull Boolean test();
 
-  Integer articlesFetchLimit();
+  @NotNull Integer articlesFetchLimit();
 
-  URL origin();
+  @NotNull URL origin();
 
-  String methods();
+  @NotNull String methods();
 
-  String headers();
+  @NotNull String headers();
 
   int port();
 
-  String filterSep();
+  @NotNull String filterSep();
 }

@@ -13,6 +13,8 @@ import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -45,10 +47,12 @@ public class Board extends BaseDomain implements Payload {
   /**
    * Black draughts associated with owner square
    */
+  @NotNull
   @DynamoDBTypeConverted(converter = DraughtMapConverter.class)
   @DynamoDBAttribute(attributeName = "blackDraughts")
   private Map<String, Draught> blackDraughts = new HashMap<>();
 
+  @NotNull
   @DynamoDBTypeConverted(converter = DraughtMapConverter.class)
   @DynamoDBAttribute(attributeName = "whiteDraughts")
   private Map<String, Draught> whiteDraughts = new HashMap<>();
@@ -74,12 +78,14 @@ public class Board extends BaseDomain implements Payload {
   /**
    * Squares for API
    */
+  @NotNull
   @DynamoDBIgnore
   private List<Square> squares = new ArrayList<>();
 
   /**
    * Squares without nulls
    */
+  @NotNull
   @DynamoDBIgnore
   @JsonIgnore
   private List<Square> assignedSquares = new ArrayList<>();
@@ -99,6 +105,7 @@ public class Board extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "driveCount")
   private int driveCount;
 
+//  @JsonDeserialize(using = EnumRulesDeserializer.class)
   @DynamoDBTypeConvertedEnum
   @DynamoDBAttribute(attributeName = "rules")
   private EnumRules rules;
@@ -124,7 +131,7 @@ public class Board extends BaseDomain implements Payload {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Board board = (Board) o;

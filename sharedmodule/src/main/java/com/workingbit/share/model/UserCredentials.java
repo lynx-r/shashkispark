@@ -33,6 +33,7 @@ public class UserCredentials implements Payload {
     this.password = password;
   }
 
+  @org.jetbrains.annotations.NotNull
   @Override
   public String toString() {
     return "UserCredentials{" +
@@ -40,6 +41,7 @@ public class UserCredentials implements Payload {
         '}';
   }
 
+  @org.jetbrains.annotations.NotNull
   @JsonIgnore
   public String getCredentials() {
     return username + ":" + password;

@@ -1,6 +1,7 @@
 package com.workingbit.share.model;
 
 import com.workingbit.share.domain.impl.Board;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class Boards {
     boards.put(key, board);
   }
 
-  public void putAll(Map<String, Board> boards) {
+  public void putAll(@NotNull Map<String, Board> boards) {
     this.boards.putAll(boards);
   }
 

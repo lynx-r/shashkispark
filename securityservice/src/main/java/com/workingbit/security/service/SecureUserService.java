@@ -8,6 +8,8 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.SecureUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +33,8 @@ public class SecureUserService {
 
   private Logger logger = LoggerFactory.getLogger(SecureUserService.class);
 
-  public AuthUser register(UserCredentials userCredentials) {
+  @NotNull
+  public AuthUser register(@NotNull UserCredentials userCredentials) {
     try {
       String username = userCredentials.getUsername();
       if (loggedInService.findByUsername(username) != null) {
@@ -70,13 +73,14 @@ public class SecureUserService {
     throw RequestException.forbidden(ErrorMessages.USERNAME_IS_BUSY);
   }
 
-  public AuthUser authorize(UserCredentials userCredentials) {
+  @NotNull
+  public AuthUser authorize(@NotNull UserCredentials userCredentials) {
     String username = userCredentials.getUsername();
     SecureAuth secureAuth = orchestralService.getSecureAuthUsername(username);
     if (secureAuth == null) {
       try {
         secureAuth = loggedInService.findByUsername(username);
-      } catch (CryptoException | IOException e) {
+      } catch (@NotNull CryptoException | IOException e) {
         throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
       }
       if (secureAuth == null) {
@@ -114,7 +118,8 @@ public class SecureUserService {
     throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
   }
 
-  public AuthUser authenticate(AuthUser authUser) {
+  @NotNull
+  public AuthUser authenticate(@NotNull AuthUser authUser) {
     if (authUser.getAuthorities().contains(EnumAuthority.ANONYMOUS)) {
       throw RequestException.forbidden();
     }
@@ -141,7 +146,8 @@ public class SecureUserService {
     throw RequestException.forbidden();
   }
 
-  public UserInfo userInfo(AuthUser authUser) {
+  @NotNull
+  public UserInfo userInfo(@NotNull AuthUser authUser) {
     String accessToken = authUser.getAccessToken();
     SecureAuth secureAuth = isAuthUserSecure(accessToken, authUser);
     if (secureAuth != null) {
@@ -151,7 +157,8 @@ public class SecureUserService {
     throw RequestException.forbidden();
   }
 
-  public UserInfo saveUserInfo(UserInfo userInfo, AuthUser authUser) {
+  @NotNull
+  public UserInfo saveUserInfo(@NotNull UserInfo userInfo, @NotNull AuthUser authUser) {
     String accessToken = authUser.getAccessToken();
     SecureAuth secureAuth = isAuthUserSecure(accessToken, authUser);
     if (secureAuth == null) {
@@ -180,7 +187,7 @@ public class SecureUserService {
             // todo обновлять автора в статьях
             try {
               loggedInService.replaceSecureAuth(secureAuth, secureAuthUpdated);
-            } catch (CryptoException | IOException e) {
+            } catch (@NotNull CryptoException | IOException e) {
               throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CHANGE_USERNAME);
             }
           } else {
@@ -195,7 +202,8 @@ public class SecureUserService {
     throw RequestException.forbidden();
   }
 
-  public AuthUser logout(AuthUser authUser) {
+  @NotNull
+  public AuthUser logout(@NotNull AuthUser authUser) {
     String accessToken = authUser.getAccessToken();
     SecureAuth secureAuth = isAuthUserSecure(accessToken, authUser);
     if (secureAuth != null) {
@@ -204,7 +212,7 @@ public class SecureUserService {
     return AuthUser.anonymous();
   }
 
-  private SecureAuth isAuthUserSecure(String accessToken, AuthUser authUser) {
+  private SecureAuth isAuthUserSecure(String accessToken, @NotNull AuthUser authUser) {
     SecureAuth secureAuth = getSecureAuth(authUser);
     if (secureAuth == null) {
       return null;
@@ -216,12 +224,13 @@ public class SecureUserService {
       if (secureAuth.getSecureToken().equals(tokenDecrypted)) {
         return secureAuth;
       }
-    } catch (IllegalBlockSizeException | BadPaddingException e) {
+    } catch (@NotNull IllegalBlockSizeException | BadPaddingException e) {
       logger.warn(String.format("Unable to decrypt accessToken %s", accessToken));
     }
     return null;
   }
 
+  @Nullable
   private SecureAuth getSecureAuth(AuthUser authUser) {
     SecureAuth secureAuth = null;
     if (StringUtils.isNotBlank(authUser.getUserSession())) {
@@ -254,6 +263,7 @@ public class SecureUserService {
    * @param secureAuth user
    * @return access and secure token
    */
+  @NotNull
   private SecureAuth getUpdateSecureAuthTokens(SecureAuth secureAuth) {
     String secureToken = getRandomString(secureAuth.getTokenLength());
     int encLength = 16;

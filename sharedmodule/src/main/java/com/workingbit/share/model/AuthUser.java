@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +34,7 @@ public class AuthUser implements Payload, DeepClone {
   private String userSession;
   private long timestamp;
   private DaoFilters filters = new DaoFilters();
+  @NotNull
   private Set<EnumAuthority> authorities = new HashSet<>();
   private String superHash;
   // произвольные данные
@@ -60,30 +62,34 @@ public class AuthUser implements Payload, DeepClone {
         Utils.getTimestamp(), new DaoFilters(), new HashSet<>(Set.of(EnumAuthority.AUTHOR)), null, null, null);
   }
 
-  public static AuthUser simpleUser(DomainId userId, String username, String accessToken, String userSession, Set<EnumAuthority> authorities) {
+  public static AuthUser simpleUser(DomainId userId, String username, String accessToken, String userSession, @NotNull Set<EnumAuthority> authorities) {
     return new AuthUser(userId, username, accessToken, userSession,
         Utils.getTimestamp(), new DaoFilters(), authorities, null, null, null);
   }
 
-  public void setAuthorities(Set<EnumAuthority> authorities) {
+  public void setAuthorities(@NotNull Set<EnumAuthority> authorities) {
     this.authorities = new HashSet<>(authorities);
   }
 
+  @NotNull
   public AuthUser addAuthorities(EnumAuthority... authorities) {
     this.authorities = new HashSet<>(Set.of(authorities));
     return this;
   }
 
+  @NotNull
   public AuthUser addAuthority(EnumAuthority authority) {
     this.authorities.add(authority);
     return this;
   }
 
+  @NotNull
   public AuthUser setInternalKey(String internalKey) {
     this.internalKey = internalKey;
     return this;
   }
 
+  @NotNull
   @JsonIgnore
   public String getInternalHash() {
     return SecureUtils.digest(userSession + accessToken + internalKey);

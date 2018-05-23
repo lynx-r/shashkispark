@@ -5,6 +5,8 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.ICoordinates;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -30,7 +32,7 @@ public class Draught extends BaseDomain implements ICoordinates {
   private boolean black;
   private boolean queen;
   private boolean captured;
-  private boolean markCaptured;
+  private int markCaptured;
   private boolean highlight;
 
   public Draught() {
@@ -82,18 +84,13 @@ public class Draught extends BaseDomain implements ICoordinates {
     this.dim = dim;
   }
 
-  public Draught setMarkCaptured(boolean markCaptured) {
-    this.markCaptured = markCaptured;
-    return this;
-  }
-
   /**
    * WARN equals without comparing with super
    * @param o
    * @return
    */
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Draught draught = (Draught) o;
@@ -109,15 +106,17 @@ public class Draught extends BaseDomain implements ICoordinates {
     return Objects.hash(v, h, black, queen, captured);
   }
 
+  @NotNull
   @Override
   public String toString() {
     return "Draught{" +
         "notation=" + getNotation() +
-        ", v=" + v +
-        ", h=" + h +
+        ", notationNum=" + getNotationNum() +
+        ", dim=" + dim +
         ", black=" + black +
         ", queen=" + queen +
         ", captured=" + captured +
+        ", markCaptured=" + markCaptured +
         ", highlight=" + highlight +
         '}';
   }

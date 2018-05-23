@@ -8,8 +8,11 @@ import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.DomainIds;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import static com.workingbit.board.BoardEmbedded.boardDao;
 
 /**
  * Created by Aleksey Popryaduhin on 18:16 09/08/2017.
@@ -20,13 +23,13 @@ public class BoardDao extends BaseDao<Board> {
     super(Board.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
   }
 
-  public List<Board> findByBoardBoxId(DomainId boardBoxDomainId) {
+  public List<Board> findByBoardBoxId(@NotNull DomainId boardBoxDomainId) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic.add(new ValueFilter("boardBoxId.id", boardBoxDomainId.getId(), "=", "S"));
     return findByFilter(filterPublic);
   }
 
-  public List<Board> findByBoardBoxIds(DomainIds boardBoxIds) {
+  public List<Board> findByBoardBoxIds(@NotNull DomainIds boardBoxIds) {
     DaoFilters filterPublic = new DaoFilters();
     for (DomainId boardBoxId : boardBoxIds.getIds()) {
       filterPublic.add(new ValueFilter("boardBoxId.id", boardBoxId.getId(), "=", "S"));
@@ -34,6 +37,11 @@ public class BoardDao extends BaseDao<Board> {
     }
     filterPublic.removeLast();
     return findByFilter(filterPublic);
+  }
+
+  public void deleteByBoardBoxId(@NotNull DomainId boardBoxDomainId) {
+    List<Board> byBoardBoxId = boardDao.findByBoardBoxId(boardBoxDomainId);
+    boardDao.batchDelete(byBoardBoxId);
   }
 
 //  @Override

@@ -1,6 +1,7 @@
 package com.workingbit.share.model;
 
 import com.workingbit.share.domain.impl.Notation;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class Notations {
     notations.put(key, notation);
   }
 
-  public void putAll(Map<String, Notation> notations) {
+  public void putAll(@NotNull Map<String, Notation> notations) {
     this.notations.putAll(notations);
   }
 

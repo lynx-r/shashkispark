@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -65,6 +66,17 @@ public class NotationDrive implements DeepClone, NotationFormat {
    */
   private int idInVariants;
 
+  private int ancestors;
+
+  /**
+   * idInVariants of parent item
+   */
+  private int parentId;
+
+  private String parentColor;
+
+  private String driveColor;
+
   /**
    * Начиная с этого хода идет скрытая задача
    */
@@ -80,6 +92,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
     this.root = root;
   }
 
+  @NotNull
   public static NotationDrive create(NotationMoves moves) {
     NotationDrive notationDrive = new NotationDrive();
     notationDrive.setNotationNumber(null);
@@ -91,7 +104,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
     target.notationFormat = orig.notationFormat;
   }
 
-  public static void copyOf(NotationDrive orig, NotationDrive target) {
+  public static void copyOf(@NotNull NotationDrive orig, @NotNull NotationDrive target) {
     copyMetaOf(orig, target);
     target.ellipses = orig.ellipses;
     target.comment = orig.comment;
@@ -104,7 +117,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
     return variants.add(variant);
   }
 
-  public boolean addAllVariants(NotationDrives variants) {
+  public boolean addAllVariants(@NotNull NotationDrives variants) {
     return this.variants.addAll(variants);
   }
 
@@ -112,7 +125,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
     return variants;
   }
 
-  public void setVariants(NotationDrives variants) {
+  public void setVariants(@NotNull NotationDrives variants) {
     this.variants = variants.deepClone();
   }
 
@@ -145,13 +158,13 @@ public class NotationDrive implements DeepClone, NotationFormat {
     return Objects.hash(super.hashCode(), getNotationNumberInt(), ellipses);
   }
 
-  public void parseNameFromPdn(String name) {
+  public void parseNameFromPdn(@NotNull String name) {
     switch (name) {
       case "NUMERICMOVE":
-        notationFormat = EnumNotationFormat.ЧИСЛОВОЙ;
+        notationFormat = EnumNotationFormat.DIGITAL;
         break;
       case "ALPHANUMERICMOVE":
-        notationFormat = EnumNotationFormat.БУКВЕННЫЙ;
+        notationFormat = EnumNotationFormat.ALPHANUMERIC;
         break;
       case "ELLIPSES":
         ellipses = true;
@@ -159,7 +172,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
     }
   }
 
-  public void addMoveFromPdn(String move) {
+  public void addMoveFromPdn(@NotNull String move) {
     NotationMove atom = NotationMove.fromPdn(move);
     moves.add(atom);
   }
@@ -170,6 +183,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
     variants.setDimension(boardDimension);
   }
 
+  @NotNull
   public String print(String prefix) {
     if (root) {
       return prefix + getClass().getSimpleName() +
@@ -218,8 +232,8 @@ public class NotationDrive implements DeepClone, NotationFormat {
         .toString();
   }
 
-  @DynamoDBIgnore
   @JsonIgnore
+  @DynamoDBIgnore
   public int getVariantsSize() {
     return variants.size();
   }
@@ -232,5 +246,11 @@ public class NotationDrive implements DeepClone, NotationFormat {
     this.notationFormat = format;
     moves.setNotationFormat(format);
     variants.setNotationFormat(format);
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  public NotationDrive getLastVariant() {
+    return variants.getLast();
   }
 }

@@ -2,6 +2,7 @@ package com.workingbit.board.config;
 
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.IAuthority;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +32,7 @@ public enum Authority implements IAuthority {
   BOARD_REDO_PROTECTED("/board/redo", Constants.SECURE_ROLES),
   BOARD_UNDO_PROTECTED("/board/undo", Constants.SECURE_ROLES),
   BOARD_FORK_PROTECTED("/board/fork", Constants.SECURE_ROLES),
+  BOARD_REMOVE_VARIANT_PROTECTED("/board/remove-variant", Constants.SECURE_ROLES),
   CHANGE_TURN_PROTECTED("/board/change-turn", Constants.SECURE_ROLES),
   CHANGE_COLOR_PROTECTED("/board/change-color", Constants.SECURE_ROLES),
   ;
@@ -53,7 +55,8 @@ public enum Authority implements IAuthority {
     return authorities;
   }
 
-  public Authority setAuthorities(Set<EnumAuthority> authorities) {
+  @NotNull
+  public Authority setAuthorities(@NotNull Set<EnumAuthority> authorities) {
     this.authorities.addAll(authorities);
     return this;
   }

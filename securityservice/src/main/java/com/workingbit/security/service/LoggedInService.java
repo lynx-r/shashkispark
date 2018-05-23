@@ -5,6 +5,8 @@ import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.SecureAuth;
 import com.workingbit.share.util.SecureUtils;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +30,7 @@ public class LoggedInService {
     encryptFile(decryptedFile);
   }
 
-  SecureAuth findByUsername(String username) throws CryptoException, IOException {
+  @Nullable SecureAuth findByUsername(String username) throws CryptoException, IOException {
     File decryptedFile = decryptFile();
     List<String> lines = FileUtils.readLines(decryptedFile);
     for (String line : lines) {
@@ -40,7 +42,7 @@ public class LoggedInService {
     return null;
   }
 
-  void replaceSecureAuth(SecureAuth secureAuth, SecureAuth secureAuthUpdated) throws CryptoException, IOException {
+  void replaceSecureAuth(@NotNull SecureAuth secureAuth, SecureAuth secureAuthUpdated) throws CryptoException, IOException {
     File decryptedFile = decryptFile();
     List<String> lines = FileUtils.readLines(decryptedFile);
     int indexReplace = -1;
@@ -62,13 +64,14 @@ public class LoggedInService {
     encryptFile(decryptedFile);
   }
 
-  private void encryptFile(File decryptedFile) throws CryptoException, IOException {
+  private void encryptFile(@NotNull File decryptedFile) throws CryptoException, IOException {
     String key = appProperties.passwordFileKey();
     String passwdFilename = appProperties.passwordFilename();
     File encrypted = getEncryptedFile(passwdFilename);
     SecureUtils.encrypt(key, decryptedFile, encrypted);
   }
 
+  @NotNull
   private File decryptFile() throws CryptoException, IOException {
     String key = appProperties.passwordFileKey();
     String passwdFilename = appProperties.passwordFilename();
@@ -78,7 +81,8 @@ public class LoggedInService {
     return decryptedFile;
   }
 
-  private File getEncryptedFile(String passwdFilename) throws IOException {
+  @NotNull
+  private File getEncryptedFile(@NotNull String passwdFilename) throws IOException {
     File encrypted = new File(passwdFilename);
     if (!encrypted.exists()) {
       boolean newFile = encrypted.createNewFile();

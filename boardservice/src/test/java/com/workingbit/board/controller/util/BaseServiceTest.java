@@ -17,6 +17,7 @@ import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
 import junit.framework.TestCase;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 
 import java.time.LocalDateTime;
@@ -40,11 +41,16 @@ public class BaseServiceTest {
 
   private static AppProperties appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
+  @NotNull
   protected BoardService boardService = new BoardService();
+  @NotNull
   protected BoardBoxService boardBoxService = new BoardBoxService();
+  @NotNull
   protected BoardBoxDao boardBoxDao = new BoardBoxDao(appProperties);
+  @NotNull
   protected BoardDao boardDao = new BoardDao(appProperties);
 
+  @NotNull
   protected NotationParserService notationParserService = new NotationParserService();
   private AuthUser token;
 
@@ -53,6 +59,7 @@ public class BaseServiceTest {
     token = new AuthUser(Utils.getRandomString20(), Utils.getRandomString20());
   }
 
+  @NotNull
   protected BoardBox getBoardBox(boolean fillBoard) {
     Board board = BoardUtils.initBoard(fillBoard, false, EnumRules.RUSSIAN);
     Utils.setRandomIdAndCreatedAt(board);
@@ -61,6 +68,7 @@ public class BaseServiceTest {
     return boardBox;
   }
 
+  @NotNull
   protected BoardBox getSavedBoardBoxEmpty() {
     BoardBox boardBox = new BoardBox();
     boardBox.setId(Utils.getRandomString20());
@@ -73,26 +81,29 @@ public class BaseServiceTest {
     return BoardUtils.initBoard(false, false, EnumRules.RUSSIAN);
   }
 
+  @NotNull
   protected BoardBoxService boardBoxService() {
     return boardBoxService;
   }
 
+  @NotNull
   protected Draught getDraught(int v, int h) {
-    return new Draught(v, h, getRules().getDimension());
+    return new Draught(v, h, getRules().getDimensionAbs());
   }
 
-  Square getSquare(Draught draught, int v, int h) {
-    return new Square(v, h, getRules().getDimension(), true, draught);
+  @NotNull Square getSquare(Draught draught, int v, int h) {
+    return new Square(v, h, getRules().getDimensionAbs(), true, draught);
   }
 
-  Draught getDraughtBlack(int v, int h) {
-    return new Draught(v, h, getRules().getDimension(), true);
+  @NotNull Draught getDraughtBlack(int v, int h) {
+    return new Draught(v, h, getRules().getDimensionAbs(), true);
   }
 
-  Square getSquareByVH(BoardBox board, int v, int h) {
+  @NotNull Square getSquareByVH(@NotNull BoardBox board, int v, int h) {
     return findSquareByVH(board.getBoard(), v, h);
   }
 
+  @NotNull
   protected EnumRules getRules() {
     return EnumRules.RUSSIAN;
   }
@@ -104,12 +115,13 @@ public class BaseServiceTest {
 //    return new BoardService(boardDao, objectMapper, boardHistoryService);
 //  }
 
+  @NotNull
   protected CreateBoardPayload getCreateBoardRequest(boolean black, boolean fillBoard, EnumRules rules,
                                                      EnumEditBoardBoxMode editMode) {
     DomainId boardBoxId = DomainId.getRandomID();
     DomainId articleId = DomainId.getRandomID();
 
-    CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
+    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
     createBoardPayload.setBlack(black);
     createBoardPayload.setFillBoard(fillBoard);
     createBoardPayload.setRules(rules);
@@ -119,33 +131,37 @@ public class BaseServiceTest {
     return createBoardPayload;
   }
 
-  protected Board addWhiteDraught(Board board, String notation) throws BoardServiceException {
+  @NotNull
+  protected Board addWhiteDraught(@NotNull Board board, String notation) throws BoardServiceException {
     addSquare(board, notation, false, false);
     return board;
   }
 
-  protected Board addBlackDraught(Board board, String notation) throws BoardServiceException {
+  @NotNull
+  protected Board addBlackDraught(@NotNull Board board, String notation) throws BoardServiceException {
     addSquare(board, notation, true, false);
     return board;
   }
 
-  protected Board addWhiteQueen(Board board, String notation) throws BoardServiceException {
+  @NotNull
+  protected Board addWhiteQueen(@NotNull Board board, String notation) throws BoardServiceException {
     addSquare(board, notation, false, true);
     return board;
   }
 
-  protected Board addBlackQueen(Board board, String notation) throws BoardServiceException {
+  @NotNull
+  protected Board addBlackQueen(@NotNull Board board, String notation) throws BoardServiceException {
     addSquare(board, notation, true, true);
     return board;
   }
 
-  private void addSquare(Board board, String notation, boolean black, boolean queen) {
+  private void addSquare(@NotNull Board board, String notation, boolean black, boolean queen) {
     BoardUtils.addDraught(board, notation, new Draught(0, 0, 0, black, queen));
     Square added = getSquare(board, notation);
     board.setSelectedSquare(added);
   }
 
-  protected void testCollection(String notations, Set<Square> items) {
+  protected void testCollection(@NotNull String notations, @NotNull Set<Square> items) {
     List<String> collection = items.stream().map(ICoordinates::getNotation).collect(Collectors.toList());
     String[] notation = notations.split(",");
     Arrays.stream(notation).forEach(n -> {
@@ -154,7 +170,7 @@ public class BaseServiceTest {
     assertEquals(collection.toString(), notation.length, collection.size());
   }
 
-  protected void testCollectionTree(String notations, TreeSquare items) {
+  protected void testCollectionTree(@NotNull String notations, @NotNull TreeSquare items) {
     List<String> collection = items.flatTree().stream().map(ICoordinates::getNotation).collect(Collectors.toList());
     String[] notation = notations.split(",");
     Arrays.stream(notation).forEach(n -> {
@@ -163,7 +179,8 @@ public class BaseServiceTest {
     assertEquals(collection.toString(), notation.length, collection.size());
   }
 
-  protected Square getSquare(Board board, String notation) {
+  @NotNull
+  protected Square getSquare(@NotNull Board board, String notation) {
     return BoardUtils.findSquareByNotation(notation, board);
   }
 
@@ -173,7 +190,8 @@ public class BaseServiceTest {
 //    return boardService.move(board, capturedSquares.getCaptured(), board.getDomainId(), notationHistory);
 //  }
 
-  protected Board move(Board serverBoard, String fromNotation, String toNotation, boolean blackTurn, NotationHistory notationHistory) {
+  @NotNull
+  protected Board move(@NotNull Board serverBoard, String fromNotation, String toNotation, boolean blackTurn, @NotNull NotationHistory notationHistory) {
     Square from = BoardUtils.findSquareByNotation(fromNotation, serverBoard);
     Square to = BoardUtils.findSquareByNotation(toNotation, serverBoard);
     to.setHighlight(true);
@@ -192,23 +210,28 @@ public class BaseServiceTest {
     return serverBoard;
   }
 
-  protected Square getSquareWithWhiteDraught(Board board, String notation) {
+  @NotNull
+  protected Square getSquareWithWhiteDraught(@NotNull Board board, String notation) {
     return getSquareWithDraught(board, notation, false, false);
   }
 
-  protected Square getSquareWithBlackDraught(Board board, String notation) {
+  @NotNull
+  protected Square getSquareWithBlackDraught(@NotNull Board board, String notation) {
     return getSquareWithDraught(board, notation, true, false);
   }
 
-  protected Square getSquareWithDraught(Board board, String notation, boolean black) {
+  @NotNull
+  protected Square getSquareWithDraught(@NotNull Board board, String notation, boolean black) {
     return getSquareWithDraught(board, notation, black, false);
   }
 
-  protected Square getSquareWithQueen(Board board, String notation, boolean black) {
+  @NotNull
+  protected Square getSquareWithQueen(@NotNull Board board, String notation, boolean black) {
     return getSquareWithDraught(board, notation, black, true);
   }
 
-  private Square getSquareWithDraught(Board board, String notation, boolean black, boolean queen) {
+  @NotNull
+  private Square getSquareWithDraught(@NotNull Board board, String notation, boolean black, boolean queen) {
     Square square = findSquareByNotation(notation, board);
     Draught draught = new Draught(square.getV(), square.getH(), square.getDim(), black, queen);
     square.setDraught(draught);

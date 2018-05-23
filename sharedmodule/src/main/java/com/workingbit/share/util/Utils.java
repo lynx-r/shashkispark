@@ -1,9 +1,5 @@
 package com.workingbit.share.util;
 
-import com.fasterxml.jackson.databind.InjectableValues;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.model.DomainId;
@@ -13,6 +9,8 @@ import com.workingbit.share.model.NotationFormat;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -24,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.workingbit.share.common.SharedProperties.sharedProperties;
 import static com.workingbit.share.model.enumarable.EnumNotation.LPAREN;
 import static com.workingbit.share.model.enumarable.EnumNotation.RPAREN;
 
@@ -33,6 +30,7 @@ import static com.workingbit.share.model.enumarable.EnumNotation.RPAREN;
  */
 public class Utils {
 
+  @NotNull
   public static List<String> ALPH = new ArrayList<>() {{
     add("a");
     add("b");
@@ -46,6 +44,7 @@ public class Utils {
     add("j");
   }};
 
+  @NotNull
   public static Map<String, String> ALPHANUMERIC_TO_NUMERIC_64 = new HashMap<>() {{
     put("b8", "1");
     put("d8", "2");
@@ -81,6 +80,7 @@ public class Utils {
     put("g1", "32");
   }};
 
+  @NotNull
   public static Map<String, String> NUMERIC_TO_ALPHANUMERIC_64 = new HashMap<>() {{
     put("1", "b8");
     put("2", "d8");
@@ -116,6 +116,7 @@ public class Utils {
     put("32", "g1");
   }};
 
+  @NotNull
   public static Map<String, String> ALPHANUMERIC_TO_NUMERIC_100 = new HashMap<>() {{
     put("b10", "1");
     put("d10", "2");
@@ -169,6 +170,8 @@ public class Utils {
     put("i1", "50");
   }};
 
+  @Nullable
+  @NotNull
   public static Map<String, String> NUMERIC_TO_ALPHANUMERIC_100 = new HashMap<>() {{
     put("1", "b10");
     put("2", "d10");
@@ -222,6 +225,7 @@ public class Utils {
     put("50", "i1");
   }};
 
+  @NotNull
   private static String RANDOM_STR_SEP = "-";
   public static int RANDOM_ID_LENGTH = 20;
   public static int RANDOM_STRING_LENGTH = 7;
@@ -243,6 +247,7 @@ public class Utils {
     return RandomStringUtils.randomAlphanumeric(length);
   }
 
+  @NotNull
   public static byte[] getSecureRandom(int length) {
     SecureRandom random = new SecureRandom();
     byte[] data = new byte[length];
@@ -254,7 +259,7 @@ public class Utils {
     return new String(getSecureRandom(length), Charset.forName("UTF-8"));
   }
 
-  public static String encode(byte[] key, String data) throws Exception {
+  public static String encode(@NotNull byte[] key, String data) throws Exception {
     Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
     SecretKeySpec secret_key = new SecretKeySpec(key, "HmacSHA256");
     sha256_HMAC.init(secret_key);
@@ -273,29 +278,20 @@ public class Utils {
     return getRandomString(4);
   }
 
-  public static ObjectMapper configureObjectMapper(ObjectMapper mapper) {
-    mapper.registerModule(new JavaTimeModule());
-    mapper = mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    mapper.findAndRegisterModules();
-    InjectableValues inject = new InjectableValues.Std().addValue("validFilterKeys", sharedProperties.validFilters());
-    mapper.reader(inject);
-    return mapper;
-  }
-
   public static <T extends BaseDomain> List<T> listObjectsToListT(List<Object> objects, Class<T> clazz) {
     return objects.stream()
         .map(clazz::cast)
         .collect(Collectors.toList());
   }
 
-  public static String listToPdn(List<NotationFormat> list) {
+  public static String listToPdn(@Nullable List<NotationFormat> list) {
     if (list == null || list.isEmpty()) {
       return "";
     }
     return streamToPdn(list.stream()).collect(Collectors.joining());
   }
 
-  public static Stream<String> streamToPdn(Stream<NotationFormat> stream) {
+  public static Stream<String> streamToPdn(@Nullable Stream<NotationFormat> stream) {
     if (stream == null) {
       return Stream.empty();
     }
@@ -313,7 +309,7 @@ public class Utils {
         });
   }
 
-  public static String notationDrivesToPdn(NotationDrives drives) {
+  public static String notationDrivesToPdn(@Nullable NotationDrives drives) {
     if (drives == null || drives.isEmpty()) {
       return "";
     }
@@ -328,7 +324,7 @@ public class Utils {
     return StringUtils.join(pdns, "");
   }
 
-  public static String notationDrivesToTreePdn(NotationDrives drives, String indent, String tabulation) {
+  public static String notationDrivesToTreePdn(@Nullable NotationDrives drives, String indent, String tabulation) {
     if (drives == null || drives.isEmpty()) {
       return "";
     }
@@ -337,7 +333,7 @@ public class Utils {
         .map(d -> d.getVariants()
             .stream()
             .map(notationDrive -> notationDrive.asTree(indent, tabulation))
-            .collect(Collectors.joining("", "\n",  ""))
+            .collect(Collectors.joining("", "\n", ""))
         )
         .collect(Collectors.toList());
     return StringUtils.join(pdns, "");
@@ -352,5 +348,14 @@ public class Utils {
         .stream()
         .map(s -> indent + s.asTree(indent, tabulation))
         .collect(Collectors.joining("\n"));
+  }
+
+  public static String getRandomColor() {
+    var letters = "3456789ABC";
+    StringBuilder color = new StringBuilder("#");
+    for (var i = 0; i < 6; i++) {
+      color.append(letters.charAt((int) Math.floor(Math.random() * 10)));
+    }
+    return color.toString();
   }
 }

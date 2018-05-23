@@ -11,6 +11,8 @@ import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +32,8 @@ public class ArticleService {
 
   private final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
-  public CreateArticleResponse createArticle(CreateArticlePayload articleAndBoard, AuthUser authUser) throws RequestException {
+  @NotNull
+  public CreateArticleResponse createArticle(@NotNull CreateArticlePayload articleAndBoard, @NotNull AuthUser authUser) throws RequestException {
     var article = articleAndBoard.getArticle();
     article.setTitle(article.getTitle().trim());
     String humanReadableUrl = article.getHumanReadableUrl().trim();
@@ -53,6 +56,8 @@ public class ArticleService {
       present = false;
     }
     Utils.setArticleUrlAndIdAndCreatedAt(article, present);
+    articleDao.save(article);
+
     article.setArticleStatus(EnumArticleStatus.DRAFT);
 
     CreateBoardPayload boardRequest = articleAndBoard.getBoardRequest();
@@ -60,6 +65,7 @@ public class ArticleService {
     boardRequest.setArticleId(article.getDomainId());
     boardRequest.setUserId(article.getUserId());
     boardRequest.setIdInArticle(1);
+    boardRequest.setRules(boardRequest.getRules());
     if (boardRequest.isFillBoard()) {
       boardRequest.setEditMode(EnumEditBoardBoxMode.EDIT);
     } else {
@@ -76,7 +82,7 @@ public class ArticleService {
       article.setBoardBoxCount(1);
       articleDao.save(article);
     } else {
-      logger.error("Unable to create board");
+      logger.error("Unable to createNotationDrives board");
       throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CREATE_BOARD);
     }
 
@@ -87,7 +93,7 @@ public class ArticleService {
     return createArticleResponse;
   }
 
-  public Article save(Article articleClient, AuthUser token) {
+  public Article save(@NotNull Article articleClient, @NotNull AuthUser token) {
     var article = articleDao.find(articleClient);
     if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
       throw RequestException.badRequest(ErrorMessages.ARTICLE_IS_DELETED);
@@ -112,7 +118,8 @@ public class ArticleService {
     return article;
   }
 
-  public Article cache(Article articleClient, AuthUser token) {
+  @Nullable
+  public Article cache(@NotNull Article articleClient, @NotNull AuthUser token) {
     var article = articleDao.find(articleClient);
     if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
       return null;
@@ -122,7 +129,8 @@ public class ArticleService {
     return article;
   }
 
-  public CreateArticleResponse importPdn(ImportPdnPayload importPdnPayload, AuthUser authUser) {
+  @NotNull
+  public CreateArticleResponse importPdn(@NotNull ImportPdnPayload importPdnPayload, @NotNull AuthUser authUser) {
     var article = articleDao.findById(importPdnPayload.getArticleId());
     if (article.getArticleStatus().equals(EnumArticleStatus.REMOVED)) {
       throw RequestException.badRequest(ErrorMessages.ARTICLE_IS_DELETED);
@@ -131,7 +139,7 @@ public class ArticleService {
     Optional<Answer> boardBoxAnswer;
     int boardBoxCount = article.getBoardBoxCount() + 1;
     if (StringUtils.isBlank(importPdnPayload.getPdn())) {
-      CreateBoardPayload boardRequest = CreateBoardPayload.createBoardPayload();
+      CreateBoardPayload boardRequest = new CreateBoardPayload();
       article.setSelectedBoardBoxId(DomainId.getRandomID());
       boardRequest.setBoardBoxId(article.getSelectedBoardBoxId());
       boardRequest.setArticleId(article.getDomainId());
@@ -160,7 +168,7 @@ public class ArticleService {
     throw RequestException.notFound404();
   }
 
-  public Articles findAll(String limitStr, AuthUser authUser) {
+  public Articles findAll(@NotNull String limitStr, @NotNull AuthUser authUser) {
     if (EnumAuthority.hasAuthorAuthorities(authUser)) {
       return findAllDb(limitStr, authUser);
     }
@@ -170,7 +178,7 @@ public class ArticleService {
         .orElseGet(() -> findAllDb(limitStr, authUser));
   }
 
-  public Article findByHru(String articleHru, AuthUser token) {
+  public Article findByHru(String articleHru, @NotNull AuthUser token) {
     try {
       Article byHru = articleDao.findByHru(articleHru);
       articleStoreService.put(token.getUserSession(), byHru);
@@ -180,13 +188,14 @@ public class ArticleService {
     }
   }
 
-  public Article findByHruCached(String articleHru, String selectedBoardBoxId, AuthUser token) {
+  public Article findByHruCached(String articleHru, String selectedBoardBoxId, @NotNull AuthUser token) {
     return articleStoreService
         .get(token.getUserSession(), articleHru, selectedBoardBoxId)
         .orElseGet(() -> findByHru(articleHru, token));
   }
 
-  public Articles removeById(DomainId articleId, AuthUser authUser) {
+  @NotNull
+  public Articles removeById(DomainId articleId, @NotNull AuthUser authUser) {
     Article article = articleDao.findById(articleId);
     article.setArticleStatus(EnumArticleStatus.REMOVED);
     articleDao.save(article);
@@ -207,7 +216,8 @@ public class ArticleService {
     return articles;
   }
 
-  private Articles findAllDb(String limitStr, AuthUser authUser) {
+  @NotNull
+  private Articles findAllDb(@NotNull String limitStr, @NotNull AuthUser authUser) {
     int limit = appProperties.articlesFetchLimit();
     if (!StringUtils.isBlank(limitStr)) {
       limit = Integer.parseInt(limitStr);

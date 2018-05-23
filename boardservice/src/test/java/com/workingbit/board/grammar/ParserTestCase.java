@@ -16,6 +16,7 @@ package com.workingbit.board.grammar;
 
 import junit.framework.TestCase;
 import net.percederberg.grammatica.parser.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -45,7 +46,7 @@ abstract class ParserTestCase extends TestCase {
      * @param parser         the parser to use
      * @param output         the expected parse tree
      */
-    protected void parse(Parser parser, String output) {
+    protected void parse(@NotNull Parser parser, @NotNull String output) {
         try {
             validateTree(parser.parse(), output);
         } catch (ParserCreationException e) {
@@ -65,7 +66,7 @@ abstract class ParserTestCase extends TestCase {
      * @param line           the line number
      * @param column         the column number
      */
-    protected void failParse(Parser parser,
+    protected void failParse(@NotNull Parser parser,
                              int type,
                              int line,
                              int column) {
@@ -93,7 +94,7 @@ abstract class ParserTestCase extends TestCase {
      * @param root           the parse tree root node
      * @param str            the string representation
      */
-    private void validateTree(Node root, String str) {
+    private void validateTree(Node root, @NotNull String str) {
         StringWriter output = new StringWriter();
 
         root.printTo(new PrintWriter(output));
@@ -107,7 +108,7 @@ abstract class ParserTestCase extends TestCase {
      * @param expected       the expected result
      * @param result         the result obtained
      */
-    private void validateLines(String expected, String result) {
+    private void validateLines(String expected, @NotNull String result) {
         int     line = 1;
         String  expectLine;
         String  resultLine;

@@ -1,6 +1,7 @@
 package com.workingbit.share.util;
 
 import org.eclipse.jetty.server.AbstractNCSARequestLog;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 public class RequestLogFactory {
@@ -11,7 +12,7 @@ public class RequestLogFactory {
         this.logger = logger;
     }
 
-    AbstractNCSARequestLog create() {
+    @NotNull AbstractNCSARequestLog create() {
         return new AbstractNCSARequestLog() {
             @Override
             protected boolean isEnabled() {

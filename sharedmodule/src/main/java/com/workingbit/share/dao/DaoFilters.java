@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,21 +29,24 @@ public class DaoFilters {
   }
 
   @JsonCreator
-  public DaoFilters(@JsonProperty("filters") LinkedList<BaseFilter> filters) {
+  public DaoFilters(@Nullable @JsonProperty("filters") LinkedList<BaseFilter> filters) {
     this.filters = filters == null ? new LinkedList<>() : filters;
     eav = new HashMap<>();
   }
 
+  @NotNull
   public DaoFilters add(BaseFilter filter) {
     filters.add(filter);
     return this;
   }
 
+  @NotNull
   public DaoFilters add(int index, BaseFilter filter) {
     filters.add(index, filter);
     return this;
   }
 
+  @NotNull
   public Map<String, Object> build() {
     return Map.of(
         "eav", eav,
@@ -59,7 +64,8 @@ public class DaoFilters {
     return filters.isEmpty();
   }
 
-  public DaoFilters addAll(DaoFilters filters) {
+  @NotNull
+  public DaoFilters addAll(@NotNull DaoFilters filters) {
     this.filters.addAll(filters.filters);
     return this;
   }

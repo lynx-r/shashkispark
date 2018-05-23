@@ -7,6 +7,7 @@ import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Optional;
@@ -49,12 +50,12 @@ public class ArticleStoreService {
     return Optional.empty();
   }
 
-  public void put(String userSession, Article article) {
+  public void put(String userSession, @NotNull Article article) {
     Map map = Map.of(getKey(userSession, article.getHumanReadableUrl(), article.getSelectedBoardBoxId().getId()), article);
     storeArticle.put(article.getHumanReadableUrl(), map);
   }
 
-  public void remove(Article article) {
+  public void remove(@NotNull Article article) {
     storeArticle.remove(article.getHumanReadableUrl());
   }
 

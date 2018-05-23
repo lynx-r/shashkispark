@@ -84,7 +84,8 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "e5"); // c3
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "e1"));
     testCollectionTree("c3,b6,e7,e5", highlight.getCaptured());
-    testCollection("b4,f8,a5,c7,d8,d4,f4,g3,h2,f6", highlight.getAllowed());
+    testCollection("b4,f8,a5,c7,d8,f4,g3,h2,f6", highlight.getAllowed());
+//    testCollection("b4,f8,a5,c7,d8,d4,f4,g3,h2,f6", highlight.getAllowed());
   }
 
   @Test
@@ -138,6 +139,18 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     testCollectionTree("d4,d6", highlight.getCaptured());
     testCollection("c7,e5", highlight.getAllowed());
   }
+
+//  @Test
+//  public void draught_three_captured() throws BoardServiceException, ExecutionException, InterruptedException {
+//    Board board = getBoard();
+//    Board updatedBoard = addWhiteDraught(board, "c3"); // c3
+//    updatedBoard = addBlackDraught(updatedBoard, "d4"); // c3
+//    updatedBoard = addBlackDraught(updatedBoard, "d6"); // c3
+//    updatedBoard = addBlackDraught(updatedBoard, "f6"); // c3
+//    MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "c3"));
+//    testCollectionTree("d4,d6,f6", highlight.getCaptured());
+//    testCollection("c7,e5,g7", highlight.getAllowed());
+//  }
 
   @Test
   public void draught_captured_over_many_squares() throws BoardServiceException, ExecutionException, InterruptedException {

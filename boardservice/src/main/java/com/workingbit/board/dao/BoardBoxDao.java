@@ -10,6 +10,7 @@ import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.DomainIds;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
     super(BoardBox.class, appProperties.regionDynamoDB(), appProperties.endpointDynamoDB().toString(), appProperties.test());
   }
 
-  public List<BoardBox> findPublicByIds(DomainIds boardBoxIds) {
+  public List<BoardBox> findPublicByIds(@NotNull DomainIds boardBoxIds) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
     filterPublic.add(new Unary("("));
@@ -32,7 +33,7 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
     return findByFilter(filterPublic);
   }
 
-  public List<BoardBox> findByIdsAndAuthor(DomainIds boardBoxIds, AuthUser authUser) {
+  public List<BoardBox> findByIdsAndAuthor(@NotNull DomainIds boardBoxIds, @NotNull AuthUser authUser) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic
         .add(new ValueFilter("userId.id", authUser.getUserId().getId(), "=", "S"));
@@ -55,13 +56,13 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
     return findByFilter(filterPublic);
   }
 
-  public List<BoardBox> findByArticleId(DomainId articleId) {
+  public List<BoardBox> findByArticleId(@NotNull DomainId articleId) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic.add(new ValueFilter("articleId.id", articleId.getId(), "=", "S"));
     return findByFilter(filterPublic);
   }
 
-  public List<BoardBox> findPublicByArticleId(DomainId articleId) {
+  public List<BoardBox> findPublicByArticleId(@NotNull DomainId articleId) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
     filterPublic.add(new Unary("and"));
@@ -69,7 +70,7 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
     return findByFilter(filterPublic);
   }
 
-  public BoardBox findPublicById(DomainId boardBoxId) {
+  public BoardBox findPublicById(@NotNull DomainId boardBoxId) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
     filterPublic.add(new Unary("and"));

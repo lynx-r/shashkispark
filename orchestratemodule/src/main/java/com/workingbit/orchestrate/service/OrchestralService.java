@@ -13,6 +13,8 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.UnirestUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -80,71 +82,72 @@ public class OrchestralService {
     return post(authorize, userCredentials, emptyMap());
   }
 
-  public Optional<AuthUser> authenticate(AuthUser authUser) {
+  public Optional<AuthUser> authenticate(@NotNull AuthUser authUser) {
     return authenticateAnswer(authUser).map(answer -> ((AuthUser) answer.getBody()));
   }
 
-  public Optional<Answer> authenticateAnswer(AuthUser authUser) {
+  public Optional<Answer> authenticateAnswer(@NotNull AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return get(authenticate, headers);
   }
 
-  public Optional<Article> createArticle(CreateArticlePayload articlePayload, AuthUser authUser) {
+  public Optional<Article> createArticle(CreateArticlePayload articlePayload, @NotNull AuthUser authUser) {
     return createArticleAnswer(articlePayload, authUser).map(answer -> ((Article) answer.getBody()));
   }
 
-  public Optional<Answer> createArticleAnswer(CreateArticlePayload articlePayload, AuthUser authUser) {
+  public Optional<Answer> createArticleAnswer(CreateArticlePayload articlePayload, @NotNull AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return post(article, articlePayload, headers);
   }
 
-  public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, AuthUser authUser) {
+  public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, @NotNull AuthUser authUser) {
     return createBoardBoxAnswer(boardRequest, authUser).map(answer -> ((BoardBox) answer.getBody()));
   }
 
-  public Optional<Answer> createBoardBoxAnswer(CreateBoardPayload boardRequest, AuthUser authUser) {
+  public Optional<Answer> createBoardBoxAnswer(CreateBoardPayload boardRequest, @NotNull AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return post(boardbox, boardRequest, headers);
   }
 
-  public Optional<BoardBox> parsePdn(ImportPdnPayload boardRequest, AuthUser authUser) {
+  public Optional<BoardBox> parsePdn(ImportPdnPayload boardRequest, @NotNull AuthUser authUser) {
     return parsePdnAnswer(boardRequest, authUser).map(answer -> ((BoardBox) answer.getBody()));
   }
 
-  public Optional<Answer> parsePdnAnswer(ImportPdnPayload boardRequest, AuthUser authUser) {
+  public Optional<Answer> parsePdnAnswer(ImportPdnPayload boardRequest, @NotNull AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return post(parsePdn, boardRequest, headers);
   }
 
-  public Optional<UserInfo> userInfo(AuthUser authUser) {
+  public Optional<UserInfo> userInfo(@NotNull AuthUser authUser) {
     return userInfoAnswer(authUser).map(answer -> ((UserInfo) answer.getBody()));
   }
 
-  public Optional<Answer> userInfoAnswer(AuthUser authUser) {
+  public Optional<Answer> userInfoAnswer(@NotNull AuthUser authUser) {
     Map<String, String> authHeaders = getAuthHeaders(authUser);
     return post(userInfo, authUser, authHeaders);
   }
 
-  public Optional<UserInfo> saveUserInfo(UserInfo userInfo, AuthUser authUser) {
+  public Optional<UserInfo> saveUserInfo(UserInfo userInfo, @NotNull AuthUser authUser) {
     return saveUserInfoAnswer(userInfo, authUser).map(answer -> ((UserInfo) answer.getBody()));
   }
 
-  public Optional<Answer> saveUserInfoAnswer(UserInfo userInfo, AuthUser authUser) {
+  public Optional<Answer> saveUserInfoAnswer(UserInfo userInfo, @NotNull AuthUser authUser) {
     Map<String, String> authHeaders = getAuthHeaders(authUser);
     return post(saveUserInfo, userInfo, authHeaders);
   }
 
-  public Optional<AuthUser> logout(AuthUser authUser) {
+  public Optional<AuthUser> logout(@NotNull AuthUser authUser) {
     return logoutAnswer(authUser).map(answer -> ((AuthUser) answer.getBody()));
   }
 
-  public Optional<Answer> logoutAnswer(AuthUser authUser) {
+  public Optional<Answer> logoutAnswer(@NotNull AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return get(logout, headers);
   }
 
+  @NotNull
   @SuppressWarnings("unchecked")
-  public Optional<Answer> internal(AuthUser authUser, String methodName, Object... params) {
+  public Optional<Answer> internal(@NotNull AuthUser authUser, @NotNull String methodName, @NotNull Object... params) {
     AuthUser authUserInternal = authUser.deepClone();
     String internalKey = getRandomString20();
     authUser.setInternalKey(internalKey);
@@ -166,7 +169,7 @@ public class OrchestralService {
         throw ((RequestException) targetException);
       }
       throw RequestException.forbidden();
-    } catch (NoSuchMethodException | IllegalAccessException e) {
+    } catch (@NotNull NoSuchMethodException | IllegalAccessException e) {
       logger.error("INTERNAL CALL FAIL: " + e.getMessage());
       throw RequestException.forbidden();
     }
@@ -226,7 +229,7 @@ public class OrchestralService {
     return Optional.empty();
   }
 
-  public void cacheRequest(Request request, Answer answer, AuthUser authUser) {
+  public void cacheRequest(@NotNull Request request, @NotNull Answer answer, @NotNull AuthUser authUser) {
     String key = getRequestKey(request);
     if (answer.getBody() != null) {
 //      RedisUtil.cacheRequest(key, answer.getBody());
@@ -240,24 +243,27 @@ public class OrchestralService {
     return url + queryParams;
   }
 
-  public String checkTokenCache(AuthUser authUser) {
+  @Nullable
+  public String checkTokenCache(@NotNull AuthUser authUser) {
     return RedisUtil.getTokenCache(authUser);
   }
 
-  public void cacheSecureAuth(SecureAuth auth) {
+  public void cacheSecureAuth(@NotNull SecureAuth auth) {
     RedisUtil.cacheSecureAuth(auth.getUserSession(), auth);
     RedisUtil.cacheSecureAuthUsername(auth.getUsername(), auth.getUserSession());
   }
 
+  @NotNull
   public SecureAuth getSecureAuth(String userSession) {
     return RedisUtil.getSecureAuthByUserSession(userSession);
   }
 
+  @Nullable
   public SecureAuth getSecureAuthUsername(String username) {
     return RedisUtil.getSecureAuthByUsername(username);
   }
 
-  public void removeSecureAuth(AuthUser authUser) {
+  public void removeSecureAuth(@NotNull AuthUser authUser) {
     RedisUtil.removeSecureAuthByUserSession(authUser.getUserSession());
     RedisUtil.removeSecureAuthByUserUsername(authUser.getUsername());
   }

@@ -1,53 +1,59 @@
 package com.workingbit.share.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.workingbit.share.converter.NotationDrivesConverter;
+import com.workingbit.share.converter.NotationDrivesDeserializer;
+import com.workingbit.share.converter.NotationDrivesSerializer;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
+import com.workingbit.share.util.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created by Aleksey Popryaduhin on 10:12 04/10/2017.
  */
 public class NotationHistory implements DeepClone {
 
-  private NotationDrives history;
+  @JsonSerialize(using = NotationDrivesSerializer.class)
+  @JsonDeserialize(using = NotationDrivesDeserializer.class)
+  @DynamoDBTypeConverted(converter = NotationDrivesConverter.class)
   private NotationDrives notation;
   /**
    * using for fork and switch
    */
-  private NotationDrive currentNotationDrive;
+  private int currentNotationDrive;
   /**
    * using for fork and switch
    */
-  private NotationDrive variantNotationDrive;
+  private int variantNotationDrive;
 
   public NotationHistory() {
-    this(true);
+    createWithRoot();
   }
 
-  private NotationHistory(boolean hasRoot) {
+  public NotationHistory(NotationDrives notation) {
+    this.notation = notation;
+  }
+
+  @NotNull
+  private static NotationDrives createNotationDrives(boolean hasRoot) {
     if (hasRoot) {
-      notation = NotationDrives.create();
+      NotationDrives notationHistory = NotationDrives.create();
       NotationDrive root = new NotationDrive(true);
       root.setSelected(true);
-      notation.add(root);
-      history = NotationDrives.create();
-      history.add(root.deepClone());
+      notationHistory.add(root);
+      return notationHistory;
     } else {
-      notation = NotationDrives.create();
-      history = NotationDrives.create();
+      return NotationDrives.create();
     }
-  }
-
-  public NotationDrives getHistory() {
-    return history;
-  }
-
-  public void setHistory(NotationDrives history) {
-    this.history = history;
   }
 
   public NotationDrives getNotation() {
@@ -55,48 +61,42 @@ public class NotationHistory implements DeepClone {
   }
 
   public void setNotation(NotationDrives notation) {
-    this.notation = notation.deepClone();
+    this.notation = notation;
   }
 
-  public NotationDrive getCurrentNotationDrive() {
+  @DynamoDBIgnore
+  @JsonIgnore
+  public void setNotation(@NotNull List<NotationDrive> notationDrives) {
+    this.notation = new NotationDrives(notationDrives);
+  }
+
+  public void setRules(@NotNull EnumRules rules) {
+    notation.setDimension(rules.getDimensionAbs());
+  }
+
+  public void setFormat(EnumNotationFormat format) {
+    notation.setNotationFormat(format);
+  }
+
+
+  public int getCurrentNotationDrive() {
     return currentNotationDrive;
   }
 
-  public void setCurrentNotationDrive(NotationDrive currentNotationDrive) {
+  public void setCurrentNotationDrive(int currentNotationDrive) {
     this.currentNotationDrive = currentNotationDrive;
   }
 
-  public NotationDrive getVariantNotationDrive() {
+  public int getVariantNotationDrive() {
     return variantNotationDrive;
   }
 
-  public void setVariantNotationDrive(NotationDrive variantNotationDrive) {
+  public void setVariantNotationDrive(int variantNotationDrive) {
     this.variantNotationDrive = variantNotationDrive;
   }
 
-  public void addInHistoryAndNotation(NotationDrive element) {
-    history.add(element);
+  public void add(NotationDrive element) {
     notation.add(element);
-  }
-
-  @DynamoDBIgnore
-  @JsonIgnore
-  private NotationDrive getLastSafeHistory() {
-    boolean isRootDrive = history.getLast().isRoot();
-    if (isRootDrive) {
-      NotationDrive notationDrive = new NotationDrive();
-      notationDrive.setNotationNumberInt(1);
-      addInHistoryAndNotation(notationDrive);
-      return notationDrive;
-    } else {
-      return history.getLast();
-    }
-  }
-
-  @JsonIgnore
-  @DynamoDBIgnore
-  public NotationDrive getFirst() {
-    return notation.getFirst();
   }
 
   @JsonIgnore
@@ -109,226 +109,188 @@ public class NotationHistory implements DeepClone {
     return notation.size();
   }
 
-  private int indexOf(NotationDrive o) {
-    return notation.indexOf(o);
-  }
-
-  private NotationDrives subListHistory(int fromIndex, int toIndex) {
-    List<NotationDrive> subList = history.subList(fromIndex, toIndex);
+  @NotNull
+  private NotationDrives subListNotation(int fromIndex, int toIndex) {
+    List<NotationDrive> subList = notation.subList(fromIndex, toIndex);
     NotationDrives nd = new NotationDrives();
     nd.addAll(subList);
     return nd;
   }
 
-  public boolean forkAt(NotationDrive forkFromNotationDrive) {
-    if (history.size() == 1) {
-      return false;
-    }
-    int indexFork = indexOf(forkFromNotationDrive);
-    NotationDrives cutpoint = subListHistory(indexFork, size());
+  public boolean forkAt(int forkFromNotationDrive) {
+    NotationDrives cutpoint = subListNotation(forkFromNotationDrive, size());
     NotationDrives cutNotationDrives = cutpoint.deepClone();
-    NotationDrives toRemove = subListHistory(indexFork, size() - 1);
+    NotationDrive fVariant = get(forkFromNotationDrive).deepClone();
 
-    notation.removeAll(toRemove);
-    resetNotationSelected(notation);
-    notation.getLast().setSelected(true);
-
-    history.removeAll(toRemove);
-
-    // if not duplicated
-    NotationDrive cutFirst = cutNotationDrives.getFirst();
-    NotationDrive variant = cutFirst.deepClone();
-    NotationDrive lastHist = history.getLast();
-    Optional<NotationDrive> continueDrive = variantHasEqualContinue(lastHist, variant, toRemove);
-    if (!continueDrive.isPresent() || continueDrive.get().equals(lastHist)) {
-      if (lastHist.getVariantsSize() == 0) {
-        NotationDrive rootV = variant.deepClone();
-        rootV.setIdInVariants(0);
-        NotationDrives rootCut = cutNotationDrives.deepClone();
-        rootCut.setIdInVariants(rootV.getIdInVariants());
-        rootV.setVariants(rootCut);
-        rootV.setCurrent(true);
-        lastHist.addVariant(rootV);
-      }
-      variant.setIdInVariants(lastHist.getVariantsSize());
-      cutNotationDrives.setIdInVariants(variant.getIdInVariants());
-      resetNotationSelected(cutNotationDrives);
-      cutNotationDrives.getLast().setSelected(true);
-      variant.setVariants(cutNotationDrives);
-      resetCurrentAndSetPresious(lastHist);
-      variant.setCurrent(true);
-      lastHist.addVariant(variant);
-    }
-
-    if (!notation.isEmpty()) {
-      notation.forEach(this::resetMovesCursor);
-      NotationMoves moves = notation.getLast().getMoves();
-      if (!moves.isEmpty()) {
-        moves.getLast().setCursor(true);
-      }
-    }
-
-    return true;
-  }
-
-  private void resetNotationSelected(NotationDrives notation) {
-    notation.forEach(notationDrive -> notationDrive.setSelected(false));
-  }
-
-  private void resetCurrentAndSetPresious(NotationDrive lastHist) {
-    lastHist.getVariants().forEach(v -> {
-      setPreviousNotation(v);
-      v.setCurrent(false);
-    });
-  }
-
-  private void setPreviousNotation(NotationDrive v) {
-    if (v.isCurrent()) {
-      v.setPrevious(true);
-    } else {
-      v.setPrevious(false);
-    }
-  }
-
-  public boolean switchTo(NotationDrive currentNotationDrive,
-                          NotationDrive variantNotationDrive) {
-    int indexSwitch = history.indexOf(currentNotationDrive);
-    NotationDrive toSwitchDrive;
-    if (currentNotationDrive == null) {
-      toSwitchDrive = getLastSafeHistory();
-      indexSwitch = history.indexOf(toSwitchDrive);
-    } else {
-      toSwitchDrive = history.get(indexSwitch);
-    }
-
-    NotationDrives switchVariants = toSwitchDrive.getVariants().deepClone();
-
-    // push tail of notation to variants
-//    if (indexSwitch + 1 < size()) {
-    NotationDrives forked = new NotationDrives(subListHistory(indexSwitch, size()));
-    NotationDrives forkedWithoutFirst = new NotationDrives(forked.subList(1, forked.size()));
-
-    // remove tail
-    notation.removeAll(forkedWithoutFirst);
-    history.removeAll(forkedWithoutFirst);
-
-    NotationDrive lastNewHist = history.getLast();
-    lastNewHist.getVariants()
+//    if (forkFromNotationDrive != 0) {
+    notation.removeAll(cutpoint);
+//    } else {
+//      notation.removeAll(cutpoint.subList(1, cutpoint.size()));
+//    }
+    notation
         .stream()
         .filter(NotationDrive::isCurrent)
-        .map(notationDrive -> List.of(notationDrive, notationDrive.getVariants().subList(1, notationDrive.getVariantsSize())))
-        .filter(notationDrives -> !variantsEqual((Collection) notationDrives.get(1), forkedWithoutFirst))
         .findFirst()
-        .ifPresent(notationDrive -> ((NotationDrive) notationDrive.get(0)).setVariants(forked));
+        .ifPresent(notationDrive -> {
+          notationDrive.setSelected(false);
+          notationDrive.setCurrent(false);
+        });
+
+    // if first variant
+    NotationDrive rootV = null;
+    if (fVariant.getVariantsSize() == 0) {
+      rootV = fVariant.deepClone();
+      NotationDrives rootCut = cutNotationDrives.deepClone();
+      rootCut.setIdInVariants(0);
+      rootV.setVariants(rootCut);
+      rootV.setSelected(false);
+      rootV.setPrevious(true);
+      rootV.setCurrent(false);
+      rootV.setParentColor("purple");
+      rootV.setDriveColor(Utils.getRandomColor());
+    }
+    NotationDrive forkedVariant = fVariant.deepClone();
+    forkedVariant.setDriveColor(Utils.getRandomColor());
+
+    if (rootV != null) {
+      forkedVariant.addVariant(rootV);
+      forkedVariant.setParentColor(rootV.getParentColor());
+    }
+    cutNotationDrives.setIdInVariants(forkedVariant.getIdInVariants());
+//    NotationDrives lastVariants = notation.getLast().getVariants();
+    NotationDrive firstNew = cutNotationDrives.getFirst().deepClone();
+//    if (forkFromNotationDrive == 0) {
+//      firstNew.setIdInVariants(lastVariants.size());
+//      lastVariants
+//          .stream()
+//          .filter(NotationDrive::isPrevious)
+//          .findFirst()
+//          .ifPresent(notationDrive -> notationDrive.setPrevious(false));
+//      lastVariants
+//          .stream()
+//          .filter(NotationDrive::isCurrent)
+//          .findFirst()
+//          .ifPresent(notationDrive -> {
+//            notationDrive.setCurrent(false);
+//            notationDrive.setPrevious(true);
+//          });
+//      firstNew.setVariants(notation.getFirst().getVariants().deepClone());
+//    } else {
+    firstNew.setIdInVariants(forkedVariant.getVariantsSize());
 //    }
-
-    // find in selected notation drive to switch
-    NotationDrive variantToSwitch = null;
-    if (currentNotationDrive != null) {
-      resetCurrentAndSetPresious(currentNotationDrive);
-      variantToSwitch = variantNotationDrive;
-    }
-
-    if (variantToSwitch != null) {
-//      resetCurrentAndSetPresious(toSwitchDrive);
-      addAllVariantsInHistoryAndNotation(variantToSwitch);
-    } else if (!switchVariants.isEmpty()) {
-      // switch sequentially to drive with min variants
-      Optional<NotationDrive> withMinVariants = switchVariants
+    firstNew.setCurrent(true);
+    NotationDrives switchVariants = forkedVariant.getVariants();
+    if (rootV == null) {
+      switchVariants
           .stream()
-          .filter(NotationDrive::isCurrent)
-          .findFirst();
-      resetCurrentAndSetPresious(toSwitchDrive);
-      withMinVariants.ifPresent(this::addAllVariantsInHistoryAndNotation);
+          .filter(NotationDrive::isPrevious)
+          .findFirst()
+          .ifPresent(notationDrive -> notationDrive.setPrevious(false));
     } else {
-      return false;
+      firstNew.setParentId(0);
+      firstNew.setParentColor(rootV.getDriveColor());
+      firstNew.setDriveColor(Utils.getRandomColor());
     }
+    cutNotationDrives.getFirst().setVariants(NotationDrives.create());
+    firstNew.setVariants(new NotationDrives(List.of(cutNotationDrives.getFirst())));
+    switchVariants
+        .stream()
+        .filter(NotationDrive::isCurrent)
+        .findFirst()
+        .ifPresent(currentVariant -> {
+          currentVariant.setAncestors(currentVariant.getAncestors() + 1);
+          firstNew.setParentId(currentVariant.getIdInVariants());
+          firstNew.setParentColor(currentVariant.getDriveColor());
+          currentVariant.setCurrent(false);
+          currentVariant.setPrevious(true);
+        });
+    forkedVariant.addVariant(firstNew);
+    forkedVariant.setCurrent(true);
+    forkedVariant.setSelected(true);
 
+//    if (forkFromNotationDrive == 0) {
+//      lastVariants.add(firstNew);
+//    } else {
+    notation.add(forkedVariant);
+
+    setLastMoveCursor();
     return true;
   }
 
-  private Optional<NotationDrive> variantHasEqualContinue(NotationDrive currentDrive, NotationDrive variant, NotationDrives cutNotationDrives) {
-    if (currentDrive.getVariants().isEmpty() && variant.getVariants().isEmpty()) {
-      return isNotationDriveMovesEqual(currentDrive, variant) ? Optional.of(currentDrive) : Optional.empty();
+  public boolean switchTo(int currentNotationDrive,
+                          int variantNotationDrive) {
+    getCurrentVariant()
+        .ifPresent(notationDrive -> {
+          NotationDrive switchTo = notation.get(currentNotationDrive);
+
+          NotationDrives toRemove = notationDrive.getVariants();
+          notation.removeAll(toRemove.subList(1, toRemove.size()));
+
+          NotationDrives switchToVariants = switchTo.getVariants();
+          switchToVariants
+              .forEach(nd -> nd.setPrevious(false));
+          switchToVariants
+              .stream()
+              .filter(NotationDrive::isCurrent)
+              .findFirst()
+              .ifPresent(current -> {
+                current.setCurrent(false);
+                current.setPrevious(true);
+              });
+          NotationDrive variantToSwitch = switchToVariants.get(variantNotationDrive);
+          variantToSwitch.setCurrent(true);
+          variantToSwitch.setPrevious(false);
+
+          // replace first drive's variants with switched on variants
+          NotationDrives variantsToSwitch = variantToSwitch.getVariants();
+          NotationDrive notationDriveSwitched = variantsToSwitch.getFirst();
+          notationDriveSwitched.setCurrent(true);
+          notationDriveSwitched.setPrevious(false);
+
+          List<NotationDrive> newVariants = variantsToSwitch.subList(1, variantsToSwitch.size());
+          newVariants
+              .stream()
+              .filter(NotationDrive::isSelected)
+              .findFirst()
+              .ifPresent(nd -> nd.setSelected(false));
+          notation.addAll(newVariants);
+          notation.getLast().setSelected(true);
+          setLastMoveCursor();
+        });
+    return true;
+  }
+
+  public void removeByNotationNumberInVariants(int notationNumber, int variantNumber) {
+    notation
+        .stream()
+        .filter(notationDrive -> notationDrive.getNotationNumberInt() == notationNumber)
+        .findFirst()
+        .ifPresent(inNotation ->
+            inNotation.getVariants()
+                .removeIf(inVariants -> inVariants.getIdInVariants() == variantNumber)
+        );
+  }
+
+  public void setLastMoveCursor() {
+    if (notation.isEmpty()) {
+      return;
     }
-    for (NotationDrive current : currentDrive.getVariants()) {
-      if (isNotationDriveMovesEqual(current, variant)) {
-        NotationDrives currentVariants = current.getVariants();
-        if (variantsEqual(currentVariants, cutNotationDrives)) {
-          return Optional.of(current);
-        }
+    notation.forEach(nd -> nd.getMoves().resetCursors());
+    NotationMoves moves = notation.getLast().getMoves();
+    if (!moves.isEmpty()) {
+      NotationSimpleMove lastMove = moves.getLastMove();
+      if (lastMove != null) {
+        lastMove.setCursor(true);
       }
     }
-    return Optional.empty();
-  }
-
-  private boolean variantsEqual(Collection currents, Collection variants) {
-    Iterator iteratorCurrent = currents.iterator();
-    Iterator iteratorVariant = variants.iterator();
-    while ((iteratorCurrent.hasNext() && iteratorVariant.hasNext())) {
-      NotationDrive current = (NotationDrive) iteratorCurrent.next();
-      NotationDrive variant = (NotationDrive) iteratorVariant.next();
-      return variantsEqual(current.getVariants(), variant.getVariants())
-          && currents.size() == variants.size() && current.getMoves().equals(variant.getMoves());
-    }
-    return false;
-  }
-
-  private boolean isNotationDriveMovesEqual(NotationDrive currentDrive, NotationDrive variant) {
-    return currentDrive.getMoves().equals(variant.getMoves());
-  }
-
-  private void addAllVariantsInHistoryAndNotation(NotationDrive variant) {
-    NotationDrive lastHist = history.getLast();
-    setCurrentMarkerForNotationDrive(variant, lastHist);
-
-    NotationDrives variants = variant.getVariants();
-    if (variants.size() > 1) {
-      var continueVariants = variants.subList(1, variants.size());
-//      boolean hasEqualContinue = lastHist.getVariants()
-//          .stream()
-//          .filter(NotationDrive::isCurrent)
-//          .anyMatch(notationDrive -> variantsEqual(notationDrive.getVariants(), variant.getVariants()));
-//      if (hasEqualContinue) {
-      history.addAll(continueVariants);
-      notation.addAll(continueVariants);
-//      }
-    }
-    resetNotationSelected(notation);
-    notation.getLast().setSelected(true);
-
-    notation.forEach(this::resetMovesCursor);
-    history.forEach(this::resetMovesCursor);
-
-    NotationDrive lastNot = notation.getLast();
-    if (!lastNot.getMoves().isEmpty()) {
-      lastNot.getMoves().getLast().setCursor(true);
-    }
-  }
-
-  private void resetMovesCursor(NotationDrive drive) {
-    drive.getMoves().resetCursors();
-  }
-
-  private void setCurrentMarkerForNotationDrive(NotationDrive variant, NotationDrive lastHist) {
-    lastHist.getVariants()
-        .forEach(v -> {
-          v.setPrevious(false);
-          if (v.isCurrent()) {
-            v.setPrevious(true);
-          }
-          v.setCurrent(false);
-          if (v.getIdInVariants() == variant.getIdInVariants()) {
-            v.setCurrent(true);
-            v.setPrevious(false);
-          }
-        });
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public boolean isEmpty() {
-    return notation.isEmpty();
+    return notation.isEmpty()
+        || notation.size() == 1
+        && notation.getLast().getVariants().isEmpty();
   }
 
   @JsonIgnore
@@ -337,20 +299,20 @@ public class NotationHistory implements DeepClone {
     return notation.get(index);
   }
 
-  public static NotationHistory create() {
-    return new NotationHistory(false);
+  public static NotationHistory createNotationDrives() {
+    return new NotationHistory(createNotationDrives(false));
   }
 
   public static NotationHistory createWithRoot() {
-    return new NotationHistory(true);
+    return new NotationHistory(createNotationDrives(true));
   }
 
   public String notationToPdn() {
-    return history.asString();
+    return notation.asString();
   }
 
   public String notationToTreePdn(String indent, String tabulation) {
-    return history.asTree(indent, tabulation);
+    return notation.asTree(indent, tabulation);
   }
 
   public void printPdn() {
@@ -360,57 +322,46 @@ public class NotationHistory implements DeepClone {
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<DomainId> getLastNotationBoardId() {
-    try {
-      NotationDrive notationLast = history.getLast();
-      if (notationLast.isRoot()) {
-        NotationMoves moves = notationLast.getVariants()
-            .getLast()
-            .getMoves();
-        if (!moves.isEmpty()) {
-          return Optional.of(moves.getFirst()
-              .getMove().getFirst()
-              .getBoardId());
-        }
-        return Optional.empty();
+    NotationDrive notationLast = notation.getLast();
+    if (notationLast.isRoot()) {
+      NotationMoves moves = notationLast.getVariants()
+          .getLast()
+          .getMoves();
+      if (!moves.isEmpty()) {
+        return Optional.of(moves.getFirst()
+            .getMove().getFirst()
+            .getBoardId());
       }
-      NotationMoves moves = notationLast.getMoves();
-      return moves.getLast().getLastMoveBoardId();
-    } catch (Exception e) {
-      e.printStackTrace();
       return Optional.empty();
     }
+    NotationMoves moves = notationLast.getMoves();
+    return moves.getLast().getLastMoveBoardId();
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<DomainId> getLastNotationBoardIdInVariants() {
-    try {
-      NotationDrive notationLast = history.getLast();
-      if (notationLast.isRoot()) {
-        return notationLast.getVariants()
-            .stream()
-            .filter(NotationDrive::isCurrent)
-            .flatMap(notationDrive -> notationDrive.getVariants().stream())
-            .filter(NotationDrive::isSelected)
-            .map(NotationDrive::getMoves)
-            .map(NotationMoves::getLastMove)
-            .map(NotationSimpleMove::getBoardId)
-            .findFirst();
-      }
-      return notationLast
-          .getVariants()
+    NotationDrive notationLast = notation.getLast();
+    if (notationLast.isRoot()) {
+      return notationLast.getVariants()
           .stream()
           .filter(NotationDrive::isCurrent)
           .flatMap(notationDrive -> notationDrive.getVariants().stream())
           .filter(NotationDrive::isSelected)
           .map(NotationDrive::getMoves)
           .map(NotationMoves::getLastMove)
+          .filter(Objects::nonNull)
           .map(NotationSimpleMove::getBoardId)
           .findFirst();
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Optional.empty();
     }
+    return getCurrentVariantStream()
+        .map(NotationDrive::getVariants)
+        .map(LinkedList::getLast)
+        .map(NotationDrive::getMoves)
+        .map(NotationMoves::getLastMove)
+        .filter(Objects::nonNull)
+        .map(NotationSimpleMove::getBoardId)
+        .findFirst();
   }
 
   @JsonIgnore
@@ -423,50 +374,56 @@ public class NotationHistory implements DeepClone {
     return Optional.empty();
   }
 
+  @NotNull
   public String debugPdnString() {
     return "\n" +
-        "HISTORY: " +
-        history.asString() +
-        "\n" +
         "NOTATION: " +
         notation.asString();
   }
 
-  public void syncLastDrive() {
-    NotationDrive lastNotation = notation.getLast();
-    lastNotation.setSelected(true);
-    NotationDrive lastHistory = history.getLast();
-    NotationDrive.copyOf(lastNotation, lastHistory);
-  }
-
-  @JsonIgnore
   @DynamoDBIgnore
-  public Optional<DomainId> getFirstNotationBoardId() {
-    if (size() > 1 && !get(1).getMoves().isEmpty()) {
-      return Optional.of(get(1).getMoves().getFirst().getMove().getFirst().getBoardId());
-    }
-    return Optional.empty();
+  @JsonIgnore
+  private Optional<NotationDrive> getCurrentVariant() {
+    return getCurrentVariantStream()
+        .findFirst();
   }
 
-  public void setRules(EnumRules rules) {
-    notation.setDimension(rules.getDimension());
-    history.setDimension(rules.getDimension());
+  @DynamoDBIgnore
+  @JsonIgnore
+  private Stream<NotationDrive> getCurrentVariantStream() {
+    return notation
+        .stream()
+        .filter(NotationDrive::isCurrent)
+        .flatMap(notationDrive -> notationDrive.getVariants().stream())
+        .filter(NotationDrive::isCurrent);
   }
 
-  public void setFormat(EnumNotationFormat format) {
-    notation.setNotationFormat(format);
-    history.setNotationFormat(format);
-  }
-
-
-  public boolean isEqual(NotationHistory that) {
+  public boolean isEqual(@NotNull NotationHistory that) {
     EnumNotationFormat formatThat = that.getNotation().getFirst().getNotationFormat();
     EnumNotationFormat formatThis = this.getNotation().getFirst().getNotationFormat();
-    that.setFormat(EnumNotationFormat.ЧИСЛОВОЙ);
-    this.setFormat(EnumNotationFormat.ЧИСЛОВОЙ);
+    that.setFormat(EnumNotationFormat.DIGITAL);
+    this.setFormat(EnumNotationFormat.DIGITAL);
     boolean equals = that.notationToPdn().equals(this.notationToPdn());
     that.setFormat(formatThat);
     this.setFormat(formatThis);
     return equals;
+  }
+
+  public void syncMoves() {
+    getCurrentVariant().ifPresent(notationDrive -> {
+      if (getLast().getMoves().size() == 2) {
+        if (notationDrive.getNotationNumberInt() == getLast().getNotationNumberInt()) {
+          notationDrive.setMoves(getLast().getMoves());
+        }
+        notationDrive.getLastVariant().setMoves(getLast().getMoves());
+      } else {
+        notationDrive.addVariant(getLast());
+      }
+    });
+    setLastMoveCursor();
+  }
+
+  public void setLastSelected(boolean selected) {
+    getLast().setSelected(selected);
   }
 }

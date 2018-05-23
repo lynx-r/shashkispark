@@ -11,6 +11,8 @@ import com.workingbit.share.util.Utils;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +33,8 @@ import java.util.List;
 
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.share.model.enumarable.EnumRules.*;
+import static com.workingbit.share.util.JsonUtils.dataToJson;
+import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static org.junit.Assert.*;
 
 /**
@@ -44,14 +48,17 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       "/pdn/notation_variant_with_forward_move2.pdn",
   };
   private static final String FLAT_NOTATION_FILE_NAME = "/pdn/notation_variant_nested.pdn";
+  @NotNull
   public static @DataPoints
   boolean[] blacks = {true, false};
 
+  @NotNull
   public static @DataPoints
   boolean[] fillBoards = {true, false};
 
   private AuthUser authUser;
 
+  @NotNull
   public static @DataPoints
   EnumRules[] ruless = {RUSSIAN, RUSSIAN_GIVEAWAY, INTERNATIONAL, INTERNATIONAL_GIVEAWAY};
 
@@ -125,6 +132,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     assertNotNull(byId);
   }
 
+  @NotNull
   protected BoardBox getBoardBoxWhiteNotFilledRUSSIAN() {
     return getBoardBox(false, false, RUSSIAN, EnumEditBoardBoxMode.EDIT);
   }
@@ -132,7 +140,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_create_board_from_pdn_notation() throws URISyntaxException, IOException, ParserLogException, ParserCreationException {
     for (String fileName : PDN_FILE_NAME_BOARDS) {
-      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
+      System.out.println("LOADED DIGITAL FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       BufferedReader bufferedReader = Files.newBufferedReader(path);
@@ -147,7 +155,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
 
-      // Test create BoardBox moving draughts
+      // Test createNotationDrives BoardBox moving draughts
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       BoardBox current = boardBox.deepClone();
       for (NotationDrive drive : notationDrives.getNotation()) {
@@ -155,8 +163,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
           current = moveStrokes(current, move);
         }
       }
-      String newPdn = current.getNotation().asString();
-      String oldPdn = boardBox.getNotation().asString();
+      String newPdn = current.getNotation().getAsString();
+      String oldPdn = boardBox.getNotation().getAsString();
       assertEquals(oldPdn, newPdn);
     }
   }
@@ -221,7 +229,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // switch
       BoardBox switched = getSwitched(boardBoxVariant);
       switched.getNotation().print();
-      System.out.println(switched.getNotation().asString());
+      System.out.println(switched.getNotation().getAsString());
     }
   }
 
@@ -265,7 +273,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_switch_to_variant_with_forward_move() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
     for (String fileName : PDN_FILE_NAME_VARIANT_WITH_FORWARD_MOVE) {
-      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
+      System.out.println("LOADED DIGITAL FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       List<String> lines = Files.readAllLines(path);
@@ -316,7 +324,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     }
   }
 
-  public BoardBox getSwitched(BoardBox current) {
+  @Nullable
+  public BoardBox getSwitched(@NotNull BoardBox current) {
     BoardBoxes boardBoxes = boardBoxService.switchNotation(current, token);
     for (int i = 0; i < boardBoxes.getBoardBoxes().size(); i++) {
       var bb = boardBoxes.getBoardBoxes().get(i);
@@ -331,7 +340,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_double_switch_to_variant_with_forward_move() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
     for (String fileName : PDN_FILE_NAME_VARIANT_WITH_FORWARD_MOVE) {
-      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
+      System.out.println("LOADED DIGITAL FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       List<String> lines = Files.readAllLines(path);
@@ -409,6 +418,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     }
   }
 
+  @NotNull
   public BufferedReader getBufferedReaderForNotation(List<String> lines) {
     try {
       InputStreamReader in = new InputStreamReader(new StringInputStream(StringUtils.join(lines, "\n")), "UTF-8");
@@ -422,7 +432,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
   @Test
   public void test_double_fork() throws IOException, ParserLogException, ParserCreationException, URISyntaxException {
     for (String fileName : PDN_FILE_NAME_VARIANT) {
-      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
+      System.out.println("LOADED DIGITAL FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       List<String> lines = Files.readAllLines(path);
@@ -445,7 +455,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkDriveIndex);
       BoardBox boardBoxVariant = getForkNotation(boardBox);
-      String firstForkPdn = boardBoxVariant.getNotation().asString();
+      String firstForkPdn = boardBoxVariant.getNotation().getAsString();
 
       // get previous drive
       NotationHistory nds = boardBoxVariant.getNotation().getNotationHistory();
@@ -455,14 +465,15 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       BoardBox switched = getSwitched(boardBoxVariant);
 
       BoardBox doubleFork = getForkNotation(switched);
-      String secondForkPdn = doubleFork.getNotation().asString();
+      String secondForkPdn = doubleFork.getNotation().getAsString();
       doubleFork.getNotation().print();
-      System.out.println(doubleFork.getNotation().asString());
+      System.out.println(doubleFork.getNotation().getAsString());
       assertEquals(firstForkPdn, secondForkPdn);
     }
   }
 
-  public BoardBox getForkNotation(BoardBox switched) {
+  @Nullable
+  public BoardBox getForkNotation(@NotNull BoardBox switched) {
     BoardBoxes boardBoxes = boardBoxService.forkNotation(switched, token);
     for (int i = 0; i < boardBoxes.getBoardBoxes().size(); i++) {
       var bb = boardBoxes.getBoardBoxes().get(i);
@@ -484,7 +495,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     return boardBoxCurrent;
   }
 
-  public BoardBox moveStrokes(BoardBox boardBoxCurrent, NotationMove notationMove) {
+  @NotNull
+  public BoardBox moveStrokes(@NotNull BoardBox boardBoxCurrent, @NotNull NotationMove notationMove) {
     NotationSimpleMove[] move = notationMove.getMove().toArray(new NotationSimpleMove[0]);
     for (int i = 0; i < move.length - 1; i++) {
 //      String boardId = notationMove.getBoardId();
@@ -521,13 +533,13 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       BufferedReader bufferedReader = Files.newBufferedReader(path);
 
       Notation notation = notationParserService.parse(bufferedReader);
-      String reparsed = notation.asString();
+      String reparsed = notation.getAsString();
       List<String> lines = Files.readAllLines(path);
       String origin = StringUtils.join(lines, "\n");
       assertEquals(origin, reparsed);
 
 
-      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
+      System.out.println("LOADED DIGITAL FILE: " + fileName);
       System.out.println(reparsed);
       notation.print();
       System.out.println("---");
@@ -650,11 +662,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       }
 
       boardBox = boardBoxService.undo(boardBox, token);
-      System.out.println("UNDO: " + boardBox.getNotation().asString());
+      System.out.println("UNDO: " + boardBox.getNotation().getAsString());
       assertEquals(0, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
       BoardBox undoNotPossible = boardBoxService.undo(boardBox, token);
       assertNull(undoNotPossible);
-      break;
     }
   }
 
@@ -687,19 +698,18 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       }
 
       boardBox = boardBoxService.undo(boardBox, token);
-      System.out.println("UNDO: " + boardBox.getNotation().asString());
+      System.out.println("UNDO: " + boardBox.getNotation().getAsString());
       assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
       boardBox = boardBoxService.undo(boardBox, token);
-      System.out.println("UNDO: " + boardBox.getNotation().asString());
+      System.out.println("UNDO: " + boardBox.getNotation().getAsString());
       assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
 
       boardBox = boardBoxService.redo(boardBox, token);
-      System.out.println("UNDO: " + boardBox.getNotation().asString());
+      System.out.println("UNDO: " + boardBox.getNotation().getAsString());
       assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
       boardBox = boardBoxService.redo(boardBox, token);
-      System.out.println("UNDO: " + boardBox.getNotation().asString());
+      System.out.println("UNDO: " + boardBox.getNotation().getAsString());
       assertEquals(0, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
-      break;
     }
   }
 
@@ -815,8 +825,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 //    boardBox = boardBoxService.redo(boardBox);
 //    System.out.print("REDO ");
 //    boardBox.getNotation().getNotationHistory().printPdn();
-//    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().asTreeString(),
-//        boardBox.getNotation().getNotationHistory().getNotation().asTreeString());
+//    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().getAsTreeString(),
+//        boardBox.getNotation().getNotationHistory().getNotation().getAsTreeString());
 
 //    boardBox = boardBoxService.undo(boardBox);
 //    System.out.print("UNDO ");
@@ -944,12 +954,14 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     boards.forEach(board -> boardBoxService().delete(board.getDomainId()));
   }
 
+  @NotNull
   private List<BoardBox> boards = new ArrayList<>();
 
   private void toDelete(BoardBox board) {
     boards.add(board);
   }
 
+  @NotNull
   protected BoardBox getBoardBox(boolean black, boolean fillBoard, EnumRules rules, EnumEditBoardBoxMode editMode) {
     CreateBoardPayload createBoardPayload = getCreateBoardRequest(black, fillBoard, rules, editMode);
     return boardBoxService().createBoardBox(createBoardPayload, token);
@@ -970,8 +982,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     parsePdn.setPdn(writer.toString());
     BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
     Notation notation = boardBox.getNotation();
-    notation.setFormat(EnumNotationFormat.ЧИСЛОВОЙ);
-    System.out.println(notation.asTreeString());
+    notation.setFormat(EnumNotationFormat.DIGITAL);
+    System.out.println(notation.getAsTreeString());
   }
 
   @Test
@@ -985,8 +997,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     IOUtils.copy(in, writer);
     parsePdn.setPdn(writer.toString());
     BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
-    System.out.println(boardBox.getNotation().asString());
-    System.out.println(boardBox.getNotation().asTreeString());
+    System.out.println(boardBox.getNotation().getAsString());
+    System.out.println(boardBox.getNotation().getAsTreeString());
   }
 
   @Test
@@ -1000,8 +1012,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     IOUtils.copy(in, writer);
     parsePdn.setPdn(writer.toString());
     BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
-    System.out.println(boardBox.getNotation().asString());
-    System.out.println(boardBox.getNotation().asTreeString());
+    System.out.println(boardBox.getNotation().getAsString());
+    System.out.println(boardBox.getNotation().getAsTreeString());
   }
 
   @Test
@@ -1015,10 +1027,10 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     IOUtils.copy(in, writer);
     parsePdn.setPdn(writer.toString());
     Notation parse = notationParserService.parse(writer.toString());
-    System.out.println(parse.asTreeString());
+    System.out.println(parse.getAsTreeString());
 //    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
-//    System.out.println(boardBox.getNotation().asTreeString());
-//    System.out.println(boardBox.getNotation().asTreeString());
+//    System.out.println(boardBox.getNotation().getAsTreeString());
+//    System.out.println(boardBox.getNotation().getAsTreeString());
   }
 
   @Test
@@ -1103,8 +1115,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       return bufferedReader;
     }
 
+    @NotNull
     public LoadNotationForkNumberAndForwardMoves invoke() throws URISyntaxException, IOException {
-      System.out.println("LOADED ЧИСЛОВОЙ FILE: " + fileName);
+      System.out.println("LOADED DIGITAL FILE: " + fileName);
       URL uri = getClass().getResource(fileName);
       Path path = Paths.get(uri.toURI());
       List<String> lines = Files.readAllLines(path);
@@ -1117,5 +1130,26 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       bufferedReader = getBufferedReaderForNotation(lines);
       return this;
     }
+  }
+
+  @Test
+  public void name() {
+    EnumRules enumRules = EnumRules.RUSSIAN;
+    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
+    createBoardPayload.setRules(enumRules);
+    String answer = dataToJson(createBoardPayload);
+    System.out.println(answer);
+    assertNotNull(answer);
+    CreateBoardPayload createBoardPayload1 = jsonToData(answer, CreateBoardPayload.class);
+    System.out.println(createBoardPayload1);
+  }
+
+  @Test
+  public void json() {
+    NotationHistory notationHistory = NotationHistory.createWithRoot();
+    String s = dataToJson(notationHistory);
+    System.out.println(s);
+    NotationHistory notationHistory1 = jsonToData(s, NotationHistory.class);
+    System.out.println(notationHistory1);
   }
 }

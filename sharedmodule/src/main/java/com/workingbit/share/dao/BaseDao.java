@@ -12,6 +12,8 @@ import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.DomainIds;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +31,12 @@ import static java.lang.String.format;
 public class BaseDao<T extends BaseDomain> {
 
   protected Logger logger;
+  @NotNull
   private final Class<T> clazz;
+  @NotNull
   private final DynamoDBMapper dynamoDBMapper;
 
-  protected BaseDao(Class<T> clazz, String region, String endpoint, boolean test) {
+  protected BaseDao(@NotNull Class<T> clazz, String region, String endpoint, boolean test) {
     this.clazz = clazz;
 
     logger = LoggerFactory.getLogger(clazz);
@@ -54,11 +58,12 @@ public class BaseDao<T extends BaseDomain> {
     dynamoDBMapper = new DynamoDBMapper(ddb);
   }
 
+  @NotNull
   protected DynamoDBMapper getDynamoDBMapper() {
     return dynamoDBMapper;
   }
 
-  public void save(final T entity, DynamoDBSaveExpression saveExpression) {
+  public void save(@Nullable final T entity, DynamoDBSaveExpression saveExpression) {
     if (entity == null) {
       logger.error("Entity is null");
       return;
@@ -70,7 +75,7 @@ public class BaseDao<T extends BaseDomain> {
     dynamoDBMapper.save(entity, saveExpression);
   }
 
-  public void save(final T entity) {
+  public void save(@Nullable final T entity) {
     if (entity == null) {
       logger.error("Entity is null");
       throw DaoException.notFound();
@@ -83,7 +88,7 @@ public class BaseDao<T extends BaseDomain> {
     dynamoDBMapper.save(entity);
   }
 
-  public List<T> findAll(Integer limit) {
+  public List<T> findAll(@Nullable Integer limit) {
     logger.info(String.format("Find all with limit %s", limit));
 
     DynamoDBScanExpression dynamoDBQueryExpression = new DynamoDBScanExpression();
@@ -125,7 +130,7 @@ public class BaseDao<T extends BaseDomain> {
 //    return Optional.empty();
 //  }
 
-  public T findById(DomainId entityKey) {
+  public T findById(@Nullable DomainId entityKey) {
     if (entityKey == null) {
       logger.info("Entity key is null");
       throw DaoException.notFound();
@@ -138,7 +143,7 @@ public class BaseDao<T extends BaseDomain> {
     return load;
   }
 
-  public void delete(final DomainId entityId) {
+  public void delete(@Nullable final DomainId entityId) {
     if (entityId == null) {
       throw DaoException.notFound();
     }
@@ -146,7 +151,14 @@ public class BaseDao<T extends BaseDomain> {
     dynamoDBMapper.delete(byId);
   }
 
-  public List<T> findByIds(DomainIds ids) {
+  public void batchDelete(@Nullable final List<T> entityIds) {
+    if (entityIds == null) {
+      throw DaoException.notFound();
+    }
+    dynamoDBMapper.batchDelete(entityIds);
+  }
+
+  public List<T> findByIds(@NotNull DomainIds ids) {
     logger.info(String.format("Find by ids %s", ids));
     Map<Class<?>, List<KeyPair>> itemsToGet = new HashMap<>(ids.getIds().size());
     List<KeyPair> findByKeys = ids.getIds()
@@ -162,7 +174,7 @@ public class BaseDao<T extends BaseDomain> {
     throw DaoException.notFound();
   }
 
-  public T find(T obj) {
+  public T find(@NotNull T obj) {
     return findById(obj.getDomainId());
   }
 
@@ -189,12 +201,12 @@ public class BaseDao<T extends BaseDomain> {
     throw DaoException.notFound();
   }
 
-  protected List<T> findByFilter(DaoFilters filters) {
+  protected List<T> findByFilter(@NotNull DaoFilters filters) {
     return findByFilter(0, filters);
   }
 
   @SuppressWarnings("unchecked")
-  protected List<T> findByFilter(int limit, DaoFilters filters) {
+  protected List<T> findByFilter(int limit, @NotNull DaoFilters filters) {
     Map<String, Object> parsedFilter = filters.build();
     Map<String, AttributeValue> eav = (Map<String, AttributeValue>) parsedFilter.get("eav");
     String filter = (String) parsedFilter.get("expression");
@@ -219,7 +231,7 @@ public class BaseDao<T extends BaseDomain> {
     return list;
   }
 
-  public void batchSave(List<T> entities) {
+  public void batchSave(@NotNull List<T> entities) {
     if (entities.isEmpty()) {
       logger.info("Nothing to save");
       return;

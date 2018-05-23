@@ -9,6 +9,7 @@ import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.IAuthority;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -41,20 +42,20 @@ public class AuthRequestUtil {
     validator = factory.getValidator();
   }
 
-  public static Optional<AuthUser> isAuthenticated(AuthUser authUser) throws RequestException {
+  public static Optional<AuthUser> isAuthenticated(@NotNull AuthUser authUser) throws RequestException {
     return orchestralService
         .internal(authUser, "authenticateAnswer", authUser)
         .map(Answer::getAuthUser);
   }
 
-  public static boolean hasAuthorities(Set<EnumAuthority> clientAuthorities, Set<EnumAuthority> allowedAuthorities) {
+  public static boolean hasAuthorities(Set<EnumAuthority> clientAuthorities, @NotNull Set<EnumAuthority> allowedAuthorities) {
     if (clientAuthorities.contains(EnumAuthority.REMOVED)) {
       return false;
     }
     return !allowedAuthorities.isEmpty() && EnumAuthority.hasAuthorities(clientAuthorities, allowedAuthorities);
   }
 
-  private static String getOrCreateSession(Request request, Response response) {
+  private static String getOrCreateSession(Request request, @NotNull Response response) {
     // take user session which user got after login
     String accessToken = request.headers(ACCESS_TOKEN_HEADER);
     if (StringUtils.isBlank(accessToken)) {
@@ -70,6 +71,7 @@ public class AuthRequestUtil {
     return request.headers(USER_SESSION_HEADER);
   }
 
+  @NotNull
   public static String getSessionAndSetCookieInResponse(Response response) {
     String anonymousSession = Utils.getRandomString(SESSION_LENGTH);
     response.cookie(ANONYMOUS_SESSION_HEADER, anonymousSession, COOKIE_AGE, false, true);
@@ -89,7 +91,8 @@ public class AuthRequestUtil {
         response.status(), token));
   }
 
-  public static AuthUser getAuthUser(Request request, Response response) {
+  @NotNull
+  public static AuthUser getAuthUser(@NotNull Request request, @NotNull Response response) {
     String userSession = getOrCreateSession(request, response);
     String userId = request.headers(USER_ID_HEADER);
     String username = request.headers(USERNAME_HEADER);

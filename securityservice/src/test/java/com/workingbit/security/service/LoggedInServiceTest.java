@@ -4,6 +4,7 @@ import com.workingbit.share.exception.CryptoException;
 import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.SecureAuth;
 import com.workingbit.share.util.Utils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertNull;
  */
 public class LoggedInServiceTest {
 
+  @NotNull
   private LoggedInService loggedInService = new LoggedInService();
 
   @Test

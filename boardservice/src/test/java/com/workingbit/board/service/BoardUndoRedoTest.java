@@ -7,6 +7,7 @@ import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.util.Utils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +19,7 @@ import static junit.framework.TestCase.assertTrue;
  */
 public class BoardUndoRedoTest extends BaseServiceTest {
 
+  @NotNull
   private String articleId = Utils.getRandomString20();
   private AuthUser token;
 
@@ -202,7 +204,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
     assertTrue(squareD4.isOccupied());
   }
 
-  public Board undo(BoardBox boardBox) {
+  public Board undo(@NotNull BoardBox boardBox) {
     return boardBoxService().undo(boardBox, token).getBoard();
   }
 

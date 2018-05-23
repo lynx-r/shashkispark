@@ -3,19 +3,23 @@ package com.workingbit.share.model;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.util.Utils;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Created by Aleksey Popryadukhin on 02/04/2018.
  */
+//@JsonDeserialize(using = NotationDrivesDeserializer.class)
 public class NotationDrives extends LinkedList<NotationDrive> implements NotationFormat, DeepClone {
 
   public NotationDrives() {
   }
 
-  public NotationDrives(List<NotationDrive> notationDrives) {
+  public NotationDrives(@NotNull List<NotationDrive> notationDrives) {
     addAll(notationDrives);
   }
 
@@ -71,6 +75,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
       return new NotationDrives.Builder();
     }
 
+    @NotNull
     public NotationDrives.Builder add(NotationDrive drive) {
       drives.add(drive);
       return this;
@@ -80,7 +85,8 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
       return drives;
     }
 
-    public NotationDrives.Builder addAll(List<NotationDrive> drives) {
+    @NotNull
+    public NotationDrives.Builder addAll(@NotNull List<NotationDrive> drives) {
       this.drives.addAll(drives);
       return this;
     }

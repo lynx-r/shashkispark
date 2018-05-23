@@ -5,6 +5,7 @@ import com.workingbit.share.domain.impl.BoardBox;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.map.ListOrderedMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -23,17 +24,18 @@ public class BoardBoxes implements Payload {
     boardBoxList.forEach(this::push);
   }
 
-  public static BoardBoxes create(ListOrderedMap<String, BoardBox> collection) {
+  @NotNull
+  public static BoardBoxes create(@NotNull ListOrderedMap<String, BoardBox> collection) {
     BoardBoxes boardBoxes = new BoardBoxes();
     boardBoxes.putAll(collection);
     return boardBoxes;
   }
 
-  public void push(BoardBox boardBox) {
+  public void push(@NotNull BoardBox boardBox) {
     boardBoxes.put(String.valueOf(boardBox.getIdInArticle()), boardBox);
   }
 
-  public void putAll(ListOrderedMap<String, BoardBox> boardBoxes) {
+  public void putAll(@NotNull ListOrderedMap<String, BoardBox> boardBoxes) {
     this.boardBoxes.putAll(boardBoxes);
   }
 

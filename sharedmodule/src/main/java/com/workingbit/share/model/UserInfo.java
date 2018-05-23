@@ -5,6 +5,7 @@ import com.workingbit.share.model.enumarable.EnumAuthority;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,12 +24,14 @@ public class UserInfo implements Payload {
 
   private String creditCard;
 
+  @NotNull
   private Set<EnumAuthority> authorities = new HashSet<>();
 
   public void addAuthority(EnumAuthority role) {
     this.authorities.add(role);
   }
 
+  @NotNull
   public UserInfo authority(EnumAuthority role) {
     this.authorities.add(role);
     return this;

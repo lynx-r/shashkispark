@@ -13,6 +13,8 @@ import com.workingbit.share.model.UserCredentials;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.ClassRule;
 import org.junit.Test;
 import spark.servlet.SparkApplication;
@@ -34,6 +36,7 @@ import static org.junit.Assert.*;
  */
 public class SecurityControllerTest {
 
+  @NotNull
   private static String boardUrl = "/api/v1";
   private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
 
@@ -45,9 +48,11 @@ public class SecurityControllerTest {
     }
   }
 
+  @NotNull
   @ClassRule
   public static SparkServer<SecurityControllerTestSparkApplication> testServer = new SparkServer<>(SecurityControllerTestSparkApplication.class, randomPort);
 
+  @NotNull
   private AuthUser register() throws RequestException {
     String username = getRandomString20();
     String password = getRandomString20();
@@ -256,7 +261,7 @@ public class SecurityControllerTest {
 //    answer = post("/save-user-info", userInfo, authUserBanned, HTTP_FORBIDDEN);
 //    answer = get("/user-info", authUserBanned, HTTP_FORBIDDEN);
 //
-//    // create user
+//    // createNotationDrives user
 //    userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
 //    registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
 //    authUser = registerResult.getAuthUser();
@@ -283,7 +288,7 @@ public class SecurityControllerTest {
 //    answer = post("/save-user-info", userInfoBanned, unbanned, HTTP_OK);
 //  }
 
-  private Answer post(String path, Object payload, AuthUser authUser, int expectCode) throws HttpClientException {
+  private Answer post(String path, Object payload, @Nullable AuthUser authUser, int expectCode) throws HttpClientException {
     PostMethod resp = testServer.post(boardUrl + path, dataToJson(payload), false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {
@@ -303,7 +308,7 @@ public class SecurityControllerTest {
     return answer;
   }
 
-  private Answer post(String path, Object payload, AuthUser authUser, int expectCode, String[] errors) throws HttpClientException {
+  private Answer post(String path, Object payload, @Nullable AuthUser authUser, int expectCode, @NotNull String[] errors) throws HttpClientException {
     PostMethod resp = testServer.post(boardUrl + path, dataToJson(payload), false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {
@@ -324,7 +329,7 @@ public class SecurityControllerTest {
     return answer;
   }
 
-  private Answer get(String path, AuthUser authUser, int expectCode) throws HttpClientException {
+  private Answer get(String path, @Nullable AuthUser authUser, int expectCode) throws HttpClientException {
     var resp = testServer.get(boardUrl + path, false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {

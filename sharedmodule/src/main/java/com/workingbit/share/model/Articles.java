@@ -3,6 +3,7 @@ package com.workingbit.share.model;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.domain.impl.Article;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +21,7 @@ public class Articles implements Payload {
     this.articles = new ArrayList<>();
   }
 
-  public void addAll(Collection<Article> articles) {
+  public void addAll(@NotNull Collection<Article> articles) {
     this.articles.addAll(articles);
   }
 

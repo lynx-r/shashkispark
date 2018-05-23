@@ -7,6 +7,7 @@ import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +30,7 @@ public class NotationStoreService {
     store = cacheManager.getCache(notation, String.class, Map.class);
   }
 
-  public Optional<Notation> get(String userSession, DomainId notationId) {
+  public Optional<Notation> get(String userSession, @NotNull DomainId notationId) {
     Map map = store.get(notationId.getId());
     if (map != null) {
       return Optional.ofNullable((Notation) map.get(getKey(userSession, notationId.getId())));
@@ -37,13 +38,13 @@ public class NotationStoreService {
     return Optional.empty();
   }
 
-  public void put(String userSession, Notation notation) {
+  public void put(String userSession, @NotNull Notation notation) {
     String key = getKey(userSession, notation.getId());
     Map map = Map.of(key, notation);
     store.put(notation.getId(), map);
   }
 
-  public void remove(Notation notation) {
+  public void remove(@NotNull Notation notation) {
     store.remove(notation.getId());
   }
 

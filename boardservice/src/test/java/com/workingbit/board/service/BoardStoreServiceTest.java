@@ -2,6 +2,7 @@ package com.workingbit.board.service;
 
 
 import com.workingbit.share.domain.impl.BoardBox;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 /**
@@ -9,6 +10,7 @@ import org.junit.Test;
  */
 public class BoardStoreServiceTest {
 
+  @NotNull
   private BoardBoxStoreService store = new BoardBoxStoreService();
 
   @Test

@@ -184,7 +184,7 @@ class PdnReadingTokenizer extends Tokenizer {
         pattern = new TokenPattern(PdnReadingConstants.IDENTIFIER,
                                    "IDENTIFIER",
                                    TokenPattern.REGEXP_TYPE,
-                                   "[A-Z][a-zA-Z0-9_\\u0080-\\u9fff]*");
+                                   "[A-Z][a-zA-Z0-9_]*");
         addPattern(pattern);
 
         pattern = new TokenPattern(PdnReadingConstants.WHITESPACE,
