@@ -154,9 +154,9 @@ public class OrchestralService {
       Class[] classParams = Arrays.stream(params).map(Object::getClass).toArray(Class[]::new);
       Method method = getClass().getMethod(methodName, classParams);
       return (Optional<Answer>) method.invoke(this, params);
-    }catch(InvocationTargetException te) {
-      logger.error("INTERNAL REQUEST EXCEPTION: " + te.getMessage());
+    } catch (InvocationTargetException te) {
       if (te.getTargetException() instanceof RequestException) {
+        logger.error("INTERNAL REQUEST EXCEPTION: " + te.getMessage());
         throw ((RequestException) te.getTargetException());
       }
       throw RequestException.forbidden();

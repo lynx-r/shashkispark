@@ -3,9 +3,11 @@ package com.workingbit.board.dao;
 import com.workingbit.board.config.AppProperties;
 import com.workingbit.share.dao.BaseDao;
 import com.workingbit.share.dao.DaoFilters;
+import com.workingbit.share.dao.Unary;
 import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.model.DomainId;
+import com.workingbit.share.model.DomainIds;
 
 import java.util.List;
 
@@ -21,6 +23,16 @@ public class BoardDao extends BaseDao<Board> {
   public List<Board> findByBoardBoxId(DomainId boardBoxDomainId) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic.add(new ValueFilter("boardBoxId.id", boardBoxDomainId.getId(), "=", "S"));
+    return findByFilter(filterPublic);
+  }
+
+  public List<Board> findByBoardBoxIds(DomainIds boardBoxIds) {
+    DaoFilters filterPublic = new DaoFilters();
+    for (DomainId boardBoxId : boardBoxIds.getIds()) {
+      filterPublic.add(new ValueFilter("boardBoxId.id", boardBoxId.getId(), "=", "S"));
+      filterPublic.add(new Unary("or"));
+    }
+    filterPublic.removeLast();
     return findByFilter(filterPublic);
   }
 

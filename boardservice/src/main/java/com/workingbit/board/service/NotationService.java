@@ -41,7 +41,7 @@ class NotationService {
     }
   }
 
-  void save(AuthUser authUser, Notation notation) {
+  void save(AuthUser authUser, Notation notation, boolean publish) {
     if (authUser == null) {
       return;
     }
@@ -51,7 +51,9 @@ class NotationService {
     if (secure) {
       notation.setReadonly(false);
       notationDao.save(notation);
-      notationStoreService.remove(notation.getId());
+      if (publish) {
+        notationStoreService.remove(notation.getId());
+      }
     } else {
       notationStoreService.put(authUser.getUserSession(), notation);
     }

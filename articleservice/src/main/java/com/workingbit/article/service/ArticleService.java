@@ -97,7 +97,9 @@ public class ArticleService {
     article.setArticleStatus(articleClient.getArticleStatus());
     article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
     articleDao.save(article);
-    articleStoreService.remove(article.getId());
+    if (articleClient.getArticleStatus().equals(EnumArticleStatus.PUBLISHED)) {
+      articleStoreService.remove(article.getId());
+    }
     return article;
   }
 
