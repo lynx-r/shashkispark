@@ -7,6 +7,7 @@ import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
+import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -160,32 +161,13 @@ public class ArticleService {
   }
 
   public Articles findAll(String limitStr, AuthUser authUser) {
+    if (EnumAuthority.hasAuthorAuthorities(authUser)) {
+      return findAllDb(limitStr, authUser);
+    }
+
     return articleStoreService
         .getAllArticles()
-        .orElseGet(() -> {
-          int limit = appProperties.articlesFetchLimit();
-          if (!StringUtils.isBlank(limitStr)) {
-            limit = Integer.parseInt(limitStr);
-          }
-          Articles articles = new Articles();
-          try {
-            List<Article> published;
-            if (authUser.getUserId() == null) {
-              published = articleDao.findPublished(limit);
-            } else {
-              published = articleDao.findPublishedBy(limit, authUser);
-            }
-            articles.setArticles(published);
-            articleStoreService.putAllArticles(articles);
-            return articles;
-          } catch (DaoException e) {
-            if (e.getCode() == HTTP_NOT_FOUND) {
-              logger.info(e.getMessage());
-              return articles;
-            }
-            throw RequestException.badRequest();
-          }
-        });
+        .orElseGet(() -> findAllDb(limitStr, authUser));
   }
 
   public Article findByHru(String articleHru, AuthUser token) {
@@ -223,5 +205,30 @@ public class ArticleService {
     Articles articles = new Articles();
     articles.setArticles(published);
     return articles;
+  }
+
+  private Articles findAllDb(String limitStr, AuthUser authUser) {
+    int limit = appProperties.articlesFetchLimit();
+    if (!StringUtils.isBlank(limitStr)) {
+      limit = Integer.parseInt(limitStr);
+    }
+    Articles articles = new Articles();
+    try {
+      List<Article> published;
+      if (authUser.getUserId() == null) {
+        published = articleDao.findPublished(limit);
+      } else {
+        published = articleDao.findPublishedBy(limit, authUser);
+      }
+      articles.setArticles(published);
+      articleStoreService.putAllArticles(articles);
+      return articles;
+    } catch (DaoException e) {
+      if (e.getCode() == HTTP_NOT_FOUND) {
+        logger.info(e.getMessage());
+        return articles;
+      }
+      throw RequestException.badRequest();
+    }
   }
 }

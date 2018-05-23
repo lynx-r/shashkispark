@@ -177,6 +177,7 @@ public class SecureUserService {
             userBeforeSave.setUsername(userInfo.getUsername());
             SecureAuth secureAuthUpdated = secureAuth.deepClone();
             secureAuthUpdated.setUsername(userInfo.getUsername());
+            // todo обновлять автора в статьях
             try {
               loggedInService.replaceSecureAuth(secureAuth, secureAuthUpdated);
             } catch (CryptoException | IOException e) {

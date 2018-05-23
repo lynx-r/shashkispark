@@ -43,7 +43,7 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "humanReadableUrl")
   private String humanReadableUrl;
 
-  @DynamoDBIgnore
+  @DynamoDBAttribute(attributeName = "author")
   private String author;
 
   @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
