@@ -10,7 +10,7 @@ import java.io.IOException;
 public class JsonUtils {
   private static Logger logger = LoggerFactory.getLogger(JsonUtils.class);
 
-  private static final ObjectMapper mapper;
+  public static final ObjectMapper mapper;
 
   static {
     mapper = Utils.configureObjectMapper(new ObjectMapper());

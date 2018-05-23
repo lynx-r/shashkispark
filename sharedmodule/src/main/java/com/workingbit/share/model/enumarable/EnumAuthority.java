@@ -14,7 +14,7 @@ public enum EnumAuthority {
   ADMIN,
   ANONYMOUS,
   INTERNAL,
-  BANNED;
+  REMOVED;
 
   EnumAuthority() {
   }
@@ -36,6 +36,6 @@ public enum EnumAuthority {
   }
 
   public static boolean isBanned(Set<EnumAuthority> authorities) {
-    return hasAuthorities(authorities, Set.of(BANNED));
+    return hasAuthorities(authorities, Set.of(REMOVED));
   }
 }

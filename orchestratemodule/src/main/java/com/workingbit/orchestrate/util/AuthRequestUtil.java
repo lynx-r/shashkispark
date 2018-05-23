@@ -48,7 +48,7 @@ public class AuthRequestUtil {
   }
 
   public static boolean hasAuthorities(Set<EnumAuthority> clientAuthorities, Set<EnumAuthority> allowedAuthorities) {
-    if (clientAuthorities.contains(EnumAuthority.BANNED)) {
+    if (clientAuthorities.contains(EnumAuthority.REMOVED)) {
       return false;
     }
     return !allowedAuthorities.isEmpty() && EnumAuthority.hasAuthorities(clientAuthorities, allowedAuthorities);

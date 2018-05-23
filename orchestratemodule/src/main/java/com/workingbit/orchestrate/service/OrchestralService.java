@@ -235,7 +235,7 @@ public class OrchestralService {
   }
 
   public String checkTokenCache(AuthUser authUser) {
-    return RedisUtil.checkTokenCache(authUser);
+    return RedisUtil.getTokenCache(authUser);
   }
 
   public void cacheSecureAuth(SecureAuth auth) {
@@ -244,15 +244,15 @@ public class OrchestralService {
   }
 
   public SecureAuth getSecureAuth(String userSession) {
-    return RedisUtil.checkAuthUser(userSession);
+    return RedisUtil.getSecureAuthByUserSession(userSession);
   }
 
   public SecureAuth getSecureAuthUsername(String username) {
-    return RedisUtil.checkAuthUserName(username);
+    return RedisUtil.getSecureAuthByUsername(username);
   }
 
   public void removeSecureAuth(AuthUser authUser) {
-    RedisUtil.removeSecureAuth(authUser.getUserSession());
-    RedisUtil.removeSecureAuthUsername(authUser.getUsername());
+    RedisUtil.removeSecureAuthByUserSession(authUser.getUserSession());
+    RedisUtil.removeSecureAuthByUserUsername(authUser.getUsername());
   }
 }

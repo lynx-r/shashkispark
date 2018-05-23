@@ -122,11 +122,11 @@ public class ArticleControllerTest {
     UserInfo userInfo = orchestralService
         .userInfo(headers)
         .get();
-    userInfo.addAuthority(EnumAuthority.BANNED);
+    userInfo.addAuthority(EnumAuthority.REMOVED);
     answer = orchestralService.saveUserInfoAnswer(userInfo, headers).get();
     UserInfo savedUserInfo = (UserInfo) answer.getBody();
     headers = answer.getAuthUser();
-    assertTrue(savedUserInfo.getAuthorities().contains(EnumAuthority.BANNED));
+    assertTrue(savedUserInfo.getAuthorities().contains(EnumAuthority.REMOVED));
     articleNotAuthorized = put(ARTICLE_PROTECTED.getPath(), article, headers).getMessage();
     assertEquals(HTTP_FORBIDDEN, articleNotAuthorized.getCode());
 
@@ -134,7 +134,7 @@ public class ArticleControllerTest {
     answer = orchestralService.authenticateAnswer(headers).get();
     assertEquals(HTTP_OK, answer.getStatusCode());
     headers = answer.getAuthUser();
-    assertTrue(headers.getAuthorities().contains(EnumAuthority.BANNED));
+    assertTrue(headers.getAuthorities().contains(EnumAuthority.REMOVED));
 
     answer = put(ARTICLE_PROTECTED.getPath(), article, headers);
     assertEquals(HTTP_FORBIDDEN, answer.getStatusCode());

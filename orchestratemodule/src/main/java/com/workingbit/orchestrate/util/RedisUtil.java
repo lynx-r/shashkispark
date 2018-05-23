@@ -5,9 +5,11 @@ import com.workingbit.orchestrate.exception.OrchestrateException;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.Payload;
 import com.workingbit.share.model.SecureAuth;
+import com.workingbit.share.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.*;
+import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,9 @@ public class RedisUtil {
 //    config.setTransportMode(TransportMode.NIO);
     config.useSingleServer()
         .setAddress("redis://" + moduleProperties.redisHost() + ":" + moduleProperties.redisPort());
-
+    config.setNettyThreads(4);
+    config.setThreads(4);
+    config.setCodec(new JsonJacksonCodec(JsonUtils.mapper));
     reddison = Redisson.create(config);
   }
 
@@ -70,7 +74,7 @@ public class RedisUtil {
     }
   }
 
-  public static String checkTokenCache(AuthUser authUser) {
+  public static String getTokenCache(AuthUser authUser) {
     RListMultimapCache<Object, Object> tokenCache = reddison.getListMultimapCache(CACHE_TOKEN_MAP);
     String key = authUser.getUserSession();
     String value = authUser.getAccessToken();
@@ -92,9 +96,9 @@ public class RedisUtil {
     tokenCache.put(userSession, authUser);
   }
 
-  public static SecureAuth checkAuthUser(String username) {
+  public static SecureAuth getSecureAuthByUserSession(String userSession) {
     RMapCache<Object, Object> mapCache = reddison.getMapCache(CACHE_SECURE_AUTH_USERSESSION);
-    return (SecureAuth) mapCache.get(username);
+    return (SecureAuth) mapCache.get(userSession);
   }
 
   public static void cacheSecureAuthUsername(String username, String userSession) {
@@ -102,19 +106,22 @@ public class RedisUtil {
     tokenCache.put(username, userSession);
   }
 
-  public static SecureAuth checkAuthUserName(String username) {
+  public static SecureAuth getSecureAuthByUsername(String username) {
     RMapCache<Object, Object> userSessionMap = reddison.getMapCache(CACHE_SECURE_AUTH_USERNAME);
     String userSession = (String) userSessionMap.get(username);
+    if (userSession == null) {
+      return null;
+    }
     RMapCache<Object, Object> mapCache = reddison.getMapCache(CACHE_SECURE_AUTH_USERSESSION);
     return (SecureAuth) mapCache.get(userSession);
   }
 
-  public static void removeSecureAuth(String userSession) {
-    RMapCache<Object, Object> userSessionMap = reddison.getMapCache(CACHE_SECURE_AUTH_USERNAME);
+  public static void removeSecureAuthByUserSession(String userSession) {
+    RMapCache<Object, Object> userSessionMap = reddison.getMapCache(CACHE_SECURE_AUTH_USERSESSION);
     userSessionMap.remove(userSession);
   }
 
-  public static void removeSecureAuthUsername(String username) {
+  public static void removeSecureAuthByUserUsername(String username) {
     RMapCache<Object, Object> userSessionMap = reddison.getMapCache(CACHE_SECURE_AUTH_USERNAME);
     userSessionMap.remove(username);
   }
