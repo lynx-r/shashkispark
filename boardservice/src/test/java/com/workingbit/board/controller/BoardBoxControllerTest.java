@@ -5,6 +5,7 @@ import com.despegar.sparkjava.test.SparkServer;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.workingbit.board.BoardEmbedded;
 import com.workingbit.board.config.Authority;
+import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
@@ -71,9 +72,13 @@ public class BoardBoxControllerTest {
     DomainId boardBoxId = DomainId.getRandomID();
     DomainId articleId = DomainId.getRandomID();
 
-    BoardBox boardBox = getBoardBox(boardBoxId, articleId, authUser);
+    List bb = getBoardBox(boardBoxId, articleId, authUser, false);
 
-    boardBox = (BoardBox) post(Authority.BOARD_ADD_DRAUGHT_PROTECTED.getPath(), boardBox, authUser).getBody();
+    BoardBox boardBox = (BoardBox) bb.get(0);
+    authUser = (AuthUser) bb.get(1);
+
+    Answer post = post(Authority.BOARD_ADD_DRAUGHT_PROTECTED.getPath(), boardBox, authUser);
+    boardBox = (BoardBox) post.getBody();
     Board board = boardBox.getBoard();
     Draught draught = board.getWhiteDraughts().get("c3");
     assertTrue(draught != null);
@@ -92,7 +97,10 @@ public class BoardBoxControllerTest {
     DomainId boardBoxId = DomainId.getRandomID();
     DomainId articleId = DomainId.getRandomID();
 
-    BoardBox boardBox = getBoardBox(boardBoxId, articleId, authUser);
+    List bb = getBoardBox(boardBoxId, articleId, authUser, false);
+
+    BoardBox boardBox = (BoardBox) bb.get(0);
+    authUser = (AuthUser) bb.get(1);
 
     GetMethod resp = testServer.get(boardUrl + "/board/" + boardBoxId, false);
     HttpResponse execute = testServer.execute(resp);
@@ -113,20 +121,23 @@ public class BoardBoxControllerTest {
     DomainId boardBoxId = DomainId.getRandomID();
     DomainId articleId = DomainId.getRandomID();
 
-    BoardBox boardBox = getBoardBox(boardBoxId, articleId, null);
+//    List bb = getBoardBox(boardBoxId, articleId, authUser, false);
+//
+//    BoardBox boardBox = (BoardBox) bb.get(0);
+//    authUser = (AuthUser) bb.get(1);
 
-    boardBox = (BoardBox) post("/highlight", boardBox, null).getBody();
-    Board board = boardBox.getBoard();
-    List<Square> highlighted = board.getSquares()
-        .stream()
-        .filter(Objects::nonNull)
-        .filter(Square::isHighlight)
-        .collect(Collectors.toList());
-    assertEquals(highlighted.size(), 2);
-    highlighted.forEach(square -> {
-      square.setDim(8);
-    });
-    testCollection("b4,d4", highlighted);
+//    boardBox = (BoardBox) post("/highlight", boardBox, null).getBody();
+//    Board board = boardBox.getBoard();
+//    List<Square> highlighted = board.getSquares()
+//        .stream()
+//        .filter(Objects::nonNull)
+//        .filter(Square::isHighlight)
+//        .collect(Collectors.toList());
+//    assertEquals(highlighted.size(), 2);
+//    highlighted.forEach(square -> {
+//      square.setDim(8);
+//    });
+//    testCollection("b4,d4", highlighted);
   }
 
   @Test
@@ -136,14 +147,12 @@ public class BoardBoxControllerTest {
 
     AuthUser authUser = register();
 
-    BoardBox boardBox = getBoardBox(boardBoxId, articleId, authUser);
+    List bb = getBoardBox(boardBoxId, articleId, authUser, false);
 
-    Square nextSquare = boardBox.getBoard().getSquares().stream()
-        .filter(Objects::nonNull)
-        .peek(square -> square.setDim(8))
-        .filter(square -> square.getNotation().equals("b4"))
-        .findFirst()
-        .get();
+    BoardBox boardBox = (BoardBox) bb.get(0);
+    authUser = (AuthUser) bb.get(1);
+
+    Square nextSquare = findSquare(boardBox, "b4");
     nextSquare.setHighlight(true);
     boardBox.getBoard().setNextSquare(nextSquare);
 
@@ -160,25 +169,85 @@ public class BoardBoxControllerTest {
     assertTrue(moved.isOccupied());
   }
 
-  private BoardBox getBoardBox(DomainId boardBoxId, DomainId articleId, AuthUser authUser) throws HttpClientException {
+  @Test
+  public void switchTo() throws Exception {
+    DomainId boardBoxId = DomainId.getRandomID();
+    DomainId articleId = DomainId.getRandomID();
+
+    AuthUser authUser = register();
+    List bb = getBoardBox(boardBoxId, articleId, authUser, true);
+    BoardBox boardBox = (BoardBox) bb.get(0);
+    authUser = (AuthUser) bb.get(1);
+
+    List<? extends DeepClone> move = move(boardBox, authUser, "g3", "h4");
+    move = move(((BoardBox) move.get(0)), ((AuthUser) move.get(1)), "b6", "a5");
+    move = move(((BoardBox) move.get(0)), ((AuthUser) move.get(1)), "e3", "f4");
+    move = move(((BoardBox) move.get(0)), ((AuthUser) move.get(1)), "d6", "c5");
+
+    BoardBox bbox = (BoardBox)move.get(0);
+    NotationDrive notationDrive = bbox.getNotation().getNotationHistory().get(2);
+    bbox.getNotation().getNotationHistory().setCurrentNotationDrive(notationDrive);
+    Answer post = post(Authority.BOARD_FORK_PROTECTED.getPath(), move.get(0), (AuthUser) move.get(1));
+    BoardBoxes bboxes = (BoardBoxes) post.getBody();
+    BoardBox finalBbox = bbox;
+    bbox = bboxes.getBoardBoxes().valueList().stream().filter(b->b.getId().equals(finalBbox.getId())).findFirst().get();
+    authUser = post.getAuthUser();
+    assertEquals(2, bbox.getNotation().getNotationHistory().getLast().getVariants().size());
+  }
+
+  private List<? extends DeepClone> move(BoardBox boardBox, AuthUser authUser, String sel, String nex) throws HttpClientException {
+    Square selectedSquare = findSquare(boardBox, sel);
+    boardBox.getBoard().setSelectedSquare(selectedSquare);
+
+    Square nextSquare = findSquare(boardBox, nex);
+    nextSquare.setHighlight(true);
+    boardBox.getBoard().setNextSquare(nextSquare);
+
+    Answer post = post(Authority.BOARD_MOVE_PROTECTED.getPath(), boardBox, authUser);
+    boardBox = (BoardBox) post.getBody();
+    authUser = post.getAuthUser();
+    Board board = boardBox.getBoard();
+    Square moved = board.getSquares()
+        .stream()
+        .filter(Objects::nonNull)
+        .peek(square -> square.setDim(8))
+        .filter(square -> square.getNotation().equals(nex))
+        .findFirst()
+        .get();
+    assertTrue(moved.isOccupied());
+    return List.of(boardBox, authUser);
+  }
+
+  public Square findSquare(BoardBox boardBox, String notation) {
+    return boardBox.getBoard().getSquares().stream()
+        .filter(Objects::nonNull)
+        .peek(square -> square.setDim(8))
+        .filter(square -> square.getNotation().equals(notation))
+        .findFirst()
+        .get();
+  }
+
+  private List<DeepClone> getBoardBox(DomainId boardBoxId, DomainId articleId, AuthUser authUser, boolean fillBoard) throws HttpClientException {
     CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
     createBoardPayload.setArticleId(articleId);
     createBoardPayload.setBoardBoxId(boardBoxId);
     createBoardPayload.setRules(EnumRules.RUSSIAN);
-    createBoardPayload.setFillBoard(false);
+    createBoardPayload.setFillBoard(fillBoard);
+    createBoardPayload.setEditMode(EnumEditBoardBoxMode.EDIT);
     createBoardPayload.setBlack(false);
     UnirestUtil.configureSerialization();
     BoardBox body = (BoardBox) post(Authority.BOARD_PROTECTED.getPath(), createBoardPayload, authUser).getBody();
     assertNotNull(body);
 
-    body.setEditMode(EnumEditBoardBoxMode.PLACE);
-    body = (BoardBox) put(Authority.BOARD_PROTECTED.getPath(), body, authUser).getBody();
+//    body.setEditMode(EnumEditBoardBoxMode.PLACE);
+//    Answer put = put(Authority.BOARD_PROTECTED.getPath(), body, authUser);
+//    body = (BoardBox) put.getBody();
+//    authUser = put.getAuthUser();
 
-    BoardBox boardBox = (BoardBox) get(Authority.BOARD_PROTECTED + "/" + body.getId()).getBody();
-    Board board = boardBox.getBoard();
-    Square square = new Square(5, 2, 8, true, new Draught(5, 2, 8));
-    board.setSelectedSquare(square);
-    return boardBox;
+    Answer post = post(Authority.BOARD_BY_ID.getPath().replace(":id", body.getId()), body.getDomainId(), authUser);
+    authUser = post.getAuthUser();
+    BoardBox boardBox = (BoardBox) post.getBody();
+    return List.of(boardBox, authUser);
   }
 
   private Answer post(String path, Object payload, AuthUser authUser) throws HttpClientException {
@@ -202,7 +271,7 @@ public class BoardBoxControllerTest {
   }
 
   private Answer get(String params) throws HttpClientException {
-    GetMethod resp = testServer.get(boardUrl + "/" + params, false);
+    GetMethod resp = testServer.get(boardUrl + params, false);
     HttpResponse execute = testServer.execute(resp);
     return jsonToData(new String(execute.body()), Answer.class);
   }
