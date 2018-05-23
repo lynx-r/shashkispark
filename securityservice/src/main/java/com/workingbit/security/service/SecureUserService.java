@@ -217,7 +217,7 @@ public class SecureUserService {
         return secureAuth;
       }
     } catch (IllegalBlockSizeException | BadPaddingException e) {
-      logger.error(String.format("Unable to decrypt accessToken %s", accessToken));
+      logger.warn(String.format("Unable to decrypt accessToken %s", accessToken));
     }
     return null;
   }

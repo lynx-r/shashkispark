@@ -395,7 +395,7 @@ public class BoardBoxService {
     // switch to new board
     if (success) {
       return notationDrives
-          .getLastNotationBoardId()
+          .getLastNotationBoardIdInVariants()
           .map(boardId -> saveBoardBoxAfterSwitchFork(authUser, boardBox, boardId))
           .orElse(null);
     }
