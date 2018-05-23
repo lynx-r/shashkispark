@@ -1,6 +1,7 @@
 package com.workingbit.security.service;
 
 import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.exception.CryptoException;
 import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
@@ -12,11 +13,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
 import static com.workingbit.security.SecurityEmbedded.appProperties;
+import static com.workingbit.security.SecurityEmbedded.loggedInService;
 import static com.workingbit.security.SecurityEmbedded.siteUserInfoDao;
 import static com.workingbit.share.common.RequestConstants.SESSION_LENGTH;
 import static com.workingbit.share.util.Utils.*;
@@ -31,13 +34,7 @@ public class SecureUserService {
   public AuthUser register(UserCredentials userCredentials) {
     try {
       String username = userCredentials.getUsername();
-      boolean duplicateName = true;
-      try {
-        siteUserInfoDao.findByUsername(username);
-      } catch (DaoException e) {
-        duplicateName = false;
-      }
-      if (duplicateName) {
+      if (loggedInService.findByUsername(username) != null) {
         throw RequestException.forbidden();
       }
       SecureAuth secureAuth = new SecureAuth();
@@ -65,6 +62,7 @@ public class SecureUserService {
 
       // send access token and userSession
       orchestralService.cacheSecureAuth(secureAuth);
+      loggedInService.registerUser(secureAuth);
       return AuthUser.simpleUser(secureAuth.getUserId(), username, secureAuth.getAccessToken(), userSession, secureAuth.getAuthorities());
     } catch (Exception e) {
       logger.error("UNREGISTERED: " + userCredentials, e.getMessage());
@@ -76,7 +74,14 @@ public class SecureUserService {
     String username = userCredentials.getUsername();
     SecureAuth secureAuth = orchestralService.getSecureAuthUsername(username);
     if (secureAuth == null) {
-      throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+      try {
+        secureAuth = loggedInService.findByUsername(username);
+      } catch (CryptoException | IOException e) {
+        throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+      }
+      if (secureAuth == null) {
+        throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+      }
     }
     try {
       // hash credentials
@@ -170,6 +175,13 @@ public class SecureUserService {
           SiteUserInfo byUsername = siteUserInfoDao.findByUsername(userInfo.getUsername());
           if (byUsername == null) {
             userBeforeSave.setUsername(userInfo.getUsername());
+            SecureAuth secureAuthUpdated = secureAuth.deepClone();
+            secureAuthUpdated.setUsername(userInfo.getUsername());
+            try {
+              loggedInService.replaceSecureAuth(secureAuth, secureAuthUpdated);
+            } catch (CryptoException | IOException e) {
+              throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CHANGE_USERNAME);
+            }
           } else {
             throw RequestException.badRequest(ErrorMessages.USERNAME_IS_BUSY);
           }

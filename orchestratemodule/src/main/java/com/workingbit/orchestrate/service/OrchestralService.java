@@ -30,6 +30,7 @@ import static com.workingbit.orchestrate.util.RedisUtil.putInternalRequest;
 import static com.workingbit.share.common.DBConstants.DATE_TIME_FORMATTER;
 import static com.workingbit.share.util.Utils.getRandomString20;
 import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Collections.emptyMap;
 
@@ -155,9 +156,14 @@ public class OrchestralService {
       Method method = getClass().getMethod(methodName, classParams);
       return (Optional<Answer>) method.invoke(this, params);
     } catch (InvocationTargetException te) {
-      if (te.getTargetException() instanceof RequestException) {
-        logger.error("INTERNAL REQUEST EXCEPTION: " + te.getMessage());
-        throw ((RequestException) te.getTargetException());
+      Throwable targetException = te.getTargetException();
+      if (targetException instanceof RequestException) {
+        if (((RequestException) targetException).getCode() == HTTP_FORBIDDEN) {
+          logger.warn(targetException.getMessage());
+        } else {
+          logger.error("INTERNAL REQUEST EXCEPTION: " + te.getMessage());
+        }
+        throw ((RequestException) targetException);
       }
       throw RequestException.forbidden();
     } catch (NoSuchMethodException | IllegalAccessException e) {

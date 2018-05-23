@@ -78,6 +78,9 @@ public class ArticleService {
       logger.error("Unable to create board");
       throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CREATE_BOARD);
     }
+    Articles all = findAll("50", authUser);
+    all.add(article);
+    articleStoreService.putAllArticles(all);
     return createArticleResponse;
   }
 
@@ -152,27 +155,32 @@ public class ArticleService {
   }
 
   public Articles findAll(String limitStr, AuthUser authUser) {
-    int limit = appProperties.articlesFetchLimit();
-    if (!StringUtils.isBlank(limitStr)) {
-      limit = Integer.parseInt(limitStr);
-    }
-    Articles articles = new Articles();
-    try {
-      List<Article> published;
-      if (authUser.getUserId() == null) {
-        published = articleDao.findPublished(limit);
-      } else {
-        published = articleDao.findPublishedBy(limit, authUser);
-      }
-      articles.setArticles(published);
-      return articles;
-    } catch (DaoException e) {
-      if (e.getCode() == HTTP_NOT_FOUND) {
-        logger.info(e.getMessage());
-        return articles;
-      }
-      throw RequestException.badRequest();
-    }
+    return articleStoreService
+        .getAllArticles()
+        .orElseGet(() -> {
+          int limit = appProperties.articlesFetchLimit();
+          if (!StringUtils.isBlank(limitStr)) {
+            limit = Integer.parseInt(limitStr);
+          }
+          Articles articles = new Articles();
+          try {
+            List<Article> published;
+            if (authUser.getUserId() == null) {
+              published = articleDao.findPublished(limit);
+            } else {
+              published = articleDao.findPublishedBy(limit, authUser);
+            }
+            articles.setArticles(published);
+            articleStoreService.putAllArticles(articles);
+            return articles;
+          } catch (DaoException e) {
+            if (e.getCode() == HTTP_NOT_FOUND) {
+              logger.info(e.getMessage());
+              return articles;
+            }
+            throw RequestException.badRequest();
+          }
+        });
   }
 
   public Article findByHru(String articleHru, AuthUser token) {

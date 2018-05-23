@@ -26,4 +26,6 @@ public interface AppProperties {
   int tokenLength();
 
   String superHashEnvName();
+
+  String passwordFileKey();
 }

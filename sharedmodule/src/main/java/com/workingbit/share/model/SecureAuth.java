@@ -1,5 +1,6 @@
 package com.workingbit.share.model;
 
+import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +15,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SecureAuth {
+public class SecureAuth implements DeepClone {
 
   private DomainId userId;
   private String username;

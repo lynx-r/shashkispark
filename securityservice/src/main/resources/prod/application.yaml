@@ -10,3 +10,4 @@ app:
   sessionLength: 20
   tokenLength: 20
   superHashEnvName: SHASHKI_SUPER_USER
+  passwordFileKey: yGqa2Ga3wCqVb65U

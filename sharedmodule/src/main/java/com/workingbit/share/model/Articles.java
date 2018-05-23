@@ -23,4 +23,8 @@ public class Articles implements Payload {
   public void addAll(Collection<Article> articles) {
     this.articles.addAll(articles);
   }
+
+  public void add(Article article) {
+    articles.add(article);
+  }
 }

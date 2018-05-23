@@ -5,6 +5,7 @@ import com.workingbit.security.config.AppProperties;
 import com.workingbit.security.config.Authority;
 import com.workingbit.security.controller.SecurityController;
 import com.workingbit.security.dao.SiteUserInfoDao;
+import com.workingbit.security.service.LoggedInService;
 import com.workingbit.security.service.SecureUserService;
 import com.workingbit.share.exception.ExceptionHandler;
 import com.workingbit.share.common.ErrorMessages;
@@ -31,6 +32,7 @@ public class SecurityEmbedded {
   public static AppProperties appProperties;
   public static SecureUserService secureUserService;
   public static SiteUserInfoDao siteUserInfoDao;
+  public static LoggedInService loggedInService;
 
   static {
     OrchestrateModule.loadModule();
@@ -40,6 +42,7 @@ public class SecurityEmbedded {
     siteUserInfoDao = new SiteUserInfoDao(appProperties);
 
     secureUserService = new SecureUserService();
+    loggedInService = new LoggedInService();
   }
 
   public static void main(String[] args) {
