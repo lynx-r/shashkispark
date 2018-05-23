@@ -21,6 +21,8 @@ public class UserInfo implements Payload {
   private DomainId userId;
   private String username;
 
+  private String creditCard;
+
   private Set<EnumAuthority> authorities = new HashSet<>();
 
   public void addAuthority(EnumAuthority role) {

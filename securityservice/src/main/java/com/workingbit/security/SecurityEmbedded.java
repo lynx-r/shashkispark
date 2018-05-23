@@ -4,7 +4,7 @@ import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.security.config.AppProperties;
 import com.workingbit.security.config.Authority;
 import com.workingbit.security.controller.SecurityController;
-import com.workingbit.security.dao.SecureUserDao;
+import com.workingbit.security.dao.SiteUserInfoDao;
 import com.workingbit.security.service.SecureUserService;
 import com.workingbit.share.exception.ExceptionHandler;
 import com.workingbit.share.common.ErrorMessages;
@@ -30,14 +30,14 @@ public class SecurityEmbedded {
   // Declare dependencies
   public static AppProperties appProperties;
   public static SecureUserService secureUserService;
-  public static SecureUserDao secureUserDao;
+  public static SiteUserInfoDao siteUserInfoDao;
 
   static {
     OrchestrateModule.loadModule();
 
     appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
-    secureUserDao = new SecureUserDao(appProperties);
+    siteUserInfoDao = new SiteUserInfoDao(appProperties);
 
     secureUserService = new SecureUserService();
   }

@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /**
  * Created by Aleksey Popryadukhin on 18/04/2018.
  */
-public class SecureUserServiceTest {
+public class SiteUserInfoServiceTest {
 
   private SecureUserService secureUserService = new SecureUserService();
 

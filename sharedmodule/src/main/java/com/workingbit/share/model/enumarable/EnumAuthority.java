@@ -34,4 +34,8 @@ public enum EnumAuthority {
   public static boolean isAnonymous(AuthUser authUser) {
     return hasAuthorities(authUser.getAuthorities(), Set.of(ANONYMOUS));
   }
+
+  public static boolean isBanned(Set<EnumAuthority> authorities) {
+    return hasAuthorities(authorities, Set.of(BANNED));
+  }
 }
