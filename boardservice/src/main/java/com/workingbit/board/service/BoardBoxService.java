@@ -336,10 +336,6 @@ public class BoardBoxService {
     var updated = find(boardBox, authUser);
     Board currentBoard = updated.getBoard();
     Square squareLink = findSquareByLink(selectedSquare, currentBoard);
-    if (squareLink == null) {
-      logger.error("Unable to add a draught");
-      throw RequestException.badRequest(ErrorMessages.UNABLE_TO_ADD_DRAUGHT);
-    }
     try {
       currentBoard = boardService.addDraught(currentBoard, squareLink.getNotation(), draught);
     } catch (Exception e) {
@@ -458,7 +454,7 @@ public class BoardBoxService {
   @NotNull
   private BoardBox updateBoardBox(BoardBox boardBox, @NotNull AuthUser authUser) {
     Board board = boardService.findById(boardBox.getBoardId());
-    Notation notation = notationService.findById(authUser, boardBox.getNotationId());
+    Notation notation = notationService.findById(boardBox.getNotationId(), authUser);
     board = boardService.resetHighlightAndUpdate(board);
     board.setReadonly(boardBox.isReadonly());
     boardBox.setBoard(board);
@@ -471,7 +467,7 @@ public class BoardBoxService {
   @NotNull
   private BoardBox updatePublicBoardBox(@NotNull AuthUser authUser, @NotNull BoardBox boardBox) {
     fillWithBoards(new BoardBoxes(List.of(boardBox)));
-    Notation notation = notationService.findById(authUser, boardBox.getNotationId());
+    Notation notation = notationService.findPublicById(boardBox.getNotationId(), authUser);
     boardBox.setNotation(notation);
     boardBox.setNotationId(notation.getDomainId());
     boardBoxStoreService.put(authUser.getUserSession(), boardBox);

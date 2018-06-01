@@ -21,29 +21,11 @@ import static com.workingbit.board.BoardEmbedded.*;
  */
 class NotationService {
 
-  Notation findById(@Nullable AuthUser authUser, @NotNull DomainId notationId) {
+  Notation findById(@NotNull DomainId notationId, @Nullable AuthUser authUser) {
     if (authUser == null) {
       throw RequestException.notFound404();
     }
-
-//    boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
-//    if (secure) {
-//      return notationDao.findById(notationId);
-//    } else {
-    var notation = notationStoreService
-        .get(authUser.getUserSession(), notationId)
-        .orElseGet(() -> notationDao.findById(notationId));
-
-    NotationDrives notTask = notation.getNotationHistory().getNotation()
-        .stream()
-        .filter(nd -> !nd.isTaskBelow())
-        .collect(Collectors.toCollection(NotationDrives::new));
-    if (notation.getNotationHistory().getNotation().size() != notTask.size()) {
-      notation.getNotationHistory().setNotation(notTask);
-    }
-    notationStoreService.put(authUser.getUserSession(), notation);
-    return notation;
-//    }
+    return notationDao.findById(notationId);
   }
 
   void save(@NotNull Notation notation, @Nullable AuthUser authUser) {
@@ -113,5 +95,25 @@ class NotationService {
       draught.setDim(dimension);
       return draught;
     });
+  }
+
+  Notation findPublicById(@NotNull DomainId notationId, @Nullable AuthUser authUser) {
+    if (authUser == null) {
+      throw RequestException.notFound404();
+    }
+
+    var notation = notationStoreService
+        .get(authUser.getUserSession(), notationId)
+        .orElseGet(() -> notationDao.findById(notationId));
+
+    NotationDrives notTask = notation.getNotationHistory().getNotation()
+        .stream()
+        .filter(nd -> !nd.isTaskBelow())
+        .collect(Collectors.toCollection(NotationDrives::new));
+    if (notation.getNotationHistory().getNotation().size() != notTask.size()) {
+      notation.getNotationHistory().setNotation(notTask);
+    }
+    notationStoreService.put(authUser.getUserSession(), notation);
+    return notation;
   }
 }
