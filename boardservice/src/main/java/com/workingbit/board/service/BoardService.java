@@ -30,6 +30,8 @@ import static java.lang.String.format;
 public class BoardService {
 
   private Logger logger = LoggerFactory.getLogger(BoardService.class);
+  private static final String SERVER_BOARD = "serverBoard";
+  private static final String MOVES_LIST = "movesList";
 
   Board createBoard(@NotNull CreateBoardPayload newBoardRequest) {
     Board board = initBoard(newBoardRequest.isFillBoard(), newBoardRequest.isBlack(),
@@ -132,7 +134,7 @@ public class BoardService {
       throw new BoardServiceException(ErrorMessages.INVALID_HIGHLIGHT);
     }
     MovesList movesList = getHighlightedBoard(serverBoard.isBlackTurn(), serverBoard);
-    return Map.of("serverBoard", serverBoard, "movesList", movesList);
+    return Map.of(SERVER_BOARD, serverBoard, MOVES_LIST, movesList);
   }
 
   @NotNull Map getSimpleHighlight(@NotNull Board serverBoard, @NotNull Board clientBoard) {
@@ -142,7 +144,7 @@ public class BoardService {
       throw new BoardServiceException(ErrorMessages.INVALID_HIGHLIGHT);
     }
     MovesList movesList = getHighlightedAssignedMoves(serverBoard.getSelectedSquare());
-    return Map.of("serverBoard", serverBoard, "movesList", movesList);
+    return Map.of(SERVER_BOARD, serverBoard, MOVES_LIST, movesList);
   }
 
   private boolean isValidHighlight(@Nullable Square selectedSquare) {
@@ -162,8 +164,8 @@ public class BoardService {
    */
   public Board move(@NotNull Board serverBoard, @NotNull Board clientBoard, @NotNull NotationHistory notationHistory, boolean save) {
     Map highlight = getHighlight(serverBoard, clientBoard);
-    serverBoard = (Board) highlight.get("serverBoard");
-    MovesList movesList = (MovesList) highlight.get("movesList");
+    serverBoard = (Board) highlight.get(SERVER_BOARD);
+    MovesList movesList = (MovesList) highlight.get(MOVES_LIST);
     Set<Square> allowed = movesList.getAllowed();
     TreeSquare captured = movesList.getCaptured();
     if (allowed.isEmpty()) {
@@ -327,7 +329,7 @@ public class BoardService {
       return serverBoard;
     }
     serverBoard = serverBoard.deepClone();
-    List<String> moves = notationMove.getMoveNotationsPdn();
+    List<String> moves = notationMove.getMoveNotations();
     Iterator<String> iterator = moves.iterator();
     Utils.setRandomIdAndCreatedAt(serverBoard);
     batchBoards.add(serverBoard);

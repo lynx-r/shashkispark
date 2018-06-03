@@ -112,9 +112,7 @@ public class ArticleService {
     articleStoreService.remove(article);
 
     // replace edited article
-    Articles all = findAll("50", token);
-    all.replace(article);
-    articleStoreService.putAllArticles(all);
+    updateAllCache(token, article);
     return article;
   }
 
@@ -159,6 +157,7 @@ public class ArticleService {
       article.setSelectedBoardBoxId(boardBox.getDomainId());
       article.setBoardBoxCount(boardBoxCount);
       articleDao.save(article);
+      articleStoreService.put(authUser.getUserSession(), article);
 
       CreateArticleResponse articleResponse = CreateArticleResponse.createArticleResponse();
       articleResponse.setArticle(article);
@@ -169,12 +168,9 @@ public class ArticleService {
   }
 
   public Articles findAll(@NotNull String limitStr, @NotNull AuthUser authUser) {
-    if (EnumAuthority.hasAuthorAuthorities(authUser)) {
-      return findAllDb(limitStr, authUser);
-    }
-
+    boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     return articleStoreService
-        .getAllArticles()
+        .getAllArticles(secure)
         .orElseGet(() -> findAllDb(limitStr, authUser));
   }
 
@@ -213,6 +209,7 @@ public class ArticleService {
     }
     Articles articles = new Articles();
     articles.setArticles(published);
+    articleStoreService.putAllArticles(articles);
     return articles;
   }
 
@@ -240,5 +237,11 @@ public class ArticleService {
       }
       throw RequestException.badRequest();
     }
+  }
+
+  private void updateAllCache(@NotNull AuthUser token, Article article) {
+    Articles all = findAll(appProperties.articlesFetchLimit().toString(), token);
+    all.replace(article);
+    articleStoreService.putAllArticles(all);
   }
 }

@@ -31,8 +31,8 @@ import static java.lang.String.format;
 public class BoardBoxService {
 
   private final Logger logger = LoggerFactory.getLogger(BoardBoxService.class);
-  private final static BoardService boardService = new BoardService();
-  private final static NotationService notationService = new NotationService();
+  private static final BoardService boardService = new BoardService();
+  private static final NotationService notationService = new NotationService();
 
   @NotNull
   public BoardBox createBoardBox(@NotNull CreateBoardPayload createBoardPayload, @NotNull AuthUser authUser) {
@@ -467,7 +467,7 @@ public class BoardBoxService {
   @NotNull
   private BoardBox updatePublicBoardBox(@NotNull AuthUser authUser, @NotNull BoardBox boardBox) {
     fillWithBoards(new BoardBoxes(List.of(boardBox)));
-    Notation notation = notationService.findPublicById(boardBox.getNotationId(), authUser);
+    Notation notation = notationService.findById(boardBox.getNotationId(), authUser);
     boardBox.setNotation(notation);
     boardBox.setNotationId(notation.getDomainId());
     boardBoxStoreService.put(authUser.getUserSession(), boardBox);
@@ -543,6 +543,7 @@ public class BoardBoxService {
     while (down ? i >= 0 : i < diagonals.size()) {
       Square square = diagonals.get(i);
       if (square.isOccupied() && square.getDraught().isBlack() == black) {
+        // fixme
         if (!square.getDraught().isQueen() && tries > 1) {
           if (down) {
             i--;

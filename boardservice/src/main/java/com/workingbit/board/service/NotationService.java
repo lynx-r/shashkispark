@@ -5,14 +5,16 @@ import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.exception.RequestException;
-import com.workingbit.share.model.*;
+import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.model.DomainId;
+import com.workingbit.share.model.NotationFen;
+import com.workingbit.share.model.NotationHistory;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
 
@@ -21,12 +23,12 @@ import static com.workingbit.board.BoardEmbedded.*;
  */
 class NotationService {
 
-  Notation findById(@NotNull DomainId notationId, @Nullable AuthUser authUser) {
-    if (authUser == null) {
-      throw RequestException.notFound404();
-    }
-    return notationDao.findById(notationId);
-  }
+//  Notation findById(@NotNull DomainId notationId, @Nullable AuthUser authUser) {
+//    if (authUser == null) {
+//      throw RequestException.notFound404();
+//    }
+//    return notationDao.findById(notationId);
+//  }
 
   void save(@NotNull Notation notation, @Nullable AuthUser authUser) {
     if (authUser == null) {
@@ -97,23 +99,12 @@ class NotationService {
     });
   }
 
-  Notation findPublicById(@NotNull DomainId notationId, @Nullable AuthUser authUser) {
+  Notation findById(@NotNull DomainId notationId, @Nullable AuthUser authUser) {
     if (authUser == null) {
       throw RequestException.notFound404();
     }
-
-    var notation = notationStoreService
+    return notationStoreService
         .get(authUser.getUserSession(), notationId)
         .orElseGet(() -> notationDao.findById(notationId));
-
-    NotationDrives notTask = notation.getNotationHistory().getNotation()
-        .stream()
-        .filter(nd -> !nd.isTaskBelow())
-        .collect(Collectors.toCollection(NotationDrives::new));
-    if (notation.getNotationHistory().getNotation().size() != notTask.size()) {
-      notation.getNotationHistory().setNotation(notTask);
-    }
-    notationStoreService.put(authUser.getUserSession(), notation);
-    return notation;
   }
 }

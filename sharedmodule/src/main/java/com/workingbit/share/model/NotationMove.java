@@ -46,35 +46,18 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public String getNotationInFormat(EnumNotationFormat notationFormat) {
-    return getMoveNotations(notationFormat)
+  private String getNotationAsString() {
+    return getMoveNotations()
         .stream()
         .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getSimple() : CAPTURE.getSimple()));
   }
 
   @JsonIgnore
   @DynamoDBIgnore
-  private String getNotationPdn() {
-    return getMoveNotations(EnumNotationFormat.DIGITAL)
-        .stream()
-        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdn() : CAPTURE.getPdn()));
-  }
-
-  @JsonIgnore
-  @DynamoDBIgnore
-  private List<String> getMoveNotations(EnumNotationFormat format) {
+  public List<String> getMoveNotations() {
     return move
         .stream()
-        .map(move -> move.getNotation())
-        .collect(Collectors.toList());
-  }
-
-  @JsonIgnore
-  @DynamoDBIgnore
-  public List<String> getMoveNotationsPdn() {
-    return move
-        .stream()
-        .map(move -> move.getNotation())
+        .map(NotationSimpleMove::getNotation)
         .collect(Collectors.toList());
   }
 
@@ -82,12 +65,12 @@ public class NotationMove implements DeepClone, NotationFormat {
   public void setNotation(String ignore) {
   }
 
-  public void setNotationFormat(EnumNotationFormat format) {
+  void setNotationFormat(EnumNotationFormat format) {
     this.notationFormat = format;
     move.forEach(m -> m.setFormat(format));
   }
 
-  public void setBoardDimension(int dimension) {
+  void setBoardDimension(int dimension) {
     this.boardDimension = dimension;
     move.forEach(m -> m.setBoardDimension(dimension));
   }
@@ -96,7 +79,6 @@ public class NotationMove implements DeepClone, NotationFormat {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof NotationMove)) return false;
-//    if (!super.equals(o)) return false;
     NotationMove that = (NotationMove) o;
     return type == that.type &&
         Objects.equals(move, that.move);
@@ -104,7 +86,6 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   @Override
   public int hashCode() {
-
     return Objects.hash(super.hashCode(), type, move);
   }
 
@@ -135,18 +116,16 @@ public class NotationMove implements DeepClone, NotationFormat {
   }
 
   @NotNull
-  public String print(String prefix) {
-    return new StringBuilder()
-        .append(prefix).append(getClass().getSimpleName())
-        .append(prefix).append("\t").append("type: ").append(type)
-        .append(prefix).append("\t").append("move: ").append(move.toString())
+  String print(String prefix) {
+    return prefix + getClass().getSimpleName() +
+        prefix + "\t" + "type: " + type +
+        prefix + "\t" + "move: " + move.toString() +
 //        .append(prefix).append("\t").append("cursor: ").append(cursor)
-        .append(prefix).append("\t").append("moveStrength: ").append(moveStrength)
-        .toString();
+        prefix + "\t" + "moveStrength: " + moveStrength;
   }
 
   public String asString() {
-    String stroke = getNotationInFormat(notationFormat) + (moveStrength != null ? " " + moveStrength : " ");
+    String stroke = getNotationAsString() + (moveStrength != null ? " " + moveStrength : " ");
     return String.format("%1$-10s", stroke);
   }
 
@@ -176,18 +155,20 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public Optional<DomainId> getLastMoveBoardId() {
+  Optional<DomainId> getLastMoveBoardId() {
     return Optional.ofNullable(move.getLast().getBoardId());
   }
 
   public void addMove(String previousNotation, DomainId prevBoardId, String currentNotation, DomainId currentBoardId) {
-    move = new LinkedList<>() {{
-      add(new NotationSimpleMove(previousNotation, prevBoardId));
-      add(new NotationSimpleMove(currentNotation, currentBoardId));
-    }};
+    move = new LinkedList<>(
+        List.of(
+            new NotationSimpleMove(previousNotation, prevBoardId),
+            new NotationSimpleMove(currentNotation, currentBoardId)
+        )
+    );
   }
 
-  public void resetCursor() {
+  void resetCursor() {
     move.forEach(m -> m.setCursor(false));
   }
 

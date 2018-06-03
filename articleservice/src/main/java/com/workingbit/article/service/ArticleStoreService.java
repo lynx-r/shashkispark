@@ -50,12 +50,12 @@ public class ArticleStoreService {
     return Optional.empty();
   }
 
-  public void put(String userSession, @NotNull Article article) {
+  void put(String userSession, @NotNull Article article) {
     Map map = Map.of(getKey(userSession, article.getHumanReadableUrl(), article.getSelectedBoardBoxId().getId()), article);
     storeArticle.put(article.getHumanReadableUrl(), map);
   }
 
-  public void remove(@NotNull Article article) {
+  void remove(@NotNull Article article) {
     storeArticle.remove(article.getHumanReadableUrl());
   }
 
@@ -63,11 +63,16 @@ public class ArticleStoreService {
     return key + ":" + articleHru + ":" + selectedBoardBoxId;
   }
 
-  public void putAllArticles(Articles articles) {
+  void putAllArticles(Articles articles) {
     storeArticles.put(ALL_ARTICLES_KEY, articles);
   }
 
-  public Optional<Articles> getAllArticles() {
-    return Optional.ofNullable(storeArticles.get(ALL_ARTICLES_KEY));
+  Optional<Articles> getAllArticles(boolean secure) {
+    Articles all = storeArticles.get(ALL_ARTICLES_KEY);
+    if (all == null || all.isEmpty()) {
+      return Optional.empty();
+    }
+    all.setSecureArticles(secure);
+    return Optional.of(all);
   }
 }

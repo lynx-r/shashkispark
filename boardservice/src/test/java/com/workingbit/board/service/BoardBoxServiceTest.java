@@ -633,9 +633,9 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
 
 //      String firstBoardId = boardBox.getNotation().getNotationHistory().get(1).getMoves().getFirst().getBoardId();
-//      Board board = boardDao.findPublicById(firstBoardId);
+//      Board board = boardDao.findById(firstBoardId);
 //      String initBoardId = board.getPreviousBoards().getLastOrCreateIfRoot().getBoardId();
-//      board = boardDao.findPublicById(initBoardId);
+//      board = boardDao.findById(initBoardId);
 //      board.setNotationHistory(NotationHistory.createWithRoot());
 //      boardBox.setBoard(board);
 //      boardBox.getNotation().setNotationHistory(board.getNotationHistory());
