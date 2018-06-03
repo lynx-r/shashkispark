@@ -1,6 +1,7 @@
 package com.workingbit.share.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import static com.workingbit.share.util.Utils.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class NotationSimpleMove {
+public class NotationSimpleMove implements DeepClone {
   private String notation;
   private DomainId boardId;
   private boolean cursor;

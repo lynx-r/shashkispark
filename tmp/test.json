@@ -1,43 +1,43 @@
 {
   "body": {
     "type": "BoardBox",
-    "id": "OliT6l2ieNxTFGWZrEKI",
-    "createdAt": "2018-05-25T08:43:42.209129",
-    "updatedAt": "2018-05-25T08:43:44.577449",
+    "id": "WGGhT8GikbysLmjr8B5V",
+    "createdAt": "2018-06-03T17:58:41.017861",
+    "updatedAt": "2018-06-03T17:58:43.610446",
     "userId": {
       "type": "DomainId",
-      "id": "0l7VguFlPGA0d3yKw3u7",
-      "createdAt": "2018-05-25T05:19:37.411895",
-      "readonly": false,
-      "updatedAt": null
+      "id": "5cMXO6ZdbXZLKpxtle93",
+      "createdAt": "2018-06-03T17:48:40.123083",
+      "updatedAt": null,
+      "readonly": false
     },
     "articleId": {
       "type": "DomainId",
-      "id": "EF6nDPVmbo8HQQWNBKOO",
-      "createdAt": "2018-05-25T08:43:42.209203",
-      "readonly": false,
-      "updatedAt": null
+      "id": "JBLnhsmymQh1sxkjWEqk",
+      "createdAt": "2018-06-03T17:58:41.018384",
+      "updatedAt": null,
+      "readonly": false
     },
     "idInArticle": 1,
     "boardId": {
       "type": "DomainId",
-      "id": "wedvYhm0C4jh37kSTleh",
-      "createdAt": "2018-05-25T08:43:42.299032",
-      "readonly": false,
-      "updatedAt": null
+      "id": "nF3XztQLmtGydQRVSLOa",
+      "createdAt": "2018-06-03T17:58:42.503673",
+      "updatedAt": null,
+      "readonly": false
     },
     "publicBoards": [],
     "board": {
       "type": "Board",
-      "id": "wedvYhm0C4jh37kSTleh",
-      "createdAt": "2018-05-25T08:43:42.299032",
-      "updatedAt": "2018-05-25T08:43:44.605136",
+      "id": "nF3XztQLmtGydQRVSLOa",
+      "createdAt": "2018-06-03T17:58:42.503673",
+      "updatedAt": "2018-06-03T17:58:43.700276",
       "boardBoxId": {
         "type": "DomainId",
-        "id": "OliT6l2ieNxTFGWZrEKI",
-        "createdAt": "2018-05-25T08:43:42.209129",
-        "readonly": false,
-        "updatedAt": null
+        "id": "WGGhT8GikbysLmjr8B5V",
+        "createdAt": "2018-06-03T17:58:41.017861",
+        "updatedAt": null,
+        "readonly": false
       },
       "blackDraughts": {
         "h6": {
@@ -46,7 +46,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "h-2",
@@ -58,7 +58,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "h0",
@@ -70,7 +70,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "g-1",
@@ -82,7 +82,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "f-2",
@@ -94,7 +94,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "f0",
@@ -106,7 +106,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "e-1",
@@ -118,7 +118,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "d-2",
@@ -130,7 +130,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "d0",
@@ -142,7 +142,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "c-1",
@@ -154,7 +154,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "b-2",
@@ -166,7 +166,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "b0",
@@ -178,7 +178,7 @@
           "black": true,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "a-1",
@@ -192,7 +192,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "h-6",
@@ -204,7 +204,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "g-7",
@@ -216,7 +216,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "g-5",
@@ -228,7 +228,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "f-6",
@@ -240,7 +240,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "e-7",
@@ -252,7 +252,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "e-5",
@@ -264,7 +264,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "d-6",
@@ -276,7 +276,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "c-7",
@@ -288,7 +288,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "c-5",
@@ -300,7 +300,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "b-6",
@@ -312,7 +312,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "a-7",
@@ -324,7 +324,7 @@
           "black": false,
           "queen": false,
           "captured": false,
-          "markCaptured": false,
+          "markCaptured": 0,
           "highlight": false,
           "updatedAt": null,
           "notation": "a-5",
@@ -347,7 +347,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "b0",
@@ -370,7 +370,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "d0",
@@ -393,7 +393,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "f0",
@@ -416,7 +416,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "h0",
@@ -438,7 +438,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "a-1",
@@ -461,7 +461,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "c-1",
@@ -484,7 +484,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "e-1",
@@ -507,7 +507,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "g-1",
@@ -531,7 +531,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "b-2",
@@ -554,7 +554,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "d-2",
@@ -577,7 +577,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "f-2",
@@ -600,7 +600,7 @@
             "black": true,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "h-2",
@@ -718,7 +718,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "a-5",
@@ -741,7 +741,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "c-5",
@@ -764,7 +764,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "e-5",
@@ -787,7 +787,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "g-5",
@@ -811,7 +811,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "b-6",
@@ -834,7 +834,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "d-6",
@@ -857,7 +857,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "f-6",
@@ -880,7 +880,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "h-6",
@@ -902,7 +902,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "a-7",
@@ -925,7 +925,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "c-7",
@@ -948,7 +948,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "e-7",
@@ -971,7 +971,7 @@
             "black": false,
             "queen": false,
             "captured": false,
-            "markCaptured": false,
+            "markCaptured": 0,
             "highlight": false,
             "updatedAt": null,
             "notation": "g-7",
@@ -992,22 +992,22 @@
     },
     "notationId": {
       "type": "DomainId",
-      "id": "j8n5hxHjKf9FolOyElqC",
-      "createdAt": "2018-05-25T08:43:42.33057",
-      "readonly": false,
-      "updatedAt": null
+      "id": "JMf7ir9JxQQTM4mZwZ1m",
+      "createdAt": "2018-06-03T17:58:43.59401",
+      "updatedAt": null,
+      "readonly": false
     },
     "notation": {
       "type": "Notation",
-      "id": "j8n5hxHjKf9FolOyElqC",
-      "createdAt": "2018-05-25T08:43:42.33057",
-      "updatedAt": "2018-05-25T08:43:44.652748",
+      "id": "JMf7ir9JxQQTM4mZwZ1m",
+      "createdAt": "2018-06-03T17:58:43.59401",
+      "updatedAt": "2018-06-03T17:58:43.784365",
       "boardBoxId": {
         "type": "DomainId",
-        "id": "OliT6l2ieNxTFGWZrEKI",
-        "createdAt": "2018-05-25T08:43:42.209129",
-        "readonly": false,
-        "updatedAt": null
+        "id": "WGGhT8GikbysLmjr8B5V",
+        "createdAt": "2018-06-03T17:58:41.017861",
+        "updatedAt": null,
+        "readonly": false
       },
       "tags": {
         "Event": "",
@@ -1019,7 +1019,24 @@
         "Result": "",
         "FEN": ""
       },
+      "notationHistoryId": {
+        "type": "DomainId",
+        "id": "zi9d4VLTK016c1DcFSd9",
+        "createdAt": "2018-06-03T17:58:43.594082",
+        "updatedAt": null,
+        "readonly": false
+      },
       "notationHistory": {
+        "id": "zi9d4VLTK016c1DcFSd9",
+        "createdAt": "2018-06-03T17:58:43.594082",
+        "updatedAt": "2018-06-03T17:58:43.86357",
+        "notationId": {
+          "type": "DomainId",
+          "id": "JMf7ir9JxQQTM4mZwZ1m",
+          "createdAt": "2018-06-03T17:58:43.59401",
+          "updatedAt": null,
+          "readonly": false
+        },
         "notation": [
           {
             "notationNumber": "0. ",
@@ -1034,42 +1051,211 @@
             "current": false,
             "previous": false,
             "idInVariants": 0,
+            "ancestors": 0,
+            "parentId": 0,
+            "parentColor": null,
+            "driveColor": null,
             "taskBelow": false,
             "notationNumberInt": 0
           }
         ],
-        "currentNotationDrive": 0,
-        "variantNotationDrive": 0
+        "notationLine": {
+          "currentNotationDrive": null,
+          "variantNotationDrive": null
+        },
+        "readonly": false,
+        "currentNotationDrive": null,
+        "variantNotationDrive": null
+      },
+      "forkedNotations": {
+        "com.workingbit.share.model.NotationLine@2da2eceb": {
+          "id": "zi9d4VLTK016c1DcFSd9",
+          "createdAt": "2018-06-03T17:58:43.594082",
+          "updatedAt": "2018-06-03T17:58:43.86357",
+          "notationId": {
+            "type": "DomainId",
+            "id": "JMf7ir9JxQQTM4mZwZ1m",
+            "createdAt": "2018-06-03T17:58:43.59401",
+            "updatedAt": null,
+            "readonly": false
+          },
+          "notation": [
+            {
+              "notationNumber": "0. ",
+              "moves": [],
+              "variants": [],
+              "ellipses": false,
+              "notationFormat": null,
+              "boardDimension": 8,
+              "comment": null,
+              "root": true,
+              "selected": true,
+              "current": false,
+              "previous": false,
+              "idInVariants": 0,
+              "ancestors": 0,
+              "parentId": 0,
+              "parentColor": null,
+              "driveColor": null,
+              "taskBelow": false,
+              "notationNumberInt": 0
+            }
+          ],
+          "notationLine": {
+            "currentNotationDrive": null,
+            "variantNotationDrive": null
+          },
+          "readonly": false,
+          "currentNotationDrive": null,
+          "variantNotationDrive": null
+        }
+      },
+      "notationFen": {
+        "turn": "W",
+        "blackTurn": false,
+        "black": {
+          "squares": [
+            {
+              "k": false,
+              "number": "4"
+            },
+            {
+              "k": false,
+              "number": "8"
+            },
+            {
+              "k": false,
+              "number": "11"
+            },
+            {
+              "k": false,
+              "number": "3"
+            },
+            {
+              "k": false,
+              "number": "7"
+            },
+            {
+              "k": false,
+              "number": "10"
+            },
+            {
+              "k": false,
+              "number": "2"
+            },
+            {
+              "k": false,
+              "number": "6"
+            },
+            {
+              "k": false,
+              "number": "9"
+            },
+            {
+              "k": false,
+              "number": "1"
+            },
+            {
+              "k": false,
+              "number": "5"
+            },
+            {
+              "k": false,
+              "number": "12"
+            }
+          ]
+        },
+        "white": {
+          "squares": [
+            {
+              "k": false,
+              "number": "22"
+            },
+            {
+              "k": false,
+              "number": "25"
+            },
+            {
+              "k": false,
+              "number": "29"
+            },
+            {
+              "k": false,
+              "number": "21"
+            },
+            {
+              "k": false,
+              "number": "28"
+            },
+            {
+              "k": false,
+              "number": "32"
+            },
+            {
+              "k": false,
+              "number": "24"
+            },
+            {
+              "k": false,
+              "number": "27"
+            },
+            {
+              "k": false,
+              "number": "31"
+            },
+            {
+              "k": false,
+              "number": "23"
+            },
+            {
+              "k": false,
+              "number": "26"
+            },
+            {
+              "k": false,
+              "number": "30"
+            }
+          ]
+        },
+        "boardId": {
+          "type": "DomainId",
+          "id": "nF3XztQLmtGydQRVSLOa",
+          "createdAt": "2018-06-03T17:58:42.503673",
+          "updatedAt": null,
+          "readonly": false
+        },
+        "size": 12,
+        "asString": "[FEN \"W:W22,25,29,21,28,32,24,27,31,23,26,30:B4,8,11,3,7,10,2,6,9,1,5,12\"]"
       },
       "readonly": false,
       "rules": "RUSSIAN",
-      "format": "БУКВЕННЫЙ",
+      "format": "ALPHANUMERIC",
       "formats": [
-        "ЧИСЛОВОЙ",
-        "БУКВЕННЫЙ"
+        "DIGITAL",
+        "ALPHANUMERIC"
       ],
-      "asString": "[Event \"\"]\n[Site \"\"]\n[Date \"\"]\n[Round \"\"]\n[White \"\"]\n[Black \"\"]\n[Result \"\"]\n[FEN \"\"]\n\n * ",
-      "asTreeString": "[Event \"\"]\n[Site \"\"]\n[Date \"\"]\n[Round \"\"]\n[White \"\"]\n[Black \"\"]\n[Result \"\"]\n[FEN \"\"]\n\n * "
+      "asString": "[Event \"\"]\n[Site \"\"]\n[Date \"\"]\n[Round \"\"]\n[White \"\"]\n[Black \"\"]\n[Result \"\"]\n[FEN \"W:W22,25,29,21,28,32,24,27,31,23,26,30:B4,8,11,3,7,10,2,6,9,1,5,12\"]\n",
+      "asTreeString": "[Event \"\"]\n[Site \"\"]\n[Date \"\"]\n[Round \"\"]\n[White \"\"]\n[Black \"\"]\n[Result \"\"]\n\n * "
     },
     "editMode": "EDIT",
     "readonly": false,
     "visiblePublic": true,
     "task": false
   },
-  "id": "JBKnxtQmFffZN8i1vStR",
+  "id": "dw41sf5R6fGmkM0jMC3A",
   "statusCode": 201,
   "authUser": {
     "type": "AuthUser",
     "userId": {
       "type": "DomainId",
-      "id": "0l7VguFlPGA0d3yKw3u7",
-      "createdAt": "2018-05-25T05:19:37.411895",
-      "readonly": false,
-      "updatedAt": null
+      "id": "5cMXO6ZdbXZLKpxtle93",
+      "createdAt": "2018-06-03T17:48:40.123083",
+      "updatedAt": null,
+      "readonly": false
     },
     "username": "123",
-    "accessToken": "g912ius2H3qBHTzVgtYNC92tjol8URjU6Zvm1ED4e1M=",
-    "userSession": "Shi819jVpaqBmeR2Md4h",
+    "accessToken": "gxryWwMO7y38wsD95TA7IJtEl4nu/piC2kGXn2JenYQ=",
+    "userSession": "QTsrGn0rsxDmpLtUQq1W",
     "timestamp": 0,
     "filters": {
       "filters": []

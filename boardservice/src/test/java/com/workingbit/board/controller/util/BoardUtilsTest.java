@@ -6,7 +6,7 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.enumarable.EnumRules;
-import com.workingbit.share.model.NotationHistory;
+import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.util.Utils;
 import org.junit.Test;
 
@@ -123,7 +123,7 @@ public class BoardUtilsTest extends BaseServiceTest {
     System.out.println(diagonal1);
     assertFalse(isSubDiagonal(diagonal1, diagonal0));
 //     TODO more checks
-//    assertTrue(isSubDiagonal(diagonal0, Collections.singletonList(diagonal0.get(2))));
+//    assertTrue(isSubDiagonal(diagonal0, Collections.singletonList(diagonal0.getNotation(2))));
   }
 
   private Board getBoardFilled() {

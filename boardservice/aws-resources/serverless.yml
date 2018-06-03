@@ -169,6 +169,24 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
 
+    DynamoDbTableSHASHKIWIKINotationHistory:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: SHASHKIWIKINotationHistory
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
     DynamoDBIamPolicySHASHKIWIKIBoardBox:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableSHASHKIWIKIBoardBox
@@ -226,6 +244,26 @@ resources:
                 - dynamodb:Scan
                 - dynamodb:Query
               Resource: arn:aws:dynamodb:*:*:table/SHASHKIWIKINotation
+        Roles:
+          - Ref: IamRoleLambdaExecution
+
+    DynamoDBIamPolicySHASHKIWIKINotationHistory:
+      Type: AWS::IAM::Policy
+      DependsOn: DynamoDbTableSHASHKIWIKINotationHistory
+      Properties:
+        PolicyName: lambda-dynamodb-SHASHKIWIKINotationHistory
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+                - dynamodb:Query
+              Resource: arn:aws:dynamodb:*:*:table/SHASHKIWIKINotationHistory
         Roles:
           - Ref: IamRoleLambdaExecution
 

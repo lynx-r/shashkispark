@@ -1,14 +1,12 @@
 package com.workingbit.share.domain.impl;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.ListOrderedMapConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.model.DomainId;
-import com.workingbit.share.model.NotationFen;
-import com.workingbit.share.model.NotationHistory;
-import com.workingbit.share.model.Payload;
+import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumNotation;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
@@ -20,8 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.workingbit.share.common.NotationConstants.NOTATION_DEFAULT_TAGS;
 
@@ -66,8 +63,18 @@ public class Notation extends BaseDomain implements Payload {
   private ListOrderedMap<String, String> tags;
 
   @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
-  @DynamoDBAttribute(attributeName = "notationHistory")
+  @DynamoDBAttribute(attributeName = "notationHistoryId")
+  private DomainId notationHistoryId;
+
+  @JsonIgnore
+  @DynamoDBAttribute(attributeName = "prevVariantId")
+  private Integer prevVariantId;
+
+  @DynamoDBIgnore
   private NotationHistory notationHistory;
+
+  @DynamoDBIgnore
+  private Map<String, NotationHistory> forkedNotations;
 
   @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "notationFen")
@@ -89,8 +96,9 @@ public class Notation extends BaseDomain implements Payload {
 
   public Notation() {
     setTags(new ListOrderedMap<>());
-    notationHistory = NotationHistory.createWithRoot();
     notationFen = new NotationFen();
+    notationHistory = NotationHistory.createWithRoot();
+    forkedNotations = new HashMap<>();
     format = EnumNotationFormat.ALPHANUMERIC;
     formats = EnumNotationFormat.values();
   }
@@ -181,5 +189,32 @@ public class Notation extends BaseDomain implements Payload {
           }
       );
     }
+  }
+
+  public void addNotationHistory(NotationHistory notationHistory) {
+    forkedNotations.put(notationHistory.getId(), notationHistory);
+  }
+
+  public void addNotationHistoryAll(List<NotationHistory> byNotationId) {
+    byNotationId.forEach(this::addNotationHistory);
+  }
+
+  public void updateAllNotations(int forkFromNotationDrive, String id, NotationDrives notationDrives) {
+    forkedNotations.replaceAll((s, nh) -> {
+      if (!s.equals(id)) {
+        notationDrives.getCurrentVariant()
+            .ifPresent(notationDrive ->
+                nh.get(forkFromNotationDrive).addVariant(notationDrive));
+      }
+      return nh;
+    });
+  }
+
+  public Optional<NotationHistory> findNotationHistoryByLine(NotationLine notationLine) {
+    return getForkedNotations().values()
+        .stream()
+        .filter(notationHistory -> notationHistory.getCurrentIndex().equals(notationLine.getCurrentIndex())
+            && notationHistory.getVariantIndex().equals(notationLine.getVariantIndex()))
+        .findFirst();
   }
 }

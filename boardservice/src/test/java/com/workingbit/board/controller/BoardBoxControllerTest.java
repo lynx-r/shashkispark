@@ -7,10 +7,7 @@ import com.workingbit.board.BoardEmbedded;
 import com.workingbit.board.config.Authority;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.domain.ICoordinates;
-import com.workingbit.share.domain.impl.Board;
-import com.workingbit.share.domain.impl.BoardBox;
-import com.workingbit.share.domain.impl.Draught;
-import com.workingbit.share.domain.impl.Square;
+import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumRules;
@@ -128,8 +125,8 @@ public class BoardBoxControllerTest {
 
 //    List bb = getBoardBox(boardBoxId, articleId, authUser, false);
 //
-//    BoardBox boardBox = (BoardBox) bb.get(0);
-//    authUser = (AuthUser) bb.get(1);
+//    BoardBox boardBox = (BoardBox) bb.getNotation(0);
+//    authUser = (AuthUser) bb.getNotation(1);
 
 //    boardBox = (BoardBox) post("/highlight", boardBox, null).getBody();
 //    Board board = boardBox.getBoard();
@@ -228,7 +225,7 @@ public class BoardBoxControllerTest {
   private List<? extends DeepClone> fork(List<? extends DeepClone> move, int numberToSwitch) throws HttpClientException {
     BoardBox bbox = (BoardBox) move.get(0);
     NotationDrive notationDrive = bbox.getNotation().getNotationHistory().get(numberToSwitch);
-    bbox.getNotation().getNotationHistory().setCurrentNotationDrive(numberToSwitch);
+    bbox.getNotation().getNotationHistory().getNotationLine().setCurrentIndex(numberToSwitch);
     Answer post = post(Authority.BOARD_FORK_PROTECTED.getPath(), move.get(0), (AuthUser) move.get(1));
     BoardBoxes bboxes = (BoardBoxes) post.getBody();
     BoardBox finalBbox = bbox;
@@ -285,9 +282,9 @@ public class BoardBoxControllerTest {
     assertNotNull(body);
 
 //    body.setEditMode(EnumEditBoardBoxMode.PLACE);
-//    Answer put = put(Authority.BOARD_PROTECTED.getPath(), body, authUser);
-//    body = (BoardBox) put.getBody();
-//    authUser = put.getAuthUser();
+//    Answer putNotation = putNotation(Authority.BOARD_PROTECTED.getPath(), body, authUser);
+//    body = (BoardBox) putNotation.getBody();
+//    authUser = putNotation.getAuthUser();
 
     Answer post = post(Authority.BOARD_BY_ID.getPath().replace(":id", body.getId()), body.getDomainId(), authUser);
     authUser = post.getAuthUser();

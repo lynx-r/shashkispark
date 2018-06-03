@@ -12,7 +12,7 @@ import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.DomainId;
-import com.workingbit.share.model.NotationHistory;
+import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;

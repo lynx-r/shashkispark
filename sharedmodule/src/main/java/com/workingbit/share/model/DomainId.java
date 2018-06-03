@@ -53,7 +53,7 @@ public class DomainId extends BaseDomain implements Payload {
   }
 
   @Override
-  public void setUpdatedAt(LocalDateTime createdAt) {
+  public void setUpdatedAt(LocalDateTime updatedAt) {
   }
 
   @DynamoDBIgnore

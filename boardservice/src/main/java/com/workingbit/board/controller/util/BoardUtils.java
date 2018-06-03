@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.ErrorMessages;
-import com.workingbit.share.domain.impl.Board;
-import com.workingbit.share.domain.impl.Draught;
-import com.workingbit.share.domain.impl.Square;
-import com.workingbit.share.domain.impl.TreeSquare;
+import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumNotation;
 import com.workingbit.share.model.enumarable.EnumRules;
@@ -378,7 +375,6 @@ public class BoardUtils {
   private static void pushSimpleMove(Board board, NotationHistory notationHistory,
                                      DomainId prevBoardId, int notationNumber) {
     NotationMoves moves = new NotationMoves();
-
     NotationMove notationMove = NotationMove.create(EnumNotation.SIMPLE);
 
     String previousNotation = board.getPreviousSquare().getNotation();
@@ -391,7 +387,6 @@ public class BoardUtils {
     boolean isWhiteTurn = notationNumber != 0;
     if (isWhiteTurn) {
       NotationDrive notationDrive = NotationDrive.create(moves);
-
       notationDrive.setNotationNumberInt(notationNumber);
       notationHistory.add(notationDrive);
     } else {

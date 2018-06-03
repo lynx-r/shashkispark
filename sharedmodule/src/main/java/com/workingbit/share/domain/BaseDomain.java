@@ -39,7 +39,7 @@ public abstract class BaseDomain implements Serializable, DeepClone, Cloneable {
   @Nullable
   public abstract LocalDateTime getUpdatedAt();
 
-  public abstract void setUpdatedAt(LocalDateTime createdAt);
+  public abstract void setUpdatedAt(LocalDateTime updatedAt);
 
   public abstract boolean isReadonly();
 

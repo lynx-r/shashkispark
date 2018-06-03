@@ -221,7 +221,7 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 ////    boardHistoryService.addBoardAndSave(board);
 //    Optional<BoardHistory> boardHistory = boardHistoryService.getHistory(board.getId());
 //    assertTrue(boardHistory.isPresent());
-//    assertEquals(boardHistory.get().getCurrent().getData(), board);
+//    assertEquals(boardHistory.getNotation().getCurrent().getData(), board);
 //  }
 //
 //  @Test
@@ -230,12 +230,12 @@ public class BoardUndoRedoTest extends BaseServiceTest {
 ////    boardHistoryService.addBoardAndSave(board);
 //    Optional<BoardHistory> boardHistory = boardHistoryService.getHistory(board.getId());
 //    assertTrue(boardHistory.isPresent());
-//    assertEquals(boardHistory.get().getCurrent().getData(), board);
+//    assertEquals(boardHistory.getNotation().getCurrent().getData(), board);
 //
 ////    boardHistoryService.addBoardAndSave(board);
 //    boardHistory = boardHistoryService.getHistory(board.getId());
 //    assertTrue(boardHistory.isPresent());
-//    assertEquals(boardHistory.get().getCurrent().getData(), board);
+//    assertEquals(boardHistory.getNotation().getCurrent().getData(), board);
 //  }
 
 //  @Test

@@ -149,7 +149,7 @@ public class Draught extends BaseDomain implements ICoordinates {
   }
 
   @Override
-  public void setUpdatedAt(LocalDateTime createdAt) {
+  public void setUpdatedAt(LocalDateTime updatedAt) {
 
   }
 

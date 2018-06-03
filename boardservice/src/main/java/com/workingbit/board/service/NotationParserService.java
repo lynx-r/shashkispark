@@ -5,7 +5,7 @@ import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.NotationFen;
-import com.workingbit.share.model.NotationHistory;
+import com.workingbit.share.domain.impl.NotationHistory;
 import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;

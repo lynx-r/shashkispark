@@ -17,7 +17,7 @@ public class BoardStoreServiceTest {
   public void test_cache() {
     BoardBox value = new BoardBox();
     store.put("1", value);
-//    BoardBox boardBox = store.get("1", "").get();
+//    BoardBox boardBox = store.getNotation("1", "").getNotation();
 //    assertEquals(value, boardBox);
   }
 }

@@ -11,7 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Aleksey Popryaduhin on 21:29 03/10/2017.
@@ -87,7 +88,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
     moves = new NotationMoves();
   }
 
-  NotationDrive(boolean root) {
+  public NotationDrive(boolean root) {
     this();
     this.root = root;
   }
@@ -252,5 +253,47 @@ public class NotationDrive implements DeepClone, NotationFormat {
   @DynamoDBIgnore
   public NotationDrive getLastVariant() {
     return variants.getLast();
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  public Optional<NotationDrive> getVariantById(int idInVariants) {
+    return variants
+        .stream()
+        .filter(notationDrive -> notationDrive.getIdInVariants() == idInVariants)
+        .findFirst();
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  public List<NotationDrive> getVariantSubList(int start, int end) {
+    if (variants.isEmpty() || start >= variants.size()) {
+      return new ArrayList<>();
+    }
+    return variants.subList(start, end);
+  }
+
+  public NotationDrives filterVariantById(int removeVariantId) {
+    return variants
+        .stream()
+        .filter(notationDrive -> notationDrive.getIdInVariants() != removeVariantId)
+        .collect(Collectors.toCollection(NotationDrives::new));
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  public int getVariantsId() {
+    int variantsSize = getVariantsSize();
+    boolean found = variants.stream()
+        .anyMatch(notationDrive -> notationDrive.getIdInVariants() == getVariantsSize());
+    while (found) {
+      int finalVariantsSize = variantsSize;
+      found = variants.stream()
+          .anyMatch(notationDrive -> notationDrive.getIdInVariants() == finalVariantsSize);
+      if (found) {
+        variantsSize++;
+      }
+    }
+    return variantsSize;
   }
 }

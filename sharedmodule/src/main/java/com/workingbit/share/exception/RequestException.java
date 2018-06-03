@@ -71,6 +71,10 @@ public class RequestException extends RuntimeException {
     return new RequestException(message);
   }
 
+  public static RequestException notFound404(String message) {
+    return new RequestException(HTTP_NOT_FOUND, message);
+  }
+
   @Nullable
   @Override
   public String toString() {

@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,7 +232,7 @@ public class BaseDao<T extends BaseDomain> {
     return list;
   }
 
-  public void batchSave(@NotNull List<T> entities) {
+  public void batchSave(@NotNull Collection<T> entities) {
     if (entities.isEmpty()) {
       logger.info("Nothing to save");
       return;
