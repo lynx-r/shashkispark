@@ -10,11 +10,11 @@ import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.UserCredentials;
-import com.workingbit.share.model.UserInfo;
 import com.workingbit.share.model.enumarable.EnumAuthority;
-import com.workingbit.share.util.SecureUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.ClassRule;
 import org.junit.Test;
 import spark.servlet.SparkApplication;
@@ -24,9 +24,7 @@ import java.util.Collections;
 
 import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
 import static com.workingbit.orchestrate.util.AuthRequestUtil.hasAuthorities;
-import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN_HEADER;
-import static com.workingbit.share.common.RequestConstants.SUPER_HASH_HEADER;
-import static com.workingbit.share.common.RequestConstants.USER_SESSION_HEADER;
+import static com.workingbit.share.common.RequestConstants.*;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
 import static com.workingbit.share.util.Utils.getRandomString20;
@@ -38,6 +36,7 @@ import static org.junit.Assert.*;
  */
 public class SecurityControllerTest {
 
+  @NotNull
   private static String boardUrl = "/api/v1";
   private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
 
@@ -49,9 +48,11 @@ public class SecurityControllerTest {
     }
   }
 
+  @NotNull
   @ClassRule
   public static SparkServer<SecurityControllerTestSparkApplication> testServer = new SparkServer<>(SecurityControllerTestSparkApplication.class, randomPort);
 
+  @NotNull
   private AuthUser register() throws RequestException {
     String username = getRandomString20();
     String password = getRandomString20();
@@ -137,7 +138,7 @@ public class SecurityControllerTest {
     AuthUser authUser = answerAuthorize.getAuthUser();
     get("/logout", authUser, HTTP_OK);
 
-    post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_OK);
+    post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_FORBIDDEN);
   }
 
   @Test
@@ -195,33 +196,33 @@ public class SecurityControllerTest {
     String password = getRandomString20();
     UserCredentials userCredentials = new UserCredentials(username, password);
     AuthUser anonym = AuthUser.anonymous();
-    AuthUser authUser = (AuthUser) post("/register", userCredentials, anonym, HTTP_OK).getAuthUser();
+    AuthUser authUser = post("/register", userCredentials, anonym, HTTP_OK).getAuthUser();
     assertNotNull(authUser);
 
-    AuthUser authed = (AuthUser) get("/authenticate", authUser, HTTP_OK).getAuthUser();
+    AuthUser authed = get("/authenticate", authUser, HTTP_OK).getAuthUser();
     assertNotNull(authed);
     System.out.println("AT1 " + authed.getAccessToken());
 
-    authed = (AuthUser) get("/authenticate", authed, HTTP_OK).getAuthUser();
+    authed = get("/authenticate", authed, HTTP_OK).getAuthUser();
     assertNotNull(authed);
     System.out.println("AT1 " + authed.getAccessToken());
 
-    AuthUser author = (AuthUser) post("/authorize", userCredentials, authed, HTTP_OK).getAuthUser();
+    AuthUser author = post("/authorize", userCredentials, authed, HTTP_OK).getAuthUser();
     assertNotNull(author);
 
-    authed = (AuthUser) get("/authenticate", author, HTTP_OK).getAuthUser();
+    authed = get("/authenticate", author, HTTP_OK).getAuthUser();
     assertNotNull(authed);
     System.out.println("AT1 " + authed.getAccessToken());
 
-    authed = (AuthUser) get("/authenticate", authed, HTTP_OK).getAuthUser();
+    authed = get("/authenticate", authed, HTTP_OK).getAuthUser();
     assertNotNull(authed);
     System.out.println("AT1 " + authed.getAccessToken());
 
-    authed = (AuthUser) get("/logout", authed, HTTP_OK).getAuthUser();
+    authed = get("/logout", authed, HTTP_OK).getAuthUser();
     assertNotNull(authed);
     System.out.println("LOGGED OUT " + authed.getAccessToken());
 
-    authed = (AuthUser) get("/authenticate", authed, HTTP_FORBIDDEN).getAuthUser();
+    authed = get("/authenticate", authed, HTTP_FORBIDDEN).getAuthUser();
     assertNull(authed);
   }
 
@@ -242,47 +243,52 @@ public class SecurityControllerTest {
     answerLogout = get("/logout", authUser, HTTP_FORBIDDEN);
   }
 
-  @Test
-  public void test_banned() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
-    var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
+//  @Test
+//  public void test_banned() throws Exception {
+//    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
+//    var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
+//
+//    AuthUser authUser = registerResult.getAuthUser();
+//    Answer answer = post("/user-info", authUser, authUser, HTTP_OK);
+//    authUser = answer.getAuthUser();
+//    UserInfo userInfo = (UserInfo) answer.getBody();
+//    // remove user
+//    userInfo.addAuthority(EnumAuthority.REMOVED);
+//    answer = post("/save-user-info", userInfo, authUser, HTTP_OK);
+//    AuthUser authUserBanned = answer.getAuthUser();
+//
+//    // cant update
+//    answer = post("/save-user-info", userInfo, authUserBanned, HTTP_FORBIDDEN);
+//    answer = get("/user-info", authUserBanned, HTTP_FORBIDDEN);
+//
+//    // createNotationDrives user
+//    userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
+//    registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
+//    authUser = registerResult.getAuthUser();
+//    answer = post("/user-info", authUserBanned, authUser, HTTP_OK);
+//
+//    // save user
+//    userInfo.addAuthority(EnumAuthority.ADMIN);
+//    authUser.addAuthority(EnumAuthority.ADMIN);
+//    answer = post("/save-user-info", userInfo, authUser, HTTP_FORBIDDEN);
+//
+//    userInfo.addAuthority(EnumAuthority.ADMIN);
+//    authUser.addAuthority(EnumAuthority.ADMIN);
+//    String shashki_super_user = System.getenv("SHASHKI_SUPER_USER");
+//    assertNotNull("Супер пароль не может быть пустым", shashki_super_user);
+//    authUser.setSuperHash(SecureUtils.digest(shashki_super_user));
+//    answer = post("/save-user-info", userInfo, authUser, HTTP_OK);
+//
+//    authUser = answer.getAuthUser();
+//    UserInfo userInfoBanned = (UserInfo) answer.getBody();
+//    userInfoBanned.setAuthorities(authUser.getAuthorities());
+//    answer = post("/save-user-info", userInfoBanned, authUser, HTTP_OK);
+//
+//    AuthUser unbanned = answer.getAuthUser();
+//    answer = post("/save-user-info", userInfoBanned, unbanned, HTTP_OK);
+//  }
 
-    AuthUser authUser = registerResult.getAuthUser();
-    Answer answer = post("/user-info", authUser, authUser, HTTP_OK);
-    authUser = answer.getAuthUser();
-    UserInfo userInfo = (UserInfo) answer.getBody();
-    userInfo.addAuthority(EnumAuthority.BANNED);
-    answer = post("/save-user-info", userInfo, authUser, HTTP_OK);
-    AuthUser authUserBanned = answer.getAuthUser();
-
-    answer = post("/save-user-info", userInfo, authUserBanned, HTTP_FORBIDDEN);
-
-    userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
-    registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
-    authUser = registerResult.getAuthUser();
-    answer = post("/user-info", authUserBanned, authUser, HTTP_OK);
-
-    userInfo.addAuthority(EnumAuthority.ADMIN);
-    authUser.addAuthority(EnumAuthority.ADMIN);
-    answer = post("/save-user-info", userInfo, authUser, HTTP_FORBIDDEN);
-
-    userInfo.addAuthority(EnumAuthority.ADMIN);
-    authUser.addAuthority(EnumAuthority.ADMIN);
-    String shashki_super_user = System.getenv("SHASHKI_SUPER_USER");
-    assertNotNull("Супер пароль не может быть пустым", shashki_super_user);
-    authUser.setSuperHash(SecureUtils.digest(shashki_super_user));
-    answer = post("/save-user-info", userInfo, authUser, HTTP_OK);
-
-    authUser = answer.getAuthUser();
-    UserInfo userInfoBanned = (UserInfo) answer.getBody();
-    userInfoBanned.setAuthorities(authUser.getAuthorities());
-    answer = post("/save-user-info", userInfoBanned, authUser, HTTP_OK);
-
-    AuthUser unbanned = answer.getAuthUser();
-    answer = post("/save-user-info", userInfoBanned, unbanned, HTTP_OK);
-  }
-
-  private Answer post(String path, Object payload, AuthUser authUser, int expectCode) throws HttpClientException {
+  private Answer post(String path, Object payload, @Nullable AuthUser authUser, int expectCode) throws HttpClientException {
     PostMethod resp = testServer.post(boardUrl + path, dataToJson(payload), false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {
@@ -302,7 +308,7 @@ public class SecurityControllerTest {
     return answer;
   }
 
-  private Answer post(String path, Object payload, AuthUser authUser, int expectCode, String[] errors) throws HttpClientException {
+  private Answer post(String path, Object payload, @Nullable AuthUser authUser, int expectCode, @NotNull String[] errors) throws HttpClientException {
     PostMethod resp = testServer.post(boardUrl + path, dataToJson(payload), false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {
@@ -323,7 +329,7 @@ public class SecurityControllerTest {
     return answer;
   }
 
-  private Answer get(String path, AuthUser authUser, int expectCode) throws HttpClientException {
+  private Answer get(String path, @Nullable AuthUser authUser, int expectCode) throws HttpClientException {
     var resp = testServer.get(boardUrl + path, false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {

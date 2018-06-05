@@ -9,6 +9,7 @@ import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
+import org.jetbrains.annotations.NotNull;
 import spark.Route;
 
 import static com.workingbit.article.ArticleEmbedded.articleService;
@@ -19,23 +20,28 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
  */
 public class ArticleController {
 
+  @NotNull
   public static Route home = (req, res) -> "Article. Home, sweet home!";
 
+  @NotNull
   public static Route findAllArticles = (req, res) ->
       ((QueryParamsHandlerFunc<QueryPayload>) (params, token, param) ->
           Answer.ok(articleService.findAll(params.getQuery().value(RequestConstants.LIMIT), token))
       ).handleRequest(req, res, Authority.ARTICLES);
 
+  @NotNull
   public static Route findArticleByHru = (req, res) ->
       ((ParamsHandlerFunc<ParamPayload>) (params, token, param) ->
           Answer.ok(articleService.findByHru(params.getParam().get(RequestConstants.HRU), token))
       ).handleRequest(req, res, Authority.ARTICLE_BY_HRU);
 
+  @NotNull
   public static Route findCachedArticleByHru = (req, res) ->
       ((ParamsHandlerFunc<ParamPayload>) (params, token, param) ->
           Answer.ok(articleService.findByHruCached(params.getParam().get(RequestConstants.HRU), params.getParam().get(RequestConstants.BBID), token))
       ).handleRequest(req, res, Authority.ARTICLE_BY_HRU_CACHED);
 
+  @NotNull
   public static Route removeArticleById = (req, res) ->
       ((ModelHandlerFunc<DomainId>) (params, token, param) ->
           Answer.ok(articleService.removeById(params, token))
@@ -43,6 +49,7 @@ public class ArticleController {
           Authority.ARTICLE_REMOVE_PROTECTED,
           DomainId.class);
 
+  @NotNull
   public static Route createArticleAndBoard = (req, res) ->
       ((ModelHandlerFunc<CreateArticlePayload>) (data, token, param) ->
           Answer.created(articleService.createArticle(data, token))
@@ -50,13 +57,15 @@ public class ArticleController {
           Authority.ARTICLE_PROTECTED,
           CreateArticlePayload.class);
 
+  @NotNull
   public static Route saveArticle = (req, res) ->
       ((ModelHandlerFunc<Article>) (article, token, param) ->
-          Answer.created(articleService.save((Article) article))
+          Answer.created(articleService.save((Article) article, token))
       ).handleRequest(req, res,
           Authority.ARTICLE_PROTECTED,
           Article.class);
 
+  @NotNull
   public static Route cacheArticle = (req, res) ->
       ((ModelHandlerFunc<Article>) (article, token, param) ->
           Answer.created(articleService.cache((Article) article, token))
@@ -64,6 +73,7 @@ public class ArticleController {
           Authority.ARTICLE_CACHE,
           Article.class);
 
+  @NotNull
   public static Route importPdn = (req, res) ->
       ((ModelHandlerFunc<ImportPdnPayload>) (article, token, param) -> {
         try {

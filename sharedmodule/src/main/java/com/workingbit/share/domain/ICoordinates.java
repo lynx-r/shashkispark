@@ -1,6 +1,7 @@
 package com.workingbit.share.domain;
 
 import com.workingbit.share.model.enumarable.EnumRules;
+import org.jetbrains.annotations.NotNull;
 
 import static com.workingbit.share.util.Utils.*;
 
@@ -30,8 +31,16 @@ public interface ICoordinates {
 
   void setDim(int dim);
 
+  default void invertCords() {
+    if (getDim() > 0) {
+      setV(getDim() - getV() - 1);
+      setH(getDim() - getH() - 1);
+    }
+  }
+
+  @NotNull
   default String getNotation() {
-    return getDim() == EnumRules.INTERNATIONAL.getDimension()
+    return getDim() == EnumRules.INTERNATIONAL.getDimensionAbs()
         ? getPdnNumericNotation100()
         : getAlphanumericNotation();
   }
@@ -41,7 +50,7 @@ public interface ICoordinates {
   }
 
   default String getNotationNum() {
-    return getDim() == EnumRules.INTERNATIONAL.getDimension()
+    return getDim() == EnumRules.INTERNATIONAL.getDimensionAbs()
         ? getPdnNumericNotation100()
         : getPdnNumericNotation64();
   }

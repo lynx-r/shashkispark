@@ -1,23 +1,28 @@
 package com.workingbit.security.service;
 
 import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.exception.CryptoException;
 import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.SecureUtils;
-import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Set;
 
+import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
 import static com.workingbit.security.SecurityEmbedded.appProperties;
-import static com.workingbit.security.SecurityEmbedded.secureUserDao;
+import static com.workingbit.security.SecurityEmbedded.loggedInService;
+import static com.workingbit.security.SecurityEmbedded.siteUserInfoDao;
 import static com.workingbit.share.common.RequestConstants.SESSION_LENGTH;
 import static com.workingbit.share.util.Utils.*;
 
@@ -28,70 +33,79 @@ public class SecureUserService {
 
   private Logger logger = LoggerFactory.getLogger(SecureUserService.class);
 
-  public AuthUser register(UserCredentials userCredentials) {
+  @NotNull
+  public AuthUser register(@NotNull UserCredentials userCredentials) {
     try {
       String username = userCredentials.getUsername();
-      boolean duplicateName = true;
-      try {
-        secureUserDao.findByUsername(username);
-      } catch (DaoException e) {
-        duplicateName = false;
-      }
-      if (duplicateName) {
+      if (loggedInService.findByUsername(username) != null) {
         throw RequestException.forbidden();
       }
-      SecureUser secureUser = new SecureUser();
-      Utils.setRandomIdAndCreatedAt(secureUser);
-      secureUser.setUsername(username);
-
-      secureUser.setTokenLength(appProperties.tokenLength());
+      SecureAuth secureAuth = new SecureAuth();
+      secureAuth.setUserId(DomainId.getRandomID());
+      secureAuth.setUsername(username);
+      secureAuth.setTokenLength(appProperties.tokenLength());
 
       // hash credentials
-      hashCredentials(userCredentials, secureUser);
+      hashCredentials(userCredentials, secureAuth);
 
       // encrypt random token
-      TokenPair accessToken = getAccessToken(secureUser);
+      secureAuth = getUpdateSecureAuthTokens(secureAuth);
 
       // save encrypted token and userSession
       String userSession = getUserSession();
-      secureUser.setSecureToken(accessToken.secureToken);
-      secureUser.setAccessToken(accessToken.accessToken);
-      secureUser.setUserSession(userSession);
-      secureUser.addAuthority(EnumAuthority.AUTHOR);
-      secureUserDao.save(secureUser);
+      secureAuth.setUserSession(userSession);
+      secureAuth.addAuthority(EnumAuthority.AUTHOR);
+
+      SiteUserInfo siteUserInfo = new SiteUserInfo();
+      siteUserInfo.setDomainId(secureAuth.getUserId());
+      siteUserInfo.setUsername(username);
+      siteUserInfo.setCreditCard(userCredentials.getCreditCard());
+      siteUserInfo.setUpdatedAt(LocalDateTime.now());
+      siteUserInfoDao.save(siteUserInfo);
 
       // send access token and userSession
-      return AuthUser.simpleUser(secureUser.getDomainId(), username, accessToken.accessToken, userSession, secureUser.getAuthorities());
+      orchestralService.cacheSecureAuth(secureAuth);
+      loggedInService.registerUser(secureAuth);
+      return AuthUser.simpleUser(secureAuth.getUserId(), username, secureAuth.getAccessToken(), userSession, secureAuth.getAuthorities());
     } catch (Exception e) {
       logger.error("UNREGISTERED: " + userCredentials, e.getMessage());
     }
     throw RequestException.forbidden(ErrorMessages.USERNAME_IS_BUSY);
   }
 
-  public AuthUser authorize(UserCredentials userCredentials) {
+  @NotNull
+  public AuthUser authorize(@NotNull UserCredentials userCredentials) {
+    String username = userCredentials.getUsername();
+    SecureAuth secureAuth = orchestralService.getSecureAuthUsername(username);
+    if (secureAuth == null) {
+      try {
+        secureAuth = loggedInService.findByUsername(username);
+      } catch (@NotNull CryptoException | IOException e) {
+        throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+      }
+      if (secureAuth == null) {
+        throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+      }
+    }
     try {
-      String username = userCredentials.getUsername();
-      var secureUser = secureUserDao.findByUsername(username);
       // hash credentials
       String credentials = userCredentials.getCredentials();
-      String salt = secureUser.getSalt();
+      String salt = secureAuth.getSalt();
       String clientDigest = SecureUtils.digest(credentials + salt);
 
-      if (clientDigest.equals(secureUser.getDigest())) {
+      if (clientDigest.equals(secureAuth.getDigest()) && !EnumAuthority.isBanned(secureAuth.getAuthorities())) {
         // encrypt random token
-        TokenPair accessToken = getAccessToken(secureUser);
+        SecureAuth accessToken = getUpdateSecureAuthTokens(secureAuth);
 
         // save encrypted token and userSession
         String userSession = getUserSession();
-        secureUser.setSecureToken(accessToken.secureToken);
-        secureUser.setAccessToken(accessToken.accessToken);
-        secureUser.setUserSession(userSession);
-        secureUserDao.save(secureUser);
+        secureAuth.setUserSession(userSession);
 
         // send access token and userSession
-        DomainId userId = secureUser.getDomainId();
-        Set<EnumAuthority> authorities = secureUser.getAuthorities();
-        AuthUser authUser = AuthUser.simpleUser(userId, username, accessToken.accessToken, userSession, authorities);
+        DomainId userId = secureAuth.getUserId();
+        Set<EnumAuthority> authorities = secureAuth.getAuthorities();
+        AuthUser authUser = AuthUser.simpleUser(userId, username, accessToken.getAccessToken(), userSession, authorities);
+        orchestralService.cacheSecureAuth(secureAuth);
         logger.info("AUTHORIZED: " + authUser);
         return authUser;
       }
@@ -104,32 +118,27 @@ public class SecureUserService {
     throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
   }
 
-  public AuthUser authenticate(AuthUser authUser) {
+  @NotNull
+  public AuthUser authenticate(@NotNull AuthUser authUser) {
     if (authUser.getAuthorities().contains(EnumAuthority.ANONYMOUS)) {
       throw RequestException.forbidden();
     }
-    String session = authUser.getUserSession();
     String accessToken = authUser.getAccessToken();
-    SecureUser secureUser;
-    try {
-      secureUser = secureUserDao.findBySession(session);
-    } catch (DaoException e) {
-      throw RequestException.forbidden();
-    }
-    boolean isAuth = isAuthed(accessToken, secureUser);
-    if (isAuth) {
+    SecureAuth secureAuth = isAuthUserSecure(accessToken, authUser);
+    if (secureAuth != null) {
       if (!authUser.getAuthorities().contains(EnumAuthority.INTERNAL)) {
-        TokenPair updatedAccessToken = getAccessToken(secureUser);
-        secureUser.setAccessToken(updatedAccessToken.accessToken);
-        secureUser.setSecureToken(updatedAccessToken.secureToken);
-        secureUserDao.save(secureUser);
+        SecureAuth updatedAccessToken = getUpdateSecureAuthTokens(secureAuth);
+        secureAuth.setAccessToken(updatedAccessToken.getAccessToken());
+        secureAuth.setSecureToken(updatedAccessToken.getSecureToken());
+        orchestralService.cacheSecureAuth(secureAuth);
+
         authUser.setTimestamp(getTimestamp());
-        authUser.setAccessToken(updatedAccessToken.accessToken);
+        authUser.setAccessToken(updatedAccessToken.getAccessToken());
       }
 
-      authUser.setUsername(secureUser.getUsername());
-      authUser.setUserId(secureUser.getDomainId());
-      authUser.setAuthorities(secureUser.getAuthorities());
+      authUser.setUsername(secureAuth.getUsername());
+      authUser.setUserId(secureAuth.getUserId());
+      authUser.setAuthorities(secureAuth.getAuthorities());
       logger.info("AUTHENTICATED: " + authUser);
       return authUser;
     }
@@ -137,75 +146,110 @@ public class SecureUserService {
     throw RequestException.forbidden();
   }
 
-  public UserInfo userInfo(AuthUser authUser) {
+  @NotNull
+  public UserInfo userInfo(@NotNull AuthUser authUser) {
     String accessToken = authUser.getAccessToken();
-    SecureUser secureUser = getSecureUserByIdOrSession(authUser);
-    boolean isAuth = isAuthed(accessToken, secureUser);
-    if (isAuth) {
-      return extractUserInfo(secureUser);
+    SecureAuth secureAuth = isAuthUserSecure(accessToken, authUser);
+    if (secureAuth != null) {
+      SiteUserInfo byId = siteUserInfoDao.findById(authUser.getUserId());
+      return extractUserInfo(byId, secureAuth);
     }
     throw RequestException.forbidden();
   }
 
-  public UserInfo saveUserInfo(UserInfo userInfo, AuthUser authUser) {
+  @NotNull
+  public UserInfo saveUserInfo(@NotNull UserInfo userInfo, @NotNull AuthUser authUser) {
     String accessToken = authUser.getAccessToken();
-    SecureUser secureUser = getSecureUserByIdOrSession(authUser);
-    boolean isAuth = isAuthed(accessToken, secureUser);
-    boolean canUpdate = userInfo.getUserId().equals(secureUser.getDomainId())
-        || secureUser.getAuthorities().contains(EnumAuthority.ADMIN);
+    SecureAuth secureAuth = isAuthUserSecure(accessToken, authUser);
+    if (secureAuth == null) {
+      throw RequestException.forbidden(ErrorMessages.UNABLE_TO_AUTHENTICATE);
+    }
+    SiteUserInfo byId = siteUserInfoDao.findById(authUser.getUserId());
+    boolean canUpdate = userInfo.getUserId().equals(byId.getDomainId())
+        || secureAuth.getAuthorities().contains(EnumAuthority.ADMIN);
     boolean superAuthority = false;
     if (StringUtils.isNotBlank(authUser.getSuperHash())) {
       superAuthority = authUser.getSuperHash()
           .equals(getSuperHash());
     }
-    if (isAuth && canUpdate || superAuthority) {
-      SecureUser userBeforeSave = secureUserDao.findById(userInfo.getUserId());
+    if (canUpdate || superAuthority) {
+      SiteUserInfo userBeforeSave = siteUserInfoDao.findById(userInfo.getUserId());
       if (userBeforeSave != null) {
-        return updateUserInfo(userBeforeSave, userInfo);
+        secureAuth.setAuthorities(userInfo.getAuthorities());
+        orchestralService.cacheSecureAuth(secureAuth);
+
+        if (!userBeforeSave.getUsername().equals(userInfo.getUsername())) {
+          SiteUserInfo byUsername = siteUserInfoDao.findByUsername(userInfo.getUsername());
+          if (byUsername == null) {
+            userBeforeSave.setUsername(userInfo.getUsername());
+            SecureAuth secureAuthUpdated = secureAuth.deepClone();
+            secureAuthUpdated.setUsername(userInfo.getUsername());
+            // todo обновлять автора в статьях
+            try {
+              loggedInService.replaceSecureAuth(secureAuth, secureAuthUpdated);
+            } catch (@NotNull CryptoException | IOException e) {
+              throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CHANGE_USERNAME);
+            }
+          } else {
+            throw RequestException.badRequest(ErrorMessages.USERNAME_IS_BUSY);
+          }
+        }
+        userBeforeSave.setCreditCard(userInfo.getCreditCard());
+        siteUserInfoDao.save(userBeforeSave);
+        return userInfo;
       }
     }
     throw RequestException.forbidden();
   }
 
-  public AuthUser logout(AuthUser authUser) {
-    String session = authUser.getUserSession();
+  @NotNull
+  public AuthUser logout(@NotNull AuthUser authUser) {
     String accessToken = authUser.getAccessToken();
-    SecureUser secureUser = secureUserDao.findBySession(session);
-    boolean isAuth = isAuthed(accessToken, secureUser);
-    if (isAuth) {
-      secureUser.setSecureToken("");
-      secureUser.setAccessToken("");
-      secureUser.setUserSession("");
-      secureUserDao.save(secureUser);
+    SecureAuth secureAuth = isAuthUserSecure(accessToken, authUser);
+    if (secureAuth != null) {
+      orchestralService.removeSecureAuth(authUser);
     }
     return AuthUser.anonymous();
   }
 
-  private SecureUser getSecureUserByIdOrSession(AuthUser authUser) {
-    if (authUser.getUserId() != null) {
-      return secureUserDao.findById(authUser.getUserId());
-    } else {
-      return secureUserDao.findBySession(authUser.getUserSession());
+  private SecureAuth isAuthUserSecure(String accessToken, @NotNull AuthUser authUser) {
+    SecureAuth secureAuth = getSecureAuth(authUser);
+    if (secureAuth == null) {
+      return null;
     }
-  }
-
-  private boolean isAuthed(String accessToken, SecureUser secureUser) {
-    String key = secureUser.getKey();
-    String initVector = secureUser.getInitVector();
+    String key = secureAuth.getKey();
+    String initVector = secureAuth.getInitVector();
     try {
       String tokenDecrypted = SecureUtils.decrypt(key, initVector, accessToken);
-      return secureUser.getSecureToken().equals(tokenDecrypted);
-    } catch (IllegalBlockSizeException | BadPaddingException e) {
-      logger.error(String.format("Unable to decrypt accessToken %s", accessToken));
-      return false;
+      if (secureAuth.getSecureToken().equals(tokenDecrypted)) {
+        return secureAuth;
+      }
+    } catch (@NotNull IllegalBlockSizeException | BadPaddingException e) {
+      logger.warn(String.format("Unable to decrypt accessToken %s", accessToken));
     }
+    return null;
+  }
+
+  @Nullable
+  private SecureAuth getSecureAuth(AuthUser authUser) {
+    SecureAuth secureAuth = null;
+    if (StringUtils.isNotBlank(authUser.getUserSession())) {
+      secureAuth = orchestralService.getSecureAuth(authUser.getUserSession());
+      if (secureAuth == null && StringUtils.isNotBlank(authUser.getUsername())) {
+        secureAuth = orchestralService.getSecureAuthUsername(authUser.getUsername());
+        if (secureAuth == null) {
+          throw RequestException.forbidden("ILLEGAL ACCESS");
+        }
+      }
+    }
+    return secureAuth;
   }
 
   private String getUserSession() {
     return getRandomString(SESSION_LENGTH);
   }
 
-  private void hashCredentials(UserCredentials userCredentials, SecureUser secureUser) {
+  private void hashCredentials(UserCredentials userCredentials, SecureAuth secureUser) {
     String credentials = userCredentials.getCredentials();
     String salt = getRandomString20();
     secureUser.setSalt(salt);
@@ -216,46 +260,27 @@ public class SecureUserService {
   /**
    * Set params for encryption generate secure token and encrypt it
    *
-   * @param secureUser user
+   * @param secureAuth user
    * @return access and secure token
    */
-  private TokenPair getAccessToken(SecureUser secureUser) {
-    String secureToken = getRandomString(secureUser.getTokenLength());
+  @NotNull
+  private SecureAuth getUpdateSecureAuthTokens(SecureAuth secureAuth) {
+    String secureToken = getRandomString(secureAuth.getTokenLength());
     int encLength = 16;
     String initVector = getRandomString(encLength);
     String key = getRandomString(encLength);
-    secureUser.setInitVector(initVector);
-    secureUser.setKey(key);
+    secureAuth.setInitVector(initVector);
+    secureAuth.setKey(key);
     String accessToken = SecureUtils.encrypt(key, initVector, secureToken);
     logger.info("Emit new access token: " + accessToken);
-    return new TokenPair(accessToken, secureToken);
+    secureAuth.setAccessToken(accessToken);
+    secureAuth.setSecureToken(secureToken);
+    return secureAuth;
   }
 
-  private static class TokenPair {
-    String accessToken;
-    String secureToken;
-
-    TokenPair(String accessToken, String secureToken) {
-      this.accessToken = accessToken;
-      this.secureToken = secureToken;
-    }
-
-    @Override
-    public String toString() {
-      return new ToStringBuilder(this)
-          .append("accessToken", accessToken)
-          .toString();
-    }
-  }
-
-  private UserInfo updateUserInfo(SecureUser secureUser, UserInfo userInfo) {
-    secureUser.setAuthorities(userInfo.getAuthorities());
-    secureUserDao.save(secureUser);
-    return userInfo;
-  }
-
-  private UserInfo extractUserInfo(SecureUser secureUser) {
-    return new UserInfo(secureUser.getDomainId(), secureUser.getUsername(), secureUser.getAuthorities());
+  private UserInfo extractUserInfo(SiteUserInfo siteUserInfo, SecureAuth secureAuth) {
+    return new UserInfo(siteUserInfo.getDomainId(), siteUserInfo.getUsername(), siteUserInfo.getCreditCard(),
+        secureAuth.getAuthorities());
   }
 
   private String getSuperHash() {

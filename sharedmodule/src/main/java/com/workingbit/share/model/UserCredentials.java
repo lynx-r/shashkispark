@@ -3,9 +3,7 @@ package com.workingbit.share.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.common.ErrorMessages;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -16,7 +14,8 @@ import javax.validation.constraints.Size;
 @JsonTypeName("UserCredentials")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class UserCredentials implements Payload {
 
   @NotNull(message = ErrorMessages.USERNAME_NOT_NULL)
@@ -27,6 +26,22 @@ public class UserCredentials implements Payload {
   @Size(min = 6, message = ErrorMessages.PASSWORD_CONSTRAINTS)
   private String password;
 
+  private String creditCard;
+
+  public UserCredentials(@NotNull(message = ErrorMessages.USERNAME_NOT_NULL) @Size(min = 3, max = 40, message = ErrorMessages.USERNAME_CONSTRAINTS) String username, @NotNull(message = ErrorMessages.PASSWORD_NOT_NULL) @Size(min = 6, message = ErrorMessages.PASSWORD_CONSTRAINTS) String password) {
+    this.username = username;
+    this.password = password;
+  }
+
+  @org.jetbrains.annotations.NotNull
+  @Override
+  public String toString() {
+    return "UserCredentials{" +
+        "username='" + username + '\'' +
+        '}';
+  }
+
+  @org.jetbrains.annotations.NotNull
   @JsonIgnore
   public String getCredentials() {
     return username + ":" + password;

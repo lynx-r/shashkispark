@@ -48,7 +48,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     Board updatedBoard = addWhiteDraught(board, "c3"); // c3
     updatedBoard = addBlackDraught(updatedBoard, "d4"); // c3
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("d4", highlight.getCaptured());
+    testCollectionTree("d4", highlight.getCaptured());
     testCollection("e5", highlight.getAllowed());
   }
 
@@ -58,7 +58,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     Board updatedBoard = addWhiteDraught(board, "c3"); // c3
     updatedBoard = addBlackDraught(updatedBoard, "d2"); // c3
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("d2", highlight.getCaptured());
+    testCollectionTree("d2", highlight.getCaptured());
     testCollection("e1", highlight.getAllowed());
   }
 
@@ -70,7 +70,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "d6"); // c3
     updatedBoard = addBlackDraught(updatedBoard, "b6"); // c3
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("d4,d6,b6", highlight.getCaptured());
+    testCollectionTree("d4,d6,b6", highlight.getCaptured());
     testCollection("c7,e5,a5", highlight.getAllowed());
   }
 
@@ -83,8 +83,9 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "e7"); // c3
     updatedBoard = addBlackDraught(updatedBoard, "e5"); // c3
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "e1"));
-    testCollection("c3,b6,e7,e5", highlight.getCaptured());
-    testCollection("b4,f8,a5,c7,d8,d4,f4,g3,h2,f6", highlight.getAllowed());
+    testCollectionTree("c3,b6,e7,e5", highlight.getCaptured());
+    testCollection("b4,f8,a5,c7,d8,f4,g3,h2,f6", highlight.getAllowed());
+//    testCollection("b4,f8,a5,c7,d8,d4,f4,g3,h2,f6", highlight.getAllowed());
   }
 
   @Test
@@ -98,7 +99,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "f6"); // c3
     updatedBoard = addBlackDraught(updatedBoard, "f4"); // c3
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "c1"));
-    testCollection("b2,b4,d4,d6,f6,f4", highlight.getCaptured());
+    testCollectionTree("b2,b4,d4,d6,f6,f4", highlight.getCaptured());
     testCollection("a3,c5,e3,g5,e7", highlight.getAllowed());
   }
 
@@ -111,7 +112,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "e5"); // c3
     Square e1 = getSquare(updatedBoard, "e1");
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(e1);
-    testCollection("c3,b6,e5", highlight.getCaptured());
+    testCollectionTree("c3,b6,e5", highlight.getCaptured());
     testCollection("h2,g3,c7,f4,a5", highlight.getAllowed());
   }
 
@@ -124,7 +125,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "b6"); // c3
     updatedBoard = addBlackDraught(updatedBoard, "e7"); // c3
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "e1"));
-    testCollection("d2,b6,e7", highlight.getCaptured());
+    testCollectionTree("d2,b6,e7", highlight.getCaptured());
     testCollection("b4,a5,d8,f8,f6,g5,h4", highlight.getAllowed());
   }
 
@@ -135,9 +136,21 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "d4"); // c3
     updatedBoard = addBlackDraught(updatedBoard, "d6"); // c3
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("d4,d6", highlight.getCaptured());
+    testCollectionTree("d4,d6", highlight.getCaptured());
     testCollection("c7,e5", highlight.getAllowed());
   }
+
+//  @Test
+//  public void draught_three_captured() throws BoardServiceException, ExecutionException, InterruptedException {
+//    Board board = getBoard();
+//    Board updatedBoard = addWhiteDraught(board, "c3"); // c3
+//    updatedBoard = addBlackDraught(updatedBoard, "d4"); // c3
+//    updatedBoard = addBlackDraught(updatedBoard, "d6"); // c3
+//    updatedBoard = addBlackDraught(updatedBoard, "f6"); // c3
+//    MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "c3"));
+//    testCollectionTree("d4,d6,f6", highlight.getCaptured());
+//    testCollection("c7,e5,g7", highlight.getAllowed());
+//  }
 
   @Test
   public void draught_captured_over_many_squares() throws BoardServiceException, ExecutionException, InterruptedException {
@@ -146,7 +159,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "g3"); // c3
     updatedBoard = addBlackDraught(updatedBoard, "c7"); // c3
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "h2"));
-    testCollection("g3", highlight.getCaptured());
+    testCollectionTree("g3", highlight.getCaptured());
     testCollection("f4", highlight.getAllowed());
   }
 
@@ -165,7 +178,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     Board updatedBoard = addWhiteQueen(board, "c3");
     updatedBoard = addBlackDraught(updatedBoard, "e5");
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "c3"));
-    testCollection("e5", highlight.getCaptured());
+    testCollectionTree("e5", highlight.getCaptured());
     testCollection("f6,g7,h8", highlight.getAllowed());
   }
 
@@ -176,7 +189,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "f2");
     updatedBoard = addBlackDraught(updatedBoard, "h4");
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "e1"));
-    testCollection("f2", highlight.getCaptured());
+    testCollectionTree("f2", highlight.getCaptured());
     testCollection("g3", highlight.getAllowed());
   }
 
@@ -189,7 +202,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "d2");
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "c7"));
     testCollection("a5", highlight.getAllowed());
-    testCollection("b6", highlight.getCaptured());
+    testCollectionTree("b6", highlight.getCaptured());
   }
 
   @Test
@@ -200,7 +213,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addBlackDraught(updatedBoard, "b2");
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "g7"));
     testCollection("e5", highlight.getAllowed());
-    testCollection("f6", highlight.getCaptured());
+    testCollectionTree("f6", highlight.getCaptured());
   }
 
   @Test
@@ -211,7 +224,7 @@ public class HighlightMoveUtilTest extends BaseServiceTest {
     updatedBoard = addWhiteDraught(updatedBoard, "d4");
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(updatedBoard, "d8"));
     testCollection("b6", highlight.getAllowed());
-    testCollection("c7", highlight.getCaptured());
+    testCollectionTree("c7", highlight.getCaptured());
   }
 
 }

@@ -1,0 +1,44 @@
+app:
+  port: 14567
+  regionDynamoDB: dump
+  endpointDynamoDB: http://example.com
+  test: false
+
+  # article
+#  articleResource: https://localhost:8443/article/api/v1/article
+#  articlesResource: https://localhost:8443/article/api/v1/articles
+#
+#  # board
+#  boardboxResource: https://localhost:8443/board/api/v1/board
+#  parsePdnResource: https://localhost:8443/board/api/v1/parse-pdn
+#
+#  # security
+#  registerResource: https://localhost:8443/security/api/v1/register
+#  authorizeResource: https://localhost:8443/security/api/v1/authorize
+#  authenticateResource: https://localhost:8443/security/api/v1/authenticate
+#  userInfoResource: https://localhost:8443/security/api/v1/user-info
+#  saveUserInfoResource: https://localhost:8443/security/api/v1/save-user-info
+#  logoutResource: https://localhost:8443/security/api/v1/logout
+
+  # article
+  articleResource: http://localhost:8080/article/api/v1/article
+  articleResource: http://localhost:8080/article/api/v1/article
+  articlesResource: http://localhost:8080/article/api/v1/articles
+#  articleResource: http://api.shashki.online/article/api/v1/article
+#  articleResource: https://api.shashki.online/article/api/v1/article
+#  articlesResource: https://api.shashki.online/article/api/v1/articles
+
+  # board
+  boardboxResource: http://localhost:8080/board/api/v1/board
+  parsePdnResource: http://localhost:8080/board/api/v1/parse-pdn
+
+  # security
+  registerResource: http://localhost:8080/security/api/v1/register
+  authorizeResource: http://localhost:8080/security/api/v1/authorize
+  authenticateResource: http://localhost:8080/security/api/v1/authenticate
+  userInfoResource: http://localhost:8080/security/api/v1/user-info
+  saveUserInfoResource: http://localhost:8080/security/api/v1/save-user-info
+  logoutResource: http://localhost:8080/security/api/v1/logout
+
+  redisHost: 127.0.0.1
+  redisPort: 6379

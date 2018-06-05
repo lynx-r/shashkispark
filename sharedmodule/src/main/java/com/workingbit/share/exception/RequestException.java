@@ -3,6 +3,8 @@ package com.workingbit.share.exception;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.model.MessageResponse;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -65,10 +67,15 @@ public class RequestException extends RuntimeException {
     return new RequestException(HTTP_INTERNAL_ERROR, messages);
   }
 
-  public static RequestException requestException(MessageResponse message) {
+  public static RequestException requestException(@NotNull MessageResponse message) {
     return new RequestException(message);
   }
 
+  public static RequestException notFound404(String message) {
+    return new RequestException(HTTP_NOT_FOUND, message);
+  }
+
+  @Nullable
   @Override
   public String toString() {
     return "UNAUTHORIZED: RequestException " +

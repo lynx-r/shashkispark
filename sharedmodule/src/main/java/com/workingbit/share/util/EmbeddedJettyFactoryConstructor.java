@@ -4,6 +4,7 @@ import org.eclipse.jetty.server.AbstractNCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.jetbrains.annotations.NotNull;
 import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 import spark.embeddedserver.jetty.JettyServerFactory;
 
@@ -14,7 +15,7 @@ public class EmbeddedJettyFactoryConstructor {
     this.requestLog = requestLog;
   }
 
-  EmbeddedJettyFactory create() {
+  @NotNull EmbeddedJettyFactory create() {
     JettyServerFactory jettyServerFactory = new JettyServerFactory() {
       @Override
       public Server create(int maxThreads, int minThreads, int threadTimeoutMillis) {

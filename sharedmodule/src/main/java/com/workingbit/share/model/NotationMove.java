@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ public class NotationMove implements DeepClone, NotationFormat {
   /**
    * Moves. The first is notation like a1 or b2 the second is boardId
    */
+  @NotNull
   private LinkedList<NotationSimpleMove> move = new LinkedList<>();
   private String moveStrength;
 
@@ -44,35 +46,18 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public String getNotationInFormat(EnumNotationFormat notationFormat) {
-    return getMoveNotations(notationFormat)
+  private String getNotationAsString() {
+    return getMoveNotations()
         .stream()
         .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getSimple() : CAPTURE.getSimple()));
   }
 
   @JsonIgnore
   @DynamoDBIgnore
-  private String getNotationPdn() {
-    return getMoveNotations(EnumNotationFormat.ЧИСЛОВОЙ)
-        .stream()
-        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getPdn() : CAPTURE.getPdn()));
-  }
-
-  @JsonIgnore
-  @DynamoDBIgnore
-  private List<String> getMoveNotations(EnumNotationFormat format) {
+  public List<String> getMoveNotations() {
     return move
         .stream()
-        .map(move -> move.getNotation())
-        .collect(Collectors.toList());
-  }
-
-  @JsonIgnore
-  @DynamoDBIgnore
-  public List<String> getMoveNotationsPdn() {
-    return move
-        .stream()
-        .map(move -> move.getNotation())
+        .map(NotationSimpleMove::getNotation)
         .collect(Collectors.toList());
   }
 
@@ -80,12 +65,12 @@ public class NotationMove implements DeepClone, NotationFormat {
   public void setNotation(String ignore) {
   }
 
-  public void setNotationFormat(EnumNotationFormat format) {
+  void setNotationFormat(EnumNotationFormat format) {
     this.notationFormat = format;
     move.forEach(m -> m.setFormat(format));
   }
 
-  public void setBoardDimension(int dimension) {
+  void setBoardDimension(int dimension) {
     this.boardDimension = dimension;
     move.forEach(m -> m.setBoardDimension(dimension));
   }
@@ -94,7 +79,6 @@ public class NotationMove implements DeepClone, NotationFormat {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof NotationMove)) return false;
-//    if (!super.equals(o)) return false;
     NotationMove that = (NotationMove) o;
     return type == that.type &&
         Objects.equals(move, that.move);
@@ -102,18 +86,18 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   @Override
   public int hashCode() {
-
     return Objects.hash(super.hashCode(), type, move);
   }
 
-  static NotationMove fromPdn(String stroke) {
+  @NotNull
+  static NotationMove fromPdn(@NotNull String stroke) {
     NotationMove notationMove = new NotationMove();
     checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getPdn(), SIMPLE.getPdn());
     checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getSimple(), SIMPLE.getSimple());
     return notationMove;
   }
 
-  private static void checkAndAddMoveForPdn(String stroke, NotationMove notationMove, String capture, String simple) {
+  private static void checkAndAddMoveForPdn(String stroke, @NotNull NotationMove notationMove, @NotNull String capture, @NotNull String simple) {
     boolean isCapture = stroke.contains(capture);
     if (isCapture) {
       notationMove.setType(CAPTURE);
@@ -124,24 +108,24 @@ public class NotationMove implements DeepClone, NotationFormat {
     }
   }
 
+  @NotNull
   public static NotationMove create(EnumNotation type) {
     NotationMove notationMove = new NotationMove();
     notationMove.setType(type);
     return notationMove;
   }
 
-  public String print(String prefix) {
-    return new StringBuilder()
-        .append(prefix).append(getClass().getSimpleName())
-        .append(prefix).append("\t").append("type: ").append(type)
-        .append(prefix).append("\t").append("move: ").append(move.toString())
+  @NotNull
+  String print(String prefix) {
+    return prefix + getClass().getSimpleName() +
+        prefix + "\t" + "type: " + type +
+        prefix + "\t" + "move: " + move.toString() +
 //        .append(prefix).append("\t").append("cursor: ").append(cursor)
-        .append(prefix).append("\t").append("moveStrength: ").append(moveStrength)
-        .toString();
+        prefix + "\t" + "moveStrength: " + moveStrength;
   }
 
   public String asString() {
-    String stroke = getNotationInFormat(notationFormat) + (moveStrength != null ? " " + moveStrength : " ");
+    String stroke = getNotationAsString() + (moveStrength != null ? " " + moveStrength : " ");
     return String.format("%1$-10s", stroke);
   }
 
@@ -171,22 +155,29 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public Optional<DomainId> getLastMoveBoardId() {
+  Optional<DomainId> getLastMoveBoardId() {
     return Optional.ofNullable(move.getLast().getBoardId());
   }
 
   public void addMove(String previousNotation, DomainId prevBoardId, String currentNotation, DomainId currentBoardId) {
-    move = new LinkedList<>() {{
-      add(new NotationSimpleMove(previousNotation, prevBoardId));
-      add(new NotationSimpleMove(currentNotation, currentBoardId));
-    }};
+    move = new LinkedList<>(
+        List.of(
+            new NotationSimpleMove(previousNotation, prevBoardId),
+            new NotationSimpleMove(currentNotation, currentBoardId)
+        )
+    );
   }
 
-  public void resetCursor() {
+  void resetCursor() {
     move.forEach(m -> m.setCursor(false));
   }
 
-  public void setCursor(boolean cursor) {
-    move.forEach(m -> m.setCursor(cursor));
+  @JsonIgnore
+  @DynamoDBIgnore
+  public Optional<NotationSimpleMove> getLastMove() {
+    if (!move.isEmpty()) {
+      return Optional.of(move.getLast());
+    }
+    return Optional.empty();
   }
 }

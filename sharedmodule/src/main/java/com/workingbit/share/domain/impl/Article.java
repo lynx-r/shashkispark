@@ -13,6 +13,7 @@ import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -108,7 +109,7 @@ public class Article extends BaseDomain implements Payload {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Article article = (Article) o;

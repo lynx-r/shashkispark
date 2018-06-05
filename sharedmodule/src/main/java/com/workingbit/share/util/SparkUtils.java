@@ -3,6 +3,7 @@ package com.workingbit.share.util;
 import com.workingbit.share.model.QueryPayload;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.server.AbstractNCSARequestLog;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.EmbeddedJettyFactory;
@@ -18,6 +19,7 @@ public class SparkUtils {
     return new EmbeddedJettyFactoryConstructor(requestLog).create();
   }
 
+  @NotNull
   public static String getQueryValue(QueryPayload query, String queryParam) {
     String value = query.getQuery().value(queryParam);
     return StringUtils.isNotBlank(value) ? value : "";

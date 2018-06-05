@@ -9,6 +9,7 @@ import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.util.Utils;
 import lombok.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -24,9 +25,11 @@ import java.util.Objects;
 @ToString
 public class DomainId extends BaseDomain implements Payload {
 
+  @Nullable
   @DynamoDBAttribute(attributeName = "id")
   private String id;
 
+  @Nullable
   @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
   @DynamoDBAttribute(attributeName = "createdAt")
   private LocalDateTime createdAt;
@@ -42,6 +45,7 @@ public class DomainId extends BaseDomain implements Payload {
     return new DomainId(Utils.getRandomID(), LocalDateTime.now());
   }
 
+  @Nullable
   @DynamoDBIgnore
   @Override
   public LocalDateTime getUpdatedAt() {
@@ -49,7 +53,7 @@ public class DomainId extends BaseDomain implements Payload {
   }
 
   @Override
-  public void setUpdatedAt(LocalDateTime createdAt) {
+  public void setUpdatedAt(LocalDateTime updatedAt) {
   }
 
   @DynamoDBIgnore

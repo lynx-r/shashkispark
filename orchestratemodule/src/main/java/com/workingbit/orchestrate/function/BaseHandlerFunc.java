@@ -6,6 +6,7 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.IAuthority;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import spark.Request;
 import spark.Response;
 
@@ -23,9 +24,9 @@ import static java.net.HttpURLConnection.*;
  */
 public interface BaseHandlerFunc<T extends Payload> {
 
-  Answer process(T data, AuthUser token, QueryPayload query) throws RequestException;
+  @NotNull Answer process(T data, AuthUser token, QueryPayload query) throws RequestException;
 
-  default Answer getAnswer(Request request, Response response, IAuthority path, T data, QueryPayload query) {
+  default Answer getAnswer(@NotNull Request request, @NotNull Response response, @NotNull IAuthority path, T data, QueryPayload query) {
     AuthUser authUser = getAuthUser(request, response);
     if (authUser.getInternalKey() != null) {
       boolean isAuthUserValid = checkInternalRequest(authUser.getInternalKey(), authUser);
@@ -78,24 +79,24 @@ public interface BaseHandlerFunc<T extends Payload> {
     return getAnswerForChecked(request, data, authUser);
   }
 
-  default Answer getAnswer(Request request, Response response, IAuthority path, T data) throws RequestException {
+  default Answer getAnswer(@NotNull Request request, @NotNull Response response, @NotNull IAuthority path, T data) throws RequestException {
     return getAnswer(request, response, path, data, null);
   }
 
-  default Answer getAnswerForAuth(Request request, Response response, T data) throws RequestException {
+  default Answer getAnswerForAuth(@NotNull Request request, @NotNull Response response, T data) throws RequestException {
     AuthUser authUser = getAuthUser(request, response);
     Answer answerForAuth = getAnswerForChecked(request, data, authUser);
     answerForAuth.setAuthUser((AuthUser) answerForAuth.getBody());
     return answerForAuth;
   }
 
-  private Answer getAnswerForChecked(Request request, T data, AuthUser authed, QueryPayload query) {
+  private Answer getAnswerForChecked(@NotNull Request request, T data, @NotNull AuthUser authed, QueryPayload query) {
     Answer securedAnswer = getSecureAnswer(data, authed, query);
     orchestralService.cacheRequest(request, securedAnswer, authed);
     return securedAnswer;
   }
 
-  private Answer getAnswerForChecked(Request request, T data, AuthUser authUser) throws RequestException {
+  private Answer getAnswerForChecked(@NotNull Request request, T data, @NotNull AuthUser authUser) throws RequestException {
     return getAnswerForChecked(request, data, authUser, null);
   }
 
@@ -111,7 +112,8 @@ public interface BaseHandlerFunc<T extends Payload> {
     return processed;
   }
 
-  private Answer getForbiddenAnswer(Response response) {
+  @NotNull
+  private Answer getForbiddenAnswer(@NotNull Response response) {
     String anonymousSession = getSessionAndSetCookieInResponse(response);
     AuthUser authUser = new AuthUser(anonymousSession)
         .addAuthorities(EnumAuthority.ANONYMOUS);

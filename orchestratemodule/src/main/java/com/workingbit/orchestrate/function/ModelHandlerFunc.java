@@ -5,6 +5,7 @@ import com.workingbit.share.model.Answer;
 import com.workingbit.share.model.Payload;
 import com.workingbit.share.model.QueryPayload;
 import com.workingbit.share.model.enumarable.IAuthority;
+import org.jetbrains.annotations.NotNull;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
@@ -20,7 +21,7 @@ import static com.workingbit.share.util.JsonUtils.jsonToData;
 @FunctionalInterface
 public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> {
 
-  default String handleRequest(Request request, Response response, IAuthority path, Class<T> clazz) throws RequestException {
+  default String handleRequest(@NotNull Request request, @NotNull Response response, @NotNull IAuthority path, @NotNull Class<T> clazz) throws RequestException {
     logRequest(request);
 
     String json = request.body();
@@ -36,7 +37,7 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> 
     return dataToJson(answer);
   }
 
-  default String handleAuthRequest(Request request, Response response, Class<T> clazz) throws RequestException {
+  default String handleAuthRequest(@NotNull Request request, @NotNull Response response, @NotNull Class<T> clazz) throws RequestException {
     logRequest(request);
 
     String json = request.body();

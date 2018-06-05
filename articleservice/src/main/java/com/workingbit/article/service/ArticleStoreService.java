@@ -1,12 +1,15 @@
 package com.workingbit.article.service;
 
 import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.model.Articles;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -14,28 +17,62 @@ import java.util.Optional;
  */
 public class ArticleStoreService {
 
-  private Cache<String, Article> store;
+  private static final String ALL_ARTICLES_KEY = "allArticles";
+
+  private Cache<String, Map> storeArticle;
+  private Cache<String, Articles> storeArticles;
 
   public ArticleStoreService() {
     String article = "article";
     CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
         .withCache(article,
-            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Article.class, ResourcePoolsBuilder.heap(10)))
+            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Map.class, ResourcePoolsBuilder.heap(10)))
         .build();
     cacheManager.init();
 
-    store = cacheManager.getCache(article, String.class, Article.class);
+    storeArticle = cacheManager.getCache(article, String.class, Map.class);
+
+    String articles = "articles";
+    cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
+        .withCache(articles,
+            CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Articles.class, ResourcePoolsBuilder.heap(10)))
+        .build();
+    cacheManager.init();
+
+    storeArticles = cacheManager.getCache(articles, String.class, Articles.class);
   }
 
-  public Optional<Article> get(String key, String articleHru, String selectedBoardBoxId) {
-    return Optional.ofNullable(store.get(getKey(key, articleHru, selectedBoardBoxId)));
+  public Optional<Article> get(String userSession, String articleHru, String selectedBoardBoxId) {
+    Map map = storeArticle.get(articleHru);
+    if (map != null) {
+      return Optional.ofNullable((Article) map.get(getKey(userSession, articleHru, selectedBoardBoxId)));
+    }
+    return Optional.empty();
   }
 
-  public void put(String key, Article article) {
-    store.put(getKey(key, article.getHumanReadableUrl(), article.getSelectedBoardBoxId().getId()), article);
+  void put(String userSession, @NotNull Article article) {
+    Map map = Map.of(getKey(userSession, article.getHumanReadableUrl(), article.getSelectedBoardBoxId().getId()), article);
+    storeArticle.put(article.getHumanReadableUrl(), map);
+  }
+
+  void remove(@NotNull Article article) {
+    storeArticle.remove(article.getHumanReadableUrl());
   }
 
   private String getKey(String key, String articleHru, String selectedBoardBoxId) {
     return key + ":" + articleHru + ":" + selectedBoardBoxId;
+  }
+
+  void putAllArticles(Articles articles) {
+    storeArticles.put(ALL_ARTICLES_KEY, articles);
+  }
+
+  Optional<Articles> getAllArticles(boolean secure) {
+    Articles all = storeArticles.get(ALL_ARTICLES_KEY);
+    if (all == null || all.isEmpty()) {
+      return Optional.empty();
+    }
+    all.setSecureArticles(secure);
+    return Optional.of(all);
   }
 }

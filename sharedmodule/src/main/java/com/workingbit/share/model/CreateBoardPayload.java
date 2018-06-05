@@ -23,7 +23,7 @@ public class CreateBoardPayload implements Payload {
   private DomainId userId;
   private EnumEditBoardBoxMode editMode;
 
-  private CreateBoardPayload() {
+  public CreateBoardPayload() {
   }
 
   @JsonCreator
@@ -32,7 +32,7 @@ public class CreateBoardPayload implements Payload {
                             @JsonProperty("black") Boolean black,
                             @JsonProperty("idInArticle") int idInArticle,
                             @JsonProperty("rules") EnumRules rules,
-                            @JsonProperty("selectedBoardBoxId") DomainId boardBoxId,
+                            @JsonProperty("boardBoxId") DomainId boardBoxId,
                             @JsonProperty("editMode") EnumEditBoardBoxMode editMode
   ) {
     this.articleId = articleId;
@@ -42,9 +42,5 @@ public class CreateBoardPayload implements Payload {
     this.rules = rules;
     this.boardBoxId = boardBoxId;
     this.editMode = editMode;
-  }
-
-  public static CreateBoardPayload createBoardPayload() {
-    return new CreateBoardPayload();
   }
 }

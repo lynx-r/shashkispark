@@ -1,31 +1,33 @@
 package com.workingbit.orchestrate.config;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created by Aleksey Popryaduhin on 14:17 27/09/2017.
  */
 public interface ModuleProperties {
 
-  String registerResource();
+  @NotNull String registerResource();
 
-  String authorizeResource();
+  @NotNull String authorizeResource();
 
-  String authenticateResource();
+  @NotNull String authenticateResource();
 
-  String articleResource();
+  @NotNull String articleResource();
 
-  String articlesResource();
+  @NotNull String articlesResource();
 
-  String boardboxResource();
+  @NotNull String boardboxResource();
 
-  String userInfoResource();
+  @NotNull String userInfoResource();
 
-  String saveUserInfoResource();
+  @NotNull String saveUserInfoResource();
 
-  String logoutResource();
+  @NotNull String logoutResource();
 
-  String redisHost();
+  @NotNull String redisHost();
 
-  String redisPort();
+  @NotNull String redisPort();
 
-  String parsePdnResource();
+  @NotNull String parsePdnResource();
 }

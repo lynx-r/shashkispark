@@ -5,6 +5,7 @@ import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.UserCredentials;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.Utils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -15,8 +16,9 @@ import static org.junit.Assert.*;
 /**
  * Created by Aleksey Popryadukhin on 18/04/2018.
  */
-public class SecureUserServiceTest {
+public class SiteUserInfoServiceTest {
 
+  @NotNull
   private SecureUserService secureUserService = new SecureUserService();
 
   @Test

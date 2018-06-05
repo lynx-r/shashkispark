@@ -6,10 +6,8 @@ import com.workingbit.board.controller.BoardBoxController;
 import com.workingbit.board.dao.BoardBoxDao;
 import com.workingbit.board.dao.BoardDao;
 import com.workingbit.board.dao.NotationDao;
-import com.workingbit.board.service.BoardBoxService;
-import com.workingbit.board.service.BoardBoxStoreService;
-import com.workingbit.board.service.NotationParserService;
-import com.workingbit.board.service.NotationStoreService;
+import com.workingbit.board.dao.NotationHistoryDao;
+import com.workingbit.board.service.*;
 import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.ExceptionHandler;
@@ -33,12 +31,16 @@ public class BoardEmbedded {
 
   // Declare dependencies
   public static BoardBoxService boardBoxService;
+  public static BoardService boardService;
+  public static NotationService notationService;
+  public static NotationHistoryService notationHistoryService;
   public static NotationParserService notationParserService;
   public static BoardBoxStoreService boardBoxStoreService;
   public static NotationStoreService notationStoreService;
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
   public static NotationDao notationDao;
+  public static NotationHistoryDao notationHistoryDao;
 
   public static AppProperties appProperties;
 
@@ -48,6 +50,9 @@ public class BoardEmbedded {
     appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     boardBoxService = new BoardBoxService();
+    boardService = new BoardService();
+    notationHistoryService = new NotationHistoryService();
+    notationService = new NotationService();
     notationParserService = new NotationParserService();
     boardBoxStoreService = new BoardBoxStoreService();
     notationStoreService = new NotationStoreService();
@@ -55,6 +60,7 @@ public class BoardEmbedded {
     boardBoxDao = new BoardBoxDao(appProperties);
     boardDao = new BoardDao(appProperties);
     notationDao = new NotationDao(appProperties);
+    notationHistoryDao = new NotationHistoryDao(appProperties);
   }
 
   public static void main(String[] args) {
@@ -99,7 +105,9 @@ public class BoardEmbedded {
           post(Authority.BOARD_REDO_PROTECTED.getPath(), BoardBoxController.redo);
           post(Authority.BOARD_UNDO_PROTECTED.getPath(), BoardBoxController.undo);
           post(Authority.BOARD_FORK_PROTECTED.getPath(), BoardBoxController.forkNotation);
+          post(Authority.BOARD_REMOVE_VARIANT_PROTECTED.getPath(), BoardBoxController.removeVariant);
           post(Authority.CHANGE_TURN_PROTECTED.getPath(), BoardBoxController.changeTurn);
+          post(Authority.CHANGE_COLOR_PROTECTED.getPath(), BoardBoxController.changeBoardColor);
 
           exception(RequestException.class, ExceptionHandler.handle);
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));

@@ -21,6 +21,7 @@ app:
 #  logoutResource: https://localhost:8443/security/api/v1/logout
 
   # article
+  articleResource: http://api.shashki.online/article/api/v1/article
   articleResource: https://api.shashki.online/article/api/v1/article
   articlesResource: https://api.shashki.online/article/api/v1/articles
 

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.exception.DaoException;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -60,7 +61,7 @@ public class ValueFilter implements BaseFilter {
 
   @SuppressWarnings("unchecked")
   @Override
-  public void updateEav(Map<String, AttributeValue> eav) {
+  public void updateEav(@NotNull Map<String, AttributeValue> eav) {
     String sub = formatSub(key);
     if (eav.containsKey(sub)) {
       sub += getRandomString(3);

@@ -5,6 +5,8 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.ICoordinates;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
 
   private Draught draught;
 
+  @NotNull
   @JsonIgnore
   private List<List<Square>> diagonals = new ArrayList<>();
 
@@ -100,11 +103,13 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
     this.dim = dim;
   }
 
+  @NotNull
   public Square dim(int dim) {
     this.dim = dim;
     return this;
   }
 
+  @NotNull
   public Square draught(Draught draught) {
     this.draught = draught;
     return this;
@@ -117,7 +122,7 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
    * @return
    */
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Square square = (Square) o;
@@ -130,11 +135,14 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
     return Objects.hash(v, h);
   }
 
+  @NotNull
   @Override
   public String toString() {
     return "Square{" +
         "notation=" + getNotation() +
         ", notationNum=" + getNotationNum() +
+        ", dim=" + dim +
+        ", main=" + main +
         ", highlight=" + highlight +
         ", draught=" + draught +
         '}';
@@ -144,6 +152,7 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
     this.diagonals.add(diagonal);
   }
 
+  @NotNull
   public Square highlight(boolean highlight) {
     setHighlight(highlight);
     return this;
@@ -177,7 +186,7 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
   }
 
   @Override
-  public void setUpdatedAt(LocalDateTime createdAt) {
+  public void setUpdatedAt(LocalDateTime updatedAt) {
 
   }
 

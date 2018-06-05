@@ -6,7 +6,8 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.enumarable.EnumRules;
-import com.workingbit.share.model.NotationHistory;
+import com.workingbit.share.domain.impl.NotationHistory;
+import com.workingbit.share.util.Utils;
 import org.junit.Test;
 
 import java.util.List;
@@ -122,11 +123,13 @@ public class BoardUtilsTest extends BaseServiceTest {
     System.out.println(diagonal1);
     assertFalse(isSubDiagonal(diagonal1, diagonal0));
 //     TODO more checks
-//    assertTrue(isSubDiagonal(diagonal0, Collections.singletonList(diagonal0.get(2))));
+//    assertTrue(isSubDiagonal(diagonal0, Collections.singletonList(diagonal0.getNotation(2))));
   }
 
   private Board getBoardFilled() {
-    return BoardUtils.initBoard(true, false, EnumRules.RUSSIAN);
+    Board board = BoardUtils.initBoard(true, false, EnumRules.RUSSIAN);
+    Utils.setRandomIdAndCreatedAt(board);
+    return board;
   }
 
   private Draught getDraught(boolean black) {
@@ -143,7 +146,7 @@ public class BoardUtilsTest extends BaseServiceTest {
     Square d4 = BoardUtils.findSquareByNotation("d4", board);
     board.setNextSquare(d4);
 
-    board = move(board, "c3", "d4", false, new NotationHistory());
+    board = move(board, "c3", "d4", false, NotationHistory.createWithRoot());
     c3 = BoardUtils.findSquareByNotation(c3.getNotation(), board);
     assertFalse(c3.isOccupied());
     d4 = BoardUtils.findSquareByNotation(d4.getNotation(), board);
@@ -151,7 +154,7 @@ public class BoardUtilsTest extends BaseServiceTest {
 
     Square e5 = BoardUtils.findSquareByNotation("e5", board);
     board.setNextSquare(e5);
-    board = move(board, "d4", "e5", false, new NotationHistory());
+    board = move(board, "d4", "e5", false, NotationHistory.createWithRoot());
     d4 = BoardUtils.findSquareByNotation(d4.getNotation(), board);
     assertFalse(d4.isOccupied());
     e5 = BoardUtils.findSquareByNotation(e5.getNotation(), board);

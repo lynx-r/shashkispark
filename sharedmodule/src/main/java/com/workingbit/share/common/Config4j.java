@@ -8,6 +8,7 @@ import org.cfg4j.source.classpath.ClasspathConfigurationSource;
 import org.cfg4j.source.context.environment.Environment;
 import org.cfg4j.source.context.environment.ImmutableEnvironment;
 import org.cfg4j.source.context.filesprovider.ConfigFilesProvider;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ public class Config4j {
 
   private static Logger logger = LoggerFactory.getLogger(Config4j.class);
 
-  public static ConfigurationProvider configurationProvider(String config) {
+  public static ConfigurationProvider configurationProvider(@NotNull String config) {
     // Specify which files to load. Configuration from both files will be merged.
     ConfigFilesProvider configFilesProvider = () -> Collections.singletonList(Paths.get(config));
 

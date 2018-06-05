@@ -15,6 +15,8 @@ import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -43,6 +45,7 @@ import static org.junit.Assert.*;
  */
 public class ArticleControllerTest {
 
+  @NotNull
   private static String articleUrl = "/api/v1";
   private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
 
@@ -62,9 +65,11 @@ public class ArticleControllerTest {
     }
   }
 
+  @NotNull
   @ClassRule
   public static SparkServer<ArticleControllerTestSparkApplication> testServer = new SparkServer<>(ArticleControllerTestSparkApplication.class, randomPort);
 
+  @NotNull
   private AuthUser register() throws Exception {
     String username = Utils.getRandomString20();
     String password = Utils.getRandomString20();
@@ -85,7 +90,7 @@ public class ArticleControllerTest {
   @Test
   public void create_article() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    // can't create
+    // can't createNotationDrives
     post(ARTICLE_PROTECTED.getPath(), createArticlePayload, AuthUser.anonymous(), HTTP_FORBIDDEN);
 
     AuthUser headers = register();
@@ -122,11 +127,11 @@ public class ArticleControllerTest {
     UserInfo userInfo = orchestralService
         .userInfo(headers)
         .get();
-    userInfo.addAuthority(EnumAuthority.BANNED);
+    userInfo.addAuthority(EnumAuthority.REMOVED);
     answer = orchestralService.saveUserInfoAnswer(userInfo, headers).get();
     UserInfo savedUserInfo = (UserInfo) answer.getBody();
     headers = answer.getAuthUser();
-    assertTrue(savedUserInfo.getAuthorities().contains(EnumAuthority.BANNED));
+    assertTrue(savedUserInfo.getAuthorities().contains(EnumAuthority.REMOVED));
     articleNotAuthorized = put(ARTICLE_PROTECTED.getPath(), article, headers).getMessage();
     assertEquals(HTTP_FORBIDDEN, articleNotAuthorized.getCode());
 
@@ -134,7 +139,7 @@ public class ArticleControllerTest {
     answer = orchestralService.authenticateAnswer(headers).get();
     assertEquals(HTTP_OK, answer.getStatusCode());
     headers = answer.getAuthUser();
-    assertTrue(headers.getAuthorities().contains(EnumAuthority.BANNED));
+    assertTrue(headers.getAuthorities().contains(EnumAuthority.REMOVED));
 
     answer = put(ARTICLE_PROTECTED.getPath(), article, headers);
     assertEquals(HTTP_FORBIDDEN, answer.getStatusCode());
@@ -313,12 +318,13 @@ public class ArticleControllerTest {
     assertEquals(2, articles.getArticles().size());
   }
 
+  @NotNull
   private CreateArticlePayload getCreateArticlePayload() {
     CreateArticlePayload createArticlePayload = CreateArticlePayload.createArticlePayload();
     Article article = new Article(Utils.getRandomString20(), Utils.getRandomString20(), Utils.getRandomString20());
     Utils.setArticleUrlAndIdAndCreatedAt(article, false);
     createArticlePayload.setArticle(article);
-    CreateBoardPayload createBoardPayload = CreateBoardPayload.createBoardPayload();
+    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
     createBoardPayload.setBlack(false);
     createBoardPayload.setRules(EnumRules.RUSSIAN);
     createBoardPayload.setFillBoard(false);
@@ -389,7 +395,7 @@ public class ArticleControllerTest {
     assertEquals(objectList, myClassList);
   }
 
-  private Answer post(String path, Object payload, AuthUser authUser, int expectCode) throws HttpClientException {
+  private Answer post(String path, Object payload, @Nullable AuthUser authUser, int expectCode) throws HttpClientException {
     PostMethod resp = testServer.post(articleUrl + path, dataToJson(payload), false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {
@@ -407,7 +413,7 @@ public class ArticleControllerTest {
     return answer;
   }
 
-  private Answer post(String path, Object payload, AuthUser authUser, int expectCode, String[] errors) throws HttpClientException {
+  private Answer post(String path, Object payload, @Nullable AuthUser authUser, int expectCode, @NotNull String[] errors) throws HttpClientException {
     PostMethod resp = testServer.post(articleUrl + path, dataToJson(payload), false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {
@@ -429,7 +435,7 @@ public class ArticleControllerTest {
     return answer;
   }
 
-  private Answer get(String path, AuthUser authUser, int expectCode) throws HttpClientException {
+  private Answer get(String path, @Nullable AuthUser authUser, int expectCode) throws HttpClientException {
     var resp = testServer.get(articleUrl + path, false);
     if (authUser != null) {
       if (StringUtils.isNotBlank(authUser.getAccessToken())) {

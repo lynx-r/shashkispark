@@ -4,6 +4,7 @@ import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.MovesList;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.List;
@@ -12,9 +13,7 @@ import java.util.stream.Collectors;
 
 import static com.workingbit.board.controller.util.BoardUtils.*;
 import static com.workingbit.share.common.ErrorMessages.UNABLE_TO_MOVE;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 /**
  * Created by Aleksey Popryaduhin on 21:13 11/08/2017.
@@ -35,8 +34,8 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setNextSquare(squareD4);
 
     board = move(board, "c3", "d4", true, boardBox.getNotation().getNotationHistory());
-    assertFalse(squareC3.isOccupied());
-    assertTrue(squareD4.isOccupied());
+    assertTrue(findSquareByNotation("d4", board).isOccupied());
+    assertFalse(findSquareByNotation("c3", board).isOccupied());
   }
 
   @Test
@@ -80,6 +79,7 @@ public class MoveUtilTest extends BaseServiceTest {
     board = move(board, "c3", "d4", false, boardBox.getNotation().getNotationHistory());
     board = move(board, "f6", "e5", true, boardBox.getNotation().getNotationHistory());
     Square d4 = findSquareByNotation("d4", board);
+    board.setSelectedSquare(d4);
     MovesList movesList = getHighlightedBoard(board.isBlackTurn(), board);
     assertTrue(!movesList.getCaptured().isEmpty());
     Square from = BoardUtils.findSquareByNotation("a1", board);
@@ -127,18 +127,23 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setSelectedSquare(b2);
     board = move(board, "b2", "d4", false, boardBox.getNotation().getNotationHistory());
     MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d4"));
-    testCollection("f6,d8,b6", highlight.getAllowed());
-    testCollection("e5,e7,c7,c5", highlight.getCaptured());
+    testCollection("f6,b6", highlight.getAllowed());
+//    testCollection("f6,d8,b6", highlight.getAllowed());
+    testCollectionTree("e5,c5", highlight.getCaptured());
     board = move(board, "d4", "f6", false, boardBox.getNotation().getNotationHistory());
     highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
-    testCollection("d8,b6,d4", highlight.getAllowed());
-    testCollection("e7,c7,c5", highlight.getCaptured());
+    testCollection("d8", highlight.getAllowed());
+    testCollectionTree("e7", highlight.getCaptured());
     board = move(board, "f6", "d8", false, boardBox.getNotation().getNotationHistory());
-    assertTrue(board.getSelectedSquare().getDraught().isQueen());
+    assertTrue(findSquareByNotation("d8", board).getDraught().isQueen());
     highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
-    testCollection("d4,e3,f2,g1,b6", highlight.getAllowed());
-    testCollection("c5,c7", highlight.getCaptured());
-    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
+    testCollection("d4,b6", highlight.getAllowed());
+    testCollectionTree("c5,c7", highlight.getCaptured());
+    board = move(board, "d8", "b6", false, boardBox.getNotation().getNotationHistory());
+    assertTrue(findSquareByNotation("b6", board).getDraught().isQueen());
+    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "b6"));
+    testCollection("d4,e3,f2,g1", highlight.getAllowed());
+    testCollectionTree("c5", highlight.getCaptured());
   }
 
   @Test
@@ -209,6 +214,61 @@ public class MoveUtilTest extends BaseServiceTest {
   }
 
   @Test
+  public void should_capture_turk_stroke2_careful() {
+    BoardBox boardBox = getBoardBox(false);
+    Board board = boardBox.getBoard();
+    board = addWhiteDraught(board, "d4");
+    board = addBlackDraught(board, "c5");
+    board = addBlackDraught(board, "c7");
+    board = addBlackDraught(board, "e7");
+    board = addBlackDraught(board, "e3");
+    board = addBlackDraught(board, "g5");
+    board = addBlackDraught(board, "g3");
+    Square d4 = findSquareByNotation("d4", board);
+    board.setSelectedSquare(d4);
+    board = move(board, "d4", "b6", false, boardBox.getNotation().getNotationHistory());
+    Set<String> allowed = Set.of("d8");
+    Set<String> captured = Set.of("c5");
+    assertTrue(testSameHighlightCustom(board, allowed, captured));
+    board = move(board, "b6", "d8", false, boardBox.getNotation().getNotationHistory());
+    allowed = Set.of("f6", "h4", "f2");
+    captured = Set.of("c5", "c7");
+    assertTrue(testSameHighlightCustom(board, allowed, captured));
+    board = move(board, "d8", "f6", false, boardBox.getNotation().getNotationHistory());
+    allowed = Set.of("h4", "f2");
+    captured = Set.of("c5", "c7", "e7");
+    assertTrue(testSameHighlightCustom(board, allowed, captured));
+    board = move(board, "f6", "h4", false, boardBox.getNotation().getNotationHistory());
+    allowed = Set.of("f2", "d4");
+    captured = Set.of("c5", "c7", "e7", "g5");
+    assertTrue(testSameHighlightCustom(board, allowed, captured));
+    board = move(board, "h4", "f2", false, boardBox.getNotation().getNotationHistory());
+    allowed = Set.of("d4");
+    captured = Set.of("c5", "c7", "e7", "g5", "g3");
+    assertTrue(testSameHighlightCustom(board, allowed, captured));
+    board = move(board, "f2", "d4", false, boardBox.getNotation().getNotationHistory());
+    long occupiedOne = board.getAssignedSquares().stream().filter(Square::isOccupied).count();
+    assertEquals(1, occupiedOne);
+
+//    board = move(board, "d8", "f6", false, boardBox.getNotation().getNotationHistory());
+//    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
+//    assertTrue(testSameHighlight(board, highlight));
+//
+//    board = move(board, "f6", "h4", false, boardBox.getNotation().getNotationHistory());
+//    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "h4"));
+//    assertTrue(testSameHighlight(board, highlight));
+//
+//    board = move(board, "h4", "f2", false, boardBox.getNotation().getNotationHistory());
+//    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f2"));
+//    assertTrue(testSameHighlight(board, highlight));
+//
+//    board = move(board, "f2", "d4", false, boardBox.getNotation().getNotationHistory());
+//    assertTrue(testSameHighlight(board, new MovesList()));
+//
+//    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
+  }
+
+  @Test
   public void should_move_white_on_edge() {
     BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
@@ -222,16 +282,17 @@ public class MoveUtilTest extends BaseServiceTest {
     board.setNextSquare(squareD4);
 
     board = move(board, "c7", "d8", true, boardBox.getNotation().getNotationHistory());
-    assertFalse(squareC3.isOccupied());
-    assertTrue(squareD4.isOccupied());
+    assertTrue(findSquareByNotation("d8", board).isOccupied());
+    assertFalse(findSquareByNotation("c7", board).isOccupied());
   }
 
   @Test
   public void should_move_black() {
     BoardBox boardBox = getBoardBox(false);
     Board board = boardBox.getBoard();
+    board.setBlack(true);
     String c7 = "c7";
-    BoardUtils.addDraught(board, c7, getDraught(0, 0));
+    addBlackDraught(board, "c7");
     Square squareC7 = BoardUtils.findSquareByNotation(c7, board);
     String d6 = "d6";
     Square squareD6 = (Square) BoardUtils.findSquareByNotation(d6, board).deepClone();
@@ -262,4 +323,41 @@ public class MoveUtilTest extends BaseServiceTest {
         .collect(Collectors.toList());
     return highlighted.equals(allowedSorted);
   }
+
+  private boolean testSameHighlightCustom(Board board, Set<String> allowed, @NotNull Set<String> captured) {
+    List<Square> highlighted = board.getAssignedSquares()
+        .stream()
+        .filter(Square::isHighlight)
+        .sorted()
+        .collect(Collectors.toList());
+    if (allowed.size() != highlighted.size()) {
+      return false;
+    }
+
+    List<Square> capt = board.getAssignedSquares()
+        .stream()
+        .filter(sq-> sq.isOccupied() && sq.getDraught().isCaptured())
+        .sorted()
+        .collect(Collectors.toList());
+    if (captured.size() != capt.size()) {
+      return false;
+    }
+
+    List<Square> captSorted = captured.stream()
+        .map(n-> findSquareByNotation(n, board))
+        .sorted()
+        .collect(Collectors.toList());
+
+    boolean capturedOk = captSorted.equals(capt);
+    if (!capturedOk) {
+      return false;
+    }
+
+    List<Square> allowedSorted = allowed.stream()
+        .map(n-> findSquareByNotation(n, board))
+        .sorted()
+        .collect(Collectors.toList());
+    return highlighted.equals(allowedSorted);
+  }
+
 }

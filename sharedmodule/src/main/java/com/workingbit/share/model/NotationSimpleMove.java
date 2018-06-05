@@ -1,11 +1,11 @@
 package com.workingbit.share.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Objects;
@@ -15,11 +15,10 @@ import static com.workingbit.share.util.Utils.*;
 /**
  * Created by Aleksey Popryadukhin on 04/04/2018.
  */
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class NotationSimpleMove {
+public class NotationSimpleMove implements DeepClone {
   private String notation;
   private DomainId boardId;
   private boolean cursor;
@@ -27,13 +26,23 @@ public class NotationSimpleMove {
   private EnumNotationFormat format;
   @DynamoDBIgnore
   private int boardDimension;
+  /**
+   * whether move visible. is used in frontend
+   */
+  private boolean visible;
+
+  public NotationSimpleMove() {
+    visible = true;
+  }
 
   public NotationSimpleMove(String notation, DomainId boardId) {
+    this();
     this.notation = notation;
     this.boardId = boardId;
   }
 
   public NotationSimpleMove(String notation, DomainId boardId, boolean curosr) {
+    this(notation, boardId);
     this.notation = notation;
     this.boardId = boardId;
     this.cursor = curosr;
@@ -60,9 +69,9 @@ public class NotationSimpleMove {
       return notation;
     }
     switch (format) {
-      case ЧИСЛОВОЙ:
+      case DIGITAL:
         return getNotationNum();
-      case БУКВЕННЫЙ:
+      case ALPHANUMERIC:
         return getNotationAlpha();
       default:
         return notation;
@@ -70,7 +79,7 @@ public class NotationSimpleMove {
   }
 
   private String getNotationAlpha() {
-    return boardDimension == EnumRules.INTERNATIONAL.getDimension()
+    return boardDimension == EnumRules.INTERNATIONAL.getDimensionAbs()
         ? getAlphanumericNotation100()
         : getAlphanumericNotation64();
   }
@@ -81,7 +90,7 @@ public class NotationSimpleMove {
   }
 
   private String getNotationNum() {
-    return boardDimension == EnumRules.INTERNATIONAL.getDimension()
+    return boardDimension == EnumRules.INTERNATIONAL.getDimensionAbs()
         ? getPdnNumericNotation100()
         : getPdnNumericNotation64();
   }

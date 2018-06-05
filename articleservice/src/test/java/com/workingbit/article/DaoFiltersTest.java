@@ -1,5 +1,6 @@
 package com.workingbit.article;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -41,6 +42,7 @@ public class DaoFiltersTest {
       this.type = type;
     }
 
+    @NotNull
     @Override
     public String asString() {
       return key + " " + operator + " " + value;
@@ -54,7 +56,7 @@ public class DaoFiltersTest {
       filters = new LinkedList<>();
     }
 
-    Filters add(BaseFilter filter) {
+    @NotNull Filters add(BaseFilter filter) {
       filters.add(filter);
       return this;
     }

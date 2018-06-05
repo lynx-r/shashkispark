@@ -10,6 +10,7 @@
     <logger name="com.workingbit" level="DEBUG"/>
     <logger name="org.apache.catalina" level="ERROR"/>
     <logger name="org.apache.coyote" level="ERROR"/>
+    <logger name="com.fasterxml.jackson.core" level="ERROR"/>
 
     <root level="error">
         <appender-ref ref="STDOUT" />

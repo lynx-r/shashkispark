@@ -4,6 +4,7 @@ import com.workingbit.board.service.NotationParserService;
 import com.workingbit.share.domain.impl.Notation;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -21,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class NotationParserTest {
 
+  @NotNull
   private NotationParserService notationParserService = new NotationParserService();
 
   @Test
@@ -35,8 +37,8 @@ public class NotationParserTest {
       BufferedReader bufferedReader = Files.newBufferedReader(path);
 
       Notation notation = notationParserService.parse(bufferedReader);
-      notation.print();
       assertNotNull(notation);
+      System.out.println(notation.getAsString());
     }
   }
 }

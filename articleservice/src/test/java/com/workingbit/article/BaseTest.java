@@ -7,6 +7,7 @@ import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import com.workingbit.share.util.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import static com.workingbit.share.common.Config4j.configurationProvider;
 
@@ -17,10 +18,13 @@ public class BaseTest {
 
   private static AppProperties appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
+  @NotNull
   protected ArticleDao articleDao = new ArticleDao(appProperties);
 
+  @NotNull
   protected ArticleService articleService = new ArticleService();
 
+  @NotNull
   protected Article createArticle() {
     Article article = new Article();
     Utils.setArticleUrlAndIdAndCreatedAt(article, true);

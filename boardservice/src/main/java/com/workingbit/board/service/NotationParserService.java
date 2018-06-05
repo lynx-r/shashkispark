@@ -4,12 +4,14 @@ import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
-import com.workingbit.share.model.NotationHistory;
+import com.workingbit.share.model.NotationFen;
+import com.workingbit.share.domain.impl.NotationHistory;
 import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
 import net.percederberg.grammatica.parser.Token;
 import org.apache.commons.collections4.map.ListOrderedMap;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +32,19 @@ public class NotationParserService {
   private static final String COMMENT = "COMMENT";
   private static final String VARIATION = "Variation";
 
-  public Notation parse(String notation) throws ParserLogException, ParserCreationException {
+  private NotationFenParserService notationFenParserService;
+
+  public NotationParserService() {
+    this.notationFenParserService = new NotationFenParserService();
+  }
+
+  @NotNull
+  public Notation parse(@NotNull String notation) throws ParserLogException, ParserCreationException {
     BufferedReader bufferedReader = new BufferedReader(new StringReader(notation));
     return parse(bufferedReader);
   }
 
+  @NotNull
   public Notation parse(BufferedReader bufferedReader) throws ParserCreationException, ParserLogException {
     NotationParser notationParser = new NotationParser(bufferedReader);
     notationParser.prepare();
@@ -44,9 +54,12 @@ public class NotationParserService {
 
     Notation notation = new Notation();
     ListOrderedMap<String, String> headers = notation.getTags();
-    parseHeader(gameHeader, headers);
+    parseHeader(gameHeader, headers, notation);
 
     Node game = pdnFile.getChildAt(1);
+    if (game == null) {
+      return notation;
+    }
     NotationHistory notationDrives = notation.getNotationHistory();
     try {
       parseGameBody(game, notationDrives.getNotation());
@@ -55,23 +68,27 @@ public class NotationParserService {
       logger.error("Parse error ", e);
     }
 
-    notationDrives.setHistory(notationDrives.getNotation());
     notation.setTags(headers);
     notation.setNotationHistory(notationDrives);
 
     return notation;
   }
 
-  private void parseHeader(Node gameHeader, Map<String, String> headers) {
+  private void parseHeader(Node gameHeader, @NotNull Map<String, String> headers, @NotNull Notation notation) throws ParserLogException, ParserCreationException {
     for (int i = 0; i < gameHeader.getChildCount(); i++) {
       Node header = gameHeader.getChildAt(i);
       String identifier = ((Token) header.getChildAt(1)).getImage();
       String value = ((Token) header.getChildAt(2)).getImage();
-      headers.put(identifier, value);
+      if (identifier.equals("FEN")) {
+        NotationFen fen = notationFenParserService.parse(value.substring(1, value.length() - 1));
+        notation.setNotationFen(fen);
+      } else {
+        headers.put(identifier, value);
+      }
     }
   }
 
-  private void parseGameBody(Node game, NotationDrives notationDrives) {
+  private void parseGameBody(Node game, @NotNull NotationDrives notationDrives) {
     boolean firstMove = false;
     NotationDrive notationDrive = new NotationDrive();
     int gameMoveNumber = 0;
