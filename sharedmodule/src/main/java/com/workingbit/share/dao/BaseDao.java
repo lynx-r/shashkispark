@@ -239,6 +239,11 @@ public class BaseDao<T extends BaseDomain> {
     }
     List<DynamoDBMapper.FailedBatch> failedBatches = dynamoDBMapper.batchSave(entities);
     if (!failedBatches.isEmpty()) {
+      String messages = failedBatches.stream()
+          .map(DynamoDBMapper.FailedBatch::getException)
+          .map(Throwable::getMessage)
+          .collect(Collectors.joining(","));
+      logger.error(messages);
       throw DaoException.unableToSave();
     }
   }

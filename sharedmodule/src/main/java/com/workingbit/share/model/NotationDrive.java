@@ -8,10 +8,12 @@ import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -225,12 +227,14 @@ public class NotationDrive implements DeepClone, NotationFormat {
 
   @Override
   public String toString() {
-    return new ToStringBuilder(this)
-        .append("notationNumber", notationNumber)
-        .append("moves", moves)
-        .append("variants", variants)
-        .append("root", root)
-        .toString();
+    return "NotationDrive{" +
+        "notationNumber='" + notationNumber + '\'' +
+        ", moves=" + moves +
+        ", variants=" + variants +
+        ", current=" + current +
+        ", previous=" + previous +
+        ", idInVariants=" + idInVariants +
+        '}';
   }
 
   @JsonIgnore
@@ -282,7 +286,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public int getVariantsId() {
+  public int getVariantId() {
     int variantsSize = getVariantsSize();
     boolean found = variants.stream()
         .anyMatch(notationDrive -> notationDrive.getIdInVariants() == getVariantsSize());

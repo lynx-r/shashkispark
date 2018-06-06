@@ -11,6 +11,7 @@ import com.workingbit.share.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,33 +36,32 @@ public class NotationHistoryService {
           notationDrive.setPrevious(true);
           notation.setPrevVariantId(null);
         });
-    Utils.setRandomIdAndCreatedAt(notationHistory);
     NotationDrive forkNotationDrive = notationHistory.get(forkFromNotationDrive);
-    int variantNotationDrive = forkNotationDrive.getVariantsId();
-    boolean root = variantNotationDrive == 0;
-    if (root) {
-      variantNotationDrive++;
-    }
-    notationHistory.setCurrentNotationDrive(forkFromNotationDrive);
-    notationHistory.setVariantNotationDrive(variantNotationDrive);
-    notation.addNotationHistory(notationHistory);
-
+    int variantId = forkNotationDrive.getVariantId();
+    boolean root = variantId == 0;
     if (root) {
       // root variant
-      notationHistory = notation.getNotationHistory().deepClone();
-      Utils.setRandomIdAndCreatedAt(notationHistory);
-      notationHistory.setCurrentNotationDrive(forkFromNotationDrive);
-      notationHistory.setVariantNotationDrive(0);
-      notation.addNotationHistory(notationHistory);
+      NotationHistory rootNotationHistory = notation.getNotationHistory().deepClone();
+      Utils.setRandomIdAndCreatedAt(rootNotationHistory);
+      rootNotationHistory.setCurrentNotationDrive(forkFromNotationDrive);
+      rootNotationHistory.setVariantNotationDrive(0);
+      rootNotationHistory.getLast().setCurrent(true);
+      notation.addNotationHistory(rootNotationHistory);
+      // inc variant id
+      variantId++;
     }
+    Utils.setRandomIdAndCreatedAt(notationHistory);
+    notationHistory.setCurrentNotationDrive(forkFromNotationDrive);
+    notationHistory.setVariantNotationDrive(variantId);
+    notation.addNotationHistory(notationHistory);
 
     // new fork
     NotationDrives notationDrives = notationHistory.getNotation();
-    NotationDrives cutpoint = subListNotation(notationDrives, forkFromNotationDrive, notationDrives.size());
+    NotationDrives cutPoint = subListNotation(notationDrives, forkFromNotationDrive, notationDrives.size());
     DomainId boardBoxId = notation.getBoardBoxId();
-    NotationDrives cutNotationDrives = cloneBoards(boardBoxId, cutpoint.deepClone());
+    NotationDrives cutNotationDrives = cloneBoards(boardBoxId, cutPoint.deepClone());
 
-    notationDrives.removeAll(cutpoint);
+    notationDrives.removeAll(cutPoint);
     resetNotationMarkers(notationDrives);
 
     // if first variant
@@ -73,9 +73,9 @@ public class NotationHistoryService {
       forkedVariant.addVariant(rootV);
       forkedVariant.setParentColor(rootV.getParentColor());
     }
-    cutNotationDrives.setIdInVariants(variantNotationDrive);
+    cutNotationDrives.setIdInVariants(variantId);
     NotationDrive firstNew = cutNotationDrives.getFirst().deepClone();
-    firstNew.setIdInVariants(variantNotationDrive);
+    firstNew.setIdInVariants(variantId);
     firstNew.setCurrent(true);
     NotationDrives switchVariants = forkedVariant.getVariants();
     if (rootV == null) {
@@ -92,20 +92,21 @@ public class NotationHistoryService {
     notationDrives.add(forkedVariant);
     notationDrives.setLastMoveCursor();
 
-    syncVariantsInForkedNotations(forkFromNotationDrive, notation, notationHistory, forkedVariant);
-    notationHistoryDao.batchSave(notation.getForkedNotations().values());
+    Collection<NotationHistory> notationHistories = notation.getForkedNotations().values();
+    syncVariantsInForkedNotations(forkFromNotationDrive, notationHistory, forkedVariant, notationHistories);
+    notationHistoryDao.batchSave(notationHistories);
     return notationHistory;
   }
 
   private NotationDrives cloneBoards(DomainId boardBoxId, NotationDrives notationDrives) {
     List<Board> boards = boardDao.findByBoardBoxId(boardBoxId);
-    Map<String, List<Board>> boardById = boards.stream().collect(Collectors.groupingBy(Board::getId));
+    Map<String, List<Board>> boardsById = boards.stream().collect(Collectors.groupingBy(Board::getId));
     List<Board> boardClones = new ArrayList<>();
     notationDrives.replaceAll(notationDrive -> {
       notationDrive.getMoves().replaceAll(notationMove -> {
         notationMove.getMove().replaceAll(notationSimpleMove -> {
           DomainId boardId = notationSimpleMove.getBoardId();
-          Board newBoard = boardById.get(boardId.getId()).get(0).deepClone();
+          Board newBoard = boardsById.get(boardId.getId()).get(0).deepClone();
           Utils.setRandomIdAndCreatedAt(newBoard);
           boardClones.add(newBoard);
           notationSimpleMove.setBoardId(newBoard.getDomainId());
@@ -183,8 +184,11 @@ public class NotationHistoryService {
     return rootV;
   }
 
-  private void syncVariantsInForkedNotations(int forkFromNotationDrive, Notation notation, NotationHistory notationHistory, NotationDrive forkedVariant) {
-    for (NotationHistory history : notation.getForkedNotations().values()) {
+  private void syncVariantsInForkedNotations(int forkFromNotationDrive,
+                                             NotationHistory notationHistory,
+                                             NotationDrive forkedVariant,
+                                             Collection<NotationHistory> notationHistories) {
+    for (NotationHistory history : notationHistories) {
       if (!history.getId().equals(notationHistory.getId())) {
         NotationDrive forkedCur = history.get(forkFromNotationDrive);
         forkedCur.setVariants(forkedVariant.getVariants());

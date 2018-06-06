@@ -159,7 +159,7 @@ public class NotationService {
               .map(current -> {
                 Integer prevVariantId = notation.getPrevVariantId() == null ? -1 : notation.getPrevVariantId();
                 setVariantDriveMarkers(notationLine, notation, current, prevVariantId);
-                current.setSelected(true);
+                notationHistory.getLast().setSelected(true);
                 notationHistoryDao.save(notationHistory);
                 notation.setNotationHistory(notationHistory);
                 notation.setNotationHistoryId(notationHistory.getDomainId());
@@ -209,10 +209,9 @@ public class NotationService {
           notation.getForkedNotations().replaceAll((s, notationHistory) -> {
             if (!s.equals(toSyncNotationHist.getId())) {
               NotationDrive cur = notationHistory.get(toSyncNotationHist.getCurrentIndex());
-              complementMoves(cur, currentSyncVariant.getMoves(), notation.getBoardBoxId(), toSave);
               cur.getVariantById(toSyncNotationHist.getVariantIndex())
                   .ifPresent(curVariant -> {
-                    curVariant.setMoves(cur.getMoves());
+                    complementMoves(curVariant, currentSyncVariant.getMoves(), notation.getBoardBoxId(), toSave);
                     curVariant.setVariants(currentSyncVariant.getVariants());
                   });
             }
@@ -232,16 +231,17 @@ public class NotationService {
         NotationMove move = moves.get(i);
         NotationMove moveOrig = move.deepClone();
         LinkedList<NotationSimpleMove> notationSimpleMoves = move.getMove();
-        LinkedList<NotationSimpleMove> notationSimpleMovesOrig = moveOrig.getMove();
+        LinkedList<NotationSimpleMove> notationSimpleMovesOrig = new LinkedList<>();
         for (NotationSimpleMove notationSimpleMoveCur : notationSimpleMoves) {
           NotationSimpleMove notationSimpleMove = notationSimpleMoveCur.deepClone();
           DomainId boardId = notationSimpleMove.getBoardId();
           Board board = boardsById.get(boardId.getId()).get(0).deepClone();
           Utils.setRandomIdAndCreatedAt(board);
           toSave.add(board);
-          notationSimpleMove.setBoardId(boardId.getDomainId());
+          notationSimpleMove.setBoardId(board.getDomainId());
           notationSimpleMovesOrig.add(notationSimpleMove);
         }
+        moveOrig.setMove(notationSimpleMovesOrig);
         movesOrig.add(moveOrig);
       }
     }

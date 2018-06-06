@@ -12,20 +12,20 @@ buildscript {
 // lombok configuration
 plugins {
     id 'net.ltgt.apt' version '0.15'
-    id  'com.github.spotbugs' version '1.6.1'
+//    id  'com.github.spotbugs' version '1.6.1'
 }
 
-spotbugs {
-    toolVersion = '3.1.3'
-}
+//spotbugs {
+//    toolVersion = '3.1.3'
+//}
 
 // To generate an HTML report instead of XML
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
+//tasks.withType(com.github.spotbugs.SpotBugsTask) {
+//    reports {
+//        xml.enabled = false
+//        html.enabled = true
+//    }
+//}
 
 allprojects {
     apply plugin: 'java'
@@ -83,9 +83,9 @@ configure(subprojects) {
 
         compile('com.sparkjava:spark-core:2.7.2')
 
-        compile 'com.github.spotbugs:spotbugs:3.1.3'
+//        compile 'com.github.spotbugs:spotbugs:3.1.3'
         compileOnly 'net.jcip:jcip-annotations:1.0'
-        compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.3'
+//        compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.3'
 
         testCompile group: 'junit', name: 'junit', version: '4.+'
 
@@ -225,13 +225,13 @@ task writePom << {
     }.writeTo("$projectDir/pom.xml")
 }
 
-spotbugs {
-    ignoreFailures = true
-    toolVersion = "3.1.3"
-    sourceSets = [sourceSets.main]
-    reportsDir = file("$project.buildDir/reports/spotbugs")
-    effort = "max"
-}
+//spotbugs {
+//    ignoreFailures = true
+//    toolVersion = "3.1.3"
+//    sourceSets = [sourceSets.main]
+//    reportsDir = file("$project.buildDir/reports/spotbugs")
+//    effort = "max"
+//}
 
 pmd {
     ignoreFailures = true
@@ -262,6 +262,6 @@ check << {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.7'
+    gradleVersion = '4.8'
 }
 
