@@ -10,11 +10,9 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
@@ -64,6 +62,21 @@ public class NotationService {
     NotationLine notationLine = notation.getNotationHistory().getNotationLine();
     return notation.findNotationHistoryByLine(notationLine)
         .map(notationHistory -> {
+          notationHistory.getCurrentNotationDrive()
+              .ifPresent(curDrive -> curDrive.getVariantById(notationLine.getVariantIndex())
+              .ifPresent(curVariant -> {
+                DomainIds boardIdsToRemove = curVariant
+                    .getVariants()
+                    .stream()
+                    .map(NotationDrive::getMoves)
+                    .flatMap(Collection::stream)
+                    .map(NotationMove::getMove)
+                    .flatMap(Collection::stream)
+                    .map(NotationSimpleMove::getBoardId)
+                    .distinct()
+                    .collect(Collectors.toCollection(DomainIds::new));
+                boardDao.batchDelete(boardIdsToRemove);
+              }));
           notationHistory.removeByCurrentIndex();
           notation.getForkedNotations().remove(notationHistory.getId());
           return notationHistory.getCurrentNotationDrive()

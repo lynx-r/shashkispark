@@ -8,6 +8,7 @@ import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.model.BoardBoxes;
 import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.DomainIds;
 import org.jetbrains.annotations.NotNull;
@@ -56,18 +57,18 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
     return findByFilter(filterPublic);
   }
 
-  public List<BoardBox> findByArticleId(@NotNull DomainId articleId) {
+  public BoardBoxes findByArticleId(@NotNull DomainId articleId) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic.add(new ValueFilter("articleId.id", articleId.getId(), "=", "S"));
-    return findByFilter(filterPublic);
+    return new BoardBoxes(findByFilter(filterPublic));
   }
 
-  public List<BoardBox> findPublicByArticleId(@NotNull DomainId articleId) {
+  public BoardBoxes findPublicByArticleId(@NotNull DomainId articleId) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
     filterPublic.add(new Unary("and"));
     filterPublic.add(new ValueFilter("articleId.id", articleId.getId(), "=", "S"));
-    return findByFilter(filterPublic);
+    return new BoardBoxes(findByFilter(filterPublic));
   }
 
   public BoardBox findPublicById(@NotNull DomainId boardBoxId) {

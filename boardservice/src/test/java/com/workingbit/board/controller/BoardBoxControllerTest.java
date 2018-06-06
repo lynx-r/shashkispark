@@ -197,16 +197,16 @@ public class BoardBoxControllerTest {
 
   private List<? extends DeepClone> switchToVariant(BoardBox boardBox, AuthUser authUser, int numberNot, int numberVar) throws HttpClientException {
     NotationHistory notationHistory = boardBox.getNotation().getNotationHistory();
-    NotationDrives history = notationHistory.getNotation();
-    NotationDrive toSwitch = history.get(numberNot);
-    NotationDrive toSwVar = toSwitch.getVariants().get(numberVar);
+    NotationDrives history;
+    NotationDrive toSwitch;
+    NotationDrive toSwVar;
     notationHistory.setCurrentNotationDrive(numberNot);
     notationHistory.setVariantNotationDrive(numberVar);
 
     Answer post = post(Authority.BOARD_SWITCH.getPath(), boardBox, authUser);
     BoardBoxes body = (BoardBoxes) post.getBody();
     BoardBox finalBoardBox = boardBox;
-    boardBox = body.getBoardBoxes().valueList().stream().filter(b -> b.getId().equals(finalBoardBox.getId())).findFirst().get();
+    boardBox = body.values().stream().filter(b -> b.getId().equals(finalBoardBox.getId())).findFirst().get();
     authUser = post.getAuthUser();
 
     history = boardBox.getNotation().getNotationHistory().getNotation();
@@ -229,7 +229,7 @@ public class BoardBoxControllerTest {
     Answer post = post(Authority.BOARD_FORK_PROTECTED.getPath(), move.get(0), (AuthUser) move.get(1));
     BoardBoxes bboxes = (BoardBoxes) post.getBody();
     BoardBox finalBbox = bbox;
-    bbox = bboxes.getBoardBoxes().valueList().stream().filter(b -> b.getId().equals(finalBbox.getId())).findFirst().get();
+    bbox = bboxes.values().stream().filter(b -> b.getId().equals(finalBbox.getId())).findFirst().get();
     AuthUser authUser = post.getAuthUser();
     NotationDrives history = bbox.getNotation().getNotationHistory().getNotation();
     assertEquals(2, history.getLast().getVariants().size());

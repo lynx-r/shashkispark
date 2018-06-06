@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
+import org.apache.commons.collections4.list.AbstractLinkedList;
 
 import java.util.LinkedList;
 
@@ -12,15 +13,11 @@ import java.util.LinkedList;
  */
 @JsonTypeName("DomainIds")
 @Data
-public class DomainIds implements Payload {
+public class DomainIds extends AbstractLinkedList<DomainId> implements Payload {
   private LinkedList<DomainId> ids;
 
   public DomainIds() {
     this.ids = new LinkedList<>();
-  }
-
-  public DomainIds(LinkedList<DomainId> ids) {
-    this.ids = ids;
   }
 
   public int size() {
@@ -31,8 +28,8 @@ public class DomainIds implements Payload {
     return ids.get(index);
   }
 
-  public void add(DomainId elem) {
-    ids.add(elem);
+  public boolean add(DomainId elem) {
+    return ids.add(elem);
   }
 
   @DynamoDBIgnore

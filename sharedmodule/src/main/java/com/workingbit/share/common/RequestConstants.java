@@ -24,5 +24,4 @@ public class RequestConstants {
   public static final String USERNAME_HEADER = "username";
   public static final String USER_CREATED_AT_HEADER = "user-created-at";
   public static final String PUBLIC_QUERY = "public";
-  public static final String IS_PUBLIC_QUERY = "public";
 }

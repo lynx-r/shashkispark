@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 /**
  * Created by Aleksey Popryaduhin on 18:56 09/08/2017.
@@ -152,12 +153,24 @@ public class BaseDao<T extends BaseDomain> {
     dynamoDBMapper.delete(byId);
   }
 
-  public void batchDelete(@Nullable final List<T> entityIds) {
+  public void batchDelete(@Nullable final Collection<T> entityIds) {
     if (entityIds == null) {
       throw DaoException.notFound();
     }
     dynamoDBMapper.batchDelete(entityIds);
   }
+
+  public void batchDelete(DomainIds boardIdsToRemove) {
+    try {
+      var byIds = findByIds(boardIdsToRemove);
+      dynamoDBMapper.batchDelete(byIds);
+    } catch (DaoException e) {
+      if (e.getCode() != HTTP_NOT_FOUND) {
+        throw e;
+      }
+    }
+  }
+
 
   public List<T> findByIds(@NotNull DomainIds ids) {
     logger.info(String.format("Find by ids %s", ids));
