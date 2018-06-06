@@ -34,6 +34,9 @@ public class NotationDrive implements DeepClone, NotationFormat {
   private NotationMoves moves;
 
   private NotationDrives variants;
+
+  private DomainId notationHistoryId;
+
   private boolean ellipses;
   /**
    * Does notation in notationFormat format like 1. 12-21

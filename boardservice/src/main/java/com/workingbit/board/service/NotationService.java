@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.workingbit.board.BoardEmbedded.*;
+import static com.workingbit.share.util.Utils.isCorrespondNotation;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toCollection;
@@ -68,6 +69,7 @@ public class NotationService {
               .ifPresent(curVariant -> {
                 DomainIds boardIdsToRemove = curVariant
                     .getVariants()
+                    .subList(1, curVariant.getVariantsSize())
                     .stream()
                     .map(NotationDrive::getMoves)
                     .flatMap(Collection::stream)
@@ -79,6 +81,7 @@ public class NotationService {
                 boardDao.batchDelete(boardIdsToRemove);
               }));
           notationHistory.removeByCurrentIndex();
+          notationHistoryDao.delete(notationHistory.getDomainId());
           notation.getForkedNotations().remove(notationHistory.getId());
           return notationHistory.getCurrentNotationDrive()
               .map(current -> {
@@ -220,7 +223,7 @@ public class NotationService {
         .ifPresent(currentSyncVariant -> {
           List<Board> toSave = new ArrayList<>();
           notation.getForkedNotations().replaceAll((s, notationHistory) -> {
-            if (!s.equals(toSyncNotationHist.getId())) {
+            if (isCorrespondNotation(toSyncNotationHist, notationHistory)) {
               NotationDrive cur = notationHistory.get(toSyncNotationHist.getCurrentIndex());
               cur.getVariantById(toSyncNotationHist.getVariantIndex())
                   .ifPresent(curVariant -> {
@@ -251,7 +254,7 @@ public class NotationService {
     toSyncNotationHist.getCurrentNotationDrive()
         .ifPresent(currentNotationDrive -> {
           notation.getForkedNotations().replaceAll((s, notationHistory) -> {
-            if (!s.equals(toSyncNotationHist.getId())) {
+            if (isCorrespondNotation(toSyncNotationHist, notationHistory)) {
               NotationDrive cur = notationHistory.get(toSyncNotationHist.getCurrentIndex());
               cur.setVariants(currentNotationDrive.getVariants());
             }

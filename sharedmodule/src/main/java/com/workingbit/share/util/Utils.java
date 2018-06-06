@@ -2,6 +2,7 @@ package com.workingbit.share.util;
 
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
@@ -357,5 +358,9 @@ public class Utils {
       color.append(letters.charAt((int) Math.floor(Math.random() * 10)));
     }
     return color.toString();
+  }
+
+  public static boolean isCorrespondNotation(NotationHistory toSyncNotationHist, NotationHistory notationHistory) {
+    return !notationHistory.getId().equals(toSyncNotationHist.getId()) && toSyncNotationHist.getCurrentIndex() < notationHistory.size();
   }
 }

@@ -384,8 +384,7 @@ public class BoardBoxService {
     return fillBoardBoxes(authUser, boardBox.getArticleId(), byArticleId);
   }
 
-  private BoardBox switchNotationToVariant(NotationLine notationLine, BoardBox boardBox, AuthUser authUser
-  ) {
+  private BoardBox switchNotationToVariant(NotationLine notationLine, BoardBox boardBox, AuthUser authUser) {
     try {
       Notation switched = notationService.switchTo(notationLine, boardBox.getNotation());
       // switch to new board
