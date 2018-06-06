@@ -24,6 +24,8 @@ import static com.workingbit.board.BoardEmbedded.*;
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByLink;
 import static com.workingbit.share.common.RequestConstants.PUBLIC_QUERY;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 
 /**
  * Created by Aleksey Popryaduhin on 07:00 22/09/2017.
@@ -499,9 +501,10 @@ public class BoardBoxService {
   @NotNull
   private BoardBoxes fillBoardBoxes(@NotNull AuthUser authUser, @NotNull DomainId articleId, BoardBoxes byUserAndIds) {
     DomainIds domainIds = byUserAndIds
-        .values()
+        .valueList()
         .stream()
-        .map(BoardBox::getNotationId).collect(Collectors.toCollection(DomainIds::new));
+        .map(BoardBox::getNotationId)
+        .collect(collectingAndThen(toCollection(LinkedList::new), DomainIds::new));
     fillNotations(byUserAndIds, domainIds);
     fillWithBoards(byUserAndIds);
 
@@ -587,7 +590,7 @@ public class BoardBoxService {
         .collect(Collectors.toMap(o -> o.getBoardBoxId().getId(), o -> o));
 
     // fill BoardBox
-    for (BoardBox boardBox : byUserAndIds.values()) {
+    for (BoardBox boardBox : byUserAndIds.valueList()) {
       Notation notation = notationMap.get(boardBox.getId());
       boardBox.setNotation(notation);
     }
@@ -595,9 +598,10 @@ public class BoardBoxService {
 
   private void fillWithBoards(BoardBoxes boardBoxIds) {
     DomainIds domainIds = boardBoxIds
-        .values()
+        .valueList()
         .stream()
-        .map(BoardBox::getDomainId).collect(Collectors.toCollection(DomainIds::new));
+        .map(BoardBox::getDomainId)
+        .collect(collectingAndThen(toCollection(LinkedList::new), DomainIds::new));
 
     Map<DomainId, BoardBox> boardBoxByDomainId = boardBoxIds
         .entrySet()

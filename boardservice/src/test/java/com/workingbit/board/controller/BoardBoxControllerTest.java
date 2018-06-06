@@ -206,7 +206,7 @@ public class BoardBoxControllerTest {
     Answer post = post(Authority.BOARD_SWITCH.getPath(), boardBox, authUser);
     BoardBoxes body = (BoardBoxes) post.getBody();
     BoardBox finalBoardBox = boardBox;
-    boardBox = body.values().stream().filter(b -> b.getId().equals(finalBoardBox.getId())).findFirst().get();
+    boardBox = body.valueList().stream().filter(b -> b.getId().equals(finalBoardBox.getId())).findFirst().get();
     authUser = post.getAuthUser();
 
     history = boardBox.getNotation().getNotationHistory().getNotation();
@@ -229,7 +229,7 @@ public class BoardBoxControllerTest {
     Answer post = post(Authority.BOARD_FORK_PROTECTED.getPath(), move.get(0), (AuthUser) move.get(1));
     BoardBoxes bboxes = (BoardBoxes) post.getBody();
     BoardBox finalBbox = bbox;
-    bbox = bboxes.values().stream().filter(b -> b.getId().equals(finalBbox.getId())).findFirst().get();
+    bbox = bboxes.valueList().stream().filter(b -> b.getId().equals(finalBbox.getId())).findFirst().get();
     AuthUser authUser = post.getAuthUser();
     NotationDrives history = bbox.getNotation().getNotationHistory().getNotation();
     assertEquals(2, history.getLast().getVariants().size());

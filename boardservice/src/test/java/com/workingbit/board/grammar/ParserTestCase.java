@@ -59,7 +59,7 @@ abstract class ParserTestCase extends TestCase {
     /**
      * Parses with the parser and checks the parse error. If the
      * parsing succeeded or if the parse exception didn't match the
-     * specified values, a test failure will be reported.
+     * specified valueList, a test failure will be reported.
      *
      * @param parser         the parser to use
      * @param type           the parse error type

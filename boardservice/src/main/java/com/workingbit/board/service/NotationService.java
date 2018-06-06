@@ -12,10 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 
 /**
  * Created by Aleksey Popryadukhin on 14/04/2018.
@@ -74,7 +75,7 @@ public class NotationService {
                     .flatMap(Collection::stream)
                     .map(NotationSimpleMove::getBoardId)
                     .distinct()
-                    .collect(Collectors.toCollection(DomainIds::new));
+                    .collect(collectingAndThen(toCollection(LinkedList::new), DomainIds::new));
                 boardDao.batchDelete(boardIdsToRemove);
               }));
           notationHistory.removeByCurrentIndex();
