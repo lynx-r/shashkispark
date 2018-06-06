@@ -1,6 +1,5 @@
 package com.workingbit.board.service;
 
-import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.exception.DaoException;
@@ -10,13 +9,11 @@ import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import static com.workingbit.board.BoardEmbedded.*;
+import static com.workingbit.board.BoardEmbedded.notationHistoryDao;
+import static com.workingbit.board.BoardEmbedded.notationStoreService;
 
 /**
  * Created by Aleksey Popryadukhin on 14/04/2018.
@@ -58,8 +55,7 @@ public class NotationHistoryService {
     // new fork
     NotationDrives notationDrives = notationHistory.getNotation();
     NotationDrives cutPoint = subListNotation(notationDrives, forkFromNotationDrive, notationDrives.size());
-    DomainId boardBoxId = notation.getBoardBoxId();
-    NotationDrives cutNotationDrives = cloneBoards(boardBoxId, cutPoint.deepClone());
+    NotationDrives cutNotationDrives = cutPoint.deepClone();
 
     notationDrives.removeAll(cutPoint);
     resetNotationMarkers(notationDrives);
@@ -96,31 +92,6 @@ public class NotationHistoryService {
     syncVariantsInForkedNotations(forkFromNotationDrive, notationHistory, forkedVariant, notationHistories);
     notationHistoryDao.batchSave(notationHistories);
     return notationHistory;
-  }
-
-  private NotationDrives cloneBoards(DomainId boardBoxId, NotationDrives notationDrives) {
-    List<Board> boards = boardDao.findByBoardBoxId(boardBoxId);
-    Map<String, List<Board>> boardsById = boards.stream().collect(Collectors.groupingBy(Board::getId));
-    List<Board> boardClones = new ArrayList<>();
-    notationDrives.replaceAll(notationDrive -> {
-      notationDrive.getMoves().replaceAll(notationMove -> {
-        notationMove.getMove().replaceAll(notationSimpleMove -> {
-          DomainId boardId = notationSimpleMove.getBoardId();
-          Board newBoard = boardsById.get(boardId.getId()).get(0).deepClone();
-          Utils.setRandomIdAndCreatedAt(newBoard);
-          boardClones.add(newBoard);
-          notationSimpleMove.setBoardId(newBoard.getDomainId());
-          return notationSimpleMove;
-        });
-        return notationMove;
-      });
-      if (!notationDrive.getVariants().isEmpty()) {
-        notationDrive.getVariants().getFirst().setMoves(notationDrive.getMoves());
-      }
-      return notationDrive;
-    });
-    boardDao.batchSave(boardClones);
-    return notationDrives;
   }
 
   private void fillForkedVariant(NotationDrive forkedVariant, NotationDrive firstNew) {
