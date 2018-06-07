@@ -6,6 +6,7 @@ job_production:
   tags:
       - shashki-back
   script:
+    - whoami
     - ./gradlew clean build deploylocal --stacktrace
 
 #variables:
