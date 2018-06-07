@@ -6,8 +6,7 @@ job_production:
   tags:
       - shashki-back
   script:
-    - whoami
     - ./gradlew clean build deploylocal --stacktrace
 
-#variables:
-#  GIT_SSL_NO_VERIFY: "true"
+variables:
+  CFG4J_ENV: prod
