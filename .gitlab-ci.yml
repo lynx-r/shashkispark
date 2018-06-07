@@ -7,7 +7,7 @@ job_production:
       - shashki-back
   script:
     - sudo chmod -R g+w /var/lib/tomcat8/webapps
-    - gradle clean build deploylocal --stacktrace
+    - /root/.sdkman/candidates/gradle/current/bin/gradle clean build deploylocal --stacktrace
 
 variables:
   CFG4J_ENV: prod
