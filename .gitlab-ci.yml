@@ -6,6 +6,7 @@ job_production:
   tags:
       - shashki-back
   script:
+    - service tomcat8 stop
     - ./gradlew clean build deploylocal --stacktrace
     - chown -R tomcat8:tomcat8 /var/lib/tomcat8/webapps
     - service tomcat8 restart
