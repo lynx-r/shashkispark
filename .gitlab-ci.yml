@@ -6,7 +6,6 @@ job_production:
   tags:
       - shashki-back
   script:
-    - sudo chmod -R g+w /var/lib/tomcat8/webapps
     - ./gradlew clean build deploylocal --stacktrace
 
 variables:
