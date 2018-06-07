@@ -181,7 +181,7 @@ public class NotationHistoryService {
     return nd;
   }
 
-  void createForNotation(Notation notation) {
+  void createNotationHistoryForNotation(Notation notation) {
     NotationHistory notationHistory = NotationHistory.createWithRoot();
     Utils.setRandomIdAndCreatedAt(notationHistory);
     notationHistory.setCurrentNotationDrive(0);

@@ -43,7 +43,7 @@ public class NotationService {
     Notation notation = new Notation();
     Utils.setRandomIdAndCreatedAt(notation);
 
-    notationHistoryService.createForNotation(notation);
+    notationHistoryService.createNotationHistoryForNotation(notation);
 
     notation.setBoardBoxId(boardBox.getDomainId());
     notation.setRules(boardBox.getBoard().getRules());
@@ -54,10 +54,12 @@ public class NotationService {
   void clearNotationInBoardBox(@NotNull BoardBox bb) {
     var notation = notationDao.findById(bb.getNotationId());
     notationHistoryService.deleteByNotationId(bb.getNotationId());
-    notationHistoryService.createForNotation(notation);
+    notationHistoryService.createNotationHistoryForNotation(notation);
+    notationHistoryDao.save(notation.getNotationHistory());
     notation.setNotationFen(new NotationFen());
     save(notation, false);
     bb.setNotation(notation);
+    boardBoxDao.save(bb);
   }
 
   NotationLine removeVariant(Notation notation) {

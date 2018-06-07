@@ -302,6 +302,7 @@ public class BoardBoxService {
     Board board = boardService.createBoard(boardBox.getBoard());
     boardBox.setBoardId(board.getDomainId());
     boardBox.setBoard(board);
+    boardBoxDao.save(boardBox);
 
     notationService.clearNotationInBoardBox(boardBox);
     return boardBox;
