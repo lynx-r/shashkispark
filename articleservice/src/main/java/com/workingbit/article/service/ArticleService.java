@@ -16,8 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static com.workingbit.article.ArticleEmbedded.*;
@@ -46,9 +44,6 @@ public class ArticleService {
     article.setHumanReadableUrl(humanReadableUrl);
     article.setUserId(authUser.getUserId());
 
-    Optional<Answer> userInfoAnswer = orchestralService.internal(authUser, "userInfoAnswer", authUser);
-    userInfoAnswer.ifPresent(answer -> article.setAuthor(((UserInfo) answer.getBody()).getUsername()));
-
     boolean present = true;
     try {
       articleDao.findByHru(article.getHumanReadableUrl());
@@ -56,6 +51,10 @@ public class ArticleService {
       present = false;
     }
     Utils.setArticleUrlAndIdAndCreatedAt(article, present);
+
+    Optional<Answer> userInfoAnswer = orchestralService.internal(authUser, "userInfoAnswer", authUser);
+    userInfoAnswer.ifPresent(answer -> article.setAuthor(((UserInfo) answer.getBody()).getUsername()));
+
     articleDao.save(article);
 
     article.setArticleStatus(EnumArticleStatus.DRAFT);
@@ -112,7 +111,7 @@ public class ArticleService {
     articleStoreService.remove(article);
 
     // replace edited article
-    updateAllCache(token, article);
+    replaceArticleInAllArticlesCache(article, token);
     return article;
   }
 
@@ -168,6 +167,9 @@ public class ArticleService {
   }
 
   public Articles findAll(@NotNull String limitStr, @NotNull AuthUser authUser) {
+    if (!authUser.getFilters().isEmpty()) {
+      return findAllDb(limitStr, authUser);
+    }
     boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     return articleStoreService
         .getAllArticles(secure)
@@ -198,19 +200,17 @@ public class ArticleService {
     articleStoreService.remove(article);
 
     int limit = appProperties.articlesFetchLimit();
-    List<Article> published;
+    Articles published;
     try {
       published = articleDao.findPublishedBy(limit, authUser);
     } catch (DaoException e) {
       if (e.getCode() != HTTP_NOT_FOUND) {
         throw RequestException.internalServerError();
       }
-      published = new ArrayList<>();
+      published = new Articles();
     }
-    Articles articles = new Articles();
-    articles.setArticles(published);
-    articleStoreService.putAllArticles(articles);
-    return articles;
+    articleStoreService.putAllArticles(published);
+    return published;
   }
 
   @NotNull
@@ -221,13 +221,11 @@ public class ArticleService {
     }
     Articles articles = new Articles();
     try {
-      List<Article> published;
       if (authUser.getUserId() == null) {
-        published = articleDao.findPublished(limit);
+        articles = articleDao.findPublished(limit);
       } else {
-        published = articleDao.findPublishedBy(limit, authUser);
+        articles = articleDao.findPublishedBy(limit, authUser);
       }
-      articles.setArticles(published);
       articleStoreService.putAllArticles(articles);
       return articles;
     } catch (DaoException e) {
@@ -239,7 +237,7 @@ public class ArticleService {
     }
   }
 
-  private void updateAllCache(@NotNull AuthUser token, Article article) {
+  private void replaceArticleInAllArticlesCache(Article article, @NotNull AuthUser token) {
     Articles all = findAll(appProperties.articlesFetchLimit().toString(), token);
     all.replace(article);
     articleStoreService.putAllArticles(all);

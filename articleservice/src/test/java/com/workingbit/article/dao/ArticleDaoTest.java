@@ -4,13 +4,14 @@ import com.workingbit.article.BaseTest;
 import com.workingbit.share.dao.DaoFilters;
 import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.model.Articles;
 import com.workingbit.share.model.AuthUser;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Aleksey Popryadukhin on 06/04/2018.
@@ -41,7 +42,7 @@ public class ArticleDaoTest extends BaseTest {
     DaoFilters filters = new DaoFilters();
     filters.add(new ValueFilter("articleStatus", "DRAFT", "=", "S"));
     authUser.setFilters(filters);
-    List<Article> published = articleDao.findPublishedBy(100, authUser);
+    Articles published = articleDao.findPublishedBy(100, authUser);
     assertTrue(published.contains(article));
   }
 }

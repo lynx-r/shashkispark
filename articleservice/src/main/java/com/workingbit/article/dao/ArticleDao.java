@@ -10,6 +10,7 @@ import com.workingbit.share.dao.Unary;
 import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.exception.RequestException;
+import com.workingbit.share.model.Articles;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +61,7 @@ public class ArticleDao extends BaseDao<Article> {
 //    save(board);
 //  }
 
-  public List<Article> findPublishedBy(int limit, @NotNull AuthUser authUser) {
+  public Articles findPublishedBy(int limit, @NotNull AuthUser authUser) {
     logger.info("Find all published with limit " + limit);
     DaoFilters filters = authUser.getFilters();
 //    if (authUser.getFilters().isEmpty()) {
@@ -69,14 +70,14 @@ public class ArticleDao extends BaseDao<Article> {
     addUserFilter(filters, authUser.getUserId().getId());
     List<Article> articles = findByFilter(filters);
     articles.sort(Comparator.comparing(Article::getArticleStatus));
-    return articles;
+    return new Articles(articles);
   }
 
-  public List<Article> findPublished(int limit) {
+  public Articles findPublished(int limit) {
     logger.info("Find all published with limit " + limit);
     DaoFilters filters = new DaoFilters();
     filters.add(new ValueFilter("articleStatus", EnumArticleStatus.PUBLISHED.name(), "=", "S"));
-    return findByFilter(filters);
+    return new Articles(findByFilter(filters));
   }
 
 //  public List<Article> findPublished(int limit) {

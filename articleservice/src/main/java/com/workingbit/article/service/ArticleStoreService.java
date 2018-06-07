@@ -75,4 +75,8 @@ public class ArticleStoreService {
     all.setSecureArticles(secure);
     return Optional.of(all);
   }
+
+  void clearArticles() {
+    storeArticles.clear();
+  }
 }

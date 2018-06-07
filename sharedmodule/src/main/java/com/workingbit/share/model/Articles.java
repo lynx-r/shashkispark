@@ -23,6 +23,10 @@ public class Articles implements Payload {
     this.articles = new ArrayList<>();
   }
 
+  public Articles(Collection<Article> articles) {
+    this.articles = new ArrayList<>(articles);
+  }
+
   public void addAll(@NotNull Collection<Article> articles) {
     this.articles.addAll(articles);
   }
@@ -48,5 +52,9 @@ public class Articles implements Payload {
 
   public boolean isEmpty() {
     return articles.isEmpty();
+  }
+
+  public boolean contains(Article article) {
+    return articles.contains(article);
   }
 }
