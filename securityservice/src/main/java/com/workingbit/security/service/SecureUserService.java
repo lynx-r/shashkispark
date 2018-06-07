@@ -67,8 +67,10 @@ public class SecureUserService {
       orchestralService.cacheSecureAuth(secureAuth);
       loggedInService.registerUser(secureAuth);
       return AuthUser.simpleUser(secureAuth.getUserId(), username, secureAuth.getAccessToken(), userSession, secureAuth.getAuthorities());
+    } catch (CryptoException e) {
+      logger.warn("UNREGISTERED: " + userCredentials, e.getMessage());
     } catch (Exception e) {
-      logger.error("UNREGISTERED: " + userCredentials, e.getMessage());
+      logger.error(e.getMessage(), e);
     }
     throw RequestException.forbidden(ErrorMessages.USERNAME_IS_BUSY);
   }
