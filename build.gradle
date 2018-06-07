@@ -31,7 +31,7 @@ allprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'maven'
-    apply plugin: "pmd"
+//    apply plugin: "pmd"
     group = 'com.workingbit'
 }
 
@@ -92,8 +92,8 @@ configure(subprojects) {
         // test spark controllers
         testCompile "com.despegar:spark-test:1.1.6"
 
-        pmd 'net.sourceforge.pmd:pmd-java:6.4.0'
-        pmd 'org.ow2.asm:asm:6.2'
+//        pmd 'net.sourceforge.pmd:pmd-java:6.4.0'
+//        pmd 'org.ow2.asm:asm:6.2'
 //        compile 'com.qulice:qulice-gradle-plugin:0.17.3'
     }
 }
@@ -210,20 +210,20 @@ repositories {
     mavenCentral()
 }
 
-task writePom << {
-    pom {
-        project {
-            inceptionYear '2014'
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-        }
-    }.writeTo("$projectDir/pom.xml")
-}
+//task writePom << {
+//    pom {
+//        project {
+//            inceptionYear '2014'
+//            licenses {
+//                license {
+//                    name 'The Apache Software License, Version 2.0'
+//                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                    distribution 'repo'
+//                }
+//            }
+//        }
+//    }.writeTo("$projectDir/pom.xml")
+//}
 
 //spotbugs {
 //    ignoreFailures = true
@@ -233,33 +233,33 @@ task writePom << {
 //    effort = "max"
 //}
 
-pmd {
-    ignoreFailures = true
-    sourceSets = [sourceSets.main]
-    reportsDir = file("$project.buildDir/reports/pmd")
-    ruleSets = [
-            "basic",
-            "braces"
-    ]
-}
+//pmd {
+//    ignoreFailures = true
+//    sourceSets = [sourceSets.main]
+//    reportsDir = file("$project.buildDir/reports/pmd")
+//    ruleSets = [
+//            "basic",
+//            "braces"
+//    ]
+//}
 // add CPD to check
-check << {
-    File outDir = new File('build/reports/pmd/')
-    outDir.mkdirs()
-    ant.taskdef(name: 'cpd', classname: 'net.sourceforge.pmd.cpd.CPDTask',
-            classpath: configurations.pmd.asPath)
-    ant.cpd(minimumTokenCount: '100', format: 'xml',
-            outputFile: new File(outDir , 'cpd.xml')) {
-        def dir = new File("src/main/java")
-        if (dir.exists()) {
-            fileset(dir: "src/main/java") {
-                include(name: '**/*.java')
-            }
-        } else {
-            fileset(dir: "sharedmodule/src/main/java")
-        }
-    }
-}
+//check << {
+//    File outDir = new File('build/reports/pmd/')
+//    outDir.mkdirs()
+//    ant.taskdef(name: 'cpd', classname: 'net.sourceforge.pmd.cpd.CPDTask',
+//            classpath: configurations.pmd.asPath)
+//    ant.cpd(minimumTokenCount: '100', format: 'xml',
+//            outputFile: new File(outDir , 'cpd.xml')) {
+//        def dir = new File("src/main/java")
+//        if (dir.exists()) {
+//            fileset(dir: "src/main/java") {
+//                include(name: '**/*.java')
+//            }
+//        } else {
+//            fileset(dir: "sharedmodule/src/main/java")
+//        }
+//    }
+//}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.8'
