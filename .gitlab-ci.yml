@@ -10,7 +10,7 @@ job_production:
     - service tomcat8 stop
     - ./gradlew clean build deploylocal --stacktrace
     - chown -R tomcat8:tomcat8 /var/lib/tomcat8/webapps
-    - service tomcat8 restart
+    - service tomcat8 start
 
 variables:
   CFG4J_ENV: prod
