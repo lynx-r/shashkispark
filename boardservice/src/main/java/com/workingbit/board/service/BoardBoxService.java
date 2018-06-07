@@ -480,8 +480,8 @@ public class BoardBoxService {
         && notation.getNotationHistory().isEmpty()) {
       notationService.setNotationFenFromBoard(notation, board);
     }
-    notationService.save(notation, true);
     notationHistoryService.save(notation.getNotationHistory());
+    notationService.save(notation, true);
     boardBox = updateBoardBox(boardBox, authUser);
     boardBoxStoreService.remove(boardBox);
     boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
