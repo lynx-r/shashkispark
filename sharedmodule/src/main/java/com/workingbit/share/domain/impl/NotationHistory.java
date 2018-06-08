@@ -111,7 +111,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   }
 
   @NotNull
-  private static NotationDrives createNotationDrives(boolean hasRoot) {
+  private static NotationDrives createWithoutRoot(boolean hasRoot) {
     if (hasRoot) {
       NotationDrives notationHistory = NotationDrives.create();
       NotationDrive root = new NotationDrive(true);
@@ -179,12 +179,12 @@ public class NotationHistory extends BaseDomain implements DeepClone {
     return notation.get(index);
   }
 
-  public static NotationHistory createNotationDrives() {
-    return new NotationHistory(createNotationDrives(false));
+  public static NotationHistory createWithoutRoot() {
+    return new NotationHistory(createWithoutRoot(false));
   }
 
   public static NotationHistory createWithRoot() {
-    return new NotationHistory(createNotationDrives(true));
+    return new NotationHistory(createWithoutRoot(true));
   }
 
   public String notationToPdn() {
@@ -208,7 +208,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<DomainId> getLastNotationBoardIdInVariants() {
-    return notation.getLastNotationBoardIdInVariants();
+    return notation.getLastNotationBoardIdInVariants(getCurrentIndex());
   }
 
   @JsonIgnore
@@ -236,7 +236,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   }
 
   public void syncMoves() {
-    notation.getCurrentVariant()
+    notation.getCurrentVariant(getCurrentIndex())
         .ifPresent(notationDrive -> {
           if (getLast().getMoves().size() == 2) {
             if (notationDrive.getNotationNumberInt() == getLast().getNotationNumberInt()) {
@@ -285,7 +285,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<NotationDrive> getCurrentVariant() {
-    return notation.getCurrentVariant();
+    return notation.getCurrentVariant(getCurrentIndex());
   }
 
   @JsonIgnore

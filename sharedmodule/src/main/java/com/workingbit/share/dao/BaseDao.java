@@ -18,10 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -234,7 +231,7 @@ public class BaseDao<T extends BaseDomain> {
     scanExpression.withExpressionAttributeValues(eav);
 
     logger.info("Apply filter: " + filter);
-    List<T> list = dynamoDBMapper.scanPage(clazz, scanExpression).getResults();
+    List<T> list = new ArrayList<>(dynamoDBMapper.scan(clazz, scanExpression));
     if (list.isEmpty()) {
       throw DaoException.notFound();
     }
@@ -250,6 +247,7 @@ public class BaseDao<T extends BaseDomain> {
       logger.info("Nothing to save");
       return;
     }
+    entities.forEach(t -> t.setUpdatedAt(LocalDateTime.now()));
     List<DynamoDBMapper.FailedBatch> failedBatches = dynamoDBMapper.batchSave(entities);
     if (!failedBatches.isEmpty()) {
       String messages = failedBatches.stream()

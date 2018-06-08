@@ -12,9 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
-import static com.workingbit.share.util.Utils.isCorrespondNotation;
+import static com.workingbit.share.util.Utils.isCorrespondedNotation;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toCollection;
@@ -84,7 +85,7 @@ public class NotationService {
               }));
           notationHistory.removeByCurrentIndex();
           notationHistoryDao.delete(notationHistory.getDomainId());
-          notation.getForkedNotations().remove(notationHistory.getId());
+          notation.removeForkedNotations(notationHistory);
           return notationHistory.getCurrentNotationDrive()
               .map(current -> {
                 NotationDrives variants = current.getVariants();
@@ -150,7 +151,36 @@ public class NotationService {
           .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
           .findFirst()
           .ifPresent(notation::setNotationHistory);
-      notation.addNotationHistoryAll(byNotationId);
+      notation.addForkedNotationHistories(byNotationId);
+    } catch (DaoException e) {
+      if (e.getCode() != HTTP_NOT_FOUND) {
+        logger.error(e.getMessage(), e);
+      }
+    }
+  }
+
+  private void fillNotationByNotationIds(List<Notation> notations) {
+    try {
+      DomainIds notationIds = notations
+          .stream()
+          .map(Notation::getDomainId)
+          .collect(collectingAndThen(toCollection(LinkedList::new), DomainIds::new));
+      Map<DomainId, List<NotationHistory>> historyByNotationId = notationHistoryDao.findByNotationIds(notationIds)
+          .stream()
+          .collect(Collectors.groupingBy(NotationHistory::getNotationId));
+
+      for (Notation notation : notations) {
+        List<NotationHistory> byNotationId = historyByNotationId.get(notation.getDomainId());
+        if (byNotationId == null) {
+          continue;
+        }
+        byNotationId
+            .stream()
+            .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
+            .findFirst()
+            .ifPresent(notation::setNotationHistory);
+        notation.addForkedNotationHistories(byNotationId);
+      }
     } catch (DaoException e) {
       if (e.getCode() != HTTP_NOT_FOUND) {
         logger.error(e.getMessage(), e);
@@ -216,16 +246,15 @@ public class NotationService {
 
   List<Notation> findByIds(DomainIds domainIds) {
     List<Notation> byIds = notationDao.findByIds(domainIds);
-    byIds.forEach(this::fillNotation);
+    fillNotationByNotationIds(byIds);
     return byIds;
   }
 
   void syncSubVariants(NotationHistory toSyncNotationHist, Notation notation) {
     toSyncNotationHist.getCurrentVariant()
         .ifPresent(currentSyncVariant -> {
-          List<Board> toSave = new ArrayList<>();
           notation.getForkedNotations().replaceAll((s, notationHistory) -> {
-            if (isCorrespondNotation(toSyncNotationHist, notationHistory)) {
+            if (isCorrespondedNotation(toSyncNotationHist, notationHistory)) {
               NotationDrive cur = notationHistory.get(toSyncNotationHist.getCurrentIndex());
               cur.getVariantById(toSyncNotationHist.getVariantIndex())
                   .ifPresent(curVariant -> {
@@ -235,7 +264,6 @@ public class NotationService {
             }
             return notationHistory;
           });
-          boardDao.batchSave(toSave);
           notationHistoryDao.batchSave(notation.getForkedNotations().values());
         });
   }
@@ -252,12 +280,14 @@ public class NotationService {
     }
   }
 
-  private void syncVariants(NotationHistory toSyncNotationHist, Notation notation) {
+  void syncVariants(NotationHistory toSyncNotationHist, Notation notation) {
     toSyncNotationHist.getCurrentNotationDrive()
         .ifPresent(currentNotationDrive -> {
           notation.getForkedNotations().replaceAll((s, notationHistory) -> {
-            if (isCorrespondNotation(toSyncNotationHist, notationHistory)) {
+            if (isCorrespondedNotation(toSyncNotationHist, notationHistory)) {
               NotationDrive cur = notationHistory.get(toSyncNotationHist.getCurrentIndex());
+              cur.setCurrent(currentNotationDrive.isCurrent());
+              cur.setPrevious(currentNotationDrive.isPrevious());
               cur.setVariants(currentNotationDrive.getVariants());
             }
             return notationHistory;

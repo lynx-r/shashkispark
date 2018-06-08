@@ -3,9 +3,11 @@ package com.workingbit.board.dao;
 import com.workingbit.board.config.AppProperties;
 import com.workingbit.share.dao.BaseDao;
 import com.workingbit.share.dao.DaoFilters;
+import com.workingbit.share.dao.Unary;
 import com.workingbit.share.dao.ValueFilter;
 import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.DomainId;
+import com.workingbit.share.model.DomainIds;
 
 import java.util.List;
 
@@ -21,6 +23,16 @@ public class NotationHistoryDao extends BaseDao<NotationHistory> {
   public List<NotationHistory> findByNotationId(DomainId notationId) {
     DaoFilters filterPublic = new DaoFilters();
     filterPublic.add(new ValueFilter("notationId.id", notationId.getId(), "=", "S"));
+    return findByFilter(filterPublic);
+  }
+
+  public List<NotationHistory> findByNotationIds(DomainIds notationIds) {
+    DaoFilters filterPublic = new DaoFilters();
+    for (DomainId notationId : notationIds.getIds()) {
+      filterPublic.add(new ValueFilter("notationId.id", notationId.getId(), "=", "S"));
+      filterPublic.add(new Unary("or"));
+    }
+    filterPublic.removeLast();
     return findByFilter(filterPublic);
   }
 

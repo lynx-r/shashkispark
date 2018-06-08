@@ -360,7 +360,7 @@ public class Utils {
     return color.toString();
   }
 
-  public static boolean isCorrespondNotation(NotationHistory toSyncNotationHist, NotationHistory notationHistory) {
+  public static boolean isCorrespondedNotation(NotationHistory toSyncNotationHist, NotationHistory notationHistory) {
     return !notationHistory.getId().equals(toSyncNotationHist.getId()) && toSyncNotationHist.getCurrentIndex() < notationHistory.size();
   }
 }

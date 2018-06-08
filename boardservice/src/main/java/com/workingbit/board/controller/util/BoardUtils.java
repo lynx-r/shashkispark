@@ -426,7 +426,7 @@ public class BoardUtils {
     TreeSquare captured = movesList.getCaptured();
     boolean isCapturedFound = !captured.isEmpty();
     if (isCapturedFound) {
-      highlightCaptured(board, allowed);
+      highlightCaptured(board, allowed, captured.flatTree());
       return movesList;
     } else {
       return getHighlightSimple(board, movesList, allowed, blackTurn);
@@ -474,11 +474,15 @@ public class BoardUtils {
     return movesList;
   }
 
-  private static void highlightCaptured(Board board, @NotNull Set<Square> allowed) {
+  private static void highlightCaptured(Board board, @NotNull Set<Square> allowed, List<Square> captured) {
     board.getAssignedSquares().forEach((Square square) -> {
       square.setHighlight(false);
       if (square.isOccupied() && square.equals(board.getSelectedSquare())) {
         square.getDraught().setHighlight(true);
+      }
+      if (square.isOccupied() && captured.contains(square)) {
+        Square squareWithCaptured = captured.get(captured.indexOf(square));
+        square.setDraught(squareWithCaptured.getDraught());
       }
       if (allowed.contains(square)) {
         square.setHighlight(true);

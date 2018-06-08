@@ -155,7 +155,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
 
-      // Test createNotationDrives BoardBox moving draughts
+      // Test createWithoutRoot BoardBox moving draughts
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       BoardBox current = boardBox.deepClone();
       for (NotationDrive drive : notationDrives.getNotation()) {

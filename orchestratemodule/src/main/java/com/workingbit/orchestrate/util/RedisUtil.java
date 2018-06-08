@@ -35,7 +35,7 @@ public class RedisUtil {
     RMap<Object, Object> map = reddison.getMap(INTERNAL_REQUEST_MAP);
     String internalHash = authUser.getInternalHash();
     if (StringUtils.isBlank(internalHash)) {
-      throw new OrchestrateException("Unable to createNotationDrives hash " + authUser.toString());
+      throw new OrchestrateException("Unable to createWithoutRoot hash " + authUser.toString());
     }
     map.put(internalKey, internalHash);
   }

@@ -90,7 +90,7 @@ public class ArticleControllerTest {
   @Test
   public void create_article() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    // can't createNotationDrives
+    // can't createWithoutRoot
     post(ARTICLE_PROTECTED.getPath(), createArticlePayload, AuthUser.anonymous(), HTTP_FORBIDDEN);
 
     AuthUser headers = register();

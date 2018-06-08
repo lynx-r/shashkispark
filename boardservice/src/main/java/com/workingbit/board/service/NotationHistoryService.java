@@ -14,7 +14,7 @@ import java.util.List;
 
 import static com.workingbit.board.BoardEmbedded.notationHistoryDao;
 import static com.workingbit.board.BoardEmbedded.notationStoreService;
-import static com.workingbit.share.util.Utils.isCorrespondNotation;
+import static com.workingbit.share.util.Utils.isCorrespondedNotation;
 
 /**
  * Created by Aleksey Popryadukhin on 14/04/2018.
@@ -46,14 +46,14 @@ public class NotationHistoryService {
       rootNotationHistory.setVariantNotationDrive(0);
       rootNotationHistory.getLast().setCurrent(true);
       rootHistoryId = rootNotationHistory.getDomainId();
-      notation.addNotationHistory(rootNotationHistory);
+      notation.addForkedNotationHistory(rootNotationHistory);
       // inc variant id
       variantId++;
     }
     Utils.setRandomIdAndCreatedAt(notationHistory);
     notationHistory.setCurrentNotationDrive(forkFromNotationDrive);
     notationHistory.setVariantNotationDrive(variantId);
-    notation.addNotationHistory(notationHistory);
+    notation.addForkedNotationHistory(notationHistory);
 
     // new fork
     NotationDrives notationDrives = notationHistory.getNotation();
@@ -63,12 +63,13 @@ public class NotationHistoryService {
     notationDrives.removeAll(cutPoint);
     resetNotationMarkers(notationDrives);
 
-    // if first variant
-    NotationDrive rootV = createRootDrive(forkNotationDrive, cutNotationDrives, rootHistoryId);
     NotationDrive forkedVariant = forkNotationDrive.deepClone();
-    forkedVariant.setDriveColor(Utils.getRandomColor());
 
-    if (rootV != null) {
+    // if first variant
+    NotationDrive rootV = null;
+    if (rootHistoryId != null) {
+      rootV = createRootDrive(forkNotationDrive, cutNotationDrives, rootHistoryId);
+      forkedVariant.setDriveColor(Utils.getRandomColor());
       forkedVariant.addVariant(rootV);
       forkedVariant.setParentColor(rootV.getParentColor());
     }
@@ -165,9 +166,8 @@ public class NotationHistoryService {
                                              NotationDrive forkedVariant,
                                              Collection<NotationHistory> notationHistories) {
     for (NotationHistory history : notationHistories) {
-      if (isCorrespondNotation(notationHistory, history)) {
+      if (isCorrespondedNotation(notationHistory, history)) {
         NotationDrive forkedCur = history.get(forkFromNotationDrive);
-//        forkedCur.setNotationHistoryId(forkedVariant.getNotationHistoryId());
         forkedCur.setVariants(forkedVariant.getVariants());
       }
     }
@@ -187,7 +187,7 @@ public class NotationHistoryService {
     notationHistory.setCurrentNotationDrive(0);
     notationHistory.setVariantNotationDrive(0);
     notationHistory.setNotationId(notation.getDomainId());
-    notation.addNotationHistory(notationHistory);
+    notation.addForkedNotationHistory(notationHistory);
     notation.setNotationHistory(notationHistory);
     notation.setNotationHistoryId(notationHistory.getDomainId());
   }

@@ -66,16 +66,16 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
 
   @DynamoDBIgnore
   @JsonIgnore
-  public Optional<NotationDrive> getCurrentVariant() {
-    return getCurrentVariantStream().findFirst();
+  public Optional<NotationDrive> getCurrentVariant(Integer currentIndex) {
+    return getCurrentVariantStream(currentIndex).findFirst();
   }
 
   @DynamoDBIgnore
   @JsonIgnore
-  private Stream<NotationDrive> getCurrentVariantStream() {
-    return stream()
-        .filter(NotationDrive::isCurrent)
-        .flatMap(notationDrive -> notationDrive.getVariants().stream())
+  private Stream<NotationDrive> getCurrentVariantStream(Integer currentIndex) {
+    return get(currentIndex)
+        .getVariants()
+        .stream()
         .filter(NotationDrive::isCurrent);
   }
 
@@ -118,7 +118,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
 
   @JsonIgnore
   @DynamoDBIgnore
-  public Optional<DomainId> getLastNotationBoardIdInVariants() {
+  public Optional<DomainId> getLastNotationBoardIdInVariants(Integer currentIndex) {
     NotationDrive notationLast = getLast();
 //    if (notationLast.isRoot()) {
 //      return notationLast.getVariants()
@@ -132,7 +132,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
 //          .map(NotationSimpleMove::getBoardId)
 //          .findFirst();
 //    }
-    return getCurrentVariantStream()
+    return getCurrentVariantStream(currentIndex)
         .map(NotationDrive::getVariants)
         .map(LinkedList::getLast)
         .map(NotationDrive::getMoves)

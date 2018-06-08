@@ -74,16 +74,15 @@ public class BoardBoxService {
     boardBox.setIdInArticle(idInArticle);
     Utils.setRandomIdAndCreatedAt(boardBox);
 
-    NotationHistory toFillNotationHistory = NotationHistory.createNotationDrives();
-    boardService.fillNotation(boardBox.getDomainId(), parsedNotation.getNotationFen(),
-        parsedNotation.getNotationHistory(), toFillNotationHistory, parsedNotation.getRules());
-    parsedNotation.setNotationHistory(toFillNotationHistory);
     Utils.setRandomIdAndCreatedAt(parsedNotation);
+    boardService.fillNotation(boardBox.getDomainId(), parsedNotation.getNotationFen(), parsedNotation.getDomainId(),
+        parsedNotation, parsedNotation.getRules());
     parsedNotation.setBoardBoxId(boardBox.getDomainId());
-    notationService.save(parsedNotation, true);
+    notationService.save(parsedNotation, false);
+    NotationHistory filledNotationHistory = parsedNotation.getNotationHistory();
 
     // switch boardBox to the first board
-    return toFillNotationHistory.getLastNotationBoardId()
+    return filledNotationHistory.getLastNotationBoardId()
         .map(firstBoardId -> {
           var firstBoard = boardDao.findById(firstBoardId);
           boardService.updateBoard(firstBoard);
@@ -140,7 +139,7 @@ public class BoardBoxService {
     }
     try {
       BoardBoxes byUserAndIds = boardBoxDao.findByArticleId(articleId);
-      return fillBoardBoxes(authUser, articleId, byUserAndIds);
+      return fillBoardBoxes(articleId, byUserAndIds, authUser);
     } catch (DaoException e) {
       logger.warn(e.getMessage());
       throw RequestException.noContent();
@@ -152,7 +151,7 @@ public class BoardBoxService {
         .getByArticleId(authUser.getUserSession(), articleId)
         .orElseGet(() -> {
           BoardBoxes boardBoxes = boardBoxDao.findPublicByArticleId(articleId);
-          return fillBoardBoxes(authUser, articleId, boardBoxes);
+          return fillBoardBoxes(articleId, boardBoxes, authUser);
         });
   }
 
@@ -364,7 +363,7 @@ public class BoardBoxService {
   public BoardBoxes viewBranch(@NotNull BoardBox boardBox, @NotNull AuthUser token) {
     switchNotation(boardBox, token);
     BoardBoxes byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
-    return fillBoardBoxes(token, boardBox.getArticleId(), byArticleId);
+    return fillBoardBoxes(boardBox.getArticleId(), byArticleId, token);
   }
 
   @NotNull
@@ -373,7 +372,7 @@ public class BoardBoxService {
     var filledBoardBox = findAndFill(boardBox, authUser);
     forkNotationForVariants(filledBoardBox, currentNotationDrive, authUser);
     BoardBoxes byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
-    return fillBoardBoxes(authUser, boardBox.getArticleId(), byArticleId);
+    return fillBoardBoxes(boardBox.getArticleId(), byArticleId, authUser);
   }
 
   @NotNull
@@ -382,7 +381,7 @@ public class BoardBoxService {
     var filledBoardBox = findAndFill(boardBox, authUser);
     switchNotationToVariant(notationLine, filledBoardBox, authUser);
     BoardBoxes byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
-    return fillBoardBoxes(authUser, boardBox.getArticleId(), byArticleId);
+    return fillBoardBoxes(boardBox.getArticleId(), byArticleId, authUser);
   }
 
   private BoardBox switchNotationToVariant(NotationLine notationLine, BoardBox boardBox, AuthUser authUser) {
@@ -499,7 +498,7 @@ public class BoardBoxService {
   }
 
   @NotNull
-  private BoardBoxes fillBoardBoxes(@NotNull AuthUser authUser, @NotNull DomainId articleId, BoardBoxes byUserAndIds) {
+  private BoardBoxes fillBoardBoxes(@NotNull DomainId articleId, BoardBoxes byUserAndIds, @NotNull AuthUser authUser) {
     DomainIds domainIds = byUserAndIds
         .valueList()
         .stream()

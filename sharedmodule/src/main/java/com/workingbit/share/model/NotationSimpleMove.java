@@ -66,7 +66,7 @@ public class NotationSimpleMove implements DeepClone {
       return notation;
     }
     if (boardDimension == 0) {
-      return notation;
+      throw new RuntimeException("Размерность доски не установлена");
     }
     switch (format) {
       case DIGITAL:

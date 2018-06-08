@@ -81,7 +81,7 @@ public class ArticleService {
       article.setBoardBoxCount(1);
       articleDao.save(article);
     } else {
-      logger.error("Unable to createNotationDrives board");
+      logger.error("Unable to createWithoutRoot board");
       throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CREATE_BOARD);
     }
 

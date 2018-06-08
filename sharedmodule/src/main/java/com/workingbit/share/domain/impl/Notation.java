@@ -191,23 +191,12 @@ public class Notation extends BaseDomain implements Payload {
     }
   }
 
-  public void addNotationHistory(NotationHistory notationHistory) {
+  public void addForkedNotationHistory(NotationHistory notationHistory) {
     forkedNotations.put(notationHistory.getId(), notationHistory);
   }
 
-  public void addNotationHistoryAll(List<NotationHistory> byNotationId) {
-    byNotationId.forEach(this::addNotationHistory);
-  }
-
-  public void updateAllNotations(int forkFromNotationDrive, String id, NotationDrives notationDrives) {
-    forkedNotations.replaceAll((s, nh) -> {
-      if (!s.equals(id)) {
-        notationDrives.getCurrentVariant()
-            .ifPresent(notationDrive ->
-                nh.get(forkFromNotationDrive).addVariant(notationDrive));
-      }
-      return nh;
-    });
+  public void addForkedNotationHistories(List<NotationHistory> byNotationId) {
+    byNotationId.forEach(this::addForkedNotationHistory);
   }
 
   public Optional<NotationHistory> findNotationHistoryByLine(NotationLine notationLine) {
@@ -216,5 +205,9 @@ public class Notation extends BaseDomain implements Payload {
         .filter(notationHistory -> notationHistory.getCurrentIndex().equals(notationLine.getCurrentIndex())
             && notationHistory.getVariantIndex().equals(notationLine.getVariantIndex()))
         .findFirst();
+  }
+
+  public void removeForkedNotations(NotationHistory notationHistory) {
+    forkedNotations.remove(notationHistory.getId());
   }
 }

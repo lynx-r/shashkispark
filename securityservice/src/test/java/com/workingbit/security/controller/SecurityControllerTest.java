@@ -261,7 +261,7 @@ public class SecurityControllerTest {
 //    answer = post("/save-user-info", userInfo, authUserBanned, HTTP_FORBIDDEN);
 //    answer = get("/user-info", authUserBanned, HTTP_FORBIDDEN);
 //
-//    // createNotationDrives user
+//    // createWithoutRoot user
 //    userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
 //    registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
 //    authUser = registerResult.getAuthUser();
