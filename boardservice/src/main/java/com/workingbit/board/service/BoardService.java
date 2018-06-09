@@ -250,46 +250,55 @@ public class BoardService {
         .ifPresent(notationHistory -> {
           NotationDrive lastDrive = notationHistory.getLast();
           lastDrive.setSelected(true);
-          NotationDrive lastCurrentDrive = null;
           NotationDrives curNotation = notationHistory.getNotation();
-          for (NotationDrive curDrive : curNotation) {
-            NotationDrives variants = curDrive.getVariants();
-            if (!variants.isEmpty()) {
-              lastCurrentDrive = curDrive;
-              if (curDrive.getVariantsSize() > 0) {
-                variants.getFirst().setParentId(0);
-                variants.getFirst().setParentColor("purple");
-                variants.getFirst().setDriveColor(Utils.getRandomColor());
-                for (int i = 1; i < variants.size(); i++) {
-                  NotationDrive notationDrive = variants.get(i);
-                  notationDrive.setParentColor(variants.get(i - 1).getDriveColor());
-                  notationDrive.setDriveColor(Utils.getRandomColor());
-                }
-                variants.get(curDrive.getVariantsSize() - 2).setPrevious(true);
-                variants.getLast().setCurrent(true);
-              } else {
-                variants.getFirst().setCurrent(true);
-              }
-            }
-          }
+          NotationDrive lastCurrentDrive = getNotationHistoryColors(curNotation);
           notationHistory.setRules(board.getRules());
           NotationHistory syncNotationHist = notationHistory.deepClone();
           for (int i = 0; i < syncNotationHist.getNotation().size(); i++) {
             syncNotationHist.setCurrentIndex(i);
             notationService.syncVariants(syncNotationHist, notation);
           }
-          if (lastCurrentDrive != null) {
-            lastCurrentDrive.setCurrent(true);
-            int currentIndex = curNotation.indexOf(lastCurrentDrive);
-            int variantIndex = lastCurrentDrive.getVariantsSize() - 1;
-            NotationLine line = new NotationLine(currentIndex, variantIndex);
-            notation.findNotationHistoryByLine(line)
-                .ifPresent(nh -> {
-                  notation.setNotationHistory(nh);
-                  notation.setNotationHistoryId(nh.getDomainId());
-                });
-          }
+          setNotationHistoryForNotation(notation, lastCurrentDrive, curNotation);
         });
+  }
+
+  private NotationDrive getNotationHistoryColors(NotationDrives curNotation) {
+    NotationDrive lastCurrentDrive = null;
+    for (NotationDrive curDrive : curNotation) {
+      NotationDrives variants = curDrive.getVariants();
+      if (!variants.isEmpty()) {
+        lastCurrentDrive = curDrive;
+        if (curDrive.getVariantsSize() > 0) {
+          variants.getFirst().setParentId(0);
+          variants.getFirst().setParentColor("purple");
+          variants.getFirst().setDriveColor(Utils.getRandomColor());
+          for (int i = 1; i < variants.size(); i++) {
+            NotationDrive notationDrive = variants.get(i);
+            notationDrive.setParentColor(variants.get(i - 1).getDriveColor());
+            notationDrive.setDriveColor(Utils.getRandomColor());
+          }
+          variants.get(curDrive.getVariantsSize() - 2).setPrevious(true);
+          variants.getLast().setCurrent(true);
+        } else {
+          variants.getFirst().setCurrent(true);
+        }
+      }
+    }
+    return lastCurrentDrive;
+  }
+
+  private void setNotationHistoryForNotation(@NotNull Notation notation, NotationDrive lastCurrentDrive, NotationDrives curNotation) {
+    if (lastCurrentDrive != null) {
+      lastCurrentDrive.setCurrent(true);
+      int currentIndex = curNotation.indexOf(lastCurrentDrive);
+      int variantIndex = lastCurrentDrive.getVariantsSize() - 1;
+      NotationLine line = new NotationLine(currentIndex, variantIndex);
+      notation.findNotationHistoryByLine(line)
+          .ifPresent(nh -> {
+            notation.setNotationHistory(nh);
+            notation.setNotationHistoryId(nh.getDomainId());
+          });
+    }
   }
 
   private void populateBoardWithNotation(DomainId notationId, @NotNull Board board,
