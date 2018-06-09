@@ -13,7 +13,7 @@ import static com.workingbit.share.util.JsonUtils.jsonToData;
 public class UnirestUtil {
 
   public static void configureSerialization() {
-    Unirest.setTimeouts(3 * 60 * 1000, 3 * 60 * 1000);
+    Unirest.setTimeouts(20 * 60 * 1000, 3 * 60 * 1000);
     Unirest.setObjectMapper(new ObjectMapper() {
 
       public <T> T readValue(String value, @NotNull Class<T> valueType) {
