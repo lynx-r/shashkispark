@@ -243,8 +243,7 @@ public class BoardService {
                                          @NotNull Notation notation,
                                          @NotNull List<Board> batchBoards) {
     NotationHistory recursiveFillNotationHistory = NotationHistory.createWithRoot();
-    populateBoardWithNotation(notationId, board, notation, recursiveFillNotationHistory,
-        batchBoards, 0);
+    populateBoardWithNotation(notationId, board, notation, recursiveFillNotationHistory, batchBoards);
     NotationLine lastNotationLine = new NotationLine(0, 0);
     notation.findNotationHistoryByLine(lastNotationLine)
         .ifPresent(notationHistory -> {
@@ -304,14 +303,9 @@ public class BoardService {
   private void populateBoardWithNotation(DomainId notationId, @NotNull Board board,
                                          @NotNull Notation notation,
                                          @NotNull NotationHistory recursiveNotationHistory,
-                                         @NotNull List<Board> batchBoards,
-                                         int deep
+                                         @NotNull List<Board> batchBoards
   ) {
-    ++deep;
-    Board recursiveBoard = board;
-    if (deep == 1) {
-      recursiveBoard = board.deepClone();
-    }
+    Board recursiveBoard = board.deepClone();
     Utils.setRandomIdAndCreatedAt(recursiveNotationHistory);
     recursiveNotationHistory.setNotationId(notationId);
     recursiveNotationHistory.setCurrentIndex(0);
