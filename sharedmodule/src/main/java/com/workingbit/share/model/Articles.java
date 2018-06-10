@@ -41,11 +41,11 @@ public class Articles implements Payload {
     articles.add(i, article);
   }
 
-  public void setSecureArticles(boolean secure) {
+  public void setSecureArticles(boolean secure, String userId) {
     setArticles(
         getArticles().stream().filter(article ->
             !secure && article.getArticleStatus().equals(EnumArticleStatus.PUBLISHED)
-                || secure
+                || secure && userId.equals(article.getUserId().getId())
         ).collect(Collectors.toList())
     );
   }

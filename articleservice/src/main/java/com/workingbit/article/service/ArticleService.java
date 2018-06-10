@@ -171,8 +171,9 @@ public class ArticleService {
       return findAllDb(limitStr, authUser);
     }
     boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
+    String userId = authUser.getUserId() != null ? authUser.getUserId().getId() : "";
     return articleStoreService
-        .getAllArticles(secure)
+        .getAllArticles(secure, userId)
         .orElseGet(() -> findAllDb(limitStr, authUser));
   }
 

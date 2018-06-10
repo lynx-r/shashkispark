@@ -67,12 +67,12 @@ public class ArticleStoreService {
     storeArticles.put(ALL_ARTICLES_KEY, articles);
   }
 
-  Optional<Articles> getAllArticles(boolean secure) {
+  Optional<Articles> getAllArticles(boolean secure, String userId) {
     Articles all = storeArticles.get(ALL_ARTICLES_KEY);
     if (all == null || all.isEmpty()) {
       return Optional.empty();
     }
-    all.setSecureArticles(secure);
+    all.setSecureArticles(secure, userId);
     return Optional.of(all);
   }
 
