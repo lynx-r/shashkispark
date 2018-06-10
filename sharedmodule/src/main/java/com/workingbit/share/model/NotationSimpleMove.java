@@ -31,6 +31,8 @@ public class NotationSimpleMove implements DeepClone {
    */
   private boolean visible;
 
+  private String moveStrength;
+
   public NotationSimpleMove() {
     visible = true;
   }

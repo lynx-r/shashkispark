@@ -121,7 +121,7 @@ public class NotationParserService {
               case MOVE_STRENGTH:
                 Token moveStrength = (Token) gameMove.getChildAt(0);
                 String strength = moveStrength.getImage();
-                notationDrive.getMoves().get(gameMoveNumber - 1).setMoveStrength(strength);
+//                notationDrive.getMoves().get(gameMoveNumber - 1).setMoveStrength(strength);
                 break;
             }
           }

@@ -35,7 +35,6 @@ public class NotationMove implements DeepClone, NotationFormat {
    */
   @NotNull
   private LinkedList<NotationSimpleMove> move = new LinkedList<>();
-  private String moveStrength;
 
   /**
    * Num of squares on a side
@@ -121,13 +120,12 @@ public class NotationMove implements DeepClone, NotationFormat {
   String print(String prefix) {
     return prefix + getClass().getSimpleName() +
         prefix + "\t" + "type: " + type +
-        prefix + "\t" + "move: " + move.toString() +
+        prefix + "\t" + "move: " + move.toString();
 //        .append(prefix).append("\t").append("cursor: ").append(cursor)
-        prefix + "\t" + "moveStrength: " + moveStrength;
   }
 
   public String asString() {
-    String stroke = getNotationAsString() + (moveStrength != null ? " " + moveStrength : " ");
+    String stroke = getNotationAsString();
     return String.format("%1$-10s", stroke);
   }
 
