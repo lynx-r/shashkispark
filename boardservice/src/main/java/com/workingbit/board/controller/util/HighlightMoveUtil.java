@@ -216,7 +216,6 @@ public class HighlightMoveUtil {
         if (capturedMoves.contains(previous)) {
           return;
         }
-        previous.getDraught().setMarkCaptured(1);
         TreeSquare walkCaptured = new TreeSquare();
         addCapturedMove(previous, walkCaptured);
         addAllowedMove(next, allowedMoves);
@@ -301,8 +300,9 @@ public class HighlightMoveUtil {
   }
 
   private void addCapturedMove(Square previous, TreeSquare capturedMoves) {
-    if (previous.getDraught().getMarkCaptured() == 0 && !previous.getDraught().isCaptured()) {
-      previous.getDraught().setMarkCaptured(capturedMoves.size() + 1);
+    Draught draught = previous.getDraught();
+    if (draught.getMarkCaptured() == 0 && !draught.isCaptured()) {
+      draught.setMarkCaptured(capturedMoves.size() + 1);
     }
     capturedMoves.setData(previous);
   }
@@ -341,7 +341,7 @@ public class HighlightMoveUtil {
     return previousSquare != null && previousSquare.isOccupied()
         && !isDraughtWithSameColor(previousSquare)
         && isDraughtNotOccupied(nextSquare)
-        && (!previousSquare.getDraught().isCaptured() || previousSquare.getDraught().getMarkCaptured() == 0);
+        && !previousSquare.getDraught().isCaptured();
   }
 
   private boolean hasCapturedAndCanMove(TreeSquare capturedMoves, Square next) {

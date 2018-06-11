@@ -101,6 +101,9 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
   @Override
   public void setDim(int dim) {
     this.dim = dim;
+    if (draught != null) {
+      draught.setDim(dim);
+    }
   }
 
   @NotNull

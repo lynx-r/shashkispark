@@ -81,7 +81,7 @@ public class NotationSimpleMove implements DeepClone {
   }
 
   private String getNotationAlpha() {
-    return boardDimension == EnumRules.INTERNATIONAL.getDimensionAbs()
+    return boardDimension == EnumRules.INTERNATIONAL.getDimension()
         ? getAlphanumericNotation100()
         : getAlphanumericNotation64();
   }
@@ -92,7 +92,7 @@ public class NotationSimpleMove implements DeepClone {
   }
 
   private String getNotationNum() {
-    return boardDimension == EnumRules.INTERNATIONAL.getDimensionAbs()
+    return boardDimension == EnumRules.INTERNATIONAL.getDimension()
         ? getPdnNumericNotation100()
         : getPdnNumericNotation64();
   }

@@ -88,15 +88,15 @@ public class BaseServiceTest {
 
   @NotNull
   protected Draught getDraught(int v, int h) {
-    return new Draught(v, h, getRules().getDimensionAbs());
+    return new Draught(v, h, getRules().getDimension());
   }
 
   @NotNull Square getSquare(Draught draught, int v, int h) {
-    return new Square(v, h, getRules().getDimensionAbs(), true, draught);
+    return new Square(v, h, getRules().getDimension(), true, draught);
   }
 
   @NotNull Draught getDraughtBlack(int v, int h) {
-    return new Draught(v, h, getRules().getDimensionAbs(), true);
+    return new Draught(v, h, getRules().getDimension(), true);
   }
 
   @NotNull Square getSquareByVH(@NotNull BoardBox board, int v, int h) {

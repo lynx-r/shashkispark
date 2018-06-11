@@ -138,7 +138,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   }
 
   public void setRules(@NotNull EnumRules rules) {
-    notation.setDimension(rules.getDimensionAbs());
+    notation.setDimension(rules.getDimension());
   }
 
   public void setFormat(EnumNotationFormat format) {
@@ -179,12 +179,10 @@ public class NotationHistory extends BaseDomain implements DeepClone {
     return notation.get(index);
   }
 
-  public static NotationHistory createWithoutRoot() {
-    return new NotationHistory(createWithoutRoot(false));
-  }
-
   public static NotationHistory createWithRoot() {
-    return new NotationHistory(createWithoutRoot(true));
+    NotationHistory notationHistory = new NotationHistory(createWithoutRoot(true));
+    notationHistory.setNotationLine(new NotationLine(0, 0));
+    return notationHistory;
   }
 
   public String notationToPdn() {

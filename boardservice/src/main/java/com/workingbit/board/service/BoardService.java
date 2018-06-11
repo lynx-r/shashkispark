@@ -172,8 +172,8 @@ public class BoardService {
     Map<String, List<Square>> capturedMapped = captured.flatTree()
         .stream()
         .collect(Collectors.groupingBy(ICoordinates::getNotation));
-    updateBoardDraughts(capturedMapped, serverBoard.getWhiteDraughts(), serverBoard.getRules().getDimensionAbs());
-    updateBoardDraughts(capturedMapped, serverBoard.getBlackDraughts(), serverBoard.getRules().getDimensionAbs());
+    updateBoardDraughts(capturedMapped, serverBoard.getWhiteDraughts(), serverBoard.getRules().getDimension());
+    updateBoardDraughts(capturedMapped, serverBoard.getBlackDraughts(), serverBoard.getRules().getDimension());
     if (save) {
       boardDao.save(serverBoard);
     }
@@ -203,7 +203,7 @@ public class BoardService {
           if (squares != null && !squares.isEmpty()) {
             Draught capturedDraught = squares.get(0).getDraught();
             draught.setCaptured(capturedDraught.isCaptured());
-            draught.setMarkCaptured(capturedMapped.size());
+//            draught.setMarkCaptured(capturedMapped.size());
           }
         });
   }
@@ -391,6 +391,7 @@ public class BoardService {
     boolean previousCaptured = !capturedSquares.isEmpty();
     boolean hasNextCapture = isNextCapture(board, nextHighlight);
     if (previousCaptured && hasNextCapture) {
+//      setFirstCaptured(capturedSquares, newBoard);
       updateNotationMiddle(newBoard, prevBoardId, notationHistory);
       return newBoard;
     }
@@ -398,6 +399,24 @@ public class BoardService {
     resetBoardHighlight(board);
     resetCaptured(board);
     return board;
+  }
+
+  private void setFirstCaptured(@NotNull TreeSquare capturedSquares, Board board) {
+    capturedSquares
+        .flatTree()
+        .stream()
+        .map(Square::getDraught)
+        .map(Draught::getNotation)
+        .findFirst()
+        .ifPresent(captureNotation ->
+            board.getAssignedSquares()
+                .replaceAll(square -> {
+                  if (square.getNotation().equals(captureNotation)) {
+                    square.getDraught().setCaptured(true);
+                    return square;
+                  }
+                  return square;
+                }));
   }
 
   @NotNull

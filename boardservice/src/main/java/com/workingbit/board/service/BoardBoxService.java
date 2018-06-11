@@ -162,8 +162,7 @@ public class BoardBoxService {
   }
 
   public BoardBox highlight(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
-    var updatedBoardBox = findAndFill(boardBox, authUser);
-    BoardBox serverBoardBox = updatedBoardBox.deepClone();
+    var serverBoardBox = findAndFill(boardBox, authUser);
     Board clientBoard = boardBox.getBoard();
     if (resetHighlightIfNotLastBoard(serverBoardBox)) {
       Board noHighlight = boardService.resetHighlightAndUpdate(clientBoard);
@@ -452,6 +451,7 @@ public class BoardBoxService {
     board = boardService.resetHighlightAndUpdate(board);
     board.setReadonly(boardBox.isReadonly());
     boardBox.setBoard(board);
+    notation.setRules(board.getRules());
     boardBox.setNotation(notation);
     boardBox.setNotationId(notation.getDomainId());
     boardBoxStoreService.put(authUser.getUserSession(), boardBox);
