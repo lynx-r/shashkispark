@@ -40,4 +40,10 @@ public class DomainIds implements Payload {
   public boolean isEmpty() {
     return ids.isEmpty();
   }
+
+  public void removeFirst() {
+    if (!ids.isEmpty()) {
+      ids.removeFirst();
+    }
+  }
 }

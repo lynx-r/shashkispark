@@ -69,20 +69,22 @@ public class NotationService {
         .map(notationHistory -> {
           notationHistory.getCurrentNotationDrive()
               .ifPresent(curDrive -> curDrive.getVariantById(notationLine.getVariantIndex())
-              .ifPresent(curVariant -> {
-                DomainIds boardIdsToRemove = curVariant
-                    .getVariants()
-                    .subList(1, curVariant.getVariantsSize())
-                    .stream()
-                    .map(NotationDrive::getMoves)
-                    .flatMap(Collection::stream)
-                    .map(NotationMove::getMove)
-                    .flatMap(Collection::stream)
-                    .map(NotationSimpleMove::getBoardId)
-                    .distinct()
-                    .collect(collectingAndThen(toCollection(LinkedList::new), DomainIds::new));
-                boardDao.batchDelete(boardIdsToRemove);
-              }));
+                  .ifPresent(curVariant -> {
+                    DomainIds boardIdsToRemove = curVariant
+                        .getVariants()
+                        .subList(1, curVariant.getVariantsSize())
+                        .stream()
+                        .map(NotationDrive::getMoves)
+                        .flatMap(Collection::stream)
+                        .map(NotationMove::getMove)
+                        .flatMap(Collection::stream)
+                        .map(NotationSimpleMove::getBoardId)
+                        .distinct()
+                        .collect(collectingAndThen(toCollection(LinkedList::new), DomainIds::new));
+                    boardIdsToRemove.removeFirst();
+                    boardDao.batchDelete(boardIdsToRemove);
+                  })
+              );
           notationHistory.removeByCurrentIndex();
           notationHistoryDao.delete(notationHistory.getDomainId());
           notation.removeForkedNotations(notationHistory);
