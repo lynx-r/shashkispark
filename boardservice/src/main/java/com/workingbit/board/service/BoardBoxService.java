@@ -261,8 +261,14 @@ public class BoardBoxService {
     var updatedBox = findAndFill(boardBox, authUser);
     Board inverted = updatedBox.getBoard();
     Board clientBoard = boardBox.getBoard();
-    inverted.setBlack(!clientBoard.isBlack());
+    boolean black = !clientBoard.isBlack();
+    inverted.setBlack(black);
+    inverted.setBlackTurn(black);
     boardService.save(inverted);
+
+    Notation notation = updatedBox.getNotation();
+    notation.getNotationFen().setBlackTurn(black);
+    notationService.save(notation, true);
 
     updatedBox.setBoard(inverted);
     boardBoxDao.save(updatedBox);

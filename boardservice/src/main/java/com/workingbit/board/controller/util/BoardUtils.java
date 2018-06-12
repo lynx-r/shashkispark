@@ -47,7 +47,7 @@ public class BoardUtils {
 
     Map<String, Draught> blackDraughts = new HashMap<>(boardClone.getBlackDraughts());
     Map<String, Draught> whiteDraughts = new HashMap<>(boardClone.getWhiteDraughts());
-    List<Square> boardSquares = getAssignedSquares(rules.getDimension());
+    List<Square> boardSquares = getAssignedSquares(rules.getDimension(), black);
     for (Square square : boardSquares) {
       int v = square.getV();
       int h = square.getH();
@@ -88,29 +88,35 @@ public class BoardUtils {
   }
 
   @NotNull
-  static List<Square> getSquareArray(int offset, int dim, boolean main) {
+  static List<Square> getSquareArray(int offset, int dim, boolean main, boolean black) {
     List<Square> squares = new ArrayList<>();
     for (int v = 0; v < dim; v++) {
       for (int h = 0; h < dim; h++) {
         if (((v + h + 1) % 2 == 0)
             && (main && (v - h + offset) == 0
             || !main && (v + h - offset) == dim - 1)) {
+          var vv = v;
+          var hh = h;
+          if (black) {
+            vv = dim - v;
+          }
           Square square = new Square(v, h, dim, main);
           squares.add(square);
         }
       }
     }
+//    Collections.reverse(squares);
     return squares;
   }
 
   @NotNull
-  static List<List<Square>> getDiagonals(int dim, boolean main) {
+  static List<List<Square>> getDiagonals(int dim, boolean main, boolean black) {
     List<List<Square>> diagonals = new ArrayList<>(dim - 2);
     for (int i = -dim; i < dim - 1; i++) {
       if ((i == 1 - dim) && main) {
         continue;
       }
-      List<Square> diagonal = BoardUtils.getSquareArray(i, dim, main);
+      List<Square> diagonal = BoardUtils.getSquareArray(i, dim, main, black);
       if (!diagonal.isEmpty()) {
         diagonals.add(diagonal);
       }
@@ -126,9 +132,9 @@ public class BoardUtils {
    * Assign square subdiagonal and main diagonal. Assign diagonal's squares link to squares
    */
   @NotNull
-  private static List<Square> getAssignedSquares(int dim) {
-    List<List<Square>> mainDiagonals = getDiagonals(dim, true);
-    List<List<Square>> subDiagonals = getDiagonals(dim, false);
+  private static List<Square> getAssignedSquares(int dim, boolean black) {
+    List<List<Square>> mainDiagonals = getDiagonals(dim, true, black);
+    List<List<Square>> subDiagonals = getDiagonals(dim, false, black);
 
     List<Square> squares = new ArrayList<>();
     for (List<Square> subDiagonal : subDiagonals) {

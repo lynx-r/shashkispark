@@ -285,16 +285,20 @@ public class NotationService {
   void syncVariants(NotationHistory toSyncNotationHist, Notation notation) {
     toSyncNotationHist.getCurrentNotationDrive()
         .ifPresent(currentNotationDrive -> {
+          AtomicBoolean save = new AtomicBoolean(false);
           notation.getForkedNotations().replaceAll((s, notationHistory) -> {
             if (isCorrespondedNotation(toSyncNotationHist, notationHistory)) {
               NotationDrive cur = notationHistory.get(toSyncNotationHist.getCurrentIndex());
               cur.setCurrent(currentNotationDrive.isCurrent());
               cur.setPrevious(currentNotationDrive.isPrevious());
               cur.setVariants(currentNotationDrive.getVariants());
+              save.set(true);
             }
             return notationHistory;
           });
-          notationHistoryDao.batchSave(notation.getForkedNotations().values());
+          if (save.get()) {
+            notationHistoryDao.batchSave(notation.getForkedNotations().values());
+          }
         });
   }
 }
