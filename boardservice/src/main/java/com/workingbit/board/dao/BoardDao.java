@@ -20,7 +20,7 @@ import static com.workingbit.board.BoardEmbedded.boardDao;
 public class BoardDao extends BaseDao<Board> {
 
   public BoardDao(AppProperties properties) {
-    super(Board.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
+    super(Board.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.local());
   }
 
   public List<Board> findByBoardBoxId(@NotNull DomainId boardBoxDomainId) {

@@ -7,15 +7,15 @@
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.test.context.junit4.SpringRunner;
-//import org.springframework.test.web.servlet.MockMvc;
+//import org.springframework.boot.local.autoconfigure.web.servlet.AutoConfigureMockMvc;
+//import org.springframework.boot.local.context.SpringBootTest;
+//import org.springframework.local.context.junit4.SpringRunner;
+//import org.springframework.local.web.servlet.MockMvc;
 //
 //import static org.hamcrest.Matchers.equalTo;
 //import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.getNotation;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+//import static org.springframework.local.web.servlet.request.MockMvcRequestBuilders.getNotation;
+//import static org.springframework.local.web.servlet.result.MockMvcResultMatchers.*;
 //
 ///**
 // * Created by Aleksey Popryaduhin on 09:26 15/09/2017.

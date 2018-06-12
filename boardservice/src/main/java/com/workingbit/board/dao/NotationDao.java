@@ -10,7 +10,7 @@ import com.workingbit.share.domain.impl.Notation;
 public class NotationDao extends BaseDao<Notation> {
 
   public NotationDao(AppProperties properties) {
-    super(Notation.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
+    super(Notation.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.local());
   }
 
 //  @Override

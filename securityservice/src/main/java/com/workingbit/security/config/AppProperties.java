@@ -13,7 +13,7 @@ public interface AppProperties {
 
   @NotNull URL endpointDynamoDB();
 
-  @NotNull Boolean test();
+  @NotNull Boolean local();
 
   @NotNull URL origin();
 

@@ -27,7 +27,7 @@ import java.util.Map;
 public class ArticleDao extends BaseDao<Article> {
 
   public ArticleDao(AppProperties properties) {
-    super(Article.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
+    super(Article.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.local());
   }
 
   public Article findActiveById(String entityKey) {

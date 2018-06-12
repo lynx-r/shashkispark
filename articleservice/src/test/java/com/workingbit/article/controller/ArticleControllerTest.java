@@ -83,7 +83,7 @@ public class ArticleControllerTest {
   }
 
   /**
-   * test for createArticleAndBoard
+   * local for createArticleAndBoard
    *
    * @throws Exception
    */
@@ -105,7 +105,7 @@ public class ArticleControllerTest {
   }
 
   /**
-   * test for saveArticle
+   * local for saveArticle
    *
    * @throws Exception
    */
@@ -174,7 +174,7 @@ public class ArticleControllerTest {
   }
 
   /**
-   * test for findArticleByHru
+   * local for findArticleByHru
    *
    * @throws Exception
    */
@@ -226,7 +226,7 @@ public class ArticleControllerTest {
   }
 
   /**
-   * test for findAllArticles
+   * local for findAllArticles
    *
    * @throws Exception
    */

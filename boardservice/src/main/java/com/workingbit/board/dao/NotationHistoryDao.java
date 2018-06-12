@@ -17,7 +17,7 @@ import java.util.List;
 public class NotationHistoryDao extends BaseDao<NotationHistory> {
 
   public NotationHistoryDao(AppProperties properties) {
-    super(NotationHistory.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
+    super(NotationHistory.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.local());
   }
 
   public List<NotationHistory> findByNotationId(DomainId notationId) {

@@ -217,7 +217,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
 
-      // forkNumber notation by index from test file
+      // forkNumber notation by index from local file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
       BoardBox boardBoxVariant = getForkNotation(boardBox);
@@ -251,7 +251,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
 
-      // forkNumber notation by index from test file
+      // forkNumber notation by index from local file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
       BoardBox boardBoxVariant = getForkNotation(boardBox);
@@ -295,7 +295,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
 
-      // forkNumber notation by index from test file
+      // forkNumber notation by index from local file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
       BoardBox boardBoxVariant = getForkNotation(boardBox);
@@ -362,7 +362,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
 
-      // forkNumber notation by index from test file
+      // forkNumber notation by index from local file
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkNumber);
       BoardBox fork1 = getForkNotation(boardBox);
@@ -389,7 +389,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       boardBox = boardBoxService.findAndFill(boardBox, token);
       System.out.println("SWITCH: " + boardBox.getNotation().getNotationHistory().notationToPdn());
 
-      // forkNumber notation by index from test file
+      // forkNumber notation by index from local file
       notationDrives = boardBox.getNotation().getNotationHistory();
       forkDrive = notationDrives.get(forkNumber);
       BoardBox fork2 = getForkNotation(boardBox);
@@ -450,7 +450,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
 
-      // forkNumber notation by index from test file
+      // forkNumber notation by index from local file
       int forkDriveIndex = Integer.parseInt(startVariantDriveMove);
       NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
       NotationDrive forkDrive = notationDrives.get(forkDriveIndex);

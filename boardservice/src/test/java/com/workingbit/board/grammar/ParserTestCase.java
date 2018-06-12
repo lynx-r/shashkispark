@@ -22,7 +22,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * Base class for all the parser test cases.
+ * Base class for all the parser local cases.
  *
  * @author   Per Cederberg
  * @version  1.0
@@ -30,9 +30,9 @@ import java.io.StringWriter;
 abstract class ParserTestCase extends TestCase {
 
     /**
-     * Creates a new test case.
+     * Creates a new local case.
      *
-     * @param name           the test case name
+     * @param name           the local case name
      */
     public ParserTestCase(String name) {
         super(name);
@@ -40,7 +40,7 @@ abstract class ParserTestCase extends TestCase {
 
     /**
      * Parses with the parser and checks the output. If the parsing
-     * failed or if the tree didn't match the specified output, a test
+     * failed or if the tree didn't match the specified output, a local
      * failure will be reported.
      *
      * @param parser         the parser to use
@@ -59,7 +59,7 @@ abstract class ParserTestCase extends TestCase {
     /**
      * Parses with the parser and checks the parse error. If the
      * parsing succeeded or if the parse exception didn't match the
-     * specified valueList, a test failure will be reported.
+     * specified valueList, a local failure will be reported.
      *
      * @param parser         the parser to use
      * @param type           the parse error type
@@ -88,7 +88,7 @@ abstract class ParserTestCase extends TestCase {
 
     /**
      * Validates that a parse tree is identical to a string
-     * representation. If the two representations mismatch, a test
+     * representation. If the two representations mismatch, a local
      * failure will be reported.
      *
      * @param root           the parse tree root node
@@ -103,7 +103,7 @@ abstract class ParserTestCase extends TestCase {
 
     /**
      * Validates that two strings are identical. If the two strings
-     * mismatch, a test failure will be reported.
+     * mismatch, a local failure will be reported.
      *
      * @param expected       the expected result
      * @param result         the result obtained
@@ -138,7 +138,7 @@ abstract class ParserTestCase extends TestCase {
 
     /**
      * Validates that two strings are identical. If the two strings
-     * mismatch, a test failure will be reported.
+     * mismatch, a local failure will be reported.
      *
      * @param line           the line number to report
      * @param expected       the expected result

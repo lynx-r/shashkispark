@@ -1,7 +1,7 @@
 app:
   port: 14567
   regionDynamoDB: eu-west-1
-  test: true
+  local: true
   articleResource: http://localhost:8080/article/api/v1/article
   articlesResource: http://localhost:8080/article/api/v1/articles
   boardboxResource: http://localhost:8080/board/api/v1/board

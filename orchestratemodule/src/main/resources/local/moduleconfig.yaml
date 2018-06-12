@@ -1,8 +1,8 @@
 app:
   port: 14567
-  regionDynamoDB: dump
+  regionDynamoDB: eu-west-1
   endpointDynamoDB: http://example.com
-  test: false
+  local: false
 
   # article
 #  articleResource: https://localhost:8443/article/api/v1/article

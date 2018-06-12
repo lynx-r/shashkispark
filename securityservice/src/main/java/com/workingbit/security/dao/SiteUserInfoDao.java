@@ -10,7 +10,7 @@ import com.workingbit.share.model.SiteUserInfo;
 public class SiteUserInfoDao extends BaseDao<SiteUserInfo> {
 
   public SiteUserInfoDao(AppProperties properties) {
-    super(SiteUserInfo.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.test());
+    super(SiteUserInfo.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.local());
   }
 
   public SiteUserInfo findBySession(String session) {

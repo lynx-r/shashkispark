@@ -21,7 +21,7 @@ import java.util.List;
 public class BoardBoxDao extends BaseDao<BoardBox> {
 
   public BoardBoxDao(AppProperties appProperties) {
-    super(BoardBox.class, appProperties.regionDynamoDB(), appProperties.endpointDynamoDB().toString(), appProperties.test());
+    super(BoardBox.class, appProperties.regionDynamoDB(), appProperties.endpointDynamoDB().toString(), appProperties.local());
   }
 
   public List<BoardBox> findPublicByIds(@NotNull DomainIds boardBoxIds) {
