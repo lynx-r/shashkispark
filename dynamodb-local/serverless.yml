@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: aws-nodejs # NOTE: update this with your service name
+service: shashkiwiki-dynamodb # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -22,8 +22,8 @@ provider:
   runtime: nodejs6.10
 
 # you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  stage: prod
+  region: eu-west-1
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -124,8 +124,8 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
         GlobalSecondaryIndexes:
         - IndexName: userSessionIndex
           KeySchema:
@@ -136,8 +136,8 @@ resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
         - IndexName: usernameIndex
           KeySchema:
           - AttributeName: username
@@ -147,8 +147,8 @@ resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
     DynamoDBIamPolicySHASHKIWIKISecureUser:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableSHASHKIWIKISecureUser
@@ -187,8 +187,8 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
         GlobalSecondaryIndexes:
         - IndexName: articleIdIndex
           KeySchema:
@@ -197,8 +197,8 @@ resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
         - IndexName: articleStatusIndex
           KeySchema:
           - AttributeName: articleStatus
@@ -206,8 +206,8 @@ resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
         - IndexName: humanReadableUrlIndex
           KeySchema:
           - AttributeName: humanReadableUrl
@@ -217,8 +217,8 @@ resources:
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
     DynamoDBIamPolicySHASHKIWIKIArticle:
       Type: AWS::IAM::Policy
       DependsOn: DynamoDbTableSHASHKIWIKIArticle
@@ -253,8 +253,8 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
         GlobalSecondaryIndexes:
         - IndexName: boardBoxIndex
           KeySchema:
@@ -265,8 +265,8 @@ resources:
           Projection:
             ProjectionType: KEYS_ONLY
           ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
 
     DynamoDbTableSHASHKIWIKIBoard:
       Type: AWS::DynamoDB::Table
@@ -283,8 +283,8 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
 
     DynamoDbTableSHASHKIWIKINotation:
       Type: AWS::DynamoDB::Table
@@ -301,8 +301,8 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
 
     DynamoDbTableSHASHKIWIKINotationHistory:
       Type: AWS::DynamoDB::Table
@@ -319,8 +319,8 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
 
     DynamoDBIamPolicySHASHKIWIKIBoardBox:
       Type: AWS::IAM::Policy
@@ -410,5 +410,5 @@ custom:
   dynamodb:
     start:
       port: 8765
-      inMemory: true
-      migrate: true
+      inMemory: false
+      migrate: false
