@@ -150,6 +150,7 @@ public class NotationService {
       List<NotationHistory> byNotationId = notationHistoryDao.findByNotationId(notation.getDomainId());
       byNotationId
           .stream()
+          .peek(notationHistory -> notationHistory.setFormat(notation.getFormat()))
           .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
           .findFirst()
           .ifPresent(notation::setNotationHistory);
@@ -178,6 +179,7 @@ public class NotationService {
         }
         byNotationId
             .stream()
+            .peek(notationHistory -> notationHistory.setFormat(notation.getFormat()))
             .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
             .findFirst()
             .ifPresent(notation::setNotationHistory);

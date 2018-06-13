@@ -18,7 +18,6 @@ import net.percederberg.grammatica.parser.ProductionPattern;
 import net.percederberg.grammatica.parser.ProductionPatternAlternative;
 import net.percederberg.grammatica.parser.RecursiveDescentParser;
 import net.percederberg.grammatica.parser.Tokenizer;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A token stream parser.
@@ -83,7 +82,6 @@ class PdnReadingParser extends RecursiveDescentParser {
      * @throws ParserCreationException if the tokenizer couldn't be
      *             initialized correctly
      */
-    @NotNull
     protected Tokenizer newTokenizer(Reader in)
         throws ParserCreationException {
 
@@ -178,6 +176,9 @@ class PdnReadingParser extends RecursiveDescentParser {
                                         "Move");
         alt = new ProductionPatternAlternative();
         alt.addToken(PdnReadingConstants.NUMERICMOVE, 1, 1);
+        pattern.addAlternative(alt);
+        alt = new ProductionPatternAlternative();
+        alt.addToken(PdnReadingConstants.SHORTMOVE, 1, 1);
         pattern.addAlternative(alt);
         alt = new ProductionPatternAlternative();
         alt.addToken(PdnReadingConstants.ALPHANUMERICMOVE, 1, 1);

@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.*;
+import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumNotation;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +24,9 @@ import static com.workingbit.board.controller.util.HighlightMoveUtil.getHighligh
  * Created by Aleksey Popryaduhin on 20:56 11/08/2017.
  */
 public class BoardUtils {
+
+  public static final String SERVER_BOARD = "serverBoard";
+  public static final String MOVES_LIST = "movesList";
 
   private BoardUtils() {
   }
@@ -95,17 +100,11 @@ public class BoardUtils {
         if (((v + h + 1) % 2 == 0)
             && (main && (v - h + offset) == 0
             || !main && (v + h - offset) == dim - 1)) {
-          var vv = v;
-          var hh = h;
-          if (black) {
-            vv = dim - v;
-          }
           Square square = new Square(v, h, dim, main);
           squares.add(square);
         }
       }
     }
-//    Collections.reverse(squares);
     return squares;
   }
 
@@ -214,6 +213,48 @@ public class BoardUtils {
     throw new BoardServiceException("Square not found " + notation);
   }
 
+  public static Square findSquareByNotationWithHint(String notation, List<String> moves, Board board, EnumNotationFormat notationFormat) {
+    if (StringUtils.isBlank(notation)) {
+      throw new BoardServiceException("Invalid notation " + notation);
+    }
+    switch (notationFormat) {
+      case ALPHANUMERIC:
+      case DIGITAL:
+        return findSquareByNotation(notation, board);
+      case SHORT:
+        Square nextOld = board.getNextSquare();
+        Square lastSquare = null;
+        for (int i = moves.size() - 1; i >= 0; i--) {
+          String move = moves.get(i);
+          if (i == moves.size() - 1) {
+            lastSquare = findSquareByNotation(move, board);
+          } else {
+            Optional<Square> first = lastSquare.getDiagonals()
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(square -> {
+                  String n = square.getNotation().replaceAll("\\d+", "");
+                  return n.equals(move);
+                })
+                .findFirst();
+            if (first.isPresent()) {
+              Square sq = first.get();
+              String lastMove = sq.getNotation();
+              for (Square square : board.getAssignedSquares()) {
+                if (square.getNotation().equals(lastMove)) {
+                  lastSquare = square;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        board.setNextSquare(nextOld);
+        return lastSquare;
+      default:
+        throw new BoardServiceException("Square not found " + notation);
+    }
+  }
 
   public static void addDraught(@NotNull Board board, String notation, @Nullable Draught draught) throws BoardServiceException {
     if (draught == null) {
@@ -646,5 +687,88 @@ public class BoardUtils {
 
   private static boolean isFirstMove(Board board) {
     return board.isBlackTurn() && !board.isBlack() || !board.isBlackTurn() && board.isBlack();
+  }
+
+  public static Square getPredictedSelectedSquare(Board board) {
+    Square nextSquare;
+    nextSquare = board.getNextSquare();
+    boolean black = board.isBlackTurn();
+    List<Square> found = new ArrayList<>();
+    for (List<Square> diagonals : nextSquare.getDiagonals()) {
+      Square selected = findSmartOnDiagonal(nextSquare, diagonals, black, false);
+      if (selected != null) {
+        found.add(selected);
+      }
+      selected = findSmartOnDiagonal(nextSquare, diagonals, black, true);
+      if (selected != null) {
+        found.add(selected);
+      }
+    }
+    if (found.size() != 1) {
+      Board serverBoard = board.deepClone();
+      List<Square> allowed = new ArrayList<>();
+      Set<Square> captured = new HashSet<>();
+      for (Square square : found) {
+        serverBoard.setSelectedSquare(square);
+        Map highlight = getSimpleHighlight(serverBoard, board);
+        MovesList movesList = (MovesList) highlight.get("movesList");
+        List<Square> moveCaptured = movesList.getCaptured().flatTree();
+        if (!movesList.getAllowed().isEmpty() && !captured.containsAll(moveCaptured)) {
+          captured.addAll(moveCaptured);
+          allowed.add(square);
+        }
+      }
+      if (allowed.size() != 1) {
+        throw RequestException.badRequest(ErrorMessages.UNABLE_TO_MOVE);
+      }
+      return allowed.get(0);
+    }
+    return found.get(0);
+  }
+
+  private static Square findSmartOnDiagonal(Square nextSquare, List<Square> diagonals, boolean black, boolean down) {
+    int nextI = diagonals.indexOf(nextSquare);
+    int tries = 0;
+    int i = nextI;
+    while (down ? i >= 0 : i < diagonals.size()) {
+      Square square = diagonals.get(i);
+      if (square.isOccupied() && square.getDraught().isBlack() == black) {
+        // fixme
+        if (!square.getDraught().isQueen() && tries > 1) {
+          if (down) {
+            i--;
+          } else {
+            i++;
+          }
+          continue;
+        }
+        return square;
+      }
+      if (down) {
+        i--;
+      } else {
+        i++;
+      }
+      if (!square.isOccupied()) {
+        tries++;
+      }
+    }
+    return null;
+  }
+
+  @NotNull
+  private static Map getSimpleHighlight(@NotNull Board serverBoard, @NotNull Board clientBoard) {
+    BoardUtils.updateMoveSquaresHighlightAndDraught(serverBoard, clientBoard);
+    Square selectedSquare = serverBoard.getSelectedSquare();
+    if (isValidHighlight(selectedSquare)) {
+      throw new BoardServiceException(ErrorMessages.INVALID_HIGHLIGHT);
+    }
+    MovesList movesList = getHighlightedAssignedMoves(serverBoard.getSelectedSquare());
+    return Map.of(SERVER_BOARD, serverBoard, MOVES_LIST, movesList);
+  }
+
+  public static boolean isValidHighlight(@Nullable Square selectedSquare) {
+    return selectedSquare == null
+        || !selectedSquare.isOccupied();
   }
 }

@@ -25,7 +25,8 @@ DOUBLEFORFEIT    = "0-0"
 ELLIPSES         = "..."
 MOVENUMBER       = <<[0-9]+\.(\.\.)?>>
 NUMERICMOVE      = <<[0-9][0-9]?(\s*[-x:]\s*[0-9][0-9]?)+>>
-ALPHANUMERICMOVE = <<([a-h][1-8](\s*[x:]\s*[a-h][1-8])+)|([a-h][1-8]\s*[-]?\s*[a-h][1-8])>>
+ALPHANUMERICMOVE = <<([a-h][1-9][1-9]?(\s*[x:]\s*[a-h][1-9][1-9]?)+)|([a-h][1-9][1-9]?\s*[-]?\s*[a-h][1-9][1-9]?)>>
+SHORTMOVE        = <<([a-h]([x:][a-h])*([x:][a-h][1-9][1-9]?))|([a-h][a-h][1-9][1-9]?)>>
 MOVESTRENGTH1    = <<[!?]+>>
 MOVESTRENGTH2    = <<\([!?]+\)>>
 NAG              = <<\$[0-9]+>>
@@ -54,7 +55,7 @@ GameMove         = MOVENUMBER? Move MoveStrength?                               
 Variation        = LPAREN GameBody RPAREN                                           ;
  
 // Game dependent productions
-Move             = NUMERICMOVE | ALPHANUMERICMOVE | ELLIPSES                        ;
+Move             = NUMERICMOVE | SHORTMOVE | ALPHANUMERICMOVE | ELLIPSES            ;
 GameResult       = Result1 | Result2                                                ;
 Result1          = WIN1 | DRAW1 | LOSS1                                             ;
 Result2          = WIN2 | DRAW2 | LOSS2 | DOUBLEFORFEIT                             ;

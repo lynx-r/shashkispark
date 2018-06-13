@@ -75,6 +75,8 @@ public class NotationSimpleMove implements DeepClone {
         return getNotationNum();
       case ALPHANUMERIC:
         return getNotationAlpha();
+      case SHORT:
+        return getNotationAlpha();
       default:
         return notation;
     }

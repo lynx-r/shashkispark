@@ -77,72 +77,77 @@ interface PdnReadingConstants {
     /**
      * A token identity constant.
      */
-    public static final int MOVESTRENGTH1 = 1012;
+    public static final int SHORTMOVE = 1012;
 
     /**
      * A token identity constant.
      */
-    public static final int MOVESTRENGTH2 = 1013;
+    public static final int MOVESTRENGTH1 = 1013;
 
     /**
      * A token identity constant.
      */
-    public static final int NAG = 1014;
+    public static final int MOVESTRENGTH2 = 1014;
 
     /**
      * A token identity constant.
      */
-    public static final int LPAREN = 1015;
+    public static final int NAG = 1015;
 
     /**
      * A token identity constant.
      */
-    public static final int RPAREN = 1016;
+    public static final int LPAREN = 1016;
 
     /**
      * A token identity constant.
      */
-    public static final int LBRACKET = 1017;
+    public static final int RPAREN = 1017;
 
     /**
      * A token identity constant.
      */
-    public static final int RBRACKET = 1018;
+    public static final int LBRACKET = 1018;
 
     /**
      * A token identity constant.
      */
-    public static final int ASTERISK = 1019;
+    public static final int RBRACKET = 1019;
 
     /**
      * A token identity constant.
      */
-    public static final int SETUP = 1020;
+    public static final int ASTERISK = 1020;
 
     /**
      * A token identity constant.
      */
-    public static final int STRING = 1021;
+    public static final int SETUP = 1021;
 
     /**
      * A token identity constant.
      */
-    public static final int COMMENT = 1022;
+    public static final int STRING = 1022;
 
     /**
      * A token identity constant.
      */
-    public static final int IDENTIFIER = 1023;
+    public static final int COMMENT = 1023;
 
     /**
      * A token identity constant.
      */
-    public static final int WHITESPACE = 1024;
+    public static final int IDENTIFIER = 1024;
 
     /**
      * A token identity constant.
      */
-    public static final int LINECOMMENT = 1025;
+    public static final int WHITESPACE = 1025;
+
+    /**
+     * A token identity constant.
+     */
+    public static final int LINECOMMENT = 1026;
 
     /**
      * A production node identity constant.

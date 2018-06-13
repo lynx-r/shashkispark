@@ -49,7 +49,6 @@ public class JsonUtils {
     return mapper;
   }
 
-
   public static String dataToJson(Object data) {
     try {
       return mapper.writeValueAsString(data);

@@ -112,7 +112,13 @@ class PdnReadingTokenizer extends Tokenizer {
         pattern = new TokenPattern(PdnReadingConstants.ALPHANUMERICMOVE,
                                    "ALPHANUMERICMOVE",
                                    TokenPattern.REGEXP_TYPE,
-                                   "([a-h][1-8](\\s*[x:]\\s*[a-h][1-8])+)|([a-h][1-8]\\s*[-]?\\s*[a-h][1-8])");
+                                   "([a-h][1-9][1-9]?(\\s*[x:]\\s*[a-h][1-9][1-9]?)+)|([a-h][1-9][1-9]?\\s*[-]?\\s*[a-h][1-9][1-9]?)");
+        addPattern(pattern);
+
+        pattern = new TokenPattern(PdnReadingConstants.SHORTMOVE,
+                                   "SHORTMOVE",
+                                   TokenPattern.REGEXP_TYPE,
+                                   "([a-h]([x:][a-h])*([x:][a-h][1-9][1-9]?))|([a-h][a-h][1-9][1-9]?)");
         addPattern(pattern);
 
         pattern = new TokenPattern(PdnReadingConstants.MOVESTRENGTH1,

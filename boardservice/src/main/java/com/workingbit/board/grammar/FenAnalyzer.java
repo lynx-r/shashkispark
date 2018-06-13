@@ -16,7 +16,6 @@ import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParseException;
 import net.percederberg.grammatica.parser.Production;
 import net.percederberg.grammatica.parser.Token;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A class providing callback methods for the parser.
@@ -33,7 +32,7 @@ abstract class FenAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void enter(@NotNull Node node) throws ParseException {
+    protected void enter(Node node) throws ParseException {
         switch (node.getId()) {
         case FenConstants.COLOR:
             enterColor((Token) node);
@@ -90,7 +89,7 @@ abstract class FenAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected Node exit(@NotNull Node node) throws ParseException {
+    protected Node exit(Node node) throws ParseException {
         switch (node.getId()) {
         case FenConstants.COLOR:
             return exitColor((Token) node);
@@ -381,7 +380,7 @@ abstract class FenAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childFen(@NotNull Production node, Node child)
+    protected void childFen(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -422,7 +421,7 @@ abstract class FenAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childNumericSquares(@NotNull Production node, Node child)
+    protected void childNumericSquares(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -463,7 +462,7 @@ abstract class FenAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childNumericSquareSequence(@NotNull Production node, Node child)
+    protected void childNumericSquareSequence(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -504,7 +503,7 @@ abstract class FenAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childNumericSquareRange(@NotNull Production node, Node child)
+    protected void childNumericSquareRange(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -545,7 +544,7 @@ abstract class FenAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childAlphaNumericSquares(@NotNull Production node, Node child)
+    protected void childAlphaNumericSquares(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -586,7 +585,7 @@ abstract class FenAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childAlphaNumericSquareSequence(@NotNull Production node, Node child)
+    protected void childAlphaNumericSquareSequence(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);

@@ -172,6 +172,9 @@ public class NotationDrive implements DeepClone, NotationFormat {
       case "ALPHANUMERICMOVE":
         notationFormat = EnumNotationFormat.ALPHANUMERIC;
         break;
+      case "SHORTMOVE":
+        notationFormat = EnumNotationFormat.SHORT;
+        break;
       case "ELLIPSES":
         ellipses = true;
         break;
@@ -179,7 +182,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
   }
 
   public void addMoveFromPdn(@NotNull String move) {
-    NotationMove atom = NotationMove.fromPdn(move);
+    NotationMove atom = NotationMove.fromPdn(move, notationFormat);
     moves.add(atom);
   }
 

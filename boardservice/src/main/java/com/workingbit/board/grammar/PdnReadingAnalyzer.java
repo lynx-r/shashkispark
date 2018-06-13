@@ -16,7 +16,6 @@ import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParseException;
 import net.percederberg.grammatica.parser.Production;
 import net.percederberg.grammatica.parser.Token;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A class providing callback methods for the parser.
@@ -33,7 +32,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void enter(@NotNull Node node) throws ParseException {
+    protected void enter(Node node) throws ParseException {
         switch (node.getId()) {
         case PdnReadingConstants.WIN1:
             enterWin1((Token) node);
@@ -67,6 +66,9 @@ abstract class PdnReadingAnalyzer extends Analyzer {
             break;
         case PdnReadingConstants.ALPHANUMERICMOVE:
             enterAlphanumericmove((Token) node);
+            break;
+        case PdnReadingConstants.SHORTMOVE:
+            enterShortmove((Token) node);
             break;
         case PdnReadingConstants.MOVESTRENGTH1:
             enterMovestrength1((Token) node);
@@ -156,7 +158,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected Node exit(@NotNull Node node) throws ParseException {
+    protected Node exit(Node node) throws ParseException {
         switch (node.getId()) {
         case PdnReadingConstants.WIN1:
             return exitWin1((Token) node);
@@ -180,6 +182,8 @@ abstract class PdnReadingAnalyzer extends Analyzer {
             return exitNumericmove((Token) node);
         case PdnReadingConstants.ALPHANUMERICMOVE:
             return exitAlphanumericmove((Token) node);
+        case PdnReadingConstants.SHORTMOVE:
+            return exitShortmove((Token) node);
         case PdnReadingConstants.MOVESTRENGTH1:
             return exitMovestrength1((Token) node);
         case PdnReadingConstants.MOVESTRENGTH2:
@@ -563,6 +567,30 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
+    protected void enterShortmove(Token node) throws ParseException {
+    }
+
+    /**
+     * Called when exiting a parse tree node.
+     *
+     * @param node           the node being exited
+     *
+     * @return the node to add to the parse tree, or
+     *         null if no parse tree should be created
+     *
+     * @throws ParseException if the node analysis discovered errors
+     */
+    protected Node exitShortmove(Token node) throws ParseException {
+        return node;
+    }
+
+    /**
+     * Called when entering a parse tree node.
+     *
+     * @param node           the node being entered
+     *
+     * @throws ParseException if the node analysis discovered errors
+     */
     protected void enterMovestrength1(Token node)
         throws ParseException {
     }
@@ -878,7 +906,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childPdnFile(@NotNull Production node, Node child)
+    protected void childPdnFile(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -919,7 +947,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childGameSeparator(@NotNull Production node, Node child)
+    protected void childGameSeparator(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -957,7 +985,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childGame(@NotNull Production node, Node child)
+    protected void childGame(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -998,7 +1026,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childGameHeader(@NotNull Production node, Node child)
+    protected void childGameHeader(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -1037,7 +1065,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childGameBody(@NotNull Production node, Node child)
+    protected void childGameBody(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -1075,7 +1103,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childPdnTag(@NotNull Production node, Node child)
+    protected void childPdnTag(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -1114,7 +1142,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childGameMove(@NotNull Production node, Node child)
+    protected void childGameMove(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -1155,7 +1183,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childVariation(@NotNull Production node, Node child)
+    protected void childVariation(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -1193,7 +1221,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childMove(@NotNull Production node, Node child)
+    protected void childMove(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -1234,7 +1262,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childGameResult(@NotNull Production node, Node child)
+    protected void childGameResult(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -1272,7 +1300,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childResult1(@NotNull Production node, Node child)
+    protected void childResult1(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -1310,7 +1338,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childResult2(@NotNull Production node, Node child)
+    protected void childResult2(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);
@@ -1351,7 +1379,7 @@ abstract class PdnReadingAnalyzer extends Analyzer {
      *
      * @throws ParseException if the node analysis discovered errors
      */
-    protected void childMoveStrength(@NotNull Production node, Node child)
+    protected void childMoveStrength(Production node, Node child)
         throws ParseException {
 
         node.addChild(child);

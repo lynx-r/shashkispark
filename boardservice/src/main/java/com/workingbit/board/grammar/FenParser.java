@@ -11,10 +11,13 @@
 
 package com.workingbit.board.grammar;
 
-import net.percederberg.grammatica.parser.*;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Reader;
+
+import net.percederberg.grammatica.parser.ParserCreationException;
+import net.percederberg.grammatica.parser.ProductionPattern;
+import net.percederberg.grammatica.parser.ProductionPatternAlternative;
+import net.percederberg.grammatica.parser.RecursiveDescentParser;
+import net.percederberg.grammatica.parser.Tokenizer;
 
 /**
  * A token stream parser.
@@ -94,7 +97,6 @@ class FenParser extends RecursiveDescentParser {
      * @throws ParserCreationException if the tokenizer couldn't be
      *             initialized correctly
      */
-    @NotNull
     protected Tokenizer newTokenizer(Reader in)
         throws ParserCreationException {
 

@@ -205,7 +205,7 @@ public class BoardBoxService {
       return null;
     }
     boardService.updateBoard(board);
-    selectedSquare = getPredictedSelectedSquare(board);
+    selectedSquare = boardService.getPredictedSelectedSquare(board);
     board.setSelectedSquare(selectedSquare);
     boardDao.save(board);
     return move(boardBox, token);
@@ -231,6 +231,8 @@ public class BoardBoxService {
 
     userBoardBox.setBoard(serverBoard);
     userBoardBox.setBoardId(serverBoard.getDomainId());
+    notationHistory.getLast().setNotationFormat(notation.getFormat());
+    notationHistory.getLast().setBoardDimension(notation.getRules().getDimension());
     notationHistoryService.save(notationHistory);
     notationService.syncSubVariants(notationHistory, notation);
 
@@ -519,73 +521,6 @@ public class BoardBoxService {
 
   private void throw404IfNotFound(@NotNull BoardBox boardBox) {
     boardBoxDao.find(boardBox);
-  }
-
-  private Square findSmartOnDiagonal(Square nextSquare, List<Square> diagonals, boolean black, boolean down) {
-    int nextI = diagonals.indexOf(nextSquare);
-    int tries = 0;
-    int i = nextI;
-    while (down ? i >= 0 : i < diagonals.size()) {
-      Square square = diagonals.get(i);
-      if (square.isOccupied() && square.getDraught().isBlack() == black) {
-        // fixme
-        if (!square.getDraught().isQueen() && tries > 1) {
-          if (down) {
-            i--;
-          } else {
-            i++;
-          }
-          continue;
-        }
-        return square;
-      }
-      if (down) {
-        i--;
-      } else {
-        i++;
-      }
-      if (!square.isOccupied()) {
-        tries++;
-      }
-    }
-    return null;
-  }
-
-  private Square getPredictedSelectedSquare(Board board) {
-    Square nextSquare;
-    nextSquare = board.getNextSquare();
-    boolean black = board.isBlackTurn();
-    List<Square> found = new ArrayList<>();
-    for (List<Square> diagonals : nextSquare.getDiagonals()) {
-      Square selected = findSmartOnDiagonal(nextSquare, diagonals, black, false);
-      if (selected != null) {
-        found.add(selected);
-      }
-      selected = findSmartOnDiagonal(nextSquare, diagonals, black, true);
-      if (selected != null) {
-        found.add(selected);
-      }
-    }
-    if (found.size() != 1) {
-      Board serverBoard = board.deepClone();
-      List<Square> allowed = new ArrayList<>();
-      Set<Square> captured = new HashSet<>();
-      for (Square square : found) {
-        serverBoard.setSelectedSquare(square);
-        Map highlight = boardService.getSimpleHighlight(serverBoard, board);
-        MovesList movesList = (MovesList) highlight.get("movesList");
-        List<Square> moveCaptured = movesList.getCaptured().flatTree();
-        if (!movesList.getAllowed().isEmpty() && !captured.containsAll(moveCaptured)) {
-          captured.addAll(moveCaptured);
-          allowed.add(square);
-        }
-      }
-      if (allowed.size() != 1) {
-        throw RequestException.badRequest(ErrorMessages.UNABLE_TO_MOVE);
-      }
-      return allowed.get(0);
-    }
-    return found.get(0);
   }
 
   private void fillNotations(BoardBoxes byUserAndIds, DomainIds domainIds) {

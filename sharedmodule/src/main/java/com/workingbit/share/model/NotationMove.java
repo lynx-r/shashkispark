@@ -10,10 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.workingbit.share.model.enumarable.EnumNotation.CAPTURE;
@@ -50,16 +47,38 @@ public class NotationMove implements DeepClone, NotationFormat {
   private String getNotationAsString() {
     return getMoveNotations()
         .stream()
-        .collect(Collectors.joining(type == SIMPLE ? SIMPLE.getSimple() : CAPTURE.getSimple()));
+        .collect(Collectors.joining(type == SIMPLE ?
+            (EnumNotationFormat.SHORT.equals(notationFormat) ? "" : SIMPLE.getSimple())
+            : CAPTURE.getSimple()));
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public List<String> getMoveNotations() {
-    return move
-        .stream()
-        .map(NotationSimpleMove::getNotation)
-        .collect(Collectors.toList());
+    switch (notationFormat) {
+      case ALPHANUMERIC:
+      case DIGITAL:
+        return move
+            .stream()
+            .map(NotationSimpleMove::getNotation)
+            .collect(Collectors.toList());
+      case SHORT:
+        List<String> list = new ArrayList<>();
+        int size = move.size();
+        for (int i = 0; i < size; i++) {
+          NotationSimpleMove notationSimpleMove = move.get(i);
+          String notation;
+          if (i != size - 1) {
+            notation = notationSimpleMove.getNotation().replaceAll("\\d+", "");
+          } else {
+            notation = notationSimpleMove.getNotation();
+          }
+          list.add(notation);
+        }
+        return list;
+      default:
+        throw new RuntimeException("Формат не распознан");
+    }
   }
 
   @SuppressWarnings("unused")
@@ -91,21 +110,37 @@ public class NotationMove implements DeepClone, NotationFormat {
   }
 
   @NotNull
-  static NotationMove fromPdn(@NotNull String stroke) {
+  static NotationMove fromPdn(@NotNull String stroke, EnumNotationFormat notationFormat) {
     NotationMove notationMove = new NotationMove();
-    checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getPdn(), SIMPLE.getPdn());
-    checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getSimple(), SIMPLE.getSimple());
+    notationMove.setNotationFormat(notationFormat);
+    checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getPdn(), SIMPLE.getPdn(), notationFormat);
+    checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getSimple(), SIMPLE.getSimple(), notationFormat);
     return notationMove;
   }
 
-  private static void checkAndAddMoveForPdn(String stroke, @NotNull NotationMove notationMove, @NotNull String capture, @NotNull String simple) {
+  private static void checkAndAddMoveForPdn(String stroke, @NotNull NotationMove notationMove,
+                                            @NotNull String capture, @NotNull String simple,
+                                            EnumNotationFormat notationFormat) {
     boolean isCapture = stroke.contains(capture);
     if (isCapture) {
       notationMove.setType(CAPTURE);
       notationMove.setMoveKeysForPdn(stroke.split(capture));
     } else {
       notationMove.setType(SIMPLE);
-      notationMove.setMoveKeysForPdn(stroke.split(simple));
+      switch (notationFormat) {
+        case ALPHANUMERIC:
+        case DIGITAL:
+          notationMove.setMoveKeysForPdn(stroke.split(simple));
+          break;
+        case SHORT:
+          String endMove = stroke.substring(stroke.length() - 2);
+          String startMove = stroke.substring(0, stroke.length() - 2);
+          String[] split = startMove.split("");
+          List<String> list = new ArrayList<>(List.of(split));
+          list.add(endMove);
+          notationMove.setMoveKeysForPdn(list.toArray(new String[0]));
+          break;
+      }
     }
   }
 

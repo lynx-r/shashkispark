@@ -13,13 +13,15 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.boardDao;
 import static com.workingbit.board.BoardEmbedded.notationService;
 import static com.workingbit.board.controller.util.BoardUtils.*;
-import static com.workingbit.board.controller.util.HighlightMoveUtil.getHighlightedAssignedMoves;
 import static java.lang.String.format;
 
 /**
@@ -28,8 +30,6 @@ import static java.lang.String.format;
 public class BoardService {
 
   private Logger logger = LoggerFactory.getLogger(BoardService.class);
-  private static final String SERVER_BOARD = "serverBoard";
-  private static final String MOVES_LIST = "movesList";
 
   Board createBoard(@NotNull CreateBoardPayload newBoardRequest) {
     Board board = initBoard(newBoardRequest.isFillBoard(), newBoardRequest.isBlack(),
@@ -125,22 +125,6 @@ public class BoardService {
     }
     MovesList movesList = getHighlightedBoard(serverBoard.isBlackTurn(), serverBoard);
     return Map.of(SERVER_BOARD, serverBoard, MOVES_LIST, movesList);
-  }
-
-  @NotNull
-  Map getSimpleHighlight(@NotNull Board serverBoard, @NotNull Board clientBoard) {
-    BoardUtils.updateMoveSquaresHighlightAndDraught(serverBoard, clientBoard);
-    Square selectedSquare = serverBoard.getSelectedSquare();
-    if (isValidHighlight(selectedSquare)) {
-      throw new BoardServiceException(ErrorMessages.INVALID_HIGHLIGHT);
-    }
-    MovesList movesList = getHighlightedAssignedMoves(serverBoard.getSelectedSquare());
-    return Map.of(SERVER_BOARD, serverBoard, MOVES_LIST, movesList);
-  }
-
-  private boolean isValidHighlight(@Nullable Square selectedSquare) {
-    return selectedSquare == null
-        || !selectedSquare.isOccupied();
   }
 
   public Board move(@NotNull Board serverBoard, @NotNull Board clientBoard, @NotNull NotationHistory notationHistory) {
@@ -259,6 +243,7 @@ public class BoardService {
             notationService.syncVariants(syncNotationHist, notation);
           }
           setNotationHistoryForNotation(notation, lastCurrentDrive, notationHistory);
+          notationHistory.setFormat(notation.getFormat());
         });
   }
 
@@ -376,10 +361,10 @@ public class BoardService {
     batchBoards.add(serverBoard);
     String move = moves.get(0);
     for (int i = 1; i < moves.size(); i++) {
-      Square selected = findSquareByNotation(move, serverBoard);
+      Square selected = findSquareByNotationWithHint(move, moves.subList(i - 1, moves.size()), serverBoard, notationMove.getNotationFormat());
       serverBoard.setSelectedSquare(selected);
       move = moves.get(i);
-      Square next = findSquareByNotation(move, serverBoard);
+      Square next = findSquareByNotationWithHint(move, moves.subList(i, moves.size()), serverBoard, notationMove.getNotationFormat());
       next.setHighlight(true);
       serverBoard.setNextSquare(next);
       Board clientBoard = serverBoard.deepClone();
@@ -450,5 +435,9 @@ public class BoardService {
         .map(Square::getDraught)
         .collect(Collectors.toList())
         .containsAll(captured);
+  }
+
+  public Square getPredictedSelectedSquare(Board board) {
+    return BoardUtils.getPredictedSelectedSquare(board);
   }
 }
