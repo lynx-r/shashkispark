@@ -68,7 +68,7 @@ public class BaseDao<T extends BaseDomain> {
       return;
     }
     if (entity.isReadonly()) {
-      throw new RuntimeException("Unmodifiable entity " + entity);
+      throw new RuntimeException("Unmodifiable entity " + entity.getId());
     }
     entity.setUpdatedAt(LocalDateTime.now());
     dynamoDBMapper.save(entity, saveExpression);
@@ -80,9 +80,9 @@ public class BaseDao<T extends BaseDomain> {
       throw DaoException.notFound();
     }
     if (entity.isReadonly()) {
-      throw new RuntimeException("Unmodifiable entity " + entity);
+      throw new RuntimeException("Unmodifiable entity " + entity.getId());
     }
-    logger.info("Saving entity " + entity);
+    logger.info("Saving entity " + entity.getId());
     entity.setUpdatedAt(LocalDateTime.now());
     dynamoDBMapper.save(entity);
   }
