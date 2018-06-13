@@ -224,30 +224,48 @@ public class BoardUtils {
       case SHORT:
         Square nextOld = board.getNextSquare();
         Square lastSquare = null;
+        List<Square> passed = new ArrayList<>();
         for (int i = moves.size() - 1; i >= 0; i--) {
           String move = moves.get(i);
           if (i == moves.size() - 1) {
             lastSquare = findSquareByNotation(move, board);
           } else {
-            Optional<Square> first = lastSquare.getDiagonals()
+            boolean blackTurn = board.isBlackTurn();
+            List<Square> first = lastSquare.getDiagonals()
                 .stream()
+                .filter(squares -> {
+                  int size = passed.size();
+                  return (size >= 2 && !isSubDiagonal(List.of(passed.get(size - 1), passed.get(size - 2)), squares) || size < 2);
+                })
                 .flatMap(Collection::stream)
                 .filter(square -> {
-                  String n = square.getNotation().replaceAll("\\d+", "");
-                  return n.equals(move);
+                  if (square.isOccupied()) {
+                    if (square.getDraught().isBlack() == blackTurn) {
+                      String n = square.getNotation().replaceAll("\\d+", "");
+                      return n.equals(move);
+                    }
+                  } else {
+                    String n = square.getNotation().replaceAll("\\d+", "");
+                    return n.equals(move);
+                  }
+                  return false;
                 })
-                .findFirst();
-            if (first.isPresent()) {
-              Square sq = first.get();
-              String lastMove = sq.getNotation();
-              for (Square square : board.getAssignedSquares()) {
-                if (square.getNotation().equals(lastMove)) {
-                  lastSquare = square;
-                  break;
-                }
+                .collect(Collectors.toList());
+            Square found;
+            if (first.size() > 1) {
+              found = first.stream().filter(Square::isOccupied).findFirst().orElseThrow();
+            } else {
+              found = first.get(0);
+            }
+            String lastMove = found.getNotation();
+            for (Square square : board.getAssignedSquares()) {
+              if (square.getNotation().equals(lastMove)) {
+                lastSquare = square;
+                break;
               }
             }
           }
+          passed.add(lastSquare);
         }
         board.setNextSquare(nextOld);
         return lastSquare;
@@ -760,14 +778,14 @@ public class BoardUtils {
   private static Map getSimpleHighlight(@NotNull Board serverBoard, @NotNull Board clientBoard) {
     BoardUtils.updateMoveSquaresHighlightAndDraught(serverBoard, clientBoard);
     Square selectedSquare = serverBoard.getSelectedSquare();
-    if (isValidHighlight(selectedSquare)) {
+    if (isInvalidHighlight(selectedSquare)) {
       throw new BoardServiceException(ErrorMessages.INVALID_HIGHLIGHT);
     }
     MovesList movesList = getHighlightedAssignedMoves(serverBoard.getSelectedSquare());
     return Map.of(SERVER_BOARD, serverBoard, MOVES_LIST, movesList);
   }
 
-  public static boolean isValidHighlight(@Nullable Square selectedSquare) {
+  public static boolean isInvalidHighlight(@Nullable Square selectedSquare) {
     return selectedSquare == null
         || !selectedSquare.isOccupied();
   }

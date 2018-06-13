@@ -120,7 +120,7 @@ public class BoardService {
   Map getHighlight(@NotNull Board serverBoard, @NotNull Board clientBoard) {
     BoardUtils.updateMoveSquaresHighlightAndDraught(serverBoard, clientBoard);
     Square selectedSquare = serverBoard.getSelectedSquare();
-    if (isValidHighlight(selectedSquare)) {
+    if (isInvalidHighlight(selectedSquare)) {
       throw new BoardServiceException(ErrorMessages.INVALID_HIGHLIGHT);
     }
     MovesList movesList = getHighlightedBoard(serverBoard.isBlackTurn(), serverBoard);
