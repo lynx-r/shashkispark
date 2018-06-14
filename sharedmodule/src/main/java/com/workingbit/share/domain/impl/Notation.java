@@ -158,11 +158,19 @@ public class Notation extends BaseDomain implements Payload {
   public void setRules(@NotNull EnumRules rules) {
     this.rules = rules;
     notationHistory.setRules(rules);
+    forkedNotations.replaceAll((s, nh) -> {
+      nh.setRules(rules);
+      return nh;
+    });
   }
 
   public void setFormat(EnumNotationFormat format) {
     this.format = format;
     notationHistory.setFormat(format);
+    forkedNotations.replaceAll((s, nh) -> {
+      nh.setFormat(format);
+      return nh;
+    });
   }
 
   private void tagsAsString(@NotNull StringBuilder stringBuilder) {
@@ -209,5 +217,10 @@ public class Notation extends BaseDomain implements Payload {
 
   public void removeForkedNotations(NotationHistory notationHistory) {
     forkedNotations.remove(notationHistory.getId());
+  }
+
+  public void syncFormatAndRules() {
+    setRules(getRules());
+    setFormat(getFormat());
   }
 }

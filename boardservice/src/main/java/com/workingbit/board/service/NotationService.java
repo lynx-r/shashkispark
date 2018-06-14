@@ -150,11 +150,17 @@ public class NotationService {
       List<NotationHistory> byNotationId = notationHistoryDao.findByNotationId(notation.getDomainId());
       byNotationId
           .stream()
-          .peek(notationHistory -> notationHistory.setFormat(notation.getFormat()))
           .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
           .findFirst()
           .ifPresent(notation::setNotationHistory);
+//      byNotationId
+//          .replaceAll(notationHistory -> {
+//            notationHistory.setFormat(notation.getFormat());
+//            notationHistory.setRules(notation.getRules());
+//            return notationHistory;
+//          });
       notation.addForkedNotationHistories(byNotationId);
+      notation.syncFormatAndRules();
     } catch (DaoException e) {
       if (e.getCode() != HTTP_NOT_FOUND) {
         logger.error(e.getMessage(), e);
@@ -179,11 +185,12 @@ public class NotationService {
         }
         byNotationId
             .stream()
-            .peek(notationHistory -> notationHistory.setFormat(notation.getFormat()))
+//            .peek(notationHistory -> notationHistory.setFormat(notation.getFormat()))
             .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
             .findFirst()
             .ifPresent(notation::setNotationHistory);
         notation.addForkedNotationHistories(byNotationId);
+        notation.syncFormatAndRules();
       }
     } catch (DaoException e) {
       if (e.getCode() != HTTP_NOT_FOUND) {

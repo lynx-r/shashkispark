@@ -19,9 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.BoardEmbedded.boardDao;
-import static com.workingbit.board.BoardEmbedded.notationHistoryDao;
-import static com.workingbit.board.BoardEmbedded.notationService;
+import static com.workingbit.board.BoardEmbedded.*;
 import static com.workingbit.board.controller.util.BoardUtils.*;
 import static java.lang.String.format;
 
@@ -93,6 +91,8 @@ public class BoardService {
       if (!genNotation.getNotationHistory().isEqual(genNotation.getNotationHistory())) {
         throw new BoardServiceException(ErrorMessages.UNABLE_TO_PARSE_PDN);
       }
+      genNotation.setBoardBoxId(boardBoxId);
+      notationDao.save(genNotation);
       boardDao.batchSave(batchBoards);
     }
   }
@@ -246,6 +246,7 @@ public class BoardService {
           setNotationHistoryForNotation(notation, lastCurrentDrive, notationHistory);
           notationHistory.setFormat(notation.getFormat());
           notationHistoryDao.save(notationHistory);
+          notation.setNotationHistory(notationHistory);
         });
   }
 
@@ -267,11 +268,8 @@ public class BoardService {
           if (curDrive.getVariantsSize() - 2 >= variants.size()) {
             variants.get(curDrive.getVariantsSize() - 2).setPrevious(true);
           }
-
-          variants.getLast().setCurrent(true);
-        } else {
-          variants.getFirst().setCurrent(true);
         }
+        variants.getFirst().setCurrent(true);
       }
     }
     return lastCurrentDrive;
@@ -319,13 +317,14 @@ public class BoardService {
           NotationHistory vHistory = recursiveNotationHistory.deepClone();
           Utils.setRandomIdAndCreatedAt(vHistory);
           vDrive.setIdInVariants(idInVariants);
+          vDrive.setNotationHistoryId(vHistory.getDomainId());
           NotationDrive popVDrive = vHistory.getLast();
           vDrive.setMoves(popVDrive.getMoves());
           vHistory.setCurrentIndex(recursiveNotationHistory.size() - 1);
           vHistory.setVariantIndex(idInVariants);
           idInVariants++;
           vHistory.setNotationId(notationId);
-          vHistory.setRules(board.getRules());
+//          vHistory.setRules(board.getRules());
           if (vDrive.getVariants().size() > 1) {
             NotationHistory subRecursiveNotationHistory = NotationHistory.createWithRoot();
             subRecursiveNotationHistory.setNotationLine(new NotationLine(0, 0));
@@ -344,6 +343,10 @@ public class BoardService {
             NotationDrives subNotation = subRecursiveNotationHistory.getNotation();
             subNotation.removeFirst();
             vHistory.addAll(subNotation);
+          } else {
+            NotationDrive first = vDrive.getVariants().getFirst();
+            first.setNotationHistoryId(vHistory.getDomainId());
+            first.setMoves(vDrive.getMoves());
           }
           notation.addForkedNotationHistory(vHistory);
           recursiveNotationHistory.getLast().addVariant(vDrive);

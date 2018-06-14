@@ -36,6 +36,7 @@ public class JsonUtils {
     mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
     mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
     mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
     SimpleModule module = new SimpleModule();
     module.addDeserializer(EnumRules.class, new EnumRulesDeserializer());

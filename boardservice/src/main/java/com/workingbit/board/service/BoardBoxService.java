@@ -79,10 +79,7 @@ public class BoardBoxService {
     Utils.setRandomIdAndCreatedAt(parsedNotation);
     boardService.fillNotation(boardBox.getDomainId(), parsedNotation.getNotationFen(), parsedNotation.getDomainId(),
         parsedNotation, parsedNotation.getRules());
-    parsedNotation.setBoardBoxId(boardBox.getDomainId());
-    notationService.save(parsedNotation, false);
     NotationHistory filledNotationHistory = parsedNotation.getNotationHistory();
-
     // switch boardBox to the first board
     return filledNotationHistory.getLastNotationBoardId()
         .map(firstBoardId -> {
@@ -329,6 +326,7 @@ public class BoardBoxService {
     boardBox.setBoard(loadBoard);
     boardBoxDao.save(boardBox);
     Notation notation = boardBox.getNotation();
+    notation.syncFormatAndRules();
     notationHistoryService.save(notation.getNotationHistory());
     notationStoreService.removeNotation(notation);
     boardBoxStoreService.remove(boardBox);
