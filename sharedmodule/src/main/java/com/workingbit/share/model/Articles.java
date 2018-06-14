@@ -37,6 +37,9 @@ public class Articles implements Payload {
 
   public void replace(Article article) {
     int i = articles.indexOf(article);
+    if (i == -1) {
+      return;
+    }
     articles.remove(i);
     articles.add(i, article);
   }

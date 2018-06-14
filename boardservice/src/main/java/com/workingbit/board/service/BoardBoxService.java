@@ -559,11 +559,11 @@ public class BoardBoxService {
 
     List<Board> boards = boardDao.findByBoardBoxIds(domainIds);
     for (Board board : boards) {
+      board = boardService.resetHighlightAndUpdate(board);
       BoardBox boardBox = boardBoxByDomainId.get(board.getBoardBoxId());
       board.setReadonly(boardBox.isReadonly());
       boardBox.getPublicBoards().add(board);
       if (boardBox.getBoardId().getId().equals(board.getId())) {
-        board = boardService.resetHighlightAndUpdate(board);
         boardBox.setBoard(board);
       }
     }
