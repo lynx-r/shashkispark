@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.boardDao;
+import static com.workingbit.board.BoardEmbedded.notationHistoryDao;
 import static com.workingbit.board.BoardEmbedded.notationService;
 import static com.workingbit.board.controller.util.BoardUtils.*;
 import static java.lang.String.format;
@@ -244,6 +245,7 @@ public class BoardService {
           }
           setNotationHistoryForNotation(notation, lastCurrentDrive, notationHistory);
           notationHistory.setFormat(notation.getFormat());
+          notationHistoryDao.save(notationHistory);
         });
   }
 

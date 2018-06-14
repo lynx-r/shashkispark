@@ -222,56 +222,60 @@ public class BoardUtils {
       case DIGITAL:
         return findSquareByNotation(notation, board);
       case SHORT:
-        Square nextOld = board.getNextSquare();
-        Square lastSquare = null;
-        List<Square> passed = new ArrayList<>();
-        for (int i = moves.size() - 1; i >= 0; i--) {
-          String move = moves.get(i);
-          if (i == moves.size() - 1) {
-            lastSquare = findSquareByNotation(move, board);
-          } else {
-            boolean blackTurn = board.isBlackTurn();
-            List<Square> first = lastSquare.getDiagonals()
-                .stream()
-                .filter(squares -> {
-                  int size = passed.size();
-                  return (size >= 2 && !isSubDiagonal(List.of(passed.get(size - 1), passed.get(size - 2)), squares) || size < 2);
-                })
-                .flatMap(Collection::stream)
-                .filter(square -> {
-                  if (square.isOccupied()) {
-                    if (square.getDraught().isBlack() == blackTurn) {
-                      String n = square.getNotation().replaceAll("\\d+", "");
-                      return n.equals(move);
-                    }
-                  } else {
-                    String n = square.getNotation().replaceAll("\\d+", "");
-                    return n.equals(move);
-                  }
-                  return false;
-                })
-                .collect(Collectors.toList());
-            Square found;
-            if (first.size() > 1) {
-              found = first.stream().filter(Square::isOccupied).findFirst().orElseThrow();
-            } else {
-              found = first.get(0);
-            }
-            String lastMove = found.getNotation();
-            for (Square square : board.getAssignedSquares()) {
-              if (square.getNotation().equals(lastMove)) {
-                lastSquare = square;
-                break;
-              }
-            }
-          }
-          passed.add(lastSquare);
-        }
-        board.setNextSquare(nextOld);
-        return lastSquare;
+        return findSquareByShortNotation(moves, board);
       default:
         throw new BoardServiceException("Square not found " + notation);
     }
+  }
+
+  private static Square findSquareByShortNotation(List<String> moves, Board board) {
+    Square nextOld = board.getNextSquare();
+    Square lastSquare = null;
+    List<Square> passed = new ArrayList<>();
+    for (int i = moves.size() - 1; i >= 0; i--) {
+      String move = moves.get(i);
+      if (i == moves.size() - 1) {
+        lastSquare = findSquareByNotation(move, board);
+      } else {
+        boolean blackTurn = board.isBlackTurn();
+        List<Square> first = lastSquare.getDiagonals()
+            .stream()
+            .filter(squares -> {
+              int size = passed.size();
+              return (size >= 2 && !isSubDiagonal(List.of(passed.get(size - 1), passed.get(size - 2)), squares) || size < 2);
+            })
+            .flatMap(Collection::stream)
+            .filter(square -> {
+              if (square.isOccupied()) {
+                if (square.getDraught().isBlack() == blackTurn) {
+                  String n = square.getNotation().replaceAll("\\d+", "");
+                  return n.equals(move);
+                }
+              } else {
+                String n = square.getNotation().replaceAll("\\d+", "");
+                return n.equals(move);
+              }
+              return false;
+            })
+            .collect(Collectors.toList());
+        Square found;
+        if (first.size() > 1) {
+          found = first.stream().filter(Square::isOccupied).findFirst().orElseThrow();
+        } else {
+          found = first.get(0);
+        }
+        String lastMove = found.getNotation();
+        for (Square square : board.getAssignedSquares()) {
+          if (square.getNotation().equals(lastMove)) {
+            lastSquare = square;
+            break;
+          }
+        }
+      }
+      passed.add(lastSquare);
+    }
+    board.setNextSquare(nextOld);
+    return lastSquare;
   }
 
   public static void addDraught(@NotNull Board board, String notation, @Nullable Draught draught) throws BoardServiceException {
