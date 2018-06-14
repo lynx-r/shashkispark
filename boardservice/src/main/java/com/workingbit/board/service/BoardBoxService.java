@@ -16,7 +16,9 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -321,10 +323,17 @@ public class BoardBoxService {
   }
 
   @NotNull
-  public Optional<BoardBox> loadPreviewBoard(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
-    notationService.save(boardBox.getNotation(), true);
-    updateBoardBox(boardBox, authUser);
-    return Optional.of(boardBox);
+  public BoardBox loadPreviewBoard(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
+    Board loadBoard = boardDao.findById(boardBox.getBoardId());
+    loadBoard = boardService.resetHighlightAndUpdate(loadBoard);
+    boardBox.setBoard(loadBoard);
+    boardBoxDao.save(boardBox);
+    Notation notation = boardBox.getNotation();
+    notationHistoryService.save(notation.getNotationHistory());
+    notationStoreService.removeNotation(notation);
+    boardBoxStoreService.remove(boardBox);
+    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
+    return boardBox;
   }
 
   @NotNull
@@ -550,11 +559,11 @@ public class BoardBoxService {
 
     List<Board> boards = boardDao.findByBoardBoxIds(domainIds);
     for (Board board : boards) {
-      board = boardService.resetHighlightAndUpdate(board);
       BoardBox boardBox = boardBoxByDomainId.get(board.getBoardBoxId());
       board.setReadonly(boardBox.isReadonly());
       boardBox.getPublicBoards().add(board);
       if (boardBox.getBoardId().getId().equals(board.getId())) {
+        board = boardService.resetHighlightAndUpdate(board);
         boardBox.setBoard(board);
       }
     }

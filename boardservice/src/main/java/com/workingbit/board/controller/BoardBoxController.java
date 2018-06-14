@@ -2,7 +2,6 @@ package com.workingbit.board.controller;
 
 import com.workingbit.board.config.Authority;
 import com.workingbit.orchestrate.function.ModelHandlerFunc;
-import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.domain.impl.BoardBox;
 import com.workingbit.share.exception.RequestException;
@@ -15,7 +14,6 @@ import spark.Route;
 
 import static com.workingbit.board.BoardEmbedded.boardBoxService;
 import static com.workingbit.share.util.SparkUtils.getQueryValue;
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 
 /**
@@ -73,10 +71,7 @@ public class BoardBoxController {
   @NotNull
   public static Route loadPreviewBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token, param) ->
-          boardBoxService
-              .loadPreviewBoard(data, token)
-              .map(Answer::ok)
-              .orElse(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.UNABLE_TO_LOAD_BOARD))
+          Answer.created(boardBoxService.loadPreviewBoard(data, token))
       ).handleRequest(req, res,
           Authority.BOARD_LOAD_PREVIEW,
           BoardBox.class);
