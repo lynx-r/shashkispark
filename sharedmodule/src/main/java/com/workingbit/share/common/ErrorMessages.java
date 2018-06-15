@@ -49,4 +49,5 @@ public class ErrorMessages {
   public static final String UNABLE_TO_SAVE_ENTITY = "Не удалось сохранить объект";
   public static final String EXPECTED_ONE_RESULT = "Ожидается один результат, получено много";
   public static final String UNABLE_TO_CHANGE_USERNAME = "Не удалось изменить имя пользователя";
+  public static final String UNABLE_TO_MOVE_WHEN_POINTER_NOT_LAST = "Ходить можно только когда указатель * на последнем ходе";
 }

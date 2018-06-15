@@ -212,24 +212,28 @@ public class BoardBoxService {
 
   @Nullable
   public BoardBox move(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
-    var userBoardBox = findAndFill(boardBox, authUser);
-    if (isNotEditMode(userBoardBox)) {
+    var serverBoardBox = findAndFill(boardBox, authUser);
+    Board clientBoard = boardBox.getBoard();
+    if (resetHighlightIfNotLastBoard(serverBoardBox)) {
+      throw RequestException.badRequest(ErrorMessages.UNABLE_TO_MOVE_WHEN_POINTER_NOT_LAST);
+    }
+
+    if (isNotEditMode(serverBoardBox)) {
       return null;
     }
 
-    Board serverBoard = userBoardBox.getBoard();
-    Notation notation = userBoardBox.getNotation();
+    Board serverBoard = serverBoardBox.getBoard();
+    Notation notation = serverBoardBox.getNotation();
     NotationHistory notationHistory = notation.getNotationHistory();
     try {
-      Board clientBoard = boardBox.getBoard();
       serverBoard = boardService.move(serverBoard, clientBoard, notationHistory);
     } catch (BoardServiceException e) {
       logger.error("Error while moving", e);
       throw RequestException.badRequest(e.getMessage());
     }
 
-    userBoardBox.setBoard(serverBoard);
-    userBoardBox.setBoardId(serverBoard.getDomainId());
+    serverBoardBox.setBoard(serverBoard);
+    serverBoardBox.setBoardId(serverBoard.getDomainId());
     notationHistory.getLast().setNotationFormat(notation.getFormat());
     notationHistory.getLast().setBoardDimension(notation.getRules().getDimension());
     notationHistoryService.save(notationHistory);
@@ -237,9 +241,9 @@ public class BoardBoxService {
 
     logger.info(format("Notation after move: %s", notation.getNotationHistory().debugPdnString()));
 
-    boardBoxDao.save(userBoardBox);
-    boardBoxStoreService.put(authUser.getUserSession(), userBoardBox);
-    return userBoardBox;
+    boardBoxDao.save(serverBoardBox);
+    boardBoxStoreService.put(authUser.getUserSession(), serverBoardBox);
+    return serverBoardBox;
   }
 
   @NotNull
