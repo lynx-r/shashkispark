@@ -105,6 +105,10 @@ public class ArticleService {
       String content = articleClient.getContent().trim();
       article.setContent(content);
     }
+    if (StringUtils.isNotBlank(articleClient.getIntro())) {
+      String intro = articleClient.getIntro().trim();
+      article.setIntro(intro);
+    }
     article.setArticleStatus(articleClient.getArticleStatus());
     article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
     articleDao.save(article);

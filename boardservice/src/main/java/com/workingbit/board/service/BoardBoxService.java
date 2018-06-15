@@ -129,7 +129,7 @@ public class BoardBoxService {
         });
   }
 
-  public BoardBoxes findByArticleId(@NotNull DomainId articleId, @NotNull AuthUser authUser, @NotNull String queryValue) {
+  public BoardBoxes findByArticleId(@NotNull DomainId articleId, @NotNull String queryValue, @NotNull AuthUser authUser) {
     if (queryValue.equals(PUBLIC_QUERY)) {
       return findPublicByArticleId(articleId, authUser);
     }

@@ -321,7 +321,7 @@ public class ArticleControllerTest {
   @NotNull
   private CreateArticlePayload getCreateArticlePayload() {
     CreateArticlePayload createArticlePayload = CreateArticlePayload.createArticlePayload();
-    Article article = new Article(Utils.getRandomString20(), Utils.getRandomString20(), Utils.getRandomString20());
+    Article article = new Article(Utils.getRandomString20(), Utils.getRandomString20(),  Utils.getRandomString20(), Utils.getRandomString20());
     Utils.setArticleUrlAndIdAndCreatedAt(article, false);
     createArticlePayload.setArticle(article);
     CreateBoardPayload createBoardPayload = new CreateBoardPayload();
