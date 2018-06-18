@@ -3,6 +3,7 @@ package com.workingbit.article.service;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.domain.impl.Subscriber;
 import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
@@ -216,6 +217,11 @@ public class ArticleService {
     }
     articleStoreService.putAllArticles(published);
     return published;
+  }
+
+  public Subscribed subscribe(Subscriber subscriber) {
+    // todo move in another place
+    return subscriberService.subscribe(subscriber);
   }
 
   @NotNull

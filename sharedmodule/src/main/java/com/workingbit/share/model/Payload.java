@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.BoardBox;
+import com.workingbit.share.domain.impl.Subscriber;
 
 /**
  * Created by Aleksey Popryaduhin on 16:13 01/10/2017.
@@ -32,7 +33,10 @@ import com.workingbit.share.domain.impl.BoardBox;
     @JsonSubTypes.Type(value = AuthUser.class, name = "AuthUser"),
     @JsonSubTypes.Type(value = UserInfo.class, name = "UserInfo"),
     @JsonSubTypes.Type(value = ParamPayload.class, name = "Params"),
-    @JsonSubTypes.Type(value = EmptyBody.class, name = "EmptyBody")
+    @JsonSubTypes.Type(value = EmptyBody.class, name = "EmptyBody"),
+
+    @JsonSubTypes.Type(value = Subscriber.class, name = "Subscriber"),
+    @JsonSubTypes.Type(value = Subscribed.class, name = "Subscribed")
 })
 public interface Payload {
 }

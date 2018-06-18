@@ -1,4 +1,4 @@
 
-rm -f /tmp/ShashkiOnline.pwd
+rm -f /tmp/ShashkiUsers.pwd 
 
 sls dynamodb start $1

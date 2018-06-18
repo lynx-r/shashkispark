@@ -7,6 +7,7 @@ import com.workingbit.orchestrate.function.QueryParamsHandlerFunc;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.common.RequestConstants;
 import com.workingbit.share.domain.impl.Article;
+import com.workingbit.share.domain.impl.Subscriber;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import org.jetbrains.annotations.NotNull;
@@ -85,4 +86,12 @@ public class ArticleController {
       }).handleRequest(req, res,
           Authority.ARTICLE_IMPORT_PDN_PROTECTED,
           ImportPdnPayload.class);
+
+  @NotNull
+  public static Route subscribe = (req, res) ->
+      ((ModelHandlerFunc<Subscriber>) (params, token, param) ->
+          Answer.ok(articleService.subscribe(params))
+      ).handleRequest(req, res,
+          Authority.ARTICLES,
+          Subscriber.class);
 }

@@ -4,8 +4,11 @@ import com.workingbit.article.config.AppProperties;
 import com.workingbit.article.config.Authority;
 import com.workingbit.article.controller.ArticleController;
 import com.workingbit.article.dao.ArticleDao;
+import com.workingbit.article.dao.SubscriberDao;
 import com.workingbit.article.service.ArticleService;
 import com.workingbit.article.service.ArticleStoreService;
+import com.workingbit.article.service.EmailService;
+import com.workingbit.article.service.SubscriberService;
 import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.ExceptionHandler;
@@ -30,8 +33,11 @@ public class ArticleEmbedded {
 
   // Declare dependencies
   public static ArticleDao articleDao;
+  public static SubscriberDao subscriberDao;
   public static AppProperties appProperties;
   public static ArticleService articleService;
+  public static SubscriberService subscriberService;
+  public static EmailService emailService;
   public static ArticleStoreService articleStoreService;
 
   static {
@@ -40,7 +46,10 @@ public class ArticleEmbedded {
     appProperties = configurationProvider("application.yaml").bind("app", AppProperties.class);
 
     articleDao = new ArticleDao(appProperties);
+    subscriberDao = new SubscriberDao(appProperties);
     articleService = new ArticleService();
+    subscriberService = new SubscriberService();
+    emailService = new EmailService();
     articleStoreService = new ArticleStoreService();
   }
 
@@ -76,6 +85,7 @@ public class ArticleEmbedded {
           post(Authority.ARTICLE_PROTECTED.getPath(), ArticleController.createArticleAndBoard);
           put(Authority.ARTICLE_PROTECTED.getPath(), ArticleController.saveArticle);
           post(Authority.ARTICLE_IMPORT_PDN_PROTECTED.getPath(), ArticleController.importPdn);
+          post(Authority.SUBSCRIBE.getPath(), ArticleController.subscribe);
           post(Authority.ARTICLE_REMOVE_PROTECTED.getPath(), ArticleController.removeArticleById);
 
           exception(RequestException.class, ExceptionHandler.handle);

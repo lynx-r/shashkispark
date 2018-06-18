@@ -17,6 +17,7 @@ public enum Authority implements IAuthority {
   ARTICLE_BY_HRU("/article/:hru", Constants.INSECURE_ROLES),
   ARTICLE_BY_HRU_CACHED("/article-cache/:hru/:bbid", Constants.INSECURE_ROLES),
   ARTICLE_CACHE("/article-cache", Constants.INSECURE_ROLES),
+  SUBSCRIBE("/subscribe", Constants.INSECURE_ROLES),
 
   // must be protected
   ARTICLE_PROTECTED("/article", Constants.SECURE_ROLES),
