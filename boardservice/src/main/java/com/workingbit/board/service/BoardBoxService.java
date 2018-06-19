@@ -212,28 +212,29 @@ public class BoardBoxService {
 
   @Nullable
   public BoardBox move(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
-    var serverBoardBox = findAndFill(boardBox, authUser);
+//    var serverBoardBox = findAndFill(boardBox, authUser);
     Board clientBoard = boardBox.getBoard();
-    if (resetHighlightIfNotLastBoard(serverBoardBox)) {
+    boardService.updateAssigned(clientBoard);
+    if (resetHighlightIfNotLastBoard(boardBox)) {
       throw RequestException.badRequest(ErrorMessages.UNABLE_TO_MOVE_WHEN_POINTER_NOT_LAST);
     }
 
-    if (isNotEditMode(serverBoardBox)) {
+    if (isNotEditMode(boardBox)) {
       return null;
     }
 
-    Board serverBoard = serverBoardBox.getBoard();
-    Notation notation = serverBoardBox.getNotation();
+//    Board serverBoard = boardBox.getBoard();
+    Notation notation = boardBox.getNotation();
     NotationHistory notationHistory = notation.getNotationHistory();
     try {
-      serverBoard = boardService.move(serverBoard, clientBoard, notationHistory);
+      clientBoard = boardService.move(clientBoard, notationHistory);
     } catch (BoardServiceException e) {
       logger.error("Error while moving", e);
       throw RequestException.badRequest(e.getMessage());
     }
 
-    serverBoardBox.setBoard(serverBoard);
-    serverBoardBox.setBoardId(serverBoard.getDomainId());
+    boardBox.setBoard(clientBoard);
+    boardBox.setBoardId(clientBoard.getDomainId());
     notationHistory.getLast().setNotationFormat(notation.getFormat());
     notationHistory.getLast().setBoardDimension(notation.getRules().getDimension());
     notationHistoryService.save(notationHistory);
@@ -241,9 +242,9 @@ public class BoardBoxService {
 
     logger.info(format("Notation after move: %s", notation.getNotationHistory().debugPdnString()));
 
-    boardBoxDao.save(serverBoardBox);
-    boardBoxStoreService.put(authUser.getUserSession(), serverBoardBox);
-    return serverBoardBox;
+    boardBoxDao.save(boardBox);
+    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
+    return boardBox;
   }
 
   @NotNull

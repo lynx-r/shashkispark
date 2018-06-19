@@ -13,10 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
@@ -128,45 +125,37 @@ public class BoardService {
     return Map.of(SERVER_BOARD, serverBoard, MOVES_LIST, movesList);
   }
 
-  public Board move(@NotNull Board serverBoard, @NotNull Board clientBoard, @NotNull NotationHistory notationHistory) {
-    return move(serverBoard, clientBoard, notationHistory, true);
+  public Board move(@NotNull Board clientBoard, @NotNull NotationHistory notationHistory) {
+    return move(clientBoard, notationHistory, true);
   }
 
-  /**
-   * @param serverBoard map of {boardId: String, selectedSquare: Square, targetSquare: Square, allowed: List<Square>, captured: List<Square>}  @return Move info:
-   *                    {v, h, targetSquare, queen} v - distance for moving vertical (minus up),
-   *                    h - distance for move horizontal (minus left), targetSquare is a new square with
-   * @param clientBoard
-   */
-  public Board move(@NotNull Board serverBoard, @NotNull Board clientBoard, @NotNull NotationHistory notationHistory, boolean save) {
-    Map highlight = getHighlight(serverBoard, clientBoard);
-    serverBoard = (Board) highlight.get(SERVER_BOARD);
-    MovesList movesList = (MovesList) highlight.get(MOVES_LIST);
+  public Board move(@NotNull Board clientBoard, @NotNull NotationHistory notationHistory, boolean save) {
+    MovesList movesList = getHighlightedBoard(clientBoard.isBlackTurn(), clientBoard);
     Set<Square> allowed = movesList.getAllowed();
     TreeSquare captured = movesList.getCaptured();
     if (allowed.isEmpty()) {
       throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
     }
-    Square nextSquare = serverBoard.getNextSquare();
+    Square nextSquare = clientBoard.getNextSquare();
     for (Square allow : allowed) {
       if (allow.equals(nextSquare)) {
         nextSquare.setHighlight(allow.isHighlight());
         break;
       }
     }
-    serverBoard.getSelectedSquare().getDraught().setHighlight(false);
+    clientBoard.getSelectedSquare().getDraught().setHighlight(false);
     Map<String, List<Square>> capturedMapped = captured.flatTree()
         .stream()
         .collect(Collectors.groupingBy(ICoordinates::getNotation));
-    updateBoardDraughts(capturedMapped, serverBoard.getWhiteDraughts(), serverBoard.getRules().getDimension());
-    updateBoardDraughts(capturedMapped, serverBoard.getBlackDraughts(), serverBoard.getRules().getDimension());
+    updateBoardDraughts(capturedMapped, clientBoard.getWhiteDraughts(), clientBoard.getRules().getDimension());
+    updateBoardDraughts(capturedMapped, clientBoard.getBlackDraughts(), clientBoard.getRules().getDimension());
     if (save) {
-      boardDao.save(serverBoard);
+//      boardDao.save(serverBoard);
     }
 
-    Board nextBoard = serverBoard.deepClone();
-    Utils.setRandomIdAndCreatedAt(nextBoard);
-    DomainId previousBoardId = serverBoard.getDomainId();
+    Board nextBoard = clientBoard.deepClone();
+//    Utils.setRandomIdAndCreatedAt(nextBoard);
+    DomainId previousBoardId = clientBoard.getDomainId();
     boolean prevBlackTurn = nextBoard.isBlackTurn();
     // MOVE DRAUGHT
     nextBoard = moveDraught(nextBoard, captured, previousBoardId, notationHistory);
@@ -174,7 +163,7 @@ public class BoardService {
     if (prevBlackTurn != nextBoard.isBlackTurn()) {
       nextBoard.setSelectedSquare(null);
     }
-    if (save) {
+    if (!nextBoard.getId().equals(clientBoard.getId()) && save) {
       boardDao.save(nextBoard);
     }
     return nextBoard;
@@ -373,7 +362,7 @@ public class BoardService {
       next.setHighlight(true);
       serverBoard.setNextSquare(next);
       Board clientBoard = serverBoard.deepClone();
-      serverBoard = move(serverBoard, clientBoard, notationHistory, false);
+      serverBoard = move(clientBoard, notationHistory, false);
       batchBoards.add(serverBoard);
       move = moves.get(i);
     }
@@ -394,7 +383,7 @@ public class BoardService {
       updateNotationMiddle(newBoard, prevBoardId, notationHistory);
       return newBoard;
     }
-    updateNotationEnd(board, prevBoardId, notationHistory, previousCaptured);
+    updateNotationEnd(board, notationHistory, previousCaptured);
     resetBoardHighlight(board);
     resetCaptured(board);
     return board;
@@ -442,7 +431,17 @@ public class BoardService {
         .containsAll(captured);
   }
 
-  public Square getPredictedSelectedSquare(Board board) {
+  Square getPredictedSelectedSquare(Board board) {
     return BoardUtils.getPredictedSelectedSquare(board);
+  }
+
+  void updateAssigned(Board board) {
+    List<Square> prevSquares = board.getSquares();
+    List<Square> prevAssignedSquares = prevSquares
+        .stream()
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    board.setAssignedSquares(prevAssignedSquares);
+    boardService.updateBoard(board);
   }
 }

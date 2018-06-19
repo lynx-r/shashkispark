@@ -107,13 +107,12 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
           .getMoves();
       if (!moves.isEmpty()) {
         return Optional.of(moves.getFirst()
-            .getMove().getFirst()
             .getBoardId());
       }
       return Optional.empty();
     }
     NotationMoves moves = notationLast.getMoves();
-    return moves.getLast().getLastMoveBoardId();
+    return Optional.of(moves.getLast().getLastMoveBoardId());
   }
 
   @JsonIgnore
@@ -132,14 +131,15 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
 //          .map(NotationSimpleMove::getBoardId)
 //          .findFirst();
 //    }
-    return getCurrentVariantStream(currentIndex)
+    return Optional.ofNullable(getCurrentVariantStream(currentIndex)
         .map(NotationDrive::getVariants)
         .map(LinkedList::getLast)
         .map(NotationDrive::getMoves)
-        .map(NotationMoves::getLastMove)
+        .map(NotationMoves::getLast)
         .filter(Objects::nonNull)
-        .map(NotationSimpleMove::getBoardId)
-        .findFirst();
+        .findFirst()
+        .orElse(null)
+        .getBoardId());
   }
 
   @JsonIgnore

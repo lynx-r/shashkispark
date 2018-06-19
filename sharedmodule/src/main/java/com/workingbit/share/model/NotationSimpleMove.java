@@ -20,7 +20,6 @@ import static com.workingbit.share.util.Utils.*;
 @Setter
 public class NotationSimpleMove implements DeepClone {
   private String notation;
-  private DomainId boardId;
   private boolean cursor;
   @DynamoDBIgnore
   private EnumNotationFormat format;
@@ -37,17 +36,9 @@ public class NotationSimpleMove implements DeepClone {
     visible = true;
   }
 
-  public NotationSimpleMove(String notation, DomainId boardId) {
+  public NotationSimpleMove(String notation) {
     this();
     this.notation = notation;
-    this.boardId = boardId;
-  }
-
-  public NotationSimpleMove(String notation, DomainId boardId, boolean curosr) {
-    this(notation, boardId);
-    this.notation = notation;
-    this.boardId = boardId;
-    this.cursor = curosr;
   }
 
   @Override

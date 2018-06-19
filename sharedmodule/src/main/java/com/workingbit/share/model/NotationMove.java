@@ -33,6 +33,8 @@ public class NotationMove implements DeepClone, NotationFormat {
   @NotNull
   private LinkedList<NotationSimpleMove> move = new LinkedList<>();
 
+  private DomainId boardId;
+
   /**
    * Num of squares on a side
    */
@@ -179,23 +181,24 @@ public class NotationMove implements DeepClone, NotationFormat {
   private void setMoveKeysForPdn(String[] moveKeys) {
     move = new LinkedList<>();
     for (String moveKey : moveKeys) {
-      move.add(new NotationSimpleMove(moveKey, null));
+      move.add(new NotationSimpleMove(moveKey));
     }
   }
 
   @JsonIgnore
   @DynamoDBIgnore
-  Optional<DomainId> getLastMoveBoardId() {
-    return Optional.ofNullable(move.getLast().getBoardId());
+  DomainId getLastMoveBoardId() {
+    return boardId;
   }
 
-  public void addMove(String previousNotation, DomainId prevBoardId, String currentNotation, DomainId currentBoardId) {
+  public void addMove(String previousNotation, String currentNotation, DomainId currentBoardId) {
     move = new LinkedList<>(
         List.of(
-            new NotationSimpleMove(previousNotation, prevBoardId),
-            new NotationSimpleMove(currentNotation, currentBoardId)
+            new NotationSimpleMove(previousNotation),
+            new NotationSimpleMove(currentNotation)
         )
     );
+    this.boardId = currentBoardId;
   }
 
   void resetCursor() {

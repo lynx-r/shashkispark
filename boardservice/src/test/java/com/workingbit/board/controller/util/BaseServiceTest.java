@@ -200,7 +200,7 @@ public class BaseServiceTest {
     serverBoard.setBlackTurn(blackTurn);
 
     Board clientBoard = serverBoard.deepClone();
-    serverBoard = boardService.move(serverBoard, clientBoard, notationHistory);
+    serverBoard = boardService.move(clientBoard, notationHistory);
 
     from = BoardUtils.findSquareByNotation(fromNotation, serverBoard);
     to = BoardUtils.findSquareByNotation(toNotation, serverBoard);

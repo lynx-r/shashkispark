@@ -76,9 +76,7 @@ public class NotationService {
                         .stream()
                         .map(NotationDrive::getMoves)
                         .flatMap(Collection::stream)
-                        .map(NotationMove::getMove)
-                        .flatMap(Collection::stream)
-                        .map(NotationSimpleMove::getBoardId)
+                        .map(NotationMove::getBoardId)
                         .distinct()
                         .collect(collectingAndThen(toCollection(LinkedList::new), DomainIds::new));
                     boardIdsToRemove.removeFirst();
@@ -153,12 +151,6 @@ public class NotationService {
           .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
           .findFirst()
           .ifPresent(notation::setNotationHistory);
-//      byNotationId
-//          .replaceAll(notationHistory -> {
-//            notationHistory.setFormat(notation.getFormat());
-//            notationHistory.setRules(notation.getRules());
-//            return notationHistory;
-//          });
       notation.addForkedNotationHistories(byNotationId);
       notation.syncFormatAndRules();
     } catch (DaoException e) {
@@ -185,7 +177,6 @@ public class NotationService {
         }
         byNotationId
             .stream()
-//            .peek(notationHistory -> notationHistory.setFormat(notation.getFormat()))
             .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
             .findFirst()
             .ifPresent(notation::setNotationHistory);
