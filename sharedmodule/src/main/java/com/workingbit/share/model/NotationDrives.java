@@ -112,7 +112,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
       return Optional.empty();
     }
     NotationMoves moves = notationLast.getMoves();
-    return Optional.of(moves.getLast().getLastMoveBoardId());
+    return Optional.of(moves.getLast().getBoardId());
   }
 
   @JsonIgnore

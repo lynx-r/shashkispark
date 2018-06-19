@@ -351,8 +351,7 @@ public class BoardService {
     }
     serverBoard = serverBoard.deepClone();
     List<String> moves = notationMove.getMoveNotations();
-    Utils.setRandomIdAndCreatedAt(serverBoard);
-    batchBoards.add(serverBoard);
+//    Utils.setRandomIdAndCreatedAt(serverBoard);
     String move = moves.get(0);
     for (int i = 1; i < moves.size(); i++) {
       Square selected = findSquareByNotationWithHint(move, moves.subList(i - 1, moves.size()), serverBoard, notationMove.getNotationFormat());
@@ -363,9 +362,9 @@ public class BoardService {
       serverBoard.setNextSquare(next);
       Board clientBoard = serverBoard.deepClone();
       serverBoard = move(clientBoard, notationHistory, false);
-      batchBoards.add(serverBoard);
       move = moves.get(i);
     }
+    batchBoards.add(serverBoard);
     return serverBoard;
   }
 
