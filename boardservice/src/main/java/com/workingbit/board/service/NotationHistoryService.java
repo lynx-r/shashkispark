@@ -196,6 +196,7 @@ public class NotationHistoryService {
     try {
       var notationHistories = notationHistoryDao.findByNotationId(notationId);
       notationHistoryDao.batchDelete(notationHistories);
+      notationHistories.forEach(notationStoreService::removeNotationHistory);
     } catch (DaoException ignore) {
     }
   }

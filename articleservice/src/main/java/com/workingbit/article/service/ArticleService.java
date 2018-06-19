@@ -110,6 +110,7 @@ public class ArticleService {
       String intro = articleClient.getIntro().trim();
       article.setIntro(intro);
     }
+    article.setBoardBoxCount(articleClient.getBoardBoxCount());
     article.setArticleStatus(articleClient.getArticleStatus());
     article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
     articleDao.save(article);

@@ -301,4 +301,9 @@ public class NotationService {
           }
         });
   }
+
+  void deleteById(DomainId notationId) {
+    notationDao.delete(notationId.getDomainId());
+    notationStoreService.removeNotationById(notationId);
+  }
 }

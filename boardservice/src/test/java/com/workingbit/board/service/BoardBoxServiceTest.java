@@ -127,7 +127,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     BoardBox board = getBoardBoxWhiteNotFilledRUSSIAN();
     DomainId boardId = board.getDomainId();
     assertNotNull(boardId);
-    boardBoxService().delete(boardId);
+    boardBoxService().deleteBoardBox(boardId, authUser);
     BoardBox byId = boardBoxService().findPublicById(boardId, token);
     assertNotNull(byId);
   }
@@ -951,7 +951,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @After
   public void tearUp() {
-    boards.forEach(board -> boardBoxService().delete(board.getDomainId()));
+    boards.forEach(board -> boardBoxService().deleteBoardBox(board.getDomainId(), authUser));
   }
 
   @NotNull

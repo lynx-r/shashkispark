@@ -75,7 +75,6 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBIgnore
   private Notation notation;
 
-//  @JsonDeserialize(using = EnumEditBoardBoxModeConverter.class)
   @DynamoDBTypeConvertedEnum
   @DynamoDBAttribute(attributeName = "editMode")
   private EnumEditBoardBoxMode editMode;
@@ -87,8 +86,8 @@ public class BoardBox extends BaseDomain implements Payload {
    * Показывать ли эту доску в просмотре статьи когда пользователь не залогинен
    */
   @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
-  @DynamoDBAttribute(attributeName = "visiblePublic")
-  private boolean visiblePublic;
+  @DynamoDBAttribute(attributeName = "removed")
+  private boolean removed;
 
   /**
    * Whether this BoardBox contains task
@@ -99,7 +98,6 @@ public class BoardBox extends BaseDomain implements Payload {
 
   public BoardBox() {
     editMode = EnumEditBoardBoxMode.EDIT;
-    visiblePublic = true;
     publicBoards = new HashSet<>();
   }
 

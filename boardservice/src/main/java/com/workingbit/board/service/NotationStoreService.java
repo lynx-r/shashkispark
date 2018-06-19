@@ -59,6 +59,10 @@ public class NotationStoreService {
     notationStore.remove(notation.getId());
   }
 
+  public void removeNotationById(@NotNull DomainId notationId) {
+    notationStore.remove(notationId.getId());
+  }
+
   public Optional<NotationHistory> getNotationHistory(String userSession, @NotNull DomainId notationHistoryId) {
     Map map = notationHistoryStore.get(notationHistoryId.getId());
     if (map != null) {

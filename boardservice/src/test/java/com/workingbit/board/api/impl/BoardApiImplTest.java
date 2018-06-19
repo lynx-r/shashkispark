@@ -39,7 +39,7 @@
 //  }
 //
 //  public void tearDown() {
-//    boardBoxService.delete(board.getId());
+//    boardBoxServicdeleteBoardBox(board.getId());
 //  }
 //
 //  @Test

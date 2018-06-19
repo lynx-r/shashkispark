@@ -69,6 +69,14 @@ public class BoardBoxController {
           BoardBox.class);
 
   @NotNull
+  public static Route deleteBoard = (req, res) ->
+      ((ModelHandlerFunc<DomainId>) (data, token, param) ->
+        Answer.created(boardBoxService.deleteBoardBox(data, token))
+      ).handleRequest(req, res,
+          Authority.BOARD_DELETE_PROTECTED,
+          DomainId.class);
+
+  @NotNull
   public static Route loadPreviewBoard = (req, res) ->
       ((ModelHandlerFunc<BoardBox>) (data, token, param) ->
           Answer.created(boardBoxService.loadPreviewBoard(data, token))

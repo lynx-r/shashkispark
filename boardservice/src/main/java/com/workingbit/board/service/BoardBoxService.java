@@ -11,6 +11,7 @@ import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.util.Utils;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -154,10 +155,28 @@ public class BoardBoxService {
         });
   }
 
-  void delete(DomainId boardBoxId) {
+  public BoardBox deleteBoardBox(DomainId boardBoxId, AuthUser authUser) {
     var boardBox = boardBoxDao.findById(boardBoxId);
-    boardService.delete(boardBox.getBoardId());
+    if (boardBox == null) {
+      throw RequestException.notFound404();
+    }
+    boardDao.deleteByBoardBoxId(boardBoxId);
+    notationHistoryService.deleteByNotationId(boardBox.getNotationId());
+    notationService.deleteById(boardBox.getNotationId());
     boardBoxDao.delete(boardBox.getDomainId());
+    boardBoxStoreService.remove(boardBox);
+    DomainId articleId = boardBox.getArticleId();
+    BoardBoxes byArticleId = boardBoxDao.findByArticleId(articleId);
+    ListOrderedMap<String, BoardBox> boardBoxes = byArticleId.getBoardBoxes();
+    BoardBoxes updatedBB = new BoardBoxes();
+    List<BoardBox> valueList = boardBoxes.valueList();
+    for (int i = 0; i < valueList.size(); i++) {
+      BoardBox curBB = valueList.get(i);
+      curBB.setIdInArticle(i + 1);
+      updatedBB.push(curBB);
+    }
+    boardBoxDao.batchSave(updatedBB.valueList());
+    return updateBoardBox(updatedBB.getBoardBoxes().valueList().get(0), authUser);
   }
 
   public BoardBox highlight(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {

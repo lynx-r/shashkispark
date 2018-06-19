@@ -52,10 +52,6 @@ public class BoardBoxStoreService {
     return key + ":" + boardId;
   }
 
-  public Optional<BoardBox> getPublic(String key, @NotNull DomainId boardBoxId) {
-    return get(key, boardBoxId).filter(BoardBox::isVisiblePublic);
-  }
-
   public Optional<BoardBoxes> getByArticleId(String userSession, @NotNull DomainId articleId) {
     Map map = store.get(articleId.getId());
     if (map != null) {

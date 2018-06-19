@@ -26,7 +26,7 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
 
   public List<BoardBox> findPublicByIds(@NotNull DomainIds boardBoxIds) {
     DaoFilters filterPublic = new DaoFilters();
-    filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
+    filterPublic.add(new ValueFilter("removed", true, "=", "BOOL"));
     filterPublic.add(new Unary("("));
     boardBoxIds.getIds().forEach(id ->
         filterPublic.add(new ValueFilter("id", id.getId(), "=", "S")));
@@ -65,7 +65,7 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
 
   public BoardBoxes findPublicByArticleId(@NotNull DomainId articleId) {
     DaoFilters filterPublic = new DaoFilters();
-    filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
+    filterPublic.add(new ValueFilter("removed", true, "=", "BOOL"));
     filterPublic.add(new Unary("and"));
     filterPublic.add(new ValueFilter("articleId.id", articleId.getId(), "=", "S"));
     return new BoardBoxes(findByFilter(filterPublic));
@@ -73,7 +73,7 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
 
   public BoardBox findPublicById(@NotNull DomainId boardBoxId) {
     DaoFilters filterPublic = new DaoFilters();
-    filterPublic.add(new ValueFilter("visiblePublic", true, "=", "BOOL"));
+    filterPublic.add(new ValueFilter("removed", true, "=", "BOOL"));
     filterPublic.add(new Unary("and"));
     filterPublic.add(new ValueFilter("id", boardBoxId.getId(), "=", "S"));
     List<BoardBox> byFilter = findByFilter(filterPublic);
