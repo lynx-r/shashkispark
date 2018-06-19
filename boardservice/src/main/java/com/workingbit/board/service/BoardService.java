@@ -36,10 +36,10 @@ public class BoardService {
     return board;
   }
 
-  Board createBoard(@NotNull Board newBoardRequest) {
+  Board createBoard(@NotNull Board newBoardRequest, DomainId boardBoxId) {
     Board board = initBoard(!newBoardRequest.getAssignedSquares().isEmpty(), newBoardRequest.isBlack(),
         newBoardRequest.getRules());
-    board.setBoardBoxId(board.getBoardBoxId());
+    board.setBoardBoxId(boardBoxId);
     Utils.setRandomIdAndCreatedAt(board);
     save(board);
     return board;
@@ -47,7 +47,7 @@ public class BoardService {
 
   Board initWithDraughtsOnBoard(@NotNull Board board) {
     Board newBoard = initBoard(true, board.isBlack(), board.getRules());
-    board.setBoardBoxId(board.getBoardBoxId());
+    newBoard.setBoardBoxId(board.getBoardBoxId());
     newBoard.setDomainId(board.getDomainId());
     save(newBoard);
     return newBoard;

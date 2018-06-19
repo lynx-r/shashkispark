@@ -291,7 +291,7 @@ public class BoardBoxService {
     } catch (DaoException ignore) {
     }
     // reset board
-    Board board = boardService.createBoard(boardBox.getBoard());
+    Board board = boardService.createBoard(boardBox.getBoard(), boardBox.getDomainId());
     board = boardService.initWithDraughtsOnBoard(board);
     boardBox.setBoardId(board.getDomainId());
     boardBox.setBoard(board);
@@ -309,7 +309,7 @@ public class BoardBoxService {
     } catch (DaoException ignore) {
     }
 
-    Board board = boardService.createBoard(boardBox.getBoard());
+    Board board = boardService.createBoard(boardBox.getBoard(), boardBox.getDomainId());
     boardBox.setBoardId(board.getDomainId());
     boardBox.setBoard(board);
     boardBoxDao.save(boardBox);
