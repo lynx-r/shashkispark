@@ -379,7 +379,7 @@ public class BoardService {
     boolean hasNextCapture = isNextCapture(board, nextHighlight);
     if (previousCaptured && hasNextCapture) {
 //      setFirstCaptured(capturedSquares, newBoard);
-      updateNotationMiddle(newBoard, prevBoardId, notationHistory);
+      updateNotationMiddle(newBoard, notationHistory);
       return newBoard;
     }
     updateNotationEnd(board, notationHistory, previousCaptured);
