@@ -10,7 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -43,6 +46,7 @@ public class NotationService {
   void createNotationForBoardBox(@NotNull BoardBox boardBox) {
     Notation notation = new Notation();
     Utils.setRandomIdAndCreatedAt(notation);
+    notation.getNotationFen().setBoardId(boardBox.getBoardId());
 
     notationHistoryService.createNotationHistoryForNotation(notation);
 
