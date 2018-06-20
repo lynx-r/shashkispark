@@ -93,7 +93,7 @@ public class NotationService {
           return notationHistory.getCurrentNotationDrive()
               .map(current -> {
                 NotationDrives variants = current.getVariants();
-                if (variants.size() != 0) {
+                if (variants.size() > 1) {
                   variants.replaceAll(notationDrive -> {
                     notationDrive.setPrevious(false);
                     notationDrive.setCurrent(false);
@@ -104,6 +104,7 @@ public class NotationService {
                   int idInVariants = first.getIdInVariants();
                   notationHistory.setVariantNotationDrive(idInVariants);
                 } else {
+                  current.getVariants().clear();
                   notationHistory.setVariantNotationDrive(0);
                 }
                 syncVariants(notationHistory, notation);
@@ -211,6 +212,10 @@ public class NotationService {
           });
           return notationHistory.getCurrentNotationDrive()
               .map(current -> {
+                current.getMoves().replaceAll(notationMove -> {
+                  notationMove.setCursor(false);
+                  return notationMove;
+                });
                 Integer prevVariantId = notation.getPrevVariantId() == null ? -1 : notation.getPrevVariantId();
                 setVariantDriveMarkers(notationLine, notation, current, prevVariantId);
                 notationHistory.getLast().setSelected(true);
