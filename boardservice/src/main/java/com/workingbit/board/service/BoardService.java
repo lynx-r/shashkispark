@@ -149,12 +149,8 @@ public class BoardService {
         .collect(Collectors.groupingBy(ICoordinates::getNotation));
     updateBoardDraughts(capturedMapped, clientBoard.getWhiteDraughts(), clientBoard.getRules().getDimension());
     updateBoardDraughts(capturedMapped, clientBoard.getBlackDraughts(), clientBoard.getRules().getDimension());
-    if (save) {
-//      boardDao.save(serverBoard);
-    }
 
     Board nextBoard = clientBoard.deepClone();
-//    Utils.setRandomIdAndCreatedAt(nextBoard);
     DomainId previousBoardId = clientBoard.getDomainId();
     boolean prevBlackTurn = nextBoard.isBlackTurn();
     // MOVE DRAUGHT

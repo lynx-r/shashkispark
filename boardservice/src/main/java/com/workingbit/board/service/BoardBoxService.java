@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -170,9 +171,15 @@ public class BoardBoxService {
     ListOrderedMap<String, BoardBox> boardBoxes = byArticleId.getBoardBoxes();
     BoardBoxes updatedBB = new BoardBoxes();
     List<BoardBox> valueList = boardBoxes.valueList();
+    valueList.sort(Comparator.comparingInt(BoardBox::getIdInArticle));
+    int j = 1;
     for (int i = 0; i < valueList.size(); i++) {
       BoardBox curBB = valueList.get(i);
       curBB.setIdInArticle(i + 1);
+      if (curBB.isTask()) {
+        curBB.setTaskIdInArticle(j);
+        j++;
+      }
       updatedBB.push(curBB);
     }
     boardBoxDao.batchSave(updatedBB.valueList());
@@ -231,7 +238,6 @@ public class BoardBoxService {
 
   @Nullable
   public BoardBox move(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
-//    var serverBoardBox = findAndFill(boardBox, authUser);
     Board clientBoard = boardBox.getBoard();
     boardService.updateAssigned(clientBoard);
     if (resetHighlightIfNotLastBoard(boardBox)) {
@@ -242,13 +248,12 @@ public class BoardBoxService {
       return null;
     }
 
-//    Board serverBoard = boardBox.getBoard();
     Notation notation = boardBox.getNotation();
     NotationHistory notationHistory = notation.getNotationHistory();
     try {
       clientBoard = boardService.move(clientBoard, notationHistory);
     } catch (BoardServiceException e) {
-      logger.error("Error while moving", e);
+      logger.error("Error while moving " + e.getMessage());
       throw RequestException.badRequest(e.getMessage());
     }
 
@@ -343,6 +348,12 @@ public class BoardBoxService {
   public BoardBox save(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
     throw404IfNotFound(boardBox);
     return saveAndFillBoard(boardBox, authUser);
+  }
+
+  public BoardBox markTask(BoardBox boardBox, AuthUser authUser) {
+    BoardBoxes byArticleId = boardBoxDao.findByArticleId(boardBox.getArticleId());
+    updateMarkTaskId(boardBox, byArticleId);
+    return save(boardBox, authUser);
   }
 
   @NotNull
@@ -600,5 +611,25 @@ public class BoardBoxService {
       switchNotationToVariant(switchLine, boardBox, authUser);
     }
     return boardBox;
+  }
+
+  private void updateMarkTaskId(BoardBox boardBox, BoardBoxes byArticleId) {
+    List<BoardBox> valueList = byArticleId.valueList();
+    valueList.sort(Comparator.comparingInt(BoardBox::getIdInArticle));
+    int j = 1;
+    for (BoardBox box : valueList) {
+      if (box.isTask() && !box.getId().equals(boardBox.getId())) {
+        box.setTaskIdInArticle(j);
+        j++;
+      } else if (boardBox.isTask() && box.getId().equals(boardBox.getId())) {
+        box.setTaskIdInArticle(j);
+        boardBox.setTaskIdInArticle(j);
+        j++;
+      } else {
+        box.setTaskIdInArticle(0);
+      }
+    }
+    boardBoxDao.batchSave(valueList);
+    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
   }
 }

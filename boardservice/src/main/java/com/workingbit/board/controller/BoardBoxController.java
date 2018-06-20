@@ -69,6 +69,14 @@ public class BoardBoxController {
           BoardBox.class);
 
   @NotNull
+  public static Route markTaskBoard = (req, res) ->
+      ((ModelHandlerFunc<BoardBox>) (data, token, param) ->
+          Answer.created(boardBoxService.markTask(data, token))
+      ).handleRequest(req, res,
+          Authority.BOARD_MARK_TASK_PROTECTED,
+          BoardBox.class);
+
+  @NotNull
   public static Route deleteBoard = (req, res) ->
       ((ModelHandlerFunc<DomainId>) (data, token, param) ->
         Answer.created(boardBoxService.deleteBoardBox(data, token))

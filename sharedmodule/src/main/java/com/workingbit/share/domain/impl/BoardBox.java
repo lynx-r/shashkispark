@@ -55,6 +55,9 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "idInArticle")
   private int idInArticle;
 
+  @DynamoDBAttribute(attributeName = "taskIdInArticle")
+  private int taskIdInArticle;
+
   @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "boardId")
   private DomainId boardId;
