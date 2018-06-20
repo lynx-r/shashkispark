@@ -53,7 +53,7 @@ public class BoardUtils {
 
     Map<String, Draught> blackDraughts = new HashMap<>(boardClone.getBlackDraughts());
     Map<String, Draught> whiteDraughts = new HashMap<>(boardClone.getWhiteDraughts());
-    List<Square> boardSquares = getAssignedSquares(rules.getDimension(), black);
+    List<Square> boardSquares = getAssignedSquares(rules.getDimension());
     for (Square square : boardSquares) {
       int v = square.getV();
       int h = square.getH();
@@ -132,7 +132,7 @@ public class BoardUtils {
    * Assign square subdiagonal and main diagonal. Assign diagonal's squares link to squares
    */
   @NotNull
-  private static List<Square> getAssignedSquares(int dim, boolean black) {
+  private static List<Square> getAssignedSquares(int dim) {
     List<List<Square>> mainDiagonals = getDiagonals(dim, true);
     List<List<Square>> subDiagonals = getDiagonals(dim, false);
 

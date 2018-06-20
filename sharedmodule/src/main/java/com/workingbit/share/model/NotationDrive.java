@@ -41,10 +41,8 @@ public class NotationDrive implements DeepClone, NotationFormat {
   /**
    * Does notation in notationFormat format like 1. 12-21
    */
-  @DynamoDBIgnore
   private EnumNotationFormat notationFormat;
 
-  @DynamoDBIgnore
   private int boardDimension;
 
   private String comment;

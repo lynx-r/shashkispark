@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 /**
  * Created by Aleksey Popryadukhin on 02/04/2018.
  */
-//@JsonDeserialize(using = NotationDrivesDeserializer.class)
 public class NotationDrives extends LinkedList<NotationDrive> implements NotationFormat, DeepClone {
 
   public NotationDrives() {

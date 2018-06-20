@@ -256,8 +256,10 @@ public class BoardBoxService {
     boardBox.setBoardId(clientBoard.getDomainId());
     notationHistory.getLast().setNotationFormat(notation.getFormat());
     notationHistory.getLast().setBoardDimension(notation.getRules().getDimension());
+    notation.addForkedNotationHistory(notationHistory);
     notationHistoryService.save(notationHistory);
     notationService.syncSubVariants(notationHistory, notation);
+    notationStoreService.putNotation(authUser.getUserSession(), notation);
 
     logger.info(format("Notation after move: %s", notation.getNotationHistory().debugPdnString()));
 
