@@ -10,10 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -92,6 +89,7 @@ public class NotationService {
           notation.removeForkedNotations(notationHistory);
           return notationHistory.getCurrentNotationDrive()
               .map(current -> {
+                NotationHistory nh = notationHistory;
                 NotationDrives variants = current.getVariants();
                 if (variants.size() > 1) {
                   variants.replaceAll(notationDrive -> {
@@ -102,13 +100,39 @@ public class NotationService {
                   NotationDrive first = variants.getFirst();
                   first.setCurrent(true);
                   int idInVariants = first.getIdInVariants();
-                  notationHistory.setVariantNotationDrive(idInVariants);
+                  nh.setVariantNotationDrive(idInVariants);
                 } else {
                   current.getVariants().clear();
-                  notationHistory.setVariantNotationDrive(0);
+                  Collection<NotationHistory> values = new ArrayList<>(notation.getForkedNotations().values());
+                  values.stream()
+                      .filter(toDelete -> toDelete.getCurrentIndex().equals(notationHistory.getCurrentIndex()))
+                      .forEach(toDelete -> {
+                        notationHistoryDao.delete(toDelete.getDomainId());
+                        notation.removeForkedNotations(toDelete);
+                      });
+                  int nextCurrentIndex = notation.getForkedNotations().values().stream().mapToInt(NotationHistory::getCurrentIndex).max().orElse(0);
+                  var nhNew = notation
+                      .findNotationHistoryByLine(new NotationLine(nextCurrentIndex, 0));
+                  if (nhNew.isPresent()) {
+                    nh = nhNew.get();
+                  }
+                  NotationDrive currentDrive = nh.getNotation().get(notationHistory.getCurrentIndex());
+                  Optional<NotationDrive> curVariant = currentDrive.getVariants()
+                      .stream()
+                      .filter(NotationDrive::isCurrent)
+                      .findFirst();
+                  if (curVariant.isPresent()) {
+                    NotationDrive currentVariant = curVariant.get();
+                    nh.getNotation()
+                        .removeIf(nd -> nd.getNotationNumberInt() >= currentDrive.getNotationNumberInt());
+                    NotationDrives newVariants = currentVariant.getVariants();
+                    newVariants.setIdInVariants(0);
+                    nh.getNotation().addAll(newVariants);
+                  }
+                  notationHistoryDao.save(nh);
                 }
-                syncVariants(notationHistory, notation);
-                return notationHistory.getNotationLine();
+                syncVariants(nh, notation);
+                return nh.getNotationLine();
               })
               .orElseThrow();
         })
