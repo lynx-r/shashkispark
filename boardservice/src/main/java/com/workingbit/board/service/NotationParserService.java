@@ -2,10 +2,10 @@ package com.workingbit.board.service;
 
 import com.workingbit.board.grammar.NotationParser;
 import com.workingbit.share.domain.impl.Notation;
+import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.NotationFen;
-import com.workingbit.share.domain.impl.NotationHistory;
 import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
@@ -16,7 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -72,6 +78,13 @@ public class NotationParserService {
     notation.setNotationHistory(notationDrives);
 
     return notation;
+  }
+
+  public Notation parseResource(String resourceName) throws ParserLogException, ParserCreationException, URISyntaxException, IOException {
+    URL uri = getClass().getResource(resourceName);
+    Path path = Paths.get(uri.toURI());
+    BufferedReader bufferedReader = Files.newBufferedReader(path);
+    return parse(bufferedReader);
   }
 
   private void parseHeader(Node gameHeader, @NotNull Map<String, String> headers, @NotNull Notation notation) throws ParserLogException, ParserCreationException {

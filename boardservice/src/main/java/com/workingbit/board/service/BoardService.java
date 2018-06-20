@@ -56,11 +56,6 @@ public class BoardService {
   /**
    * Create temp board and use it to emulate moves to populate notation
    *
-   * @param boardBoxId
-   * @param notationFen
-   * @param notationId
-   * @param genNotation
-   * @param rules
    */
   void fillNotation(DomainId boardBoxId, @Nullable NotationFen notationFen, DomainId notationId,
                     @NotNull Notation genNotation, EnumRules rules) {
@@ -105,10 +100,6 @@ public class BoardService {
     updateBoard(board);
     resetBoardHighlight(board);
     return board;
-  }
-
-  void delete(DomainId boardId) {
-    boardDao.delete(boardId);
   }
 
   /**
@@ -199,7 +190,7 @@ public class BoardService {
     return deepClone;
   }
 
-  void updateBoard(@NotNull Board board) {
+  public void updateBoard(@NotNull Board board) {
     Board boardUpdated = BoardUtils.updateBoard(board);
     board.setWhiteDraughts(boardUpdated.getWhiteDraughts());
     board.setBlackDraughts(boardUpdated.getBlackDraughts());
@@ -347,7 +338,6 @@ public class BoardService {
     }
     serverBoard = serverBoard.deepClone();
     List<String> moves = notationMove.getMoveNotations();
-//    Utils.setRandomIdAndCreatedAt(serverBoard);
     String move = moves.get(0);
     for (int i = 1; i < moves.size(); i++) {
       Square selected = findSquareByNotationWithHint(move, moves.subList(i - 1, moves.size()), serverBoard, notationMove.getNotationFormat());
@@ -374,7 +364,6 @@ public class BoardService {
     boolean previousCaptured = !capturedSquares.isEmpty();
     boolean hasNextCapture = isNextCapture(board, nextHighlight);
     if (previousCaptured && hasNextCapture) {
-//      setFirstCaptured(capturedSquares, newBoard);
       updateNotationMiddle(newBoard, notationHistory);
       return newBoard;
     }
@@ -382,24 +371,6 @@ public class BoardService {
     resetBoardHighlight(board);
     resetCaptured(board);
     return board;
-  }
-
-  private void setFirstCaptured(@NotNull TreeSquare capturedSquares, Board board) {
-    capturedSquares
-        .flatTree()
-        .stream()
-        .map(Square::getDraught)
-        .map(Draught::getNotation)
-        .findFirst()
-        .ifPresent(captureNotation ->
-            board.getAssignedSquares()
-                .replaceAll(square -> {
-                  if (square.getNotation().equals(captureNotation)) {
-                    square.getDraught().setCaptured(true);
-                    return square;
-                  }
-                  return square;
-                }));
   }
 
   @NotNull

@@ -80,15 +80,15 @@ public class AuthRequestUtil {
 
   public static void logRequest(Request request) {
     logger.info(String.format("REQUEST: %s %s %s %s %s",
-        LocalDateTime.now(),
-        request.requestMethod(), request.url(), request.host(), request.userAgent()));
+        request.requestMethod(), LocalDateTime.now(),
+        request.url(), request.host(), request.userAgent()));
   }
 
   public static void logResponse(String url, Response response, AuthUser token) {
     logger.info(String.format("RESPONSE: %s %s %s %s",
         url,
         LocalDateTime.now(),
-        response.status(), token));
+        response.status(), token.getAccessToken()));
   }
 
   @NotNull

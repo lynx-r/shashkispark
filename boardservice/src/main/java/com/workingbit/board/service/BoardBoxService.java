@@ -164,7 +164,7 @@ public class BoardBoxService {
     boardDao.deleteByBoardBoxId(boardBoxId);
     notationHistoryService.deleteByNotationId(boardBox.getNotationId());
     notationService.deleteById(boardBox.getNotationId());
-    boardBoxDao.delete(boardBox.getDomainId());
+    boardDao.delete(boardBox.getDomainId());
     boardBoxStoreService.remove(boardBox);
     DomainId articleId = boardBox.getArticleId();
     BoardBoxes byArticleId = boardBoxDao.findByArticleId(articleId);

@@ -7,8 +7,6 @@ import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
 import net.percederberg.grammatica.parser.Token;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -19,11 +17,9 @@ import java.util.LinkedList;
  */
 public class NotationFenParserService {
 
-  private static Logger logger = LoggerFactory.getLogger(NotationFenParserService.class);
   private static final String COLOR = "COLOR";
   private static final String COLON = "COLON";
   private static final String NUMSQUARE = "NUMSQUARE";
-  private static final String COMMA = "COMMA";
   private static final String KING = "KING";
   private static final String NUMERIC_SQUARE_SEQUENCE = "NumericSquareSequence";
   private static final String NUMERIC_SQUARE_RANGE = "NumericSquareRange";
