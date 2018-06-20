@@ -85,8 +85,7 @@ public class BoardBox extends BaseDomain implements Payload {
   /**
    * Показывать ли эту доску в просмотре статьи когда пользователь не залогинен
    */
-  @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
-  @DynamoDBAttribute(attributeName = "removed")
+  @DynamoDBIgnore
   private boolean removed;
 
   /**

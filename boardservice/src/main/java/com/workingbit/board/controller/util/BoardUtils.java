@@ -449,7 +449,7 @@ public class BoardUtils {
     String currentNotation = board.getSelectedSquare().getNotation();
     DomainId currentBoardId = board.getDomainId();
     notationMove.addMove(previousNotation, currentNotation, currentBoardId);
-    notationMove.getLastMove().ifPresent(nm -> nm.setCursor(true));
+    notationMove.setCursor(true);
     moves.add(notationMove);
 
     boolean isWhiteTurn = notationNumber != 0;

@@ -117,28 +117,14 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<DomainId> getLastNotationBoardIdInVariants(Integer currentIndex) {
-    NotationDrive notationLast = getLast();
-//    if (notationLast.isRoot()) {
-//      return notationLast.getVariants()
-//          .stream()
-//          .filter(NotationDrive::isCurrent)
-//          .flatMap(notationDrive -> notationDrive.getVariants().stream())
-//          .filter(NotationDrive::isSelected)
-//          .map(NotationDrive::getMoves)
-//          .map(NotationMoves::getLastMove)
-//          .filter(Objects::nonNull)
-//          .map(NotationSimpleMove::getBoardId)
-//          .findFirst();
-//    }
-    return Optional.ofNullable(getCurrentVariantStream(currentIndex)
+    return getCurrentVariantStream(currentIndex)
         .map(NotationDrive::getVariants)
         .map(LinkedList::getLast)
         .map(NotationDrive::getMoves)
         .map(NotationMoves::getLast)
         .filter(Objects::nonNull)
         .findFirst()
-        .orElse(null)
-        .getBoardId());
+        .map(NotationMove::getBoardId);
   }
 
   @JsonIgnore
@@ -158,39 +144,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
     forEach(nd -> nd.getMoves().resetCursors());
     NotationMoves moves = getLast().getMoves();
     if (!moves.isEmpty()) {
-      NotationSimpleMove lastMove = moves.getLastMove();
-      if (lastMove != null) {
-        lastMove.setCursor(true);
-      }
-    }
-  }
-
-  public static class Builder {
-
-    private NotationDrives drives;
-
-    private Builder() {
-      drives = new NotationDrives();
-    }
-
-    public static NotationDrives.Builder getInstance() {
-      return new NotationDrives.Builder();
-    }
-
-    @NotNull
-    public NotationDrives.Builder add(NotationDrive drive) {
-      drives.add(drive);
-      return this;
-    }
-
-    public NotationDrives build() {
-      return drives;
-    }
-
-    @NotNull
-    public NotationDrives.Builder addAll(@NotNull List<NotationDrive> drives) {
-      this.drives.addAll(drives);
-      return this;
+      moves.getLast().setCursor(true);
     }
   }
 }

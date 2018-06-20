@@ -38,11 +38,11 @@ public class NotationMove implements DeepClone, NotationFormat {
   /**
    * Num of squares on a side
    */
-  @DynamoDBIgnore
   private int boardDimension;
 
-  @DynamoDBIgnore
   private EnumNotationFormat notationFormat;
+
+  private boolean cursor;
 
   @JsonIgnore
   @DynamoDBIgnore
@@ -202,7 +202,7 @@ public class NotationMove implements DeepClone, NotationFormat {
   }
 
   void resetCursor() {
-    move.forEach(m -> m.setCursor(false));
+    setCursor(false);
   }
 
   @JsonIgnore
