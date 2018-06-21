@@ -16,6 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 /**
  * Created by Aleksey Popryaduhin on 21:29 03/10/2017.
  */
@@ -216,7 +218,8 @@ public class NotationDrive implements DeepClone, NotationFormat {
     }
     return (StringUtils.isNotBlank(notationNumber) ? notationNumber : "") +
         (!moves.isEmpty() ? moves.asString() + " " : "") +
-        (!variants.isEmpty() ? variants.variantsToPdn() : "");
+        (!variants.isEmpty() ? variants.variantsToPdn() : "") +
+        (StringUtils.isNoneBlank(comment) ? format("{%s} ", comment) : "");
   }
 
   @Override

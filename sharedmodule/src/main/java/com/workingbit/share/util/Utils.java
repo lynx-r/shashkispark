@@ -19,7 +19,6 @@ import java.nio.charset.Charset;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -296,18 +295,7 @@ public class Utils {
     if (stream == null) {
       return Stream.empty();
     }
-    AtomicInteger i = new AtomicInteger();
-    return stream
-        .map(s -> {
-          String pdn = s.asString();
-          i.getAndIncrement();
-          if (i.get() > 3) {
-            pdn = pdn.trim();
-            pdn += "\n";
-            i.set(0);
-          }
-          return pdn;
-        });
+    return stream.map(NotationFormat::asString);
   }
 
   public static String notationDrivesToPdn(@Nullable NotationDrives drives) {

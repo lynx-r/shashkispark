@@ -8,6 +8,7 @@ import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -32,6 +33,8 @@ public class NotationMove implements DeepClone, NotationFormat {
    */
   @NotNull
   private LinkedList<NotationSimpleMove> move = new LinkedList<>();
+
+  private String moveStrength;
 
   private DomainId boardId;
 
@@ -163,7 +166,7 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   public String asString() {
     String stroke = getNotationAsString();
-    return String.format("%1$-10s", stroke);
+    return String.format("%s %s ", stroke, (StringUtils.isNotBlank(moveStrength) ? moveStrength : ""));
   }
 
   @Override

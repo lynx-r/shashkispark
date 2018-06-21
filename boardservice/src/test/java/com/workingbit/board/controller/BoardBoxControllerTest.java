@@ -178,6 +178,11 @@ public class BoardBoxControllerTest {
     assertTrue(moved.isOccupied());
   }
 
+  /**
+   * actual test
+   *
+   * @throws Exception
+   */
   @Test
   public void fork() throws Exception {
     DomainId boardBoxId = DomainId.getRandomID();
@@ -261,7 +266,47 @@ public class BoardBoxControllerTest {
     notationLine = notationHistory.getNotationLine();
     assertEquals(1, notationLine.getCurrentIndex().intValue());
     assertEquals(2, notationLine.getVariantIndex().intValue());
-    System.out.println(notationHistory);
+
+    NotationDrive last = notationHistory.getLast();
+    NotationDrives variants = last.getVariants();
+    assertEquals(3, variants.size());
+    assertTrue(variants.getLast().isCurrent());
+    assertTrue(variants.get(1).isPrevious());
+
+    parserService = new NotationParserService();
+    notation = parserService.parseResource("/pdn/fork_1_3.pdn");
+    notationHistory = notation.getNotationHistory();
+    drives = notationHistory.getNotation();
+    board = boardBox.getBoard().deepClone();
+    for (NotationDrive drive : drives) {
+      for (NotationMove notationMove : drive.getMoves()) {
+        List<String> moves = notationMove.getMoveNotations();
+        String move = moves.get(0);
+        for (int i = 1; i < moves.size(); i++) {
+          boardService.updateBoard(board);
+          Square selected = findSquareByNotation(move, board);
+          board.setSelectedSquare(selected);
+          move = moves.get(i);
+          Square next = findSquareByNotation(move, board);
+          next.setHighlight(true);
+          board.setNextSquare(next);
+          boardBox.setBoard(board);
+          boardBox = (BoardBox) post(Authority.BOARD_MOVE_PROTECTED.getPath(), boardBox, authUser).getBody();
+          move = moves.get(i);
+          board = boardBox.getBoard();
+          Square moved = board.getSquares()
+              .stream()
+              .filter(Objects::nonNull)
+              .peek(square -> square.setDim(8))
+              .filter(square -> square.getNotation().equals(next.getNotation()))
+              .findFirst()
+              .get();
+          assertTrue(moved.isOccupied());
+        }
+      }
+    }
+
+//    post(Authority.BOARD_DELETE_PROTECTED.getPath(), boardBox.getDomainId(), authUser);
   }
 
   @Test

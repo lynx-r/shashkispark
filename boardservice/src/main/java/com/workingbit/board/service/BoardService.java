@@ -8,6 +8,7 @@ import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -286,6 +287,7 @@ public class BoardService {
         logger.trace(format("EMULATE MOVE: %s", drive.asString()));
         recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
       }
+      setMetaInformation(recursiveNotationHistory, notationDrive);
       if (!notationDrive.getVariants().isEmpty()) {
         NotationDrives variants = notationDrive.getVariants();
         int idInVariants = 0;
@@ -409,5 +411,18 @@ public class BoardService {
         .collect(Collectors.toList());
     board.setAssignedSquares(prevAssignedSquares);
     boardService.updateBoard(board);
+  }
+
+  private void setMetaInformation(@NotNull NotationHistory recursiveNotationHistory, NotationDrive notationDrive) {
+    NotationDrive last = recursiveNotationHistory.getLast();
+    String comment = notationDrive.getComment();
+    if (StringUtils.isNotBlank(comment)) {
+      last.setComment(comment.substring(1, comment.length() - 1));
+    }
+    for (int i = 0; i < last.getMoves().size(); i++) {
+      NotationMove m = last.getMoves().get(i);
+      NotationMove mParsed = notationDrive.getMoves().get(i);
+      m.setMoveStrength(mParsed.getMoveStrength());
+    }
   }
 }

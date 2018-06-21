@@ -164,26 +164,30 @@ public class BoardBoxService {
     boardDao.deleteByBoardBoxId(boardBoxId);
     notationHistoryService.deleteByNotationId(boardBox.getNotationId());
     notationService.deleteById(boardBox.getNotationId());
-    boardDao.delete(boardBox.getDomainId());
+    boardBoxDao.delete(boardBox.getDomainId());
     boardBoxStoreService.remove(boardBox);
     DomainId articleId = boardBox.getArticleId();
-    BoardBoxes byArticleId = boardBoxDao.findByArticleId(articleId);
-    ListOrderedMap<String, BoardBox> boardBoxes = byArticleId.getBoardBoxes();
-    BoardBoxes updatedBB = new BoardBoxes();
-    List<BoardBox> valueList = boardBoxes.valueList();
-    valueList.sort(Comparator.comparingInt(BoardBox::getIdInArticle));
-    int j = 1;
-    for (int i = 0; i < valueList.size(); i++) {
-      BoardBox curBB = valueList.get(i);
-      curBB.setIdInArticle(i + 1);
-      if (curBB.isTask()) {
-        curBB.setTaskIdInArticle(j);
-        j++;
+    try {
+      var byArticleId = boardBoxDao.findByArticleId(articleId);
+      ListOrderedMap<String, BoardBox> boardBoxes = byArticleId.getBoardBoxes();
+      BoardBoxes updatedBB = new BoardBoxes();
+      List<BoardBox> valueList = boardBoxes.valueList();
+      valueList.sort(Comparator.comparingInt(BoardBox::getIdInArticle));
+      int j = 1;
+      for (int i = 0; i < valueList.size(); i++) {
+        BoardBox curBB = valueList.get(i);
+        curBB.setIdInArticle(i + 1);
+        if (curBB.isTask()) {
+          curBB.setTaskIdInArticle(j);
+          j++;
+        }
+        updatedBB.push(curBB);
       }
-      updatedBB.push(curBB);
+      boardBoxDao.batchSave(updatedBB.valueList());
+      return updateBoardBox(updatedBB.getBoardBoxes().valueList().get(0), authUser);
+    } catch (DaoException e) {
+      return new BoardBox();
     }
-    boardBoxDao.batchSave(updatedBB.valueList());
-    return updateBoardBox(updatedBB.getBoardBoxes().valueList().get(0), authUser);
   }
 
   public BoardBox highlight(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
