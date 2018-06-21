@@ -211,15 +211,20 @@ public class NotationDrive implements DeepClone, NotationFormat {
         .toString();
   }
 
+  @DynamoDBIgnore
+  public String getVariantsAsString() {
+    return variants.variantsToPdn(notationFormat);
+  }
+
   public String asString(EnumNotationFormat notationFormat) {
     EnumNotationFormat oldNotationFormat = this.notationFormat;
     setNotationFormat(notationFormat);
     if (root) {
-      return variants.variantsToPdn();
+      return variants.variantsToPdn(notationFormat);
     }
     String notation = (StringUtils.isNotBlank(notationNumber) ? notationNumber : "") +
         (!moves.isEmpty() ? moves.asString(notationFormat) + " " : "") +
-        (!variants.isEmpty() ? variants.variantsToPdn() : "") +
+        (!variants.isEmpty() ? variants.variantsToPdn(notationFormat) : "") +
         (StringUtils.isNoneBlank(comment) ? format("{%s} ", comment) : "");
     setNotationFormat(oldNotationFormat);
     return notation;

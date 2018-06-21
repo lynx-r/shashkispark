@@ -7,7 +7,6 @@ import com.workingbit.share.model.enumarable.EnumNotation;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +21,6 @@ import static com.workingbit.share.model.enumarable.EnumNotation.SIMPLE;
  * <p>
  * Created by Aleksey Popryaduhin on 21:33 03/10/2017.
  */
-@NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class NotationMove implements DeepClone, NotationFormat {
@@ -46,6 +44,15 @@ public class NotationMove implements DeepClone, NotationFormat {
   private EnumNotationFormat notationFormat;
 
   private boolean cursor;
+
+  /**
+   * whether move visible. is used in frontend
+   */
+  private boolean visible;
+
+  public NotationMove() {
+    visible = true;
+  }
 
   private static void checkAndAddMoveForPdn(String stroke, @NotNull NotationMove notationMove,
                                             @NotNull String capture, @NotNull String simple,
@@ -71,6 +78,11 @@ public class NotationMove implements DeepClone, NotationFormat {
           break;
       }
     }
+  }
+
+  @DynamoDBIgnore
+  public String getNotationAlphaNumeric() {
+    return getNotationAsString(EnumNotationFormat.ALPHANUMERIC);
   }
 
   @JsonIgnore

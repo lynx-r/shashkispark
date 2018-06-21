@@ -4,7 +4,6 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.DomainId;
-import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.NotationFormat;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
@@ -308,7 +307,7 @@ public class Utils {
     }
   }
 
-  public static String notationDrivesToPdn(@Nullable NotationDrives drives) {
+  public static String notationDrivesToPdn(@Nullable NotationDrives drives, EnumNotationFormat notationFormat) {
     if (drives == null || drives.isEmpty()) {
       return "";
     }
@@ -316,7 +315,7 @@ public class Utils {
         .stream()
         .map(d -> d.getVariants()
             .stream()
-            .map(NotationDrive::asStringAlphaNumeric)
+            .map(notationDrive -> notationDrive.asString(notationFormat))
             .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn()))
         )
         .collect(Collectors.toList());

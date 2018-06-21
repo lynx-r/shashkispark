@@ -47,8 +47,8 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
     return Utils.listToTreePdn(new ArrayList<>(this), indent, tabulation);
   }
 
-  public String variantsToPdn() {
-    return Utils.notationDrivesToPdn(this);
+  public String variantsToPdn(EnumNotationFormat notationFormat) {
+    return Utils.notationDrivesToPdn(this, notationFormat);
   }
 
   public String variantsToTreePdn(String indent, String tabulation) {
