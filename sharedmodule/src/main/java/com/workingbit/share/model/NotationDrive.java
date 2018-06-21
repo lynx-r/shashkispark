@@ -167,7 +167,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
   public void parseNameFromPdn(@NotNull String name) {
     switch (name) {
       case "NUMERICMOVE":
-        notationFormat = EnumNotationFormat.DIGITAL;
+        notationFormat = EnumNotationFormat.NUMERIC;
         break;
       case "ALPHANUMERICMOVE":
         notationFormat = EnumNotationFormat.ALPHANUMERIC;
@@ -211,15 +211,33 @@ public class NotationDrive implements DeepClone, NotationFormat {
         .toString();
   }
 
-  @Override
-  public String asString() {
+  public String asString(EnumNotationFormat notationFormat) {
+    EnumNotationFormat oldNotationFormat = this.notationFormat;
+    setNotationFormat(notationFormat);
     if (root) {
       return variants.variantsToPdn();
     }
-    return (StringUtils.isNotBlank(notationNumber) ? notationNumber : "") +
-        (!moves.isEmpty() ? moves.asString() + " " : "") +
+    String notation = (StringUtils.isNotBlank(notationNumber) ? notationNumber : "") +
+        (!moves.isEmpty() ? moves.asString(notationFormat) + " " : "") +
         (!variants.isEmpty() ? variants.variantsToPdn() : "") +
         (StringUtils.isNoneBlank(comment) ? format("{%s} ", comment) : "");
+    setNotationFormat(oldNotationFormat);
+    return notation;
+  }
+
+  @Override
+  public String asStringAlphaNumeric() {
+    return asString(EnumNotationFormat.ALPHANUMERIC);
+  }
+
+  @Override
+  public String asStringNumeric() {
+    return asString(EnumNotationFormat.NUMERIC);
+  }
+
+  @Override
+  public String asStringShort() {
+    return asString(EnumNotationFormat.SHORT);
   }
 
   @Override
@@ -228,7 +246,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
       return variants.variantsToTreePdn(indent + tabulation, tabulation);
     }
     return (StringUtils.isNotBlank(notationNumber) ? indent + notationNumber : "") +
-        (!moves.isEmpty() ? moves.asString() + " " : "") +
+        (!moves.isEmpty() ? moves.asStringAlphaNumeric() + " " : "") +
         (!variants.isEmpty() ? variants.variantsToTreePdn(indent + tabulation, tabulation) : "\n");
   }
 

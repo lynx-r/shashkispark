@@ -33,13 +33,28 @@ public class NotationMoves extends LinkedList<NotationMove> implements NotationF
     forEach(NotationMove::resetCursor);
   }
 
-  public String asString() {
-    return Utils.listToPdn(new ArrayList<>(this));
+  public String asString(EnumNotationFormat notationFormat) {
+    return Utils.listToPdn(new ArrayList<>(this), notationFormat);
+  }
+
+  @Override
+  public String asStringAlphaNumeric() {
+    return asString(EnumNotationFormat.ALPHANUMERIC);
+  }
+
+  @Override
+  public String asStringNumeric() {
+    return asString(EnumNotationFormat.NUMERIC);
+  }
+
+  @Override
+  public String asStringShort() {
+    return asString(EnumNotationFormat.SHORT);
   }
 
   @Override
   public String asTree(String indent, String tabulation) {
-    return asString();
+    return asStringAlphaNumeric();
   }
 
   void setNotationFormat(EnumNotationFormat format) {

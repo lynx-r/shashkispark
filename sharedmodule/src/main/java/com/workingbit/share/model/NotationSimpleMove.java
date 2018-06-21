@@ -60,7 +60,7 @@ public class NotationSimpleMove implements DeepClone {
       throw new RuntimeException("Размерность доски не установлена");
     }
     switch (format) {
-      case DIGITAL:
+      case NUMERIC:
         return getNotationNum();
       case ALPHANUMERIC:
         return getNotationAlpha();

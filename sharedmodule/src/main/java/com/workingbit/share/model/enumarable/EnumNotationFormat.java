@@ -1,7 +1,7 @@
 package com.workingbit.share.model.enumarable;
 
 public enum EnumNotationFormat {
-  DIGITAL("Числовая нотация"),
+  NUMERIC("Числовая нотация"),
   ALPHANUMERIC("Число-буквенная нотация"),
   SHORT("Сокращенная нотация"),
   ;

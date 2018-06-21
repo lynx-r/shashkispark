@@ -220,7 +220,7 @@ public class BoardUtils {
     }
     switch (notationFormat) {
       case ALPHANUMERIC:
-      case DIGITAL:
+      case NUMERIC:
         return findSquareByNotation(notation, board);
       case SHORT:
         return findSquareByShortNotation(moves, board);

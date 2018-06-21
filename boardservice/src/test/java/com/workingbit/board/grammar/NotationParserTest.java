@@ -38,7 +38,7 @@ public class NotationParserTest {
 
       Notation notation = notationParserService.parse(bufferedReader);
       assertNotNull(notation);
-      System.out.println(notation.getAsString());
+      System.out.println(notation.getAsStringAlphaNumeric());
     }
   }
 }

@@ -185,8 +185,17 @@ public class NotationHistory extends BaseDomain implements DeepClone {
     return notationHistory;
   }
 
-  public String notationToPdn() {
-    return notation.asString();
+  public String notationToPdn(EnumNotationFormat notationFormat) {
+    switch (notationFormat) {
+      case ALPHANUMERIC:
+        return notation.asStringAlphaNumeric();
+      case SHORT:
+        return notation.asStringShort();
+      case NUMERIC:
+        return notation.asStringNumeric();
+      default:
+        throw new RuntimeException("Формат нотации не распознан");
+    }
   }
 
   public String notationToTreePdn(String indent, String tabulation) {
@@ -194,7 +203,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   }
 
   public void printPdn() {
-    System.out.println(notationToPdn());
+    System.out.println(notationToPdn(EnumNotationFormat.ALPHANUMERIC));
   }
 
   @JsonIgnore
@@ -219,15 +228,15 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   public String debugPdnString() {
     return "\n" +
         "NOTATION: " +
-        notation.asString();
+        notation.asStringAlphaNumeric();
   }
 
   public boolean isEqual(@NotNull NotationHistory that) {
     EnumNotationFormat formatThat = that.getNotation().getFirst().getNotationFormat();
     EnumNotationFormat formatThis = this.getNotation().getFirst().getNotationFormat();
-    that.setFormat(EnumNotationFormat.DIGITAL);
-    this.setFormat(EnumNotationFormat.DIGITAL);
-    boolean equals = that.notationToPdn().equals(this.notationToPdn());
+    that.setFormat(EnumNotationFormat.NUMERIC);
+    this.setFormat(EnumNotationFormat.NUMERIC);
+    boolean equals = that.notationToPdn(EnumNotationFormat.NUMERIC).equals(this.notationToPdn(EnumNotationFormat.NUMERIC));
     that.setFormat(formatThat);
     this.setFormat(formatThis);
     return equals;

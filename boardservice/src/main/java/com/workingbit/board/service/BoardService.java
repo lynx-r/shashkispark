@@ -284,7 +284,7 @@ public class BoardService {
     for (NotationDrive notationDrive : notation.getNotationHistory().getNotation()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
-        logger.trace(format("EMULATE MOVE: %s", drive.asString()));
+        logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
         recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
       }
       setMetaInformation(recursiveNotationHistory, notationDrive);
@@ -312,7 +312,7 @@ public class BoardService {
               NotationDrive subDrive = subVariants.get(i);
               NotationMoves vDrives = subDrive.getMoves();
               for (NotationMove drive : vDrives) {
-                logger.trace(format("EMULATE MOVE: %s", drive.asString()));
+                logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
                 subBoard = emulateMove(drive, subBoard, subRecursiveNotationHistory, batchBoards);
               }
               NotationDrive vvDrive = vDrive.getVariants().get(i + 1);

@@ -47,43 +47,40 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   private boolean cursor;
 
+  private static void checkAndAddMoveForPdn(String stroke, @NotNull NotationMove notationMove,
+                                            @NotNull String capture, @NotNull String simple,
+                                            EnumNotationFormat notationFormat) {
+    boolean isCapture = stroke.contains(capture);
+    if (isCapture) {
+      notationMove.setType(CAPTURE);
+      notationMove.setMoveKeysForPdn(stroke.split(capture));
+    } else {
+      notationMove.setType(SIMPLE);
+      switch (notationFormat) {
+        case ALPHANUMERIC:
+        case NUMERIC:
+          notationMove.setMoveKeysForPdn(stroke.split(simple));
+          break;
+        case SHORT:
+          String endMove = stroke.substring(stroke.length() - 2);
+          String startMove = stroke.substring(0, stroke.length() - 2);
+          String[] split = startMove.split("");
+          List<String> list = new ArrayList<>(List.of(split));
+          list.add(endMove);
+          notationMove.setMoveKeysForPdn(list.toArray(new String[0]));
+          break;
+      }
+    }
+  }
+
   @JsonIgnore
   @DynamoDBIgnore
-  private String getNotationAsString() {
+  private String getNotationAsString(EnumNotationFormat notationFormat) {
     return getMoveNotations()
         .stream()
         .collect(Collectors.joining(type == SIMPLE ?
             (EnumNotationFormat.SHORT.equals(notationFormat) ? "" : SIMPLE.getSimple())
             : CAPTURE.getSimple()));
-  }
-
-  @JsonIgnore
-  @DynamoDBIgnore
-  public List<String> getMoveNotations() {
-    switch (notationFormat) {
-      case ALPHANUMERIC:
-      case DIGITAL:
-        return move
-            .stream()
-            .map(NotationSimpleMove::getNotation)
-            .collect(Collectors.toList());
-      case SHORT:
-        List<String> list = new ArrayList<>();
-        int size = move.size();
-        for (int i = 0; i < size; i++) {
-          NotationSimpleMove notationSimpleMove = move.get(i);
-          String notation;
-          if (i != size - 1) {
-            notation = notationSimpleMove.getNotation().replaceAll("\\d+", "");
-          } else {
-            notation = notationSimpleMove.getNotation();
-          }
-          list.add(notation);
-        }
-        return list;
-      default:
-        throw new RuntimeException("Формат не распознан");
-    }
   }
 
   @SuppressWarnings("unused")
@@ -123,29 +120,32 @@ public class NotationMove implements DeepClone, NotationFormat {
     return notationMove;
   }
 
-  private static void checkAndAddMoveForPdn(String stroke, @NotNull NotationMove notationMove,
-                                            @NotNull String capture, @NotNull String simple,
-                                            EnumNotationFormat notationFormat) {
-    boolean isCapture = stroke.contains(capture);
-    if (isCapture) {
-      notationMove.setType(CAPTURE);
-      notationMove.setMoveKeysForPdn(stroke.split(capture));
-    } else {
-      notationMove.setType(SIMPLE);
-      switch (notationFormat) {
-        case ALPHANUMERIC:
-        case DIGITAL:
-          notationMove.setMoveKeysForPdn(stroke.split(simple));
-          break;
-        case SHORT:
-          String endMove = stroke.substring(stroke.length() - 2);
-          String startMove = stroke.substring(0, stroke.length() - 2);
-          String[] split = startMove.split("");
-          List<String> list = new ArrayList<>(List.of(split));
-          list.add(endMove);
-          notationMove.setMoveKeysForPdn(list.toArray(new String[0]));
-          break;
-      }
+  @JsonIgnore
+  @DynamoDBIgnore
+  public List<String> getMoveNotations() {
+    switch (notationFormat) {
+      case ALPHANUMERIC:
+      case NUMERIC:
+        return move
+            .stream()
+            .map(NotationSimpleMove::getNotation)
+            .collect(Collectors.toList());
+      case SHORT:
+        List<String> list = new ArrayList<>();
+        int size = move.size();
+        for (int i = 0; i < size; i++) {
+          NotationSimpleMove notationSimpleMove = move.get(i);
+          String notation;
+          if (i != size - 1) {
+            notation = notationSimpleMove.getNotation().replaceAll("\\d+", "");
+          } else {
+            notation = notationSimpleMove.getNotation();
+          }
+          list.add(notation);
+        }
+        return list;
+      default:
+        throw new RuntimeException("Формат не распознан");
     }
   }
 
@@ -164,19 +164,38 @@ public class NotationMove implements DeepClone, NotationFormat {
 //        .append(prefix).append("\t").append("cursor: ").append(cursor)
   }
 
-  public String asString() {
-    String stroke = getNotationAsString();
-    return String.format("%s %s ", stroke, (StringUtils.isNotBlank(moveStrength) ? moveStrength : ""));
+  public String asString(EnumNotationFormat notationFormat) {
+    EnumNotationFormat oldNotationFormat = this.notationFormat;
+    setNotationFormat(notationFormat);
+    String stroke = getNotationAsString(notationFormat);
+    String notation = String.format("%s %s ", stroke, (StringUtils.isNotBlank(moveStrength) ? moveStrength : ""));
+    setNotationFormat(oldNotationFormat);
+    return notation;
+  }
+
+  @Override
+  public String asStringAlphaNumeric() {
+    return asString(EnumNotationFormat.ALPHANUMERIC);
+  }
+
+  @Override
+  public String asStringNumeric() {
+    return asString(EnumNotationFormat.NUMERIC);
+  }
+
+  @Override
+  public String asStringShort() {
+    return asString(EnumNotationFormat.SHORT);
   }
 
   @Override
   public String asTree(String indent, String tabulation) {
-    return asString();
+    return asString(EnumNotationFormat.ALPHANUMERIC);
   }
 
   @Override
   public String toString() {
-    return "NotationMove{" + asString() + "}";
+    return "NotationMove{" + asString(EnumNotationFormat.ALPHANUMERIC) + "}";
   }
 
   @JsonIgnore

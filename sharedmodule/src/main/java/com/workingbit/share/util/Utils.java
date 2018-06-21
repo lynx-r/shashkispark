@@ -7,6 +7,7 @@ import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.NotationFormat;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -284,18 +285,27 @@ public class Utils {
         .collect(Collectors.toList());
   }
 
-  public static String listToPdn(@Nullable List<NotationFormat> list) {
+  public static String listToPdn(@Nullable List<NotationFormat> list, EnumNotationFormat alphanumeric) {
     if (list == null || list.isEmpty()) {
       return "";
     }
-    return streamToPdn(list.stream()).collect(Collectors.joining());
+    return streamToPdn(list.stream(), alphanumeric).collect(Collectors.joining());
   }
 
-  public static Stream<String> streamToPdn(@Nullable Stream<NotationFormat> stream) {
+  public static Stream<String> streamToPdn(@Nullable Stream<NotationFormat> stream, EnumNotationFormat notationFormat) {
     if (stream == null) {
       return Stream.empty();
     }
-    return stream.map(NotationFormat::asString);
+    switch (notationFormat) {
+      case SHORT:
+        return stream.map(NotationFormat::asStringShort);
+      case NUMERIC:
+        return stream.map(NotationFormat::asStringNumeric);
+      case ALPHANUMERIC:
+        return stream.map(NotationFormat::asStringAlphaNumeric);
+      default:
+        throw new RuntimeException("Формат не распознан");
+    }
   }
 
   public static String notationDrivesToPdn(@Nullable NotationDrives drives) {
@@ -306,7 +316,7 @@ public class Utils {
         .stream()
         .map(d -> d.getVariants()
             .stream()
-            .map(NotationDrive::asString)
+            .map(NotationDrive::asStringAlphaNumeric)
             .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn()))
         )
         .collect(Collectors.toList());

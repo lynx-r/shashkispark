@@ -28,8 +28,18 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
   }
 
   @Override
-  public String asString() {
-    return Utils.listToPdn(new ArrayList<>(this));
+  public String asStringAlphaNumeric() {
+    return Utils.listToPdn(new ArrayList<>(this), EnumNotationFormat.ALPHANUMERIC);
+  }
+
+  @Override
+  public String asStringNumeric() {
+    return Utils.listToPdn(new ArrayList<>(this), EnumNotationFormat.NUMERIC);
+  }
+
+  @Override
+  public String asStringShort() {
+    return Utils.listToPdn(new ArrayList<>(this), EnumNotationFormat.SHORT);
   }
 
   @Override
