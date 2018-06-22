@@ -199,11 +199,13 @@ public class NotationService {
               cur.setCurrent(currentNotationDrive.isCurrent());
               cur.setPrevious(currentNotationDrive.isPrevious());
               cur.setVariants(currentNotationDrive.getVariants());
+              cur.setBoardDimension(notation.getRules().getDimension());
               save.set(true);
             }
             return notationHistory;
           });
           if (save.get()) {
+            notation.syncFormatAndRules();
             notationHistoryDao.batchSave(notation.getForkedNotations().values());
           }
         });

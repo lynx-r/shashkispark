@@ -23,7 +23,7 @@ public class EmailService {
 //            "taster1@cgroup.org;taster2@cgroup.org;tester <>")
 //        .bcc("Mr Sweetnose <snose@candyshop.org>")
         .from("Алексей Попрядухин", "lynx.p9@gmail.com")
-        .withReplyTo("popcorn", "popcorn@shashki.online")
+        .withReplyTo("popcorn", "popcorn@mail.shashki.online")
         .withSubject("hey")
         .withHTMLText("<img src='cid:wink1'><b>We should meet up!</b><img src='cid:wink2'>")
         .withPlainText("Please view this email in a modern email client!")

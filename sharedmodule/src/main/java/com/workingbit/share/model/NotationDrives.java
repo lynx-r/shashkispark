@@ -62,11 +62,17 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
   }
 
   public void setNotationFormat(EnumNotationFormat format) {
-    forEach(notationDrive -> notationDrive.setNotationFormat(format));
+    replaceAll(notationDrive -> {
+      notationDrive.setNotationFormat(format);
+      return notationDrive;
+    });
   }
 
   public void setDimension(int dimension) {
-    forEach(notationDrive -> notationDrive.setBoardDimension(dimension));
+    replaceAll(notationDrive -> {
+      notationDrive.setBoardDimension(dimension);
+      return notationDrive;
+    });
   }
 
   public void setIdInVariants(int idInVariants) {

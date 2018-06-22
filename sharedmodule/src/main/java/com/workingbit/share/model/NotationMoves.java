@@ -58,10 +58,16 @@ public class NotationMoves extends LinkedList<NotationMove> implements NotationF
   }
 
   void setNotationFormat(EnumNotationFormat format) {
-    forEach(move -> move.setNotationFormat(format));
+    replaceAll(move -> {
+      move.setNotationFormat(format);
+      return move;
+    });
   }
 
   void setBoardDimension(int boardDimension) {
-    forEach(move -> move.setBoardDimension(boardDimension));
+    replaceAll(move -> {
+      move.setBoardDimension(boardDimension);
+      return move;
+    });
   }
 }

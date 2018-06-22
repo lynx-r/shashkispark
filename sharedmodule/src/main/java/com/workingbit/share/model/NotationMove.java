@@ -106,7 +106,10 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   void setBoardDimension(int dimension) {
     this.boardDimension = dimension;
-    move.forEach(m -> m.setBoardDimension(dimension));
+    move.replaceAll(m -> {
+      m.setBoardDimension(dimension);
+      return m;
+    });
   }
 
   @Override
