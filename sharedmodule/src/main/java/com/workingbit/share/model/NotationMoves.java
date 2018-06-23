@@ -60,6 +60,7 @@ public class NotationMoves extends LinkedList<NotationMove> implements NotationF
   void setNotationFormat(EnumNotationFormat format) {
     replaceAll(move -> {
       move.setNotationFormat(format);
+      move.setMoveFormat(format);
       return move;
     });
   }

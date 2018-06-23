@@ -73,7 +73,8 @@ public class NotationHistoryService {
       forkedVariant.setParentColor(rootV.getParentColor());
     }
     cutNotationDrives.setIdInVariants(variantId);
-    NotationDrive firstNew = cutNotationDrives.getFirst().deepClone();
+    NotationDrive cutNotationDrivesFirst = cutNotationDrives.getFirst();
+    NotationDrive firstNew = cutNotationDrivesFirst.deepClone();
     firstNew.setIdInVariants(variantId);
     firstNew.setCurrent(true);
     NotationDrives switchVariants = forkedVariant.getVariants();
@@ -83,8 +84,8 @@ public class NotationHistoryService {
     } else {
       fillFirstVariant(rootV, firstNew);
     }
-    cutNotationDrives.getFirst().setVariants(NotationDrives.create());
-    firstNew.setVariants(new NotationDrives(List.of(cutNotationDrives.getFirst())));
+    cutNotationDrivesFirst.setVariants(NotationDrives.create());
+    firstNew.setVariants(new NotationDrives(List.of(cutNotationDrivesFirst)));
     setMarkersAndColorsForSwitchVariants(firstNew, switchVariants);
     fillForkedVariant(forkedVariant, firstNew, notationHistory.getDomainId());
 
@@ -125,8 +126,10 @@ public class NotationHistoryService {
 
   private void fillFirstVariant(NotationDrive rootV, NotationDrive firstNew) {
     firstNew.setParentId(0);
+    rootV.setAncestors(rootV.getAncestors() + 1);
     firstNew.setParentColor(rootV.getDriveColor());
     firstNew.setDriveColor(Utils.getRandomColor());
+    firstNew.resetCursor();
   }
 
   private void setMarkersAndColorsForSwitchVariants(NotationDrive firstNew, NotationDrives switchVariants) {
@@ -138,6 +141,8 @@ public class NotationHistoryService {
           cur.setAncestors(cur.getAncestors() + 1);
           firstNew.setParentId(cur.getIdInVariants());
           firstNew.setParentColor(cur.getDriveColor());
+          firstNew.setDriveColor(Utils.getRandomColor());
+          firstNew.resetCursor();
           cur.setCurrent(false);
           cur.setPrevious(true);
         });

@@ -70,7 +70,7 @@ public class NotationParserService {
     }
     NotationHistory notationDrives = notation.getNotationHistory();
     try {
-      parseGameBody(game, notationDrives.getNotation());
+      parseGameBody(game, notationDrives.getNotation(), notation.getRules(), notation.getFormat());
     } catch (Exception e) {
       game.printTo(System.err);
       logger.error("Parse error ", e);
@@ -79,7 +79,7 @@ public class NotationParserService {
     notation.setTags(headers);
     notation.setNotationHistory(notationDrives);
 
-    notation.syncFormatAndRules();
+//    notation.syncFormatAndRules();
     return notation;
   }
 
@@ -113,10 +113,9 @@ public class NotationParserService {
     }
   }
 
-  private void parseGameBody(Node game, @NotNull NotationDrives notationDrives) {
+  private void parseGameBody(Node game, @NotNull NotationDrives notationDrives, EnumRules rules, EnumNotationFormat format) {
     boolean firstMove = false;
     NotationDrive notationDrive = new NotationDrive();
-    int gameMoveNumber = 0;
     for (int i = 0; i < game.getChildCount(); i++) {
       Node gameBody = game.getChildAt(i);
       switch (gameBody.getName()) {
@@ -130,18 +129,16 @@ public class NotationParserService {
                   notationDrive = new NotationDrive();
                 }
                 firstMove = true;
-                gameMoveNumber = 0;
 
                 String moveNumber = ((Token) gameMove).getImage();
                 int notationNumberInt = Integer.parseInt(moveNumber.substring(0, moveNumber.indexOf(".")));
                 notationDrive.setNotationNumberInt(notationNumberInt);
                 break;
               case MOVE:
-                gameMoveNumber++;
                 Token moveToken = (Token) gameMove.getChildAt(0);
                 notationDrive.parseNameFromPdn(moveToken.getName());
                 String move = moveToken.getImage();
-                notationDrive.addMoveFromPdn(move);
+                notationDrive.addMoveFromPdn(move, rules, format);
                 break;
               case MOVE_STRENGTH:
                 Token moveStrength = (Token) gameMove.getChildAt(0);
@@ -161,7 +158,7 @@ public class NotationParserService {
         case VARIATION: {
           Node variants = gameBody.getChildAt(1);
           NotationDrives subVariants = NotationDrives.create();
-          parseGameBody(variants, subVariants);
+          parseGameBody(variants, subVariants, rules, format);
           NotationDrive subDrive = subVariants.getFirst().deepClone();
           subDrive.setVariants(subVariants);
           notationDrive.addVariant(subDrive);

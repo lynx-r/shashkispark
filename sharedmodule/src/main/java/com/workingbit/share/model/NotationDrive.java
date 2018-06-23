@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotation;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
+import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -181,8 +182,12 @@ public class NotationDrive implements DeepClone, NotationFormat {
     }
   }
 
-  public void addMoveFromPdn(@NotNull String move) {
-    NotationMove atom = NotationMove.fromPdn(move, notationFormat);
+  public void addMoveFromPdn(@NotNull String move, EnumRules rules, EnumNotationFormat format) {
+    this.notationFormat = format;
+    if (rules != null) {
+      this.boardDimension = rules.getDimension();
+    }
+    NotationMove atom = new NotationMove(move, format, this.boardDimension);
     moves.add(atom);
   }
 
@@ -333,5 +338,12 @@ public class NotationDrive implements DeepClone, NotationFormat {
       }
     }
     return variantsSize;
+  }
+
+  public void resetCursor() {
+    getMoves().replaceAll(m -> {
+      m.setCursor(false);
+      return m;
+    });
   }
 }

@@ -11,11 +11,11 @@
 
 package com.workingbit.board.grammar;
 
-import java.io.Reader;
-
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.TokenPattern;
 import net.percederberg.grammatica.parser.Tokenizer;
+
+import java.io.Reader;
 
 /**
  * A character stream tokenizer.
@@ -112,13 +112,13 @@ class PdnReadingTokenizer extends Tokenizer {
         pattern = new TokenPattern(PdnReadingConstants.ALPHANUMERICMOVE,
                                    "ALPHANUMERICMOVE",
                                    TokenPattern.REGEXP_TYPE,
-                                   "([a-h][1-9][1-9]?(\\s*[x:]\\s*[a-h][1-9][1-9]?)+)|([a-h][1-9][1-9]?\\s*[-]?\\s*[a-h][1-9][1-9]?)");
+            "([a-j][1-9][1-9]?(\\s*[x:]\\s*[a-j][1-9][1-9]?)+)|([a-j][1-9][1-9]?\\s*[-]?\\s*[a-j][1-9][1-9]?)");
         addPattern(pattern);
 
         pattern = new TokenPattern(PdnReadingConstants.SHORTMOVE,
                                    "SHORTMOVE",
                                    TokenPattern.REGEXP_TYPE,
-                                   "([a-h]([x:][a-h])*([x:][a-h][1-9][1-9]?))|([a-h][a-h][1-9][1-9]?)");
+            "([a-j]([x:][a-j])*([x:][a-j][1-9][1-9]?))|([a-j][a-j][1-9][1-9]?)");
         addPattern(pattern);
 
         pattern = new TokenPattern(PdnReadingConstants.MOVESTRENGTH1,

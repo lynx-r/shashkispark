@@ -214,7 +214,8 @@ public class BoardUtils {
     throw new BoardServiceException("Square not found " + notation);
   }
 
-  public static Square findSquareByNotationWithHint(String notation, List<String> moves, Board board, EnumNotationFormat notationFormat) {
+  public static Square findSquareByNotationWithHint(String notation, List<String> moves, Board board,
+                                                    EnumNotationFormat notationFormat, int moveSize) {
     if (StringUtils.isBlank(notation)) {
       throw new BoardServiceException("Invalid notation " + notation);
     }
@@ -223,13 +224,13 @@ public class BoardUtils {
       case NUMERIC:
         return findSquareByNotation(notation, board);
       case SHORT:
-        return findSquareByShortNotation(moves, board);
+        return findSquareByShortNotation(moves, board, moveSize);
       default:
         throw new BoardServiceException("Square not found " + notation);
     }
   }
 
-  private static Square findSquareByShortNotation(List<String> moves, Board board) {
+  private static Square findSquareByShortNotation(List<String> moves, Board board, int moveSize) {
     Square nextOld = board.getNextSquare();
     Square lastSquare = null;
     List<Square> passed = new ArrayList<>();
@@ -248,7 +249,8 @@ public class BoardUtils {
             .flatMap(Collection::stream)
             .filter(square -> {
               if (square.isOccupied()) {
-                if (square.getDraught().isBlack() == blackTurn) {
+                boolean curBlack = square.getDraught().isBlack();
+                if (curBlack == blackTurn) {
                   String n = square.getNotation().replaceAll("\\d+", "");
                   return n.equals(move);
                 }
@@ -261,7 +263,11 @@ public class BoardUtils {
             .collect(Collectors.toList());
         Square found;
         if (first.size() > 1) {
-          found = first.stream().filter(Square::isOccupied).findFirst().orElseThrow();
+          if (moveSize > 2 && passed.size() == 1) {
+            found = first.stream().filter(square -> !square.isOccupied()).findFirst().orElseThrow();
+          } else {
+            found = first.stream().filter(Square::isOccupied).findFirst().orElseThrow();
+          }
         } else {
           found = first.get(0);
         }

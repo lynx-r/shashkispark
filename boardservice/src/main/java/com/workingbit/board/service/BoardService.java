@@ -230,14 +230,16 @@ public class BoardService {
           variants.getFirst().setDriveColor(Utils.getRandomColor());
           for (int i = 1; i < variants.size(); i++) {
             NotationDrive notationDrive = variants.get(i);
-            notationDrive.setParentColor(variants.get(i - 1).getDriveColor());
+            NotationDrive parent = variants.get(i - 1);
+            parent.setAncestors(parent.getAncestors() + 1);
+            notationDrive.setParentId(parent.getIdInVariants());
+            notationDrive.setParentColor(parent.getDriveColor());
             notationDrive.setDriveColor(Utils.getRandomColor());
           }
           if (curDrive.getVariantsSize() - 2 >= variants.size()) {
             variants.get(curDrive.getVariantsSize() - 2).setPrevious(true);
           }
         }
-//        variants.getFirst().setCurrent(true);
       }
     }
     return lastCurrentDrive;
@@ -248,7 +250,6 @@ public class BoardService {
     if (lastCurrentDrive == null) {
       lastCurrentDrive = curNotation.getLast();
     }
-//    lastCurrentDrive.setCurrent(true);
     int currentIndex = curNotation.indexOf(lastCurrentDrive);
     int variantIndex = lastCurrentDrive.getVariantsSize() == 0 ? 0 : lastCurrentDrive.getVariantsSize() - 1;
     NotationLine line = new NotationLine(currentIndex, variantIndex);
@@ -313,7 +314,6 @@ public class BoardService {
           variantsPopulated.add(vDrive);
         }
       }
-      int i = notationMoves.indexOf(notationDrive);
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
         recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
@@ -321,34 +321,44 @@ public class BoardService {
       setMetaInformation(recursiveNotationHistory, notationDrive);
       if (!variantsPopulated.isEmpty()) {
         for (NotationDrive drive : variantsPopulated) {
-          if (recursiveNotationHistory.get(i).getMoves().equals(drive.getVariants().getFirst().getMoves())) {
+          if (recursiveNotationHistory.getLast().getMoves().equals(drive.getVariants().getFirst().getMoves())) {
             drive.setCurrent(true);
             break;
           }
         }
-        recursiveNotationHistory.get(i - 1).addAllVariants(variantsPopulated);
+        recursiveNotationHistory.getLast().addAllVariants(variantsPopulated);
       }
     }
     notation.addForkedNotationHistory(recursiveNotationHistory);
   }
 
-  private Board emulateMove(@Nullable NotationMove notationMove, Board serverBoard, @NotNull NotationHistory notationHistory, @NotNull List<Board> batchBoards) {
+  private Board emulateMove(@Nullable NotationMove notationMove, Board serverBoard,
+                            @NotNull NotationHistory notationHistory, @NotNull List<Board> batchBoards) {
     if (notationMove == null) {
       return serverBoard;
     }
     serverBoard = serverBoard.deepClone();
     List<String> moves = notationMove.getMoveNotations();
     String move = moves.get(0);
+    Square shortPrev = null;
     for (int i = 1; i < moves.size(); i++) {
-      Square selected = findSquareByNotationWithHint(move, moves.subList(i - 1, moves.size()), serverBoard, notationMove.getNotationFormat());
+      Square selected;
+      if (shortPrev != null && moves.size() > 2) {
+        selected = findSquareByNotation(shortPrev.getNotation(), serverBoard);
+      } else {
+        selected = findSquareByNotationWithHint(move, moves.subList(i - 1, moves.size()), serverBoard,
+            notationMove.getNotationFormat(), moves.size());
+      }
       serverBoard.setSelectedSquare(selected);
       move = moves.get(i);
-      Square next = findSquareByNotationWithHint(move, moves.subList(i, moves.size()), serverBoard, notationMove.getNotationFormat());
+      Square next = findSquareByNotationWithHint(move, moves.subList(i, moves.size()), serverBoard,
+          notationMove.getNotationFormat(), moves.size());
       next.setHighlight(true);
       serverBoard.setNextSquare(next);
       Board clientBoard = serverBoard.deepClone();
       serverBoard = move(clientBoard, notationHistory, false);
       move = moves.get(i);
+      shortPrev = next;
     }
     batchBoards.add(serverBoard);
     return serverBoard;
