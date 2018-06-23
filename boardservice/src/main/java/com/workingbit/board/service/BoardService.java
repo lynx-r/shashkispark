@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
 import static com.workingbit.board.controller.util.BoardUtils.*;
-import static java.lang.String.format;
 
 /**
  * Created by Aleksey Popryaduhin on 13:45 09/08/2017.
@@ -143,10 +142,9 @@ public class BoardService {
     updateBoardDraughts(capturedMapped, clientBoard.getBlackDraughts(), clientBoard.getRules().getDimension());
 
     Board nextBoard = clientBoard.deepClone();
-    DomainId previousBoardId = clientBoard.getDomainId();
     boolean prevBlackTurn = nextBoard.isBlackTurn();
     // MOVE DRAUGHT
-    nextBoard = moveDraught(nextBoard, captured, previousBoardId, notationHistory);
+    nextBoard = moveDraught(nextBoard, captured, notationHistory);
 
     if (prevBlackTurn != nextBoard.isBlackTurn()) {
       nextBoard.setSelectedSquare(null);
@@ -282,12 +280,6 @@ public class BoardService {
     recursiveNotationHistory.setCurrentIndex(0);
     recursiveNotationHistory.setVariantIndex(0);
     for (NotationDrive notationDrive : notation.getNotationHistory().getNotation()) {
-      NotationMoves drives = notationDrive.getMoves();
-      for (NotationMove drive : drives) {
-        logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
-        recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
-      }
-      setMetaInformation(recursiveNotationHistory, notationDrive);
       if (!notationDrive.getVariants().isEmpty()) {
         NotationDrives variants = notationDrive.getVariants();
         int idInVariants = 0;
@@ -302,27 +294,29 @@ public class BoardService {
           vHistory.setVariantIndex(idInVariants);
           idInVariants++;
           vHistory.setNotationId(notationId);
-          if (vDrive.getVariants().size() > 1) {
+          NotationDrives curVariants = vDrive.getVariants();
+          if (curVariants.size() > 1) {
             NotationHistory subRecursiveNotationHistory = NotationHistory.createWithRoot();
             subRecursiveNotationHistory.setNotationLine(new NotationLine(0, 0));
-            List<NotationDrive> subVariants = vDrive.getVariantSubList(1, vDrive.getVariantsSize());
+//            List<NotationDrive> subVariants = vDrive.getVariantSubList(1, vDrive.getVariantsSize());
             Board subBoard = recursiveBoard.deepClone();
-            for (int i = 0; i < subVariants.size(); i++) {
-              NotationDrive subDrive = subVariants.get(i);
+            for (int i = 0; i < curVariants.size(); i++) {
+              NotationDrive subDrive = curVariants.get(i);
               NotationMoves vDrives = subDrive.getMoves();
               for (NotationMove drive : vDrives) {
-                logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
+//                logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
                 subBoard = emulateMove(drive, subBoard, subRecursiveNotationHistory, batchBoards);
               }
-              NotationDrive vvDrive = vDrive.getVariants().get(i + 1);
+              NotationDrive vvDrive = curVariants.get(i);
               vvDrive.setMoves(subRecursiveNotationHistory.getLast().getMoves());
+//              vvDrive.setNotationFormat(notation.getFormat());
             }
             NotationDrives subNotation = subRecursiveNotationHistory.getNotation();
             subNotation.removeFirst();
             vHistory.addAll(subNotation);
 //            vHistory.setRules(board.getRules());
           } else {
-            NotationDrive first = vDrive.getVariants().getFirst();
+            NotationDrive first = curVariants.getFirst();
             first.setNotationHistoryId(vHistory.getDomainId());
             first.setMoves(vDrive.getMoves());
           }
@@ -330,6 +324,12 @@ public class BoardService {
           recursiveNotationHistory.getLast().addVariant(vDrive);
         }
       }
+      NotationMoves drives = notationDrive.getMoves();
+      for (NotationMove drive : drives) {
+//        logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
+        recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
+      }
+      setMetaInformation(recursiveNotationHistory, notationDrive);
     }
     notation.addForkedNotationHistory(recursiveNotationHistory);
   }
@@ -356,7 +356,7 @@ public class BoardService {
     return serverBoard;
   }
 
-  private Board moveDraught(@NotNull Board board, @NotNull TreeSquare capturedSquares, DomainId prevBoardId,
+  private Board moveDraught(@NotNull Board board, @NotNull TreeSquare capturedSquares,
                             NotationHistory notationHistory) {
     notationHistory.getNotation().getLast().setSelected(false);
     performMoveDraught(board, capturedSquares);

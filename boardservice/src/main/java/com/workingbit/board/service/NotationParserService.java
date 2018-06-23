@@ -6,6 +6,8 @@ import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.NotationFen;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
+import com.workingbit.share.model.enumarable.EnumRules;
 import net.percederberg.grammatica.parser.Node;
 import net.percederberg.grammatica.parser.ParserCreationException;
 import net.percederberg.grammatica.parser.ParserLogException;
@@ -77,6 +79,7 @@ public class NotationParserService {
     notation.setTags(headers);
     notation.setNotationHistory(notationDrives);
 
+    notation.syncFormatAndRules();
     return notation;
   }
 
@@ -92,11 +95,20 @@ public class NotationParserService {
       Node header = gameHeader.getChildAt(i);
       String identifier = ((Token) header.getChildAt(1)).getImage();
       String value = ((Token) header.getChildAt(2)).getImage();
-      if (identifier.equals("FEN")) {
-        NotationFen fen = notationFenParserService.parse(value.substring(1, value.length() - 1));
-        notation.setNotationFen(fen);
-      } else {
-        headers.put(identifier, value);
+      switch (identifier) {
+        case "FEN":
+          NotationFen fen = notationFenParserService.parse(value.substring(1, value.length() - 1));
+          notation.setNotationFen(fen);
+          break;
+        case "GameType":
+          String substring = value.substring(1, value.length() - 1);
+          String[] arr = substring.split(",");
+          notation.setRules(EnumRules.fromTypeNumber(Integer.parseInt(arr[0])));
+          notation.setFormat(EnumNotationFormat.fromType(arr[4]));
+          break;
+        default:
+          headers.put(identifier, value);
+          break;
       }
     }
   }

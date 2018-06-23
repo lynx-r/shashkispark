@@ -83,6 +83,10 @@ public class Notation extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "notationFen")
   private NotationFen notationFen;
 
+//  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
+//  @DynamoDBAttribute(attributeName = "gameType")
+//  private GameType gameType;
+
   @DynamoDBAttribute(attributeName = "readonly")
   private boolean readonly;
 
@@ -114,7 +118,9 @@ public class Notation extends BaseDomain implements Payload {
     setFormat(notationFormat);
     StringBuilder stringBuilder = new StringBuilder();
     tagsAsString(stringBuilder);
-    stringBuilder.append(notationFen.toString());
+    stringBuilder.append(getGameType());
+    stringBuilder.append("\n");
+    stringBuilder.append(notationFen.getAsString());
     stringBuilder.append("\n");
     if (!notationHistory.isEmpty()) {
       String moves = notationHistory.notationToPdn(notationFormat);
@@ -126,6 +132,14 @@ public class Notation extends BaseDomain implements Payload {
     String notation = stringBuilder.toString();
     setFormat(oldNotationFormat);
     return notation;
+  }
+
+  private String getGameType() {
+    return "[GameType \"" + rules.getTypeNumber() +
+        (notationFen != null ? "," + notationFen.getTurn() : "") +
+        ",0,0" +
+        ("," + getFormat().getType())
+        + ",0\"]";
   }
 
   @DynamoDBIgnore

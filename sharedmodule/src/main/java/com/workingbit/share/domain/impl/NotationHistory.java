@@ -151,6 +151,12 @@ public class NotationHistory extends BaseDomain implements DeepClone {
 
   @JsonIgnore
   @DynamoDBIgnore
+  public NotationDrive getFirst() {
+    return notation.getFirst();
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
   public NotationDrive getLast() {
     return notation.getLast();
   }
@@ -319,5 +325,10 @@ public class NotationHistory extends BaseDomain implements DeepClone {
         .ifPresent(notationDrive ->
             notationDrive.setVariants(notationDrive.filterVariantById(getVariantIndex()))
         );
+  }
+
+  public void syncFormatAndDimension() {
+    getLast().setNotationFormat(getFirst().getNotationFormat());
+    getLast().setBoardDimension(getFirst().getBoardDimension());
   }
 }

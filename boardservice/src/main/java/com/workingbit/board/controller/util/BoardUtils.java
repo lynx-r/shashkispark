@@ -348,6 +348,7 @@ public class BoardUtils {
     }
     notationHistory.setLastSelected(true);
     notationHistory.setLastMoveCursor();
+    notationHistory.syncFormatAndDimension();
   }
 
   public static void updateNotationEnd(Board board, @NotNull NotationHistory notationHistory, boolean previousCaptured) {
@@ -367,6 +368,7 @@ public class BoardUtils {
     notationHistory.syncMoves();
     board.setBlackTurn(!blackTurn);
     notationHistory.setLastSelected(true);
+    notationHistory.syncFormatAndDimension();
   }
 
   private static void pushCaptureMove(Board board, int notationNumber, @NotNull NotationHistory notationHistory) {

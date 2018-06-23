@@ -90,7 +90,7 @@ public class NotationSimpleMove implements DeepClone {
   }
 
   private String getPdnNumericNotation100() {
-    if (notation.matches("[a-j]\\d")) {
+    if (notation.matches("[a-j]\\d\\d?")) {
       return ALPHANUMERIC_TO_NUMERIC_100.get(notation);
     }
     return notation;
