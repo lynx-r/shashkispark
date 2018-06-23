@@ -204,24 +204,18 @@ public class BoardService {
                                          @NotNull List<Board> batchBoards) {
     NotationHistory recursiveFillNotationHistory = NotationHistory.createWithRoot();
     populateBoardWithNotation(notationId, board, notation, recursiveFillNotationHistory, batchBoards);
-//    NotationLine lastNotationLine = new NotationLine(0, 0);
-//    notation.findNotationHistoryByLine(lastNotationLine)
-//        .ifPresent(notationHistory -> {
     NotationDrive lastDrive = recursiveFillNotationHistory.getLast();
     lastDrive.setSelected(true);
     NotationDrives curNotation = recursiveFillNotationHistory.getNotation();
     NotationDrive lastCurrentDrive = getNotationHistoryColors(curNotation);
-//          notationHistory.setRules(board.getRules());
     NotationHistory syncNotationHist = recursiveFillNotationHistory.deepClone();
     for (int i = 0; i < syncNotationHist.getNotation().size(); i++) {
       syncNotationHist.setCurrentIndex(i);
       notationService.syncVariants(syncNotationHist, notation);
     }
     setNotationHistoryForNotation(notation, lastCurrentDrive, recursiveFillNotationHistory);
-//          notationHistory.setFormat(notation.getFormat());
     notationHistoryDao.save(recursiveFillNotationHistory);
     notation.setNotationHistory(recursiveFillNotationHistory);
-//        });
   }
 
   private NotationDrive getNotationHistoryColors(NotationDrives curNotation) {
@@ -299,23 +293,17 @@ public class BoardService {
           if (curVariants.size() > 1) {
             NotationHistory subRecursiveNotationHistory = NotationHistory.createWithRoot();
             subRecursiveNotationHistory.setNotationLine(new NotationLine(0, 0));
-//            List<NotationDrive> subVariants = vDrive.getVariantSubList(1, vDrive.getVariantsSize());
             Board subBoard = recursiveBoard.deepClone();
-            for (int i = 0; i < curVariants.size(); i++) {
-              NotationDrive subDrive = curVariants.get(i);
+            for (NotationDrive subDrive : curVariants) {
               NotationMoves vDrives = subDrive.getMoves();
               for (NotationMove drive : vDrives) {
-//                logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
                 subBoard = emulateMove(drive, subBoard, subRecursiveNotationHistory, batchBoards);
               }
-              NotationDrive vvDrive = curVariants.get(i);
-              vvDrive.setMoves(subRecursiveNotationHistory.getLast().getMoves());
-//              vvDrive.setNotationFormat(notation.getFormat());
+              subDrive.setMoves(subRecursiveNotationHistory.getLast().getMoves());
             }
             NotationDrives subNotation = subRecursiveNotationHistory.getNotation();
             subNotation.removeFirst();
             vHistory.addAll(subNotation);
-//            vHistory.setRules(board.getRules());
           } else {
             NotationDrive first = curVariants.getFirst();
             first.setNotationHistoryId(vHistory.getDomainId());
@@ -328,7 +316,6 @@ public class BoardService {
       int i = notationMoves.indexOf(notationDrive);
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
-//        logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
         recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
       }
       setMetaInformation(recursiveNotationHistory, notationDrive);
@@ -336,6 +323,7 @@ public class BoardService {
         for (NotationDrive drive : variantsPopulated) {
           if (recursiveNotationHistory.get(i).getMoves().equals(drive.getVariants().getFirst().getMoves())) {
             drive.setCurrent(true);
+            break;
           }
         }
         recursiveNotationHistory.get(i - 1).addAllVariants(variantsPopulated);
