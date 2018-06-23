@@ -1,6 +1,8 @@
 package com.workingbit.board.service;
 
+import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.board.grammar.NotationParser;
+import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.NotationDrive;
@@ -63,6 +65,9 @@ public class NotationParserService {
     Notation notation = new Notation();
     ListOrderedMap<String, String> headers = notation.getTags();
     parseHeader(gameHeader, headers, notation);
+    if (EnumNotationFormat.SHORT.equals(notation.getFormat())) {
+      throw new BoardServiceException(ErrorMessages.IMPORT_SHORT_UNSUPPORTED);
+    }
 
     Node game = pdnFile.getChildAt(1);
     if (game == null) {
@@ -79,7 +84,6 @@ public class NotationParserService {
     notation.setTags(headers);
     notation.setNotationHistory(notationDrives);
 
-//    notation.syncFormatAndRules();
     return notation;
   }
 

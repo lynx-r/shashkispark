@@ -139,27 +139,27 @@ public class NotationMove implements DeepClone, NotationFormat {
   }
 
   private void checkAndAddMoveForPdn(String stroke, @NotNull String capture, @NotNull String simple,
-                                            EnumNotationFormat notationFormat) {
+                                     EnumNotationFormat notationFormat) {
     boolean isCapture = stroke.contains(capture);
     if (isCapture) {
       setType(CAPTURE);
       setMoveKeysForPdn(stroke.split(capture));
-    } else {
+    } else if (stroke.contains(simple)) {
       setType(SIMPLE);
       switch (notationFormat) {
         case ALPHANUMERIC:
         case NUMERIC:
           setMoveKeysForPdn(stroke.split(simple));
           break;
-        case SHORT:
-          String endMove = stroke.substring(stroke.length() - 2);
-          String startMove = stroke.substring(0, stroke.length() - 2);
-          String[] split = startMove.split("");
-          List<String> list = new ArrayList<>(List.of(split));
-          list.add(endMove);
-          setMoveKeysForPdn(list.toArray(new String[0]));
-          break;
       }
+    } else if (notationFormat.equals(EnumNotationFormat.SHORT)) {
+      setType(SIMPLE);
+      String endMove = stroke.substring(1);
+      String startMove = stroke.substring(0, 1);
+      String[] split = startMove.split("");
+      List<String> list = new ArrayList<>(List.of(split));
+      list.add(endMove);
+      setMoveKeysForPdn(list.toArray(new String[0]));
     }
   }
 

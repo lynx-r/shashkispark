@@ -202,6 +202,7 @@ public class BoardService {
   private void populateBoardWithNotation(DomainId notationId, @NotNull Board board,
                                          @NotNull Notation notation,
                                          @NotNull List<Board> batchBoards) {
+    board.setDriveCount(notation.getNotationHistory().get(1).getNotationNumberInt() - 1);
     NotationHistory recursiveFillNotationHistory = NotationHistory.createWithRoot();
     populateBoardWithNotation(notationId, board, notation, recursiveFillNotationHistory, batchBoards);
     NotationDrive lastDrive = recursiveFillNotationHistory.getLast();
@@ -214,8 +215,9 @@ public class BoardService {
       notationService.syncVariants(syncNotationHist, notation);
     }
     setNotationHistoryForNotation(notation, lastCurrentDrive, recursiveFillNotationHistory);
-    notationHistoryDao.save(recursiveFillNotationHistory);
     notation.setNotationHistory(recursiveFillNotationHistory);
+    notation.syncFormatAndRules();
+    notationHistoryDao.save(recursiveFillNotationHistory);
   }
 
   private NotationDrive getNotationHistoryColors(NotationDrives curNotation) {
@@ -380,6 +382,14 @@ public class BoardService {
     updateNotationEnd(board, notationHistory, previousCaptured);
     resetBoardHighlight(board);
     resetCaptured(board);
+//    if (!capturedSquares.isEmpty()) {
+//      for (Square square : capturedSquares.flatTree()) {
+//        boolean beaten = !findSquareByLink(square, board).isOccupied();
+//        if (!beaten) {
+//          throw new RuntimeException("Шашка не была  побита: " + square.getNotation());
+//        }
+//      }
+//    }
     return board;
   }
 
