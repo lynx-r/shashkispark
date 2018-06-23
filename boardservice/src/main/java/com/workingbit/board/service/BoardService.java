@@ -279,7 +279,9 @@ public class BoardService {
     recursiveNotationHistory.setNotationId(notationId);
     recursiveNotationHistory.setCurrentIndex(0);
     recursiveNotationHistory.setVariantIndex(0);
-    for (NotationDrive notationDrive : notation.getNotationHistory().getNotation()) {
+    NotationDrives notationMoves = notation.getNotationHistory().getNotation();
+    for (NotationDrive notationDrive : notationMoves) {
+      NotationDrives variantsPopulated = new NotationDrives();
       if (!notationDrive.getVariants().isEmpty()) {
         NotationDrives variants = notationDrive.getVariants();
         int idInVariants = 0;
@@ -321,15 +323,19 @@ public class BoardService {
             first.setMoves(vDrive.getMoves());
           }
           notation.addForkedNotationHistory(vHistory);
-          recursiveNotationHistory.getLast().addVariant(vDrive);
+          variantsPopulated.add(vDrive);
         }
       }
+      int i = notationMoves.indexOf(notationDrive);
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
 //        logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
         recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
       }
       setMetaInformation(recursiveNotationHistory, notationDrive);
+      if (!variantsPopulated.isEmpty()) {
+        recursiveNotationHistory.get(i - 1).addAllVariants(variantsPopulated);
+      }
     }
     notation.addForkedNotationHistory(recursiveNotationHistory);
   }
