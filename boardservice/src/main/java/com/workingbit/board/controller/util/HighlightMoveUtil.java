@@ -369,7 +369,8 @@ public class HighlightMoveUtil {
 
   private boolean isInvalidStep(@Nullable Square next, @Nullable Square previous) {
     return next == null
-        || (next.isOccupied() && next.getDraught().isCaptured())
+        || (next.isOccupied() && (next.getDraught().isCaptured()
+        || next.getDraught().isBlack() == this.selectedSquare.getDraught().isBlack()))
         || (previous != null && previous.isOccupied()
         && previous.getDraught().isBlack() != this.selectedSquare.getDraught().isBlack()
         && !previous.equals(this.selectedSquare)

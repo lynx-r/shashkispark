@@ -1,11 +1,11 @@
 package com.workingbit.share.model;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Objects;
@@ -15,29 +15,17 @@ import static com.workingbit.share.util.Utils.*;
 /**
  * Created by Aleksey Popryadukhin on 04/04/2018.
  */
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class NotationSimpleMove implements DeepClone {
   private String notation;
   private boolean cursor;
-  @DynamoDBIgnore
   private EnumNotationFormat format;
-  @DynamoDBIgnore
   private int boardDimension;
-  /**
-   * whether move visible. is used in frontend
-   */
-  private boolean visible;
-
-  private String moveStrength;
-
-  public NotationSimpleMove() {
-    visible = true;
-  }
 
   public NotationSimpleMove(String notation) {
-    this();
     this.notation = notation;
   }
 
@@ -62,7 +50,7 @@ public class NotationSimpleMove implements DeepClone {
       throw new RuntimeException("Размерность доски не установлена");
     }
     switch (format) {
-      case DIGITAL:
+      case NUMERIC:
         return getNotationNum();
       case ALPHANUMERIC:
         return getNotationAlpha();
@@ -121,5 +109,4 @@ public class NotationSimpleMove implements DeepClone {
     }
     return notation;
   }
-
 }

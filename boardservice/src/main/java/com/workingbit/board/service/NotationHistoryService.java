@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.workingbit.board.BoardEmbedded.notationHistoryDao;
-import static com.workingbit.board.BoardEmbedded.notationStoreService;
 import static com.workingbit.share.util.Utils.isCorrespondedNotation;
 
 /**
@@ -23,7 +22,7 @@ public class NotationHistoryService {
 
   void save(@NotNull NotationHistory notationHistory) {
     notationHistoryDao.save(notationHistory);
-    notationStoreService.removeNotationHistory(notationHistory);
+//    notationStoreService.removeNotationHistory(notationHistory);
   }
 
   NotationHistory forkAt(int forkFromNotationDrive, Notation notation) {
@@ -196,7 +195,7 @@ public class NotationHistoryService {
     try {
       var notationHistories = notationHistoryDao.findByNotationId(notationId);
       notationHistoryDao.batchDelete(notationHistories);
-      notationHistories.forEach(notationStoreService::removeNotationHistory);
+//      notationHistories.forEach(notationStoreService::removeNotationHistory);
     } catch (DaoException ignore) {
     }
   }

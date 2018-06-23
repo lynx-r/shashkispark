@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 /**
  * Created by Aleksey Popryadukhin on 02/04/2018.
  */
-//@JsonDeserialize(using = NotationDrivesDeserializer.class)
 public class NotationDrives extends LinkedList<NotationDrive> implements NotationFormat, DeepClone {
 
   public NotationDrives() {
@@ -29,8 +28,18 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
   }
 
   @Override
-  public String asString() {
-    return Utils.listToPdn(new ArrayList<>(this));
+  public String asStringAlphaNumeric() {
+    return Utils.listToPdn(new ArrayList<>(this), EnumNotationFormat.ALPHANUMERIC);
+  }
+
+  @Override
+  public String asStringNumeric() {
+    return Utils.listToPdn(new ArrayList<>(this), EnumNotationFormat.NUMERIC);
+  }
+
+  @Override
+  public String asStringShort() {
+    return Utils.listToPdn(new ArrayList<>(this), EnumNotationFormat.SHORT);
   }
 
   @Override
@@ -38,8 +47,8 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
     return Utils.listToTreePdn(new ArrayList<>(this), indent, tabulation);
   }
 
-  public String variantsToPdn() {
-    return Utils.notationDrivesToPdn(this);
+  public String variantsToPdn(EnumNotationFormat notationFormat) {
+    return Utils.notationDrivesToPdn(this, notationFormat);
   }
 
   public String variantsToTreePdn(String indent, String tabulation) {
@@ -53,11 +62,17 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
   }
 
   public void setNotationFormat(EnumNotationFormat format) {
-    forEach(notationDrive -> notationDrive.setNotationFormat(format));
+    replaceAll(notationDrive -> {
+      notationDrive.setNotationFormat(format);
+      return notationDrive;
+    });
   }
 
   public void setDimension(int dimension) {
-    forEach(notationDrive -> notationDrive.setBoardDimension(dimension));
+    replaceAll(notationDrive -> {
+      notationDrive.setBoardDimension(dimension);
+      return notationDrive;
+    });
   }
 
   public void setIdInVariants(int idInVariants) {
@@ -118,28 +133,14 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<DomainId> getLastNotationBoardIdInVariants(Integer currentIndex) {
-    NotationDrive notationLast = getLast();
-//    if (notationLast.isRoot()) {
-//      return notationLast.getVariants()
-//          .stream()
-//          .filter(NotationDrive::isCurrent)
-//          .flatMap(notationDrive -> notationDrive.getVariants().stream())
-//          .filter(NotationDrive::isSelected)
-//          .map(NotationDrive::getMoves)
-//          .map(NotationMoves::getLastMove)
-//          .filter(Objects::nonNull)
-//          .map(NotationSimpleMove::getBoardId)
-//          .findFirst();
-//    }
-    return Optional.ofNullable(getCurrentVariantStream(currentIndex)
+    return getCurrentVariantStream(currentIndex)
         .map(NotationDrive::getVariants)
         .map(LinkedList::getLast)
         .map(NotationDrive::getMoves)
         .map(NotationMoves::getLast)
         .filter(Objects::nonNull)
         .findFirst()
-        .orElse(null)
-        .getBoardId());
+        .map(NotationMove::getBoardId);
   }
 
   @JsonIgnore
@@ -159,39 +160,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
     forEach(nd -> nd.getMoves().resetCursors());
     NotationMoves moves = getLast().getMoves();
     if (!moves.isEmpty()) {
-      NotationSimpleMove lastMove = moves.getLastMove();
-      if (lastMove != null) {
-        lastMove.setCursor(true);
-      }
-    }
-  }
-
-  public static class Builder {
-
-    private NotationDrives drives;
-
-    private Builder() {
-      drives = new NotationDrives();
-    }
-
-    public static NotationDrives.Builder getInstance() {
-      return new NotationDrives.Builder();
-    }
-
-    @NotNull
-    public NotationDrives.Builder add(NotationDrive drive) {
-      drives.add(drive);
-      return this;
-    }
-
-    public NotationDrives build() {
-      return drives;
-    }
-
-    @NotNull
-    public NotationDrives.Builder addAll(@NotNull List<NotationDrive> drives) {
-      this.drives.addAll(drives);
-      return this;
+      moves.getLast().setCursor(true);
     }
   }
 }

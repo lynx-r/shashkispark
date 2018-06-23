@@ -55,6 +55,9 @@ public class BoardBox extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "idInArticle")
   private int idInArticle;
 
+  @DynamoDBAttribute(attributeName = "taskIdInArticle")
+  private int taskIdInArticle;
+
   @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "boardId")
   private DomainId boardId;
@@ -85,8 +88,7 @@ public class BoardBox extends BaseDomain implements Payload {
   /**
    * Показывать ли эту доску в просмотре статьи когда пользователь не залогинен
    */
-  @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
-  @DynamoDBAttribute(attributeName = "removed")
+  @DynamoDBIgnore
   private boolean removed;
 
   /**

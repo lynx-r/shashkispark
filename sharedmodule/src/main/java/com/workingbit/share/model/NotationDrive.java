@@ -16,6 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 /**
  * Created by Aleksey Popryaduhin on 21:29 03/10/2017.
  */
@@ -41,10 +43,8 @@ public class NotationDrive implements DeepClone, NotationFormat {
   /**
    * Does notation in notationFormat format like 1. 12-21
    */
-  @DynamoDBIgnore
   private EnumNotationFormat notationFormat;
 
-  @DynamoDBIgnore
   private int boardDimension;
 
   private String comment;
@@ -167,7 +167,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
   public void parseNameFromPdn(@NotNull String name) {
     switch (name) {
       case "NUMERICMOVE":
-        notationFormat = EnumNotationFormat.DIGITAL;
+        notationFormat = EnumNotationFormat.NUMERIC;
         break;
       case "ALPHANUMERICMOVE":
         notationFormat = EnumNotationFormat.ALPHANUMERIC;
@@ -211,14 +211,38 @@ public class NotationDrive implements DeepClone, NotationFormat {
         .toString();
   }
 
-  @Override
-  public String asString() {
+  @DynamoDBIgnore
+  public String getVariantsAsString() {
+    return variants.variantsToPdn(notationFormat);
+  }
+
+  public String asString(EnumNotationFormat notationFormat) {
+    EnumNotationFormat oldNotationFormat = this.notationFormat;
+    setNotationFormat(notationFormat);
     if (root) {
-      return variants.variantsToPdn();
+      return variants.variantsToPdn(notationFormat);
     }
-    return (StringUtils.isNotBlank(notationNumber) ? notationNumber : "") +
-        (!moves.isEmpty() ? moves.asString() + " " : "") +
-        (!variants.isEmpty() ? variants.variantsToPdn() : "");
+    String notation = (StringUtils.isNotBlank(notationNumber) ? notationNumber : "") +
+        (!moves.isEmpty() ? moves.asString(notationFormat) + " " : "") +
+        (!variants.isEmpty() ? variants.variantsToPdn(notationFormat) : "") +
+        (StringUtils.isNoneBlank(comment) ? format("{%s} ", comment) : "");
+    setNotationFormat(oldNotationFormat);
+    return notation;
+  }
+
+  @Override
+  public String asStringAlphaNumeric() {
+    return asString(EnumNotationFormat.ALPHANUMERIC);
+  }
+
+  @Override
+  public String asStringNumeric() {
+    return asString(EnumNotationFormat.NUMERIC);
+  }
+
+  @Override
+  public String asStringShort() {
+    return asString(EnumNotationFormat.SHORT);
   }
 
   @Override
@@ -227,7 +251,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
       return variants.variantsToTreePdn(indent + tabulation, tabulation);
     }
     return (StringUtils.isNotBlank(notationNumber) ? indent + notationNumber : "") +
-        (!moves.isEmpty() ? moves.asString() + " " : "") +
+        (!moves.isEmpty() ? moves.asStringAlphaNumeric() + " " : "") +
         (!variants.isEmpty() ? variants.variantsToTreePdn(indent + tabulation, tabulation) : "\n");
   }
 

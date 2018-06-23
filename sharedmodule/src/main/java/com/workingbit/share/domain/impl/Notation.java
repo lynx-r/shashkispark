@@ -6,7 +6,10 @@ import com.workingbit.share.common.DBConstants;
 import com.workingbit.share.converter.ListOrderedMapConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.model.*;
+import com.workingbit.share.model.DomainId;
+import com.workingbit.share.model.NotationFen;
+import com.workingbit.share.model.NotationLine;
+import com.workingbit.share.model.Payload;
 import com.workingbit.share.model.enumarable.EnumNotation;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
@@ -104,20 +107,40 @@ public class Notation extends BaseDomain implements Payload {
   }
 
   @NotNull
+  @JsonIgnore
   @DynamoDBIgnore
-  public String getAsString() {
+  private String getAsString(EnumNotationFormat notationFormat) {
+    EnumNotationFormat oldNotationFormat = this.format;
+    setFormat(notationFormat);
     StringBuilder stringBuilder = new StringBuilder();
     tagsAsString(stringBuilder);
     stringBuilder.append(notationFen.toString());
     stringBuilder.append("\n");
     if (!notationHistory.isEmpty()) {
-      String moves = notationHistory.notationToPdn();
+      String moves = notationHistory.notationToPdn(notationFormat);
       stringBuilder.append("\n");
       stringBuilder
           .append(moves)
           .append(EnumNotation.END_GAME_SYMBOL.getPdn());
     }
-    return stringBuilder.toString();
+    String notation = stringBuilder.toString();
+    setFormat(oldNotationFormat);
+    return notation;
+  }
+
+  @DynamoDBIgnore
+  public String getAsStringAlphaNumeric() {
+    return getAsString(EnumNotationFormat.ALPHANUMERIC);
+  }
+
+  @DynamoDBIgnore
+  public String getAsStringNumeric() {
+    return getAsString(EnumNotationFormat.NUMERIC);
+  }
+
+  @DynamoDBIgnore
+  public String getAsStringShort() {
+    return getAsString(EnumNotationFormat.SHORT);
   }
 
   @SuppressWarnings("unused")

@@ -2,13 +2,18 @@ package com.workingbit.board.controller;
 
 import com.despegar.http.client.*;
 import com.despegar.sparkjava.test.SparkServer;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import com.workingbit.board.BoardEmbedded;
 import com.workingbit.board.config.Authority;
+import com.workingbit.board.service.BoardService;
+import com.workingbit.board.service.NotationParserService;
+import com.workingbit.orchestrate.config.ModuleProperties;
+import com.workingbit.orchestrate.service.OrchestralService;
+import com.workingbit.share.common.Config4j;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
+import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.UnirestUtil;
@@ -26,7 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
+import static com.workingbit.board.controller.util.BoardUtils.findSquareByNotation;
 import static com.workingbit.share.common.RequestConstants.ACCESS_TOKEN_HEADER;
 import static com.workingbit.share.common.RequestConstants.USER_SESSION_HEADER;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
@@ -43,6 +48,9 @@ public class BoardBoxControllerTest {
   @NotNull
   private static String boardUrl = "/api/v1";
   private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
+  private BoardService boardService = new BoardService();
+  private ModuleProperties moduleProperties = Config4j.configurationProvider("moduleconfig.yaml").bind("app", ModuleProperties.class);
+  private OrchestralService orchestralService = new OrchestralService(moduleProperties);
 
   public static class BoardBoxControllerTestSparkApplication implements SparkApplication {
 
@@ -57,7 +65,7 @@ public class BoardBoxControllerTest {
   public static SparkServer<BoardBoxControllerTestSparkApplication> testServer = new SparkServer<>(BoardBoxControllerTestSparkApplication.class, randomPort);
 
   @NotNull
-  private AuthUser register() throws Exception {
+  private AuthUser register() {
     String username = Utils.getRandomString20();
     String password = Utils.getRandomString20();
     UserCredentials userCredentials = new UserCredentials(username, password);
@@ -119,7 +127,7 @@ public class BoardBoxControllerTest {
   }
 
   @Test
-  public void highlight() throws UnirestException, HttpClientException {
+  public void highlight() {
     DomainId boardBoxId = DomainId.getRandomID();
     DomainId articleId = DomainId.getRandomID();
 
@@ -158,7 +166,6 @@ public class BoardBoxControllerTest {
     nextSquare.setHighlight(true);
     boardBox.getBoard().setNextSquare(nextSquare);
 
-
     boardBox = (BoardBox) post("/move", boardBox, authUser).getBody();
     Board board = boardBox.getBoard();
     Square moved = board.getSquares()
@@ -169,6 +176,137 @@ public class BoardBoxControllerTest {
         .findFirst()
         .get();
     assertTrue(moved.isOccupied());
+  }
+
+  /**
+   * actual test
+   *
+   * @throws Exception
+   */
+  @Test
+  public void fork() throws Exception {
+    DomainId boardBoxId = DomainId.getRandomID();
+    DomainId articleId = DomainId.getRandomID();
+
+    AuthUser authUser = register();
+
+    Article article = new Article();
+    article.setDomainId(articleId);
+    article.setTitle(Utils.getRandomString20());
+    article.setHumanReadableUrl(article.getTitle());
+    article.setIntro(Utils.getRandomString(101));
+    article.setContent(Utils.getRandomString(200));
+
+    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
+    createBoardPayload.setArticleId(articleId);
+    createBoardPayload.setBlack(false);
+    createBoardPayload.setFillBoard(true);
+    createBoardPayload.setUserId(authUser.getUserId());
+    createBoardPayload.setIdInArticle(1);
+    createBoardPayload.setBlack(false);
+    createBoardPayload.setRules(EnumRules.RUSSIAN);
+    CreateArticlePayload createArticlePayload = new CreateArticlePayload(article, createBoardPayload);
+
+    CreateArticleResponse response = orchestralService.createArticle(createArticlePayload, authUser).get();
+    assertNotNull(article);
+
+    article = response.getArticle();
+    article.setArticleStatus(EnumArticleStatus.PUBLISHED);
+    article = orchestralService.saveArticle(article, authUser).get();
+    BoardBox boardBox = response.getBoard();
+
+    NotationParserService parserService = new NotationParserService();
+    Notation notation = parserService.parseResource("/pdn/fork_1.pdn");
+    NotationHistory notationHistory = notation.getNotationHistory();
+    NotationDrives drives = notationHistory.getNotation();
+    Board board = boardBox.getBoard().deepClone();
+    for (NotationDrive drive : drives) {
+      for (NotationMove notationMove : drive.getMoves()) {
+        List<String> moves = notationMove.getMoveNotations();
+        String move = moves.get(0);
+        for (int i = 1; i < moves.size(); i++) {
+          boardService.updateBoard(board);
+          Square selected = findSquareByNotation(move, board);
+          board.setSelectedSquare(selected);
+          move = moves.get(i);
+          Square next = findSquareByNotation(move, board);
+          next.setHighlight(true);
+          board.setNextSquare(next);
+          boardBox.setBoard(board);
+          boardBox = (BoardBox) post(Authority.BOARD_MOVE_PROTECTED.getPath(), boardBox, authUser).getBody();
+          move = moves.get(i);
+          board = boardBox.getBoard();
+          Square moved = board.getSquares()
+              .stream()
+              .filter(Objects::nonNull)
+              .peek(square -> square.setDim(8))
+              .filter(square -> square.getNotation().equals(next.getNotation()))
+              .findFirst()
+              .get();
+          assertTrue(moved.isOccupied());
+        }
+      }
+    }
+
+    notationHistory = boardBox.getNotation().getNotationHistory();
+    notationHistory.setCurrentIndex(1);
+    BoardBoxes boardBoxes = (BoardBoxes) post(Authority.BOARD_FORK_PROTECTED.getPath(), boardBox, authUser).getBody();
+    BoardBox finalBoardBox = boardBox;
+    boardBox = boardBoxes.getBoardBoxes().valueList().stream().filter(cb -> cb.getId().equals(finalBoardBox.getId())).findFirst().get();
+    notationHistory = boardBox.getNotation().getNotationHistory();
+    NotationLine notationLine = notationHistory.getNotationLine();
+    assertEquals(1, notationLine.getCurrentIndex().intValue());
+    assertEquals(1, notationLine.getVariantIndex().intValue());
+
+    notationHistory = boardBox.getNotation().getNotationHistory();
+    notationHistory.setCurrentIndex(1);
+    boardBoxes = (BoardBoxes) post(Authority.BOARD_FORK_PROTECTED.getPath(), boardBox, authUser).getBody();
+    boardBox = boardBoxes.getBoardBoxes().valueList().stream().filter(cb -> cb.getId().equals(finalBoardBox.getId())).findFirst().get();
+    notationHistory = boardBox.getNotation().getNotationHistory();
+    notationLine = notationHistory.getNotationLine();
+    assertEquals(1, notationLine.getCurrentIndex().intValue());
+    assertEquals(2, notationLine.getVariantIndex().intValue());
+
+    NotationDrive last = notationHistory.getLast();
+    NotationDrives variants = last.getVariants();
+    assertEquals(3, variants.size());
+    assertTrue(variants.getLast().isCurrent());
+    assertTrue(variants.get(1).isPrevious());
+
+    parserService = new NotationParserService();
+    notation = parserService.parseResource("/pdn/fork_1_3.pdn");
+    notationHistory = notation.getNotationHistory();
+    drives = notationHistory.getNotation();
+    board = boardBox.getBoard().deepClone();
+    for (NotationDrive drive : drives) {
+      for (NotationMove notationMove : drive.getMoves()) {
+        List<String> moves = notationMove.getMoveNotations();
+        String move = moves.get(0);
+        for (int i = 1; i < moves.size(); i++) {
+          boardService.updateBoard(board);
+          Square selected = findSquareByNotation(move, board);
+          board.setSelectedSquare(selected);
+          move = moves.get(i);
+          Square next = findSquareByNotation(move, board);
+          next.setHighlight(true);
+          board.setNextSquare(next);
+          boardBox.setBoard(board);
+          boardBox = (BoardBox) post(Authority.BOARD_MOVE_PROTECTED.getPath(), boardBox, authUser).getBody();
+          move = moves.get(i);
+          board = boardBox.getBoard();
+          Square moved = board.getSquares()
+              .stream()
+              .filter(Objects::nonNull)
+              .peek(square -> square.setDim(8))
+              .filter(square -> square.getNotation().equals(next.getNotation()))
+              .findFirst()
+              .get();
+          assertTrue(moved.isOccupied());
+        }
+      }
+    }
+
+//    post(Authority.BOARD_DELETE_PROTECTED.getPath(), boardBox.getDomainId(), authUser);
   }
 
   @Test

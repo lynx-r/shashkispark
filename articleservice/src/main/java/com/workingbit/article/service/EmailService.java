@@ -22,8 +22,8 @@ public class EmailService {
 //        .withRecipients("Tasting Group", false, Message.RecipientType.TO,
 //            "taster1@cgroup.org;taster2@cgroup.org;tester <>")
 //        .bcc("Mr Sweetnose <snose@candyshop.org>")
-        .from("Алексей Попрядухин", "lynx.p9@gmail.com")
-        .withReplyTo("popcorn", "popcorn@shashki.online")
+        .from("Шашки онлайн", "popcorn@shashki.online")
+        .withReplyTo("Шашки онлайн", "popcorn@shashki.online")
         .withSubject("hey")
         .withHTMLText("<img src='cid:wink1'><b>We should meet up!</b><img src='cid:wink2'>")
         .withPlainText("Please view this email in a modern email client!")
@@ -31,15 +31,15 @@ public class EmailService {
 //        .withEmbeddedImage("wink2", imageDatesource)
 //        .withAttachment("invitation", pdfByteArray, "application/pdf")
 //        .withAttachment("dresscode", odfDatasource)
-        .withHeader("X-SES-CONFIGURATION-SET", "ConfigSet")
+//        .withHeader("X-SES-CONFIGURATION-SET", "ConfigSet")
 //        .withReturnReceiptTo()
-        .withDispositionNotificationTo("notify-read-emails@candyshop.com")
-        .withBounceTo("tech@candyshop.com")
+//        .withDispositionNotificationTo("notify-read-emails@candyshop.com")
+//        .withBounceTo("admin@mail.shashki.online")
 //        .signWithDomainKey(privateKeyData, "somemail.com", "selector")
         .buildEmail();
 
     Mailer mailer = MailerBuilder
-        .withSMTPServer("email-smtp.eu-west-1.amazonaws.com", 587, "AKIAJX3BFC33YG4S3P5A", "ArI18bAXY95ABHs97fUnGnNPAIfYS47aESWvtEz7VpF+")
+        .withSMTPServer("email-smtp.eu-west-1.amazonaws.com", 587, "AKIAJVJX4JLQJFJRMMEQ", "Aq+LFAk+yUOJLRWWg454p1RNvd+/Znq/cRL9eZSrM41g")
         .withTransportStrategy(TransportStrategy.SMTP_TLS)
         .withSessionTimeout(10 * 1000)
 //        .clearEmailAddressCriteria() // turns off email validation

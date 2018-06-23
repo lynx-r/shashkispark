@@ -87,14 +87,13 @@ public class BoardEmbedded {
           // open api
           post(Authority.BOARD_VIEW_BRANCH.getPath(), BoardBoxController.viewBranch);
           post(Authority.BOARD_BY_ID.getPath(), BoardBoxController.findBoardById);
-//          post(Authority.BOARD_BY_ID.getPath(), BoardBoxController.findPublicBoardById);
           post(Authority.BOARDS_BY_ARTICLE.getPath(), BoardBoxController.findBoardByIds);
-//          post(Authority.BOARD_PUBLIC_BY_ARTICLE_ID.getPath(), BoardBoxController.findPublicBoardByArticleId);
           post(Authority.BOARD_LOAD_PREVIEW.getPath(), BoardBoxController.loadPreviewBoard);
           post(Authority.BOARD_SWITCH.getPath(), BoardBoxController.switchNotation);
 
           // protected api
           post(Authority.BOARD_PROTECTED.getPath(), BoardBoxController.createBoard);
+          post(Authority.BOARD_MARK_TASK_PROTECTED.getPath(), BoardBoxController.markTaskBoard);
           post(Authority.BOARD_INIT_PROTECTED.getPath(), BoardBoxController.initBoard);
           post(Authority.BOARD_CLEAR_PROTECTED.getPath(), BoardBoxController.clearBoard);
           post(Authority.PARSE_PDN_PROTECTED.getPath(), BoardBoxController.parsePdn);

@@ -31,9 +31,7 @@ import java.util.stream.Collectors;
 import static com.workingbit.orchestrate.util.RedisUtil.putInternalRequest;
 import static com.workingbit.share.common.DBConstants.DATE_TIME_FORMATTER;
 import static com.workingbit.share.util.Utils.getRandomString20;
-import static java.net.HttpURLConnection.HTTP_CREATED;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.*;
 import static java.util.Collections.emptyMap;
 
 /**
@@ -91,13 +89,22 @@ public class OrchestralService {
     return get(authenticate, headers);
   }
 
-  public Optional<Article> createArticle(CreateArticlePayload articlePayload, @NotNull AuthUser authUser) {
-    return createArticleAnswer(articlePayload, authUser).map(answer -> ((Article) answer.getBody()));
+  public Optional<CreateArticleResponse> createArticle(CreateArticlePayload articlePayload, @NotNull AuthUser authUser) {
+    return createArticleAnswer(articlePayload, authUser).map(answer -> ((CreateArticleResponse) answer.getBody()));
   }
 
   public Optional<Answer> createArticleAnswer(CreateArticlePayload articlePayload, @NotNull AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return post(article, articlePayload, headers);
+  }
+
+  public Optional<Article> saveArticle(Article articlePayload, @NotNull AuthUser authUser) {
+    return saveArticleAnswer(articlePayload, authUser).map(answer -> ((Article) answer.getBody()));
+  }
+
+  public Optional<Answer> saveArticleAnswer(Article articlePayload, AuthUser authUser) {
+    Map<String, String> headers = getAuthHeaders(authUser);
+    return put(article, articlePayload, headers);
   }
 
   public Optional<BoardBox> createBoardBox(CreateBoardPayload boardRequest, @NotNull AuthUser authUser) {
@@ -200,6 +207,23 @@ public class OrchestralService {
   public Optional<Answer> post(String resource, Payload payload, Map<String, String> headers) {
     try {
       HttpResponse<Answer> response = Unirest.post(resource)
+          .headers(headers)
+          .body(payload)
+          .asObject(Answer.class);
+      if (response.getStatus() == HTTP_OK || response.getStatus() == HTTP_CREATED) {
+        return Optional.of(response.getBody());
+      }
+      throw RequestException.requestException(response.getBody().getMessage());
+    } catch (UnirestException e) {
+      logger.error("Unirest exception", e);
+    }
+    return Optional.empty();
+  }
+
+  @SuppressWarnings("unchecked")
+  public Optional<Answer> put(String resource, Payload payload, Map<String, String> headers) {
+    try {
+      HttpResponse<Answer> response = Unirest.put(resource)
           .headers(headers)
           .body(payload)
           .asObject(Answer.class);

@@ -4,9 +4,9 @@ import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.DomainId;
-import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.NotationFormat;
+import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +19,6 @@ import java.nio.charset.Charset;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -285,32 +284,30 @@ public class Utils {
         .collect(Collectors.toList());
   }
 
-  public static String listToPdn(@Nullable List<NotationFormat> list) {
+  public static String listToPdn(@Nullable List<NotationFormat> list, EnumNotationFormat alphanumeric) {
     if (list == null || list.isEmpty()) {
       return "";
     }
-    return streamToPdn(list.stream()).collect(Collectors.joining());
+    return streamToPdn(list.stream(), alphanumeric).collect(Collectors.joining());
   }
 
-  public static Stream<String> streamToPdn(@Nullable Stream<NotationFormat> stream) {
+  public static Stream<String> streamToPdn(@Nullable Stream<NotationFormat> stream, EnumNotationFormat notationFormat) {
     if (stream == null) {
       return Stream.empty();
     }
-    AtomicInteger i = new AtomicInteger();
-    return stream
-        .map(s -> {
-          String pdn = s.asString();
-          i.getAndIncrement();
-          if (i.get() > 3) {
-            pdn = pdn.trim();
-            pdn += "\n";
-            i.set(0);
-          }
-          return pdn;
-        });
+    switch (notationFormat) {
+      case SHORT:
+        return stream.map(NotationFormat::asStringShort);
+      case NUMERIC:
+        return stream.map(NotationFormat::asStringNumeric);
+      case ALPHANUMERIC:
+        return stream.map(NotationFormat::asStringAlphaNumeric);
+      default:
+        throw new RuntimeException("Формат не распознан");
+    }
   }
 
-  public static String notationDrivesToPdn(@Nullable NotationDrives drives) {
+  public static String notationDrivesToPdn(@Nullable NotationDrives drives, EnumNotationFormat notationFormat) {
     if (drives == null || drives.isEmpty()) {
       return "";
     }
@@ -318,7 +315,7 @@ public class Utils {
         .stream()
         .map(d -> d.getVariants()
             .stream()
-            .map(NotationDrive::asString)
+            .map(notationDrive -> notationDrive.asString(notationFormat))
             .collect(Collectors.joining(" ", LPAREN.getPdn(), RPAREN.getPdn()))
         )
         .collect(Collectors.toList());

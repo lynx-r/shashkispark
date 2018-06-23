@@ -53,7 +53,7 @@ public class BoardUtils {
 
     Map<String, Draught> blackDraughts = new HashMap<>(boardClone.getBlackDraughts());
     Map<String, Draught> whiteDraughts = new HashMap<>(boardClone.getWhiteDraughts());
-    List<Square> boardSquares = getAssignedSquares(rules.getDimension(), black);
+    List<Square> boardSquares = getAssignedSquares(rules.getDimension());
     for (Square square : boardSquares) {
       int v = square.getV();
       int h = square.getH();
@@ -94,7 +94,7 @@ public class BoardUtils {
   }
 
   @NotNull
-  static List<Square> getSquareArray(int offset, int dim, boolean main, boolean black) {
+  static List<Square> getSquareArray(int offset, int dim, boolean main) {
     List<Square> squares = new ArrayList<>();
     for (int v = 0; v < dim; v++) {
       for (int h = 0; h < dim; h++) {
@@ -110,13 +110,13 @@ public class BoardUtils {
   }
 
   @NotNull
-  static List<List<Square>> getDiagonals(int dim, boolean main, boolean black) {
+  static List<List<Square>> getDiagonals(int dim, boolean main) {
     List<List<Square>> diagonals = new ArrayList<>(dim - 2);
     for (int i = -dim; i < dim - 1; i++) {
       if ((i == 1 - dim) && main) {
         continue;
       }
-      List<Square> diagonal = BoardUtils.getSquareArray(i, dim, main, black);
+      List<Square> diagonal = BoardUtils.getSquareArray(i, dim, main);
       if (!diagonal.isEmpty()) {
         diagonals.add(diagonal);
       }
@@ -132,9 +132,9 @@ public class BoardUtils {
    * Assign square subdiagonal and main diagonal. Assign diagonal's squares link to squares
    */
   @NotNull
-  private static List<Square> getAssignedSquares(int dim, boolean black) {
-    List<List<Square>> mainDiagonals = getDiagonals(dim, true, black);
-    List<List<Square>> subDiagonals = getDiagonals(dim, false, black);
+  private static List<Square> getAssignedSquares(int dim) {
+    List<List<Square>> mainDiagonals = getDiagonals(dim, true);
+    List<List<Square>> subDiagonals = getDiagonals(dim, false);
 
     List<Square> squares = new ArrayList<>();
     for (List<Square> subDiagonal : subDiagonals) {
@@ -220,7 +220,7 @@ public class BoardUtils {
     }
     switch (notationFormat) {
       case ALPHANUMERIC:
-      case DIGITAL:
+      case NUMERIC:
         return findSquareByNotation(notation, board);
       case SHORT:
         return findSquareByShortNotation(moves, board);
@@ -314,7 +314,7 @@ public class BoardUtils {
     addDraught(board, notation, black, false, true);
   }
 
-  public static void updateNotationMiddle(Board board, DomainId prevBoardId, @NotNull NotationHistory notationHistory) {
+  public static void updateNotationMiddle(Board board, @NotNull NotationHistory notationHistory) {
     String previousNotation = board.getPreviousSquare().getNotation();
     boolean isContinueCapture = isContinueCapture(notationHistory, previousNotation);
     NotationMove move;
@@ -332,7 +332,6 @@ public class BoardUtils {
     if (isContinueCapture) {
       String currentNotation = board.getSelectedSquare().getNotation();
       NotationMove lastMove = notationHistory.getLastMove().orElseThrow(BoardServiceException::new);
-      DomainId currentBoardId = board.getDomainId();
       lastMove.getMove().add(new NotationSimpleMove(currentNotation));
     } else {
       if (!isFirstMove(board)) {
@@ -450,7 +449,7 @@ public class BoardUtils {
     String currentNotation = board.getSelectedSquare().getNotation();
     DomainId currentBoardId = board.getDomainId();
     notationMove.addMove(previousNotation, currentNotation, currentBoardId);
-    notationMove.getLastMove().ifPresent(nm -> nm.setCursor(true));
+    notationMove.setCursor(true);
     moves.add(notationMove);
 
     boolean isWhiteTurn = notationNumber != 0;

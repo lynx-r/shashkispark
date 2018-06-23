@@ -4,9 +4,9 @@ import com.workingbit.board.exception.BoardServiceException;
 import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
+import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.domain.impl.Square;
 import com.workingbit.share.model.enumarable.EnumRules;
-import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.util.Utils;
 import org.junit.Test;
 
@@ -25,43 +25,43 @@ public class BoardUtilsTest extends BaseServiceTest {
 
   @Test
   public void test_main_road() {
-    List<Square> squareDouble1Array = BoardUtils.getSquareArray(0, 8, false, black);
+    List<Square> squareDouble1Array = BoardUtils.getSquareArray(0, 8, false);
     String notation = squareDouble1Array.stream().map(ICoordinates::getNotation).collect(Collectors.joining(","));
     assertEquals("h8,g7,f6,e5,d4,c3,b2,a1", notation);
   }
 
   @Test
-  public void test_double_diagonals_main() throws Exception {
-    List<Square> squareDouble1Array = BoardUtils.getSquareArray(-1, 8, true, black);
+  public void test_double_diagonals_main() {
+    List<Square> squareDouble1Array = BoardUtils.getSquareArray(-1, 8, true);
     String notation = squareDouble1Array.stream().map(ICoordinates::getNotation).collect(Collectors.joining(","));
     assertEquals("a7,b6,c5,d4,e3,f2,g1", notation);
 
-    List<Square> squareDouble2Array = BoardUtils.getSquareArray(1, 8, true, black);
+    List<Square> squareDouble2Array = BoardUtils.getSquareArray(1, 8, true);
     notation = squareDouble2Array.stream().map(ICoordinates::getNotation).collect(Collectors.joining(","));
     assertEquals("b8,c7,d6,e5,f4,g3,h2", notation);
   }
 
   @Test
-  public void test_triple_diagonals_sub() throws Exception {
-    List<Square> squareDouble1Array = BoardUtils.getSquareArray(2, 8, false, black);
+  public void test_triple_diagonals_sub() {
+    List<Square> squareDouble1Array = BoardUtils.getSquareArray(2, 8, false);
     String notation = squareDouble1Array.stream().map(ICoordinates::getNotation).collect(Collectors.joining(","));
     assertEquals("h6,g5,f4,e3,d2,c1", notation);
 
-    List<Square> squareDouble2Array = BoardUtils.getSquareArray(-2, 8, false, black);
+    List<Square> squareDouble2Array = BoardUtils.getSquareArray(-2, 8, false);
     notation = squareDouble2Array.stream().map(ICoordinates::getNotation).collect(Collectors.joining(","));
     assertEquals("f8,e7,d6,c5,b4,a3", notation);
   }
 
   @Test
   public void test_main_diagonals() {
-    List<List<Square>> mainDiagonals = BoardUtils.getDiagonals(8, true, black);
+    List<List<Square>> mainDiagonals = BoardUtils.getDiagonals(8, true);
     String stringStream = mainDiagonals.stream().map(squares -> squares.stream().map(Square::getNotation).collect(Collectors.joining(","))).collect(Collectors.joining(";"));
     assertEquals("a3,b2,c1;a5,b4,c3,d2,e1;a7,b6,c5,d4,e3,f2,g1;b8,c7,d6,e5,f4,g3,h2;d8,e7,f6,g5,h4;f8,g7,h6", stringStream);
   }
 
   @Test
   public void test_sub_diagonals() {
-    List<List<Square>> mainDiagonals = BoardUtils.getDiagonals(8, false, black);
+    List<List<Square>> mainDiagonals = BoardUtils.getDiagonals(8, false);
     String stringStream = mainDiagonals.stream().map(squares -> squares.stream().map(Square::getNotation).collect(Collectors.joining(","))).collect(Collectors.joining(";"));
     assertEquals("b8,a7;d8,c7,b6,a5;f8,e7,d6,c5,b4,a3;h8,g7,f6,e5,d4,c3,b2,a1;h6,g5,f4,e3,d2,c1;h4,g3,f2,e1;h2,g1", stringStream);
   }

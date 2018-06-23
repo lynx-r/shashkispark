@@ -8,6 +8,7 @@ import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -56,11 +57,6 @@ public class BoardService {
   /**
    * Create temp board and use it to emulate moves to populate notation
    *
-   * @param boardBoxId
-   * @param notationFen
-   * @param notationId
-   * @param genNotation
-   * @param rules
    */
   void fillNotation(DomainId boardBoxId, @Nullable NotationFen notationFen, DomainId notationId,
                     @NotNull Notation genNotation, EnumRules rules) {
@@ -107,10 +103,6 @@ public class BoardService {
     return board;
   }
 
-  void delete(DomainId boardId) {
-    boardDao.delete(boardId);
-  }
-
   /**
    * @return map of {allowed, captured}
    */
@@ -149,12 +141,8 @@ public class BoardService {
         .collect(Collectors.groupingBy(ICoordinates::getNotation));
     updateBoardDraughts(capturedMapped, clientBoard.getWhiteDraughts(), clientBoard.getRules().getDimension());
     updateBoardDraughts(capturedMapped, clientBoard.getBlackDraughts(), clientBoard.getRules().getDimension());
-    if (save) {
-//      boardDao.save(serverBoard);
-    }
 
     Board nextBoard = clientBoard.deepClone();
-//    Utils.setRandomIdAndCreatedAt(nextBoard);
     DomainId previousBoardId = clientBoard.getDomainId();
     boolean prevBlackTurn = nextBoard.isBlackTurn();
     // MOVE DRAUGHT
@@ -203,7 +191,7 @@ public class BoardService {
     return deepClone;
   }
 
-  void updateBoard(@NotNull Board board) {
+  public void updateBoard(@NotNull Board board) {
     Board boardUpdated = BoardUtils.updateBoard(board);
     board.setWhiteDraughts(boardUpdated.getWhiteDraughts());
     board.setBlackDraughts(boardUpdated.getBlackDraughts());
@@ -226,14 +214,14 @@ public class BoardService {
           lastDrive.setSelected(true);
           NotationDrives curNotation = notationHistory.getNotation();
           NotationDrive lastCurrentDrive = getNotationHistoryColors(curNotation);
-          notationHistory.setRules(board.getRules());
+//          notationHistory.setRules(board.getRules());
           NotationHistory syncNotationHist = notationHistory.deepClone();
           for (int i = 0; i < syncNotationHist.getNotation().size(); i++) {
             syncNotationHist.setCurrentIndex(i);
             notationService.syncVariants(syncNotationHist, notation);
           }
           setNotationHistoryForNotation(notation, lastCurrentDrive, notationHistory);
-          notationHistory.setFormat(notation.getFormat());
+//          notationHistory.setFormat(notation.getFormat());
           notationHistoryDao.save(notationHistory);
           notation.setNotationHistory(notationHistory);
         });
@@ -296,9 +284,10 @@ public class BoardService {
     for (NotationDrive notationDrive : notation.getNotationHistory().getNotation()) {
       NotationMoves drives = notationDrive.getMoves();
       for (NotationMove drive : drives) {
-        logger.trace(format("EMULATE MOVE: %s", drive.asString()));
+        logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
         recursiveBoard = emulateMove(drive, recursiveBoard, recursiveNotationHistory, batchBoards);
       }
+      setMetaInformation(recursiveNotationHistory, notationDrive);
       if (!notationDrive.getVariants().isEmpty()) {
         NotationDrives variants = notationDrive.getVariants();
         int idInVariants = 0;
@@ -313,7 +302,6 @@ public class BoardService {
           vHistory.setVariantIndex(idInVariants);
           idInVariants++;
           vHistory.setNotationId(notationId);
-//          vHistory.setRules(board.getRules());
           if (vDrive.getVariants().size() > 1) {
             NotationHistory subRecursiveNotationHistory = NotationHistory.createWithRoot();
             subRecursiveNotationHistory.setNotationLine(new NotationLine(0, 0));
@@ -323,7 +311,7 @@ public class BoardService {
               NotationDrive subDrive = subVariants.get(i);
               NotationMoves vDrives = subDrive.getMoves();
               for (NotationMove drive : vDrives) {
-                logger.trace(format("EMULATE MOVE: %s", drive.asString()));
+                logger.trace(format("EMULATE MOVE: %s", drive.asStringAlphaNumeric()));
                 subBoard = emulateMove(drive, subBoard, subRecursiveNotationHistory, batchBoards);
               }
               NotationDrive vvDrive = vDrive.getVariants().get(i + 1);
@@ -332,6 +320,7 @@ public class BoardService {
             NotationDrives subNotation = subRecursiveNotationHistory.getNotation();
             subNotation.removeFirst();
             vHistory.addAll(subNotation);
+//            vHistory.setRules(board.getRules());
           } else {
             NotationDrive first = vDrive.getVariants().getFirst();
             first.setNotationHistoryId(vHistory.getDomainId());
@@ -351,7 +340,6 @@ public class BoardService {
     }
     serverBoard = serverBoard.deepClone();
     List<String> moves = notationMove.getMoveNotations();
-//    Utils.setRandomIdAndCreatedAt(serverBoard);
     String move = moves.get(0);
     for (int i = 1; i < moves.size(); i++) {
       Square selected = findSquareByNotationWithHint(move, moves.subList(i - 1, moves.size()), serverBoard, notationMove.getNotationFormat());
@@ -378,32 +366,13 @@ public class BoardService {
     boolean previousCaptured = !capturedSquares.isEmpty();
     boolean hasNextCapture = isNextCapture(board, nextHighlight);
     if (previousCaptured && hasNextCapture) {
-//      setFirstCaptured(capturedSquares, newBoard);
-      updateNotationMiddle(newBoard, prevBoardId, notationHistory);
+      updateNotationMiddle(newBoard, notationHistory);
       return newBoard;
     }
     updateNotationEnd(board, notationHistory, previousCaptured);
     resetBoardHighlight(board);
     resetCaptured(board);
     return board;
-  }
-
-  private void setFirstCaptured(@NotNull TreeSquare capturedSquares, Board board) {
-    capturedSquares
-        .flatTree()
-        .stream()
-        .map(Square::getDraught)
-        .map(Draught::getNotation)
-        .findFirst()
-        .ifPresent(captureNotation ->
-            board.getAssignedSquares()
-                .replaceAll(square -> {
-                  if (square.getNotation().equals(captureNotation)) {
-                    square.getDraught().setCaptured(true);
-                    return square;
-                  }
-                  return square;
-                }));
   }
 
   @NotNull
@@ -442,5 +411,18 @@ public class BoardService {
         .collect(Collectors.toList());
     board.setAssignedSquares(prevAssignedSquares);
     boardService.updateBoard(board);
+  }
+
+  private void setMetaInformation(@NotNull NotationHistory recursiveNotationHistory, NotationDrive notationDrive) {
+    NotationDrive last = recursiveNotationHistory.getLast();
+    String comment = notationDrive.getComment();
+    if (StringUtils.isNotBlank(comment)) {
+      last.setComment(comment.substring(1, comment.length() - 1));
+    }
+    for (int i = 0; i < last.getMoves().size(); i++) {
+      NotationMove m = last.getMoves().get(i);
+      NotationMove mParsed = notationDrive.getMoves().get(i);
+      m.setMoveStrength(mParsed.getMoveStrength());
+    }
   }
 }
