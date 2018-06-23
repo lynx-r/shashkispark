@@ -114,8 +114,11 @@ public class Notation extends BaseDomain implements Payload {
   @JsonIgnore
   @DynamoDBIgnore
   private String getAsString(EnumNotationFormat notationFormat) {
-    EnumNotationFormat oldNotationFormat = this.format;
-    setFormat(notationFormat);
+    EnumNotationFormat oldNotationFormat = null;
+    if (!this.format.equals(notationFormat)) {
+      oldNotationFormat = this.format;
+      setFormat(notationFormat);
+    }
     StringBuilder stringBuilder = new StringBuilder();
     tagsAsString(stringBuilder);
     stringBuilder.append(getGameType());
@@ -130,7 +133,9 @@ public class Notation extends BaseDomain implements Payload {
           .append(EnumNotation.END_GAME_SYMBOL.getPdn());
     }
     String notation = stringBuilder.toString();
-    setFormat(oldNotationFormat);
+    if (!this.format.equals(notationFormat)) {
+      setFormat(oldNotationFormat);
+    }
     return notation;
   }
 

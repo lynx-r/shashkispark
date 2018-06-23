@@ -163,7 +163,7 @@ public class BoardService {
           if (squares != null && !squares.isEmpty()) {
             Draught capturedDraught = squares.get(0).getDraught();
             draught.setCaptured(capturedDraught.isCaptured());
-//            draught.setMarkCaptured(capturedMapped.size());
+//            draught.setMarkCaptured(capturedDraught.getMarkCaptured());
           }
         });
   }

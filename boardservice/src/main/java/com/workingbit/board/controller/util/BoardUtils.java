@@ -429,18 +429,16 @@ public class BoardUtils {
   }
 
   private static boolean isContinueCapture(NotationHistory notationDrives, String previousNotation) {
-    NotationMoves moves = notationDrives.getLast()
-        .getMoves();
+    NotationMoves moves = notationDrives.getLast().getMoves();
     if (moves.isEmpty()) {
       return false;
     }
-    LinkedList<NotationSimpleMove> move = moves.getLast()
-        .getMove();
+    LinkedList<NotationSimpleMove> move = moves.getLast().getMove();
     if (move.isEmpty()) {
       return false;
     }
-    return move.getLast()
-        .getNotation().equals(previousNotation);
+    // previousNotation in alphaNumeric so this should be too
+    return move.getLast().getNotationAlpha().equals(previousNotation);
   }
 
   private static void pushSimpleMove(Board board, NotationHistory notationHistory, int notationNumber) {

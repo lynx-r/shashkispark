@@ -40,9 +40,7 @@ public interface ICoordinates {
 
   @NotNull
   default String getNotation() {
-    return getDim() == EnumRules.INTERNATIONAL.getDimension()
-        ? getPdnNumericNotation100()
-        : getAlphanumericNotation();
+    return getAlphanumericNotation();
   }
 
   @SuppressWarnings("unused")

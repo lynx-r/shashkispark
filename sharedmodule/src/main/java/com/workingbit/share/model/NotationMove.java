@@ -180,11 +180,16 @@ public class NotationMove implements DeepClone, NotationFormat {
   }
 
   public String asString(EnumNotationFormat notationFormat) {
-    EnumNotationFormat oldNotationFormat = this.notationFormat;
-    setNotationFormat(notationFormat);
+    EnumNotationFormat oldNotationFormat = null;
+    if (!this.notationFormat.equals(notationFormat)) {
+      oldNotationFormat = this.notationFormat;
+      setNotationFormat(notationFormat);
+    }
     String stroke = getNotationAsString(notationFormat);
     String notation = String.format("%s %s ", stroke, (StringUtils.isNotBlank(moveStrength) ? moveStrength : ""));
-    setNotationFormat(oldNotationFormat);
+    if (!this.notationFormat.equals(notationFormat)) {
+      setNotationFormat(oldNotationFormat);
+    }
     return notation;
   }
 

@@ -218,7 +218,9 @@ public class NotationDrive implements DeepClone, NotationFormat {
 
   public String asString(EnumNotationFormat notationFormat) {
     EnumNotationFormat oldNotationFormat = this.notationFormat;
-    setNotationFormat(notationFormat);
+    if (!notationFormat.equals(this.notationFormat)) {
+      setNotationFormat(notationFormat);
+    }
     if (root) {
       return variants.variantsToPdn(notationFormat);
     }
@@ -226,7 +228,9 @@ public class NotationDrive implements DeepClone, NotationFormat {
         (!moves.isEmpty() ? moves.asString(notationFormat) + " " : "") +
         (!variants.isEmpty() ? variants.variantsToPdn(notationFormat) : "") +
         (StringUtils.isNoneBlank(comment) ? format("{%s} ", comment) : "");
-    setNotationFormat(oldNotationFormat);
+    if (!notationFormat.equals(this.notationFormat)) {
+      setNotationFormat(oldNotationFormat);
+    }
     return notation;
   }
 
