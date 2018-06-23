@@ -55,7 +55,6 @@ public class BoardService {
 
   /**
    * Create temp board and use it to emulate moves to populate notation
-   *
    */
   void fillNotation(DomainId boardBoxId, @Nullable NotationFen notationFen, DomainId notationId,
                     @NotNull Notation genNotation, EnumRules rules) {
@@ -205,24 +204,24 @@ public class BoardService {
                                          @NotNull List<Board> batchBoards) {
     NotationHistory recursiveFillNotationHistory = NotationHistory.createWithRoot();
     populateBoardWithNotation(notationId, board, notation, recursiveFillNotationHistory, batchBoards);
-    NotationLine lastNotationLine = new NotationLine(0, 0);
-    notation.findNotationHistoryByLine(lastNotationLine)
-        .ifPresent(notationHistory -> {
-          NotationDrive lastDrive = notationHistory.getLast();
-          lastDrive.setSelected(true);
-          NotationDrives curNotation = notationHistory.getNotation();
-          NotationDrive lastCurrentDrive = getNotationHistoryColors(curNotation);
+//    NotationLine lastNotationLine = new NotationLine(0, 0);
+//    notation.findNotationHistoryByLine(lastNotationLine)
+//        .ifPresent(notationHistory -> {
+    NotationDrive lastDrive = recursiveFillNotationHistory.getLast();
+    lastDrive.setSelected(true);
+    NotationDrives curNotation = recursiveFillNotationHistory.getNotation();
+    NotationDrive lastCurrentDrive = getNotationHistoryColors(curNotation);
 //          notationHistory.setRules(board.getRules());
-          NotationHistory syncNotationHist = notationHistory.deepClone();
-          for (int i = 0; i < syncNotationHist.getNotation().size(); i++) {
-            syncNotationHist.setCurrentIndex(i);
-            notationService.syncVariants(syncNotationHist, notation);
-          }
-          setNotationHistoryForNotation(notation, lastCurrentDrive, notationHistory);
+    NotationHistory syncNotationHist = recursiveFillNotationHistory.deepClone();
+    for (int i = 0; i < syncNotationHist.getNotation().size(); i++) {
+      syncNotationHist.setCurrentIndex(i);
+      notationService.syncVariants(syncNotationHist, notation);
+    }
+    setNotationHistoryForNotation(notation, lastCurrentDrive, recursiveFillNotationHistory);
 //          notationHistory.setFormat(notation.getFormat());
-          notationHistoryDao.save(notationHistory);
-          notation.setNotationHistory(notationHistory);
-        });
+    notationHistoryDao.save(recursiveFillNotationHistory);
+    notation.setNotationHistory(recursiveFillNotationHistory);
+//        });
   }
 
   private NotationDrive getNotationHistoryColors(NotationDrives curNotation) {
@@ -244,7 +243,7 @@ public class BoardService {
             variants.get(curDrive.getVariantsSize() - 2).setPrevious(true);
           }
         }
-        variants.getFirst().setCurrent(true);
+//        variants.getFirst().setCurrent(true);
       }
     }
     return lastCurrentDrive;
@@ -255,7 +254,7 @@ public class BoardService {
     if (lastCurrentDrive == null) {
       lastCurrentDrive = curNotation.getLast();
     }
-    lastCurrentDrive.setCurrent(true);
+//    lastCurrentDrive.setCurrent(true);
     int currentIndex = curNotation.indexOf(lastCurrentDrive);
     int variantIndex = lastCurrentDrive.getVariantsSize() == 0 ? 0 : lastCurrentDrive.getVariantsSize() - 1;
     NotationLine line = new NotationLine(currentIndex, variantIndex);
@@ -334,6 +333,11 @@ public class BoardService {
       }
       setMetaInformation(recursiveNotationHistory, notationDrive);
       if (!variantsPopulated.isEmpty()) {
+        for (NotationDrive drive : variantsPopulated) {
+          if (recursiveNotationHistory.get(i).getMoves().equals(drive.getVariants().getFirst().getMoves())) {
+            drive.setCurrent(true);
+          }
+        }
         recursiveNotationHistory.get(i - 1).addAllVariants(variantsPopulated);
       }
     }
