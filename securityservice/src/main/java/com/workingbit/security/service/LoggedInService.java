@@ -93,7 +93,7 @@ public class LoggedInService {
       try {
         newFile = encrypted.createNewFile();
       } catch (IOException e) {
-        logger.error(e.getMessage(), e);
+        logger.error("Unable to create file: " + passwdFilename, e);
         throw RequestException.internalServerError();
       }
       if (!newFile) {
