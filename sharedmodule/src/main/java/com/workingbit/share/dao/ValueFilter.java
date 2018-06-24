@@ -25,7 +25,7 @@ public class ValueFilter implements BaseFilter {
   private String operator;
   private String dataType;
   private String stringValue;
-  private static final List<String> VALID_FILTER_KEYS = sharedProperties.validFilters();;
+  private static final List<String> VALID_FILTER_KEYS = sharedProperties.validFilters();
 
   @JsonCreator
   public ValueFilter(@JsonProperty("key") String key,
@@ -48,11 +48,7 @@ public class ValueFilter implements BaseFilter {
   public boolean isValid() {
     boolean notBlankAndNotNull = StringUtils.isNotBlank(key) && !key.contains("null");
     boolean validKey;
-    if (VALID_FILTER_KEYS != null) {
-      validKey = VALID_FILTER_KEYS.stream().anyMatch((p) -> p.equals(key));
-    } else {
-      throw new DaoException(0, "PATTERN FILTERS ARE NOT SET");
-    }
+    validKey = VALID_FILTER_KEYS.stream().anyMatch((p) -> p.equals(key));
     if (notBlankAndNotNull && validKey) {
       return true;
     }

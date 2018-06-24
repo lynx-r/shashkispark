@@ -67,6 +67,9 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "content")
   private String content;
 
+  @DynamoDBIgnore
+  private String html;
+
   @NotBlank
   @Size(max = 1000)
   @DynamoDBAttribute(attributeName = "intro")

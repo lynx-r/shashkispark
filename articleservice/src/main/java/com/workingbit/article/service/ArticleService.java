@@ -116,6 +116,10 @@ public class ArticleService {
     articleDao.save(article);
     articleStoreService.remove(article);
 
+    if (EnumArticleStatus.PUBLISHED.equals(article.getArticleStatus())) {
+      subscriberService.notifySubscribersAboutArticle(articleClient);
+    }
+
     // replace edited article
     replaceArticleInAllArticlesCache(article, token);
     return article;

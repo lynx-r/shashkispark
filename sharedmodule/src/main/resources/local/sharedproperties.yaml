@@ -1,2 +1,2 @@
 shared:
-  validFilters: id,removed,userId.id,articleStatus,articleId.id,boardBoxId.id,notationId.id
+  validFilters: id,removed,userId.id,articleStatus,articleId.id,boardBoxId.id,notationId.id,subscribed

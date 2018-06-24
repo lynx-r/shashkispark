@@ -1,11 +1,14 @@
 package com.workingbit.article.service;
 
 import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.domain.impl.Article;
 import com.workingbit.share.domain.impl.Subscriber;
 import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.Subscribed;
 import com.workingbit.share.util.Utils;
+
+import java.util.List;
 
 import static com.workingbit.article.ArticleEmbedded.emailUtils;
 import static com.workingbit.article.ArticleEmbedded.subscriberDao;
@@ -33,5 +36,19 @@ public class SubscriberService {
     subscriberDao.save(subscriber);
     emailUtils.send(subscriber.getName(), subscriber.getEmail(), subject, contentHtml, contentText);
     return new Subscribed(true);
+  }
+
+  void notifySubscribersAboutArticle(Article article) {
+    new Thread(() -> {
+      List<Subscriber> active = subscriberDao.findActive();
+      String title = String.format("Автор %s опубликовал новую статью \"%s\"", article.getAuthor(), article.getTitle());
+      String articleLink = String.format("Ссылка на статью: https://www.shashki.online/articles/view/%s/%s", article.getHumanReadableUrl(), article.getSelectedBoardBoxId().getId());
+      String contentText = String.format("Автор %s опубликовал новую статью \"%s\". %s",
+          article.getAuthor(), article.getTitle(), articleLink);
+      String contentHtml = article.getHtml() + "<br/><hr><br/>" + articleLink;
+      for (Subscriber subscriber : active) {
+        emailUtils.send(subscriber.getName(), subscriber.getEmail(), title, contentHtml, contentText);
+      }
+    }).start();
   }
 }
