@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotation;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,8 +19,6 @@ import static com.workingbit.share.model.enumarable.EnumNotation.SIMPLE;
  * <p>
  * Created by Aleksey Popryaduhin on 21:33 03/10/2017.
  */
-@AllArgsConstructor
-@Data
 public class NotationMove implements DeepClone, NotationFormat {
 
   private EnumNotation type;
@@ -54,30 +50,69 @@ public class NotationMove implements DeepClone, NotationFormat {
     visible = true;
   }
 
-  private static void checkAndAddMoveForPdn(String stroke, @NotNull NotationMove notationMove,
-                                            @NotNull String capture, @NotNull String simple,
-                                            EnumNotationFormat notationFormat) {
-    boolean isCapture = stroke.contains(capture);
-    if (isCapture) {
-      notationMove.setType(CAPTURE);
-      notationMove.setMoveKeysForPdn(stroke.split(capture));
-    } else {
-      notationMove.setType(SIMPLE);
-      switch (notationFormat) {
-        case ALPHANUMERIC:
-        case NUMERIC:
-          notationMove.setMoveKeysForPdn(stroke.split(simple));
-          break;
-        case SHORT:
-          String endMove = stroke.substring(stroke.length() - 2);
-          String startMove = stroke.substring(0, stroke.length() - 2);
-          String[] split = startMove.split("");
-          List<String> list = new ArrayList<>(List.of(split));
-          list.add(endMove);
-          notationMove.setMoveKeysForPdn(list.toArray(new String[0]));
-          break;
-      }
-    }
+  NotationMove(@NotNull String stroke, EnumNotationFormat notationFormat, int boardDimension) {
+    checkAndAddMoveForPdn(stroke, CAPTURE.getPdn(), SIMPLE.getPdn(), notationFormat);
+    checkAndAddMoveForPdn(stroke, CAPTURE.getSimple(), SIMPLE.getSimple(), notationFormat);
+    setNotationFormat(notationFormat);
+    setMoveFormat(notationFormat);
+    setBoardDimension(boardDimension);
+  }
+
+  public EnumNotation getType() {
+    return type;
+  }
+
+  public void setType(EnumNotation type) {
+    this.type = type;
+  }
+
+  public boolean isCursor() {
+    return cursor;
+  }
+
+  public void setCursor(boolean cursor) {
+    this.cursor = cursor;
+  }
+
+  @NotNull
+  public LinkedList<NotationSimpleMove> getMove() {
+    return move;
+  }
+
+  public void setMove(@NotNull LinkedList<NotationSimpleMove> move) {
+    this.move = move;
+  }
+
+  public String getMoveStrength() {
+    return moveStrength;
+  }
+
+  public void setMoveStrength(String moveStrength) {
+    this.moveStrength = moveStrength;
+  }
+
+  public DomainId getBoardId() {
+    return boardId;
+  }
+
+  public void setBoardId(DomainId boardId) {
+    this.boardId = boardId;
+  }
+
+  public int getBoardDimension() {
+    return boardDimension;
+  }
+
+  public EnumNotationFormat getNotationFormat() {
+    return notationFormat;
+  }
+
+  public boolean isVisible() {
+    return visible;
+  }
+
+  public void setVisible(boolean visible) {
+    this.visible = visible;
   }
 
   @DynamoDBIgnore
@@ -101,7 +136,31 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   void setNotationFormat(EnumNotationFormat format) {
     this.notationFormat = format;
-    move.forEach(m -> m.setFormat(format));
+  }
+
+  private void checkAndAddMoveForPdn(String stroke, @NotNull String capture, @NotNull String simple,
+                                     EnumNotationFormat notationFormat) {
+    boolean isCapture = stroke.contains(capture);
+    if (isCapture) {
+      setType(CAPTURE);
+      setMoveKeysForPdn(stroke.split(capture));
+    } else if (stroke.contains(simple)) {
+      setType(SIMPLE);
+      switch (notationFormat) {
+        case ALPHANUMERIC:
+        case NUMERIC:
+          setMoveKeysForPdn(stroke.split(simple));
+          break;
+      }
+    } else if (notationFormat.equals(EnumNotationFormat.SHORT)) {
+      setType(SIMPLE);
+      String endMove = stroke.substring(1);
+      String startMove = stroke.substring(0, 1);
+      String[] split = startMove.split("");
+      List<String> list = new ArrayList<>(List.of(split));
+      list.add(endMove);
+      setMoveKeysForPdn(list.toArray(new String[0]));
+    }
   }
 
   void setBoardDimension(int dimension) {
@@ -126,13 +185,11 @@ public class NotationMove implements DeepClone, NotationFormat {
     return Objects.hash(super.hashCode(), type, move);
   }
 
-  @NotNull
-  static NotationMove fromPdn(@NotNull String stroke, EnumNotationFormat notationFormat) {
-    NotationMove notationMove = new NotationMove();
-    notationMove.setNotationFormat(notationFormat);
-    checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getPdn(), SIMPLE.getPdn(), notationFormat);
-    checkAndAddMoveForPdn(stroke, notationMove, CAPTURE.getSimple(), SIMPLE.getSimple(), notationFormat);
-    return notationMove;
+  void setMoveFormat(EnumNotationFormat format) {
+    move.replaceAll(m -> {
+      m.setFormat(format);
+      return m;
+    });
   }
 
   @JsonIgnore
@@ -180,11 +237,16 @@ public class NotationMove implements DeepClone, NotationFormat {
   }
 
   public String asString(EnumNotationFormat notationFormat) {
-    EnumNotationFormat oldNotationFormat = this.notationFormat;
-    setNotationFormat(notationFormat);
+    EnumNotationFormat oldNotationFormat = null;
+    if (!this.notationFormat.equals(notationFormat)) {
+      oldNotationFormat = this.notationFormat;
+      setMoveFormat(notationFormat);
+    }
     String stroke = getNotationAsString(notationFormat);
     String notation = String.format("%s %s ", stroke, (StringUtils.isNotBlank(moveStrength) ? moveStrength : ""));
-    setNotationFormat(oldNotationFormat);
+    if (!this.notationFormat.equals(notationFormat)) {
+      setMoveFormat(oldNotationFormat);
+    }
     return notation;
   }
 

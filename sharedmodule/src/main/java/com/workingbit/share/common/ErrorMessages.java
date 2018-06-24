@@ -50,4 +50,5 @@ public class ErrorMessages {
   public static final String EXPECTED_ONE_RESULT = "Ожидается один результат, получено много";
   public static final String UNABLE_TO_CHANGE_USERNAME = "Не удалось изменить имя пользователя";
   public static final String UNABLE_TO_MOVE_WHEN_POINTER_NOT_LAST = "Ходить можно только когда указатель * на последнем ходе";
+  public static final String IMPORT_SHORT_UNSUPPORTED = "Импорт сокращенной нотации не поддерживается";
 }

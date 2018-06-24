@@ -60,7 +60,9 @@ public class BoardBoxService {
   public BoardBox parsePdn(@NotNull ImportPdnPayload importPdnPayload, @NotNull AuthUser authUser) {
     try {
       Notation notation = notationParserService.parse(importPdnPayload.getPdn());
-      notation.setRules(importPdnPayload.getRules());
+      if (notation.getRules() == null) {
+        notation.setRules(importPdnPayload.getRules());
+      }
       return createBoardBoxFromNotation(importPdnPayload.getArticleId(), importPdnPayload.getIdInArticle(), notation, authUser);
     } catch (@NotNull ParserLogException | ParserCreationException e) {
       logger.error("PARSE ERROR: " + e.getMessage(), e);
@@ -254,6 +256,10 @@ public class BoardBoxService {
 
     Notation notation = boardBox.getNotation();
     NotationHistory notationHistory = notation.getNotationHistory();
+    if (notationHistory.size() == 1) {
+      notationHistory.get(0).setBoardDimension(notation.getRules().getDimension());
+      notationHistory.get(0).setNotationFormat(notation.getFormat());
+    }
     try {
       clientBoard = boardService.move(clientBoard, notationHistory);
     } catch (BoardServiceException e) {
@@ -263,8 +269,6 @@ public class BoardBoxService {
 
     boardBox.setBoard(clientBoard);
     boardBox.setBoardId(clientBoard.getDomainId());
-    notationHistory.getLast().setNotationFormat(notation.getFormat());
-    notationHistory.getLast().setBoardDimension(notation.getRules().getDimension());
     notation.addForkedNotationHistory(notationHistory);
     notationHistoryService.save(notationHistory);
     notationService.syncSubVariants(notationHistory, notation);
