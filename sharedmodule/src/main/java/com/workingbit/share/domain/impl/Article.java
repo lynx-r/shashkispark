@@ -15,6 +15,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.Nullable;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -40,10 +42,14 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "updatedAt")
   private LocalDateTime updatedAt;
 
+  @NotBlank
+  @Size(max = 5000)
   @DynamoDBIndexHashKey(globalSecondaryIndexName = "humanReadableUrlIndex")
   @DynamoDBAttribute(attributeName = "humanReadableUrl")
   private String humanReadableUrl;
 
+  @NotBlank
+  @Size(max = 5000)
   @DynamoDBAttribute(attributeName = "author")
   private String author;
 
@@ -51,12 +57,18 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "userId")
   private DomainId userId;
 
+  @NotBlank
+  @Size(max = 5000)
   @DynamoDBAttribute(attributeName = "title")
   private String title;
 
+  @NotBlank
+  @Size(max = 500000)
   @DynamoDBAttribute(attributeName = "content")
   private String content;
 
+  @NotBlank
+  @Size(max = 5000)
   @DynamoDBAttribute(attributeName = "intro")
   private String intro;
 

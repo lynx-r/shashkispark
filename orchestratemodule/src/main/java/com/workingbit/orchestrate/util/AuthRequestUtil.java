@@ -88,7 +88,7 @@ public class AuthRequestUtil {
     logger.info(String.format("RESPONSE: %s %s %s %s",
         url,
         LocalDateTime.now(),
-        response.status(), token.getAccessToken()));
+        response.status(), token == null ? "" : token.getAccessToken()));
   }
 
   @NotNull
