@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import static com.workingbit.board.BoardEmbedded.*;
 import static com.workingbit.board.controller.util.BoardUtils.findSquareByLink;
 import static com.workingbit.share.common.RequestConstants.PUBLIC_QUERY;
-import static java.lang.String.format;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toCollection;
 
@@ -274,8 +273,6 @@ public class BoardBoxService {
     notationService.syncSubVariants(notationHistory, notation);
     notationStoreService.putNotation(authUser.getUserSession(), notation);
 
-    logger.info(format("Notation after move: %s", notation.getNotationHistory().debugPdnString()));
-
     boardBoxDao.save(boardBox);
     boardBoxStoreService.put(authUser.getUserSession(), boardBox);
     return boardBox;
@@ -457,6 +454,7 @@ public class BoardBoxService {
               saveBoardBoxAfterSwitchFork(boardBox, boardId, authUser))
           .orElse(null);
     } catch (DaoException e) {
+      logger.error(e.getMessage(), e);
       throw RequestException.notFound404(ErrorMessages.UNABLE_TO_SWITCH);
     }
   }

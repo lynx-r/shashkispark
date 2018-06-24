@@ -9,4 +9,4 @@ BUCKET=dynamodb-shashkiwiki-backups
 KEY=`aws s3 ls $BUCKET/config --recursive | sort | tail -n 1 | awk '{print $4}'`
 aws s3 cp s3://$BUCKET/$KEY ./shashki_online.zip
 unzip shashki_online.zip
-cp -r ./shashki_online/* /opt/dynamodb_local/shashki_online
+cp -r shashki_online/* ../shashki_online

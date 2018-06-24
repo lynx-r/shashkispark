@@ -1,7 +1,7 @@
 BUCKET=dynamodb-shashkiwiki-backups
-DATE=$(date +%x-%X)
+DATE=$(date +%F)
 ./dynamodump.py --host localhost --port 8765 -m backup -r local -s SHASHKIWIKI* -a zip 
-aws s3 cp dump.zip s3://$BUCKET/backups/dump-$DATE.zip
+aws s3 cp dump.zip s3://$BUCKET/backups/dump-$DATE-`hostname`.zip
 cp -r ../shashki_online .
 zip -r shashki_online-$DATE.zip shashki_online
 rm -rf shashki_online
