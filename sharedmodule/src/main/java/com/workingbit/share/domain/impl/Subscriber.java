@@ -9,15 +9,18 @@ import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.Payload;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 /**
  * Created by Aleksey Popryadukhin on 18/06/2018.
  */
+@NoArgsConstructor
 @DynamoDBTable(tableName = DBConstants.SUBSCRIBER)
 @JsonTypeName("Subscriber")
 @Data
@@ -38,8 +41,15 @@ public class Subscriber extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "unsubscribeDate")
   private LocalDateTime unsubscribeDate;
 
+  @Size(max = 200)
+  @NotBlank(message = "Укажите, пожалуйста, ваше имя")
+  @DynamoDBAttribute(attributeName = "name")
+  private String name;
+
+  @Size(max = 200)
   @NotBlank(message = "Почта не может быть пустой")
   @Email(message = "Не верный адрес электронной почты")
+  @DynamoDBIndexHashKey(globalSecondaryIndexName = "emailIndex")
   @DynamoDBAttribute(attributeName = "email")
   private String email;
 
@@ -60,7 +70,7 @@ public class Subscriber extends BaseDomain implements Payload {
 
   @Override
   public void setId(String id) {
-this.id = id;
+    this.id = id;
   }
 
   @Nullable

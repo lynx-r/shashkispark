@@ -12,21 +12,21 @@ import org.simplejavamail.util.ConfigLoader;
  */
 public class EmailService {
 
-  void send(String to) {
+  void send(String name, String to, String subject, String contentHtml, String contentText) {
     ConfigLoader.loadProperties("simplejavamail.properties", false); // optional default
 //    ConfigLoader.loadProperties("overrides.properties"); // optional extra
 
     Email email = EmailBuilder.startingBlank()
-        .to("lollypop", to)
+        .to(name, to)
 //        .ccWithFixedName("C. Bo group", "chocobo1@candyshop.org", "chocobo2@candyshop.org")
 //        .withRecipients("Tasting Group", false, Message.RecipientType.TO,
 //            "taster1@cgroup.org;taster2@cgroup.org;tester <>")
 //        .bcc("Mr Sweetnose <snose@candyshop.org>")
         .from("Шашки онлайн", "popcorn@shashki.online")
         .withReplyTo("Шашки онлайн", "popcorn@shashki.online")
-        .withSubject("hey")
-        .withHTMLText("<img src='cid:wink1'><b>We should meet up!</b><img src='cid:wink2'>")
-        .withPlainText("Please view this email in a modern email client!")
+        .withSubject(subject)
+        .withHTMLText(contentHtml)
+        .withPlainText(contentText)
 //        .withEmbeddedImage("wink1", imageByteArray, "image/png")
 //        .withEmbeddedImage("wink2", imageDatesource)
 //        .withAttachment("invitation", pdfByteArray, "application/pdf")

@@ -13,4 +13,7 @@ public class SubscriberDao extends BaseDao<Subscriber> {
     super(Subscriber.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.local());
   }
 
+  public Subscriber findByEmail(String email) {
+    return findByAttributeIndex(email, "email", "emailIndex");
+  }
 }

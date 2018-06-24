@@ -52,4 +52,5 @@ public class ErrorMessages {
   public static final String UNABLE_TO_MOVE_WHEN_POINTER_NOT_LAST = "Ходить можно только когда указатель * на последнем ходе";
   public static final String IMPORT_SHORT_UNSUPPORTED = "Импорт сокращенной нотации не поддерживается";
   public static final String UNABLE_TO_REMOVE_VARIANT = "Не удалось удалить вариант";
+  public static final String DUPLICATE_SUBSCRIBER = "Вы уже подписаны на рассылку";
 }

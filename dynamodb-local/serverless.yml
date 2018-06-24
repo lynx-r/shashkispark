@@ -331,6 +331,8 @@ resources:
             AttributeType: S
           - AttributeName: createdAt
             AttributeType: S
+          - AttributeName: email
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -339,6 +341,18 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
+        GlobalSecondaryIndexes:
+        - IndexName: emailIndex
+          KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+#          - AttributeName: createdAt
+#            KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
 
     DynamoDBIamPolicySHASHKIWIKIBoardBox:
       Type: AWS::IAM::Policy
