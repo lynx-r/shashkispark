@@ -1,8 +1,0 @@
-Dynamodb Local Started, Visit: http://localhost:8765/shell
-Serverless: DynamoDB - created table SHASHKIWIKISecureUser
-Serverless: DynamoDB - created table SHASHKIWIKIArticle
-Serverless: DynamoDB - created table SHASHKIWIKIBoardBox
-Serverless: DynamoDB - created table SHASHKIWIKIBoard
-Serverless: DynamoDB - created table SHASHKIWIKINotation
-Serverless: DynamoDB - created table SHASHKIWIKINotationHistory
-Serverless: DynamoDB - created table SHASHKIWIKISubscriber
