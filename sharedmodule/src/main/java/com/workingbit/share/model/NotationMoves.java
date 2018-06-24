@@ -78,6 +78,9 @@ public class NotationMoves extends LinkedList<NotationMove> implements NotationF
       return false;
     }
     NotationMoves that = ((NotationMoves) o);
+    if (isEmpty()) {
+      return that.isEmpty();
+    }
     for (int i = 0; i < that.size(); i++) {
       NotationMove notationMove = that.get(i);
       if (!notationMove.equals(get(i))) {
