@@ -197,6 +197,20 @@ public class NotationDrive implements DeepClone, NotationFormat {
     variants.setDimension(boardDimension);
   }
 
+  public void setCurrentWithVariant(boolean current) {
+    this.current = current;
+    if (!variants.isEmpty()) {
+      variants.getFirst().setCurrentWithVariant(current);
+    }
+  }
+
+  public void setPreviousWithVariant(boolean previous) {
+    this.previous = previous;
+    if (!variants.isEmpty()) {
+      variants.getFirst().setPreviousWithVariant(previous);
+    }
+  }
+
   @NotNull
   public String print(String prefix) {
     if (root) {

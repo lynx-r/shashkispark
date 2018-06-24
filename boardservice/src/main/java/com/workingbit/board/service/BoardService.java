@@ -239,7 +239,7 @@ public class BoardService {
             notationDrive.setDriveColor(Utils.getRandomColor());
           }
           if (curDrive.getVariantsSize() - 2 >= variants.size()) {
-            variants.get(curDrive.getVariantsSize() - 2).setPrevious(true);
+            variants.get(curDrive.getVariantsSize() - 2).setPreviousWithVariant(true);
           }
         }
       }
@@ -324,7 +324,7 @@ public class BoardService {
       if (!variantsPopulated.isEmpty()) {
         for (NotationDrive drive : variantsPopulated) {
           if (recursiveNotationHistory.getLast().getMoves().equals(drive.getVariants().getFirst().getMoves())) {
-            drive.setCurrent(true);
+            drive.setCurrentWithVariant(true);
             break;
           }
         }
