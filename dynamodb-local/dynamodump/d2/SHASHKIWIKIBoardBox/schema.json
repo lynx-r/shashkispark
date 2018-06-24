@@ -1,0 +1,63 @@
+{
+  "Table": {
+    "AttributeDefinitions": [
+      {
+        "AttributeName": "id",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "createdAt",
+        "AttributeType": "S"
+      }
+    ],
+    "TableName": "SHASHKIWIKIBoardBox",
+    "KeySchema": [
+      {
+        "AttributeName": "id",
+        "KeyType": "HASH"
+      },
+      {
+        "AttributeName": "createdAt",
+        "KeyType": "RANGE"
+      }
+    ],
+    "TableStatus": "ACTIVE",
+    "CreationDateTime": 1528866519.43,
+    "ProvisionedThroughput": {
+      "LastIncreaseDateTime": 0.0,
+      "LastDecreaseDateTime": 0.0,
+      "NumberOfDecreasesToday": 0,
+      "ReadCapacityUnits": 5,
+      "WriteCapacityUnits": 5
+    },
+    "TableSizeBytes": 3401,
+    "ItemCount": 8,
+    "TableArn": "arn:aws:dynamodb:ddblocal:000000000000:table/SHASHKIWIKIBoardBox",
+    "GlobalSecondaryIndexes": [
+      {
+        "IndexName": "boardBoxIndex",
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "createdAt",
+            "KeyType": "RANGE"
+          }
+        ],
+        "Projection": {
+          "ProjectionType": "KEYS_ONLY"
+        },
+        "IndexStatus": "ACTIVE",
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "IndexSizeBytes": 3401,
+        "ItemCount": 8,
+        "IndexArn": "arn:aws:dynamodb:ddblocal:000000000000:table/SHASHKIWIKIBoardBox/index/boardBoxIndex"
+      }
+    ]
+  }
+}
