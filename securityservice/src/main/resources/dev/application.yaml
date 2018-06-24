@@ -11,3 +11,5 @@ app:
   superHashEnvName: SHASHKI_SUPER_USER
   passwordFileKey: yGqa2Ga3wCqVb65U
   passwordFilename: /Users/aleksey/Development/shashki/shashkiSpark/dynamodb-local/shashki_online/ShashkiUsers.pwd
+
+  adminMail: lynx.p9@icloud.com

@@ -7,13 +7,13 @@ import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.dao.SubscriberDao;
 import com.workingbit.article.service.ArticleService;
 import com.workingbit.article.service.ArticleStoreService;
-import com.workingbit.article.service.EmailService;
 import com.workingbit.article.service.SubscriberService;
 import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.ExceptionHandler;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.Answer;
+import com.workingbit.share.util.EmailUtils;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import com.workingbit.share.util.UnirestUtil;
@@ -37,7 +37,7 @@ public class ArticleEmbedded {
   public static AppProperties appProperties;
   public static ArticleService articleService;
   public static SubscriberService subscriberService;
-  public static EmailService emailService;
+  public static EmailUtils emailUtils;
   public static ArticleStoreService articleStoreService;
 
   static {
@@ -49,7 +49,7 @@ public class ArticleEmbedded {
     subscriberDao = new SubscriberDao(appProperties);
     articleService = new ArticleService();
     subscriberService = new SubscriberService();
-    emailService = new EmailService();
+    emailUtils = new EmailUtils();
     articleStoreService = new ArticleStoreService();
   }
 

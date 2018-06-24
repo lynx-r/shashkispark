@@ -20,9 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
-import static com.workingbit.security.SecurityEmbedded.appProperties;
-import static com.workingbit.security.SecurityEmbedded.loggedInService;
-import static com.workingbit.security.SecurityEmbedded.siteUserInfoDao;
+import static com.workingbit.security.SecurityEmbedded.*;
 import static com.workingbit.share.common.RequestConstants.SESSION_LENGTH;
 import static com.workingbit.share.util.Utils.*;
 
@@ -66,6 +64,10 @@ public class SecureUserService {
       // send access token and userSession
       orchestralService.cacheSecureAuth(secureAuth);
       loggedInService.registerUser(secureAuth);
+
+      String contentHtml = String.format("Зарегистрировался новый пользователь: %s", siteUserInfo.getUsername());
+      String subject = "Зарегистрировался новый пользователь";
+      emailUtils.send(appProperties.adminMail(), appProperties.adminMail(), subject, contentHtml, contentHtml);
       return AuthUser.simpleUser(secureAuth.getUserId(), username, secureAuth.getAccessToken(), userSession, secureAuth.getAuthorities());
     } catch (CryptoException e) {
       logger.warn("UNREGISTERED: " + userCredentials, e.getMessage());

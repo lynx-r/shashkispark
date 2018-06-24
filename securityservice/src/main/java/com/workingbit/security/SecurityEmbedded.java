@@ -7,10 +7,11 @@ import com.workingbit.security.controller.SecurityController;
 import com.workingbit.security.dao.SiteUserInfoDao;
 import com.workingbit.security.service.LoggedInService;
 import com.workingbit.security.service.SecureUserService;
-import com.workingbit.share.exception.ExceptionHandler;
 import com.workingbit.share.common.ErrorMessages;
+import com.workingbit.share.exception.ExceptionHandler;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.Answer;
+import com.workingbit.share.util.EmailUtils;
 import com.workingbit.share.util.Filters;
 import com.workingbit.share.util.SparkUtils;
 import com.workingbit.share.util.UnirestUtil;
@@ -33,6 +34,7 @@ public class SecurityEmbedded {
   public static SecureUserService secureUserService;
   public static SiteUserInfoDao siteUserInfoDao;
   public static LoggedInService loggedInService;
+  public static EmailUtils emailUtils;
 
   static {
     OrchestrateModule.loadModule();
@@ -43,6 +45,8 @@ public class SecurityEmbedded {
 
     secureUserService = new SecureUserService();
     loggedInService = new LoggedInService();
+
+    emailUtils = new EmailUtils();
   }
 
   public static void main(String[] args) {

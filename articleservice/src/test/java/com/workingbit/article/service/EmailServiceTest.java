@@ -1,5 +1,6 @@
 package com.workingbit.article.service;
 
+import com.workingbit.share.util.EmailUtils;
 import org.junit.Test;
 
 /**
@@ -7,7 +8,7 @@ import org.junit.Test;
  */
 public class EmailServiceTest {
 
-  private EmailService emailService = new EmailService();
+  private EmailUtils emailUtils = new EmailUtils();
 
   @Test
   public void send() {

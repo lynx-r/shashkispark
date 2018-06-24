@@ -32,4 +32,6 @@ public interface AppProperties {
   @NotNull String passwordFileKey();
 
   @NotNull String passwordFilename();
+
+  String adminMail();
 }

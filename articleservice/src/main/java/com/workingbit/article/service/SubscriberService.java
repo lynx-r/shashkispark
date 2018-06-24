@@ -7,7 +7,7 @@ import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.Subscribed;
 import com.workingbit.share.util.Utils;
 
-import static com.workingbit.article.ArticleEmbedded.emailService;
+import static com.workingbit.article.ArticleEmbedded.emailUtils;
 import static com.workingbit.article.ArticleEmbedded.subscriberDao;
 
 /**
@@ -31,7 +31,7 @@ public class SubscriberService {
     String contentText = "Вы подписаны на получение новых статей с сайта https://www.shashki.online.";
     String subject = "Подписка на новости сайта";
     subscriberDao.save(subscriber);
-    emailService.send(subscriber.getName(), subscriber.getEmail(), subject, contentHtml, contentText);
+    emailUtils.send(subscriber.getName(), subscriber.getEmail(), subject, contentHtml, contentText);
     return new Subscribed(true);
   }
 }
