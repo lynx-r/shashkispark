@@ -43,13 +43,13 @@ public class Article extends BaseDomain implements Payload {
   private LocalDateTime updatedAt;
 
   @NotBlank
-  @Size(max = 5000)
+  @Size(max = 500)
   @DynamoDBIndexHashKey(globalSecondaryIndexName = "humanReadableUrlIndex")
   @DynamoDBAttribute(attributeName = "humanReadableUrl")
   private String humanReadableUrl;
 
   @NotBlank
-  @Size(max = 5000)
+  @Size(max = 200)
   @DynamoDBAttribute(attributeName = "author")
   private String author;
 
@@ -58,17 +58,17 @@ public class Article extends BaseDomain implements Payload {
   private DomainId userId;
 
   @NotBlank
-  @Size(max = 5000)
+  @Size(max = 1000)
   @DynamoDBAttribute(attributeName = "title")
   private String title;
 
   @NotBlank
-  @Size(max = 500000)
+  @Size(max = 50000)
   @DynamoDBAttribute(attributeName = "content")
   private String content;
 
   @NotBlank
-  @Size(max = 5000)
+  @Size(max = 1000)
   @DynamoDBAttribute(attributeName = "intro")
   private String intro;
 
