@@ -7,6 +7,8 @@ import com.workingbit.share.util.SecureUtils;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +23,8 @@ import static com.workingbit.share.util.JsonUtils.jsonToData;
  * Created by Aleksey Popryadukhin on 23/05/2018.
  */
 public class LoggedInService {
+
+  private Logger logger = LoggerFactory.getLogger(LoggedInService.class);
 
   void registerUser(SecureAuth secureAuth) throws CryptoException, IOException {
     File decryptedFile = decryptFile();
@@ -64,7 +68,7 @@ public class LoggedInService {
     encryptFile(decryptedFile);
   }
 
-  private void encryptFile(@NotNull File decryptedFile) throws CryptoException, IOException {
+  private void encryptFile(@NotNull File decryptedFile) throws CryptoException {
     String key = appProperties.passwordFileKey();
     String passwdFilename = appProperties.passwordFilename();
     File encrypted = getEncryptedFile(passwdFilename);
@@ -82,12 +86,18 @@ public class LoggedInService {
   }
 
   @NotNull
-  private File getEncryptedFile(@NotNull String passwdFilename) throws IOException {
+  private File getEncryptedFile(@NotNull String passwdFilename) {
     File encrypted = new File(passwdFilename);
     if (!encrypted.exists()) {
-      boolean newFile = encrypted.createNewFile();
+      boolean newFile;
+      try {
+        newFile = encrypted.createNewFile();
+      } catch (IOException e) {
+        logger.error(e.getMessage(), e);
+        throw RequestException.internalServerError();
+      }
       if (!newFile) {
-        throw new SecurityException("Не удалось создать файл паролей");
+        throw RequestException.internalServerError();
       }
     }
     return encrypted;
