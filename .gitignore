@@ -2,9 +2,9 @@ node_modules
 
 *.class
 .gradle
-/build/
-/bin/
-/.settings/
+**/build/
+**/bin/
+**/.settings/
 .project
 .classpath
 
@@ -22,3 +22,6 @@ node_modules
 **/ShashkiUsers.pwd
 **/dump
 **/*.db
+
+yarn.lock
+
