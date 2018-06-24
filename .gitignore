@@ -23,6 +23,7 @@ node_modules
 **/dump
 **/*.db
 **/*.log
+**/*.zip
 
 yarn.lock
 
