@@ -1,0 +1,16 @@
+ 
+  Serverless Error ---------------------------------------
+ 
+  Serverless command "dynamodb" not found. Did you mean "deploy"? Run "serverless help" for a list of all available commands.
+ 
+  Get Support --------------------------------------------
+     Docs:          docs.serverless.com
+     Bugs:          github.com/serverless/serverless/issues
+     Forums:        forum.serverless.com
+     Chat:          gitter.im/serverless/serverless
+ 
+  Your Environment Information -----------------------------
+     OS:                     linux
+     Node Version:           8.11.2
+     Serverless Version:     1.26.1
+ 
