@@ -450,3 +450,4 @@ custom:
       port: 8765
       inMemory: false
       migrate: false
+      dbPath: ${env:PWD}/data
