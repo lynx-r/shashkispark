@@ -71,4 +71,19 @@ public class NotationMoves extends LinkedList<NotationMove> implements NotationF
       return move;
     });
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof NotationMoves)) {
+      return false;
+    }
+    NotationMoves that = ((NotationMoves) o);
+    for (int i = 0; i < that.size(); i++) {
+      NotationMove notationMove = that.get(i);
+      if (!notationMove.equals(get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

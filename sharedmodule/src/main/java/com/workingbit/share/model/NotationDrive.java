@@ -232,7 +232,10 @@ public class NotationDrive implements DeepClone, NotationFormat {
 
   @DynamoDBIgnore
   public String getVariantsAsString() {
-    return variants.variantsToPdn(notationFormat);
+    if (!variants.isEmpty()) {
+      return variants.asString(notationFormat);
+    }
+    return "";
   }
 
   public String asString(EnumNotationFormat notationFormat) {

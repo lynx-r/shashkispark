@@ -37,7 +37,8 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc<T> 
     return dataToJson(answer);
   }
 
-  default String handleAuthRequest(@NotNull Request request, @NotNull Response response, @NotNull Class<T> clazz) throws RequestException {
+  default String handleAuthRequest(@NotNull Request request, @NotNull Response response, @NotNull Class<T> clazz)
+      throws RequestException {
     logRequest(request);
 
     String json = request.body();

@@ -34,7 +34,11 @@ public class NotationSimpleMove implements DeepClone {
     if (this == o) return true;
     if (!(o instanceof NotationSimpleMove)) return false;
     NotationSimpleMove that = (NotationSimpleMove) o;
-    return Objects.equals(notation, that.notation);
+    int oldBoardDimension = that.getBoardDimension();
+    that.setBoardDimension(this.boardDimension);
+    boolean equals = Objects.equals(getNotationNum(), that.getNotationNum());
+    that.setBoardDimension(oldBoardDimension);
+    return equals;
   }
 
   @Override
