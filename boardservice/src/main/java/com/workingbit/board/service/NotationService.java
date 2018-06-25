@@ -32,7 +32,7 @@ public class NotationService {
 
   void save(@NotNull Notation notation, boolean fill) {
     notationDao.save(notation);
-    notationStoreService.removeNotation(notation);
+//    notationStoreService.removeNotation(notation);
     if (fill) {
       fillNotation(notation);
     }
@@ -123,14 +123,10 @@ public class NotationService {
     if (authUser == null) {
       throw RequestException.notFound404();
     }
-    return notationStoreService
-        .getNotation(authUser.getUserSession(), notationId)
-        .orElseGet(() -> {
-          Notation byId = notationDao.findById(notationId);
-          fillNotation(byId);
-          notationStoreService.putNotation(authUser.getUserSession(), byId);
-          return byId;
-        });
+    Notation byId = notationDao.findById(notationId);
+    fillNotation(byId);
+//          notationStoreService.putNotation(authUser.getUserSession(), byId);
+    return byId;
   }
 
   Notation forkAt(int forkFromNotationDrive, Notation notation) {
@@ -214,7 +210,7 @@ public class NotationService {
 
   void deleteById(DomainId notationId) {
     notationDao.delete(notationId.getDomainId());
-    notationStoreService.removeNotationById(notationId);
+//    notationStoreService.removeNotationById(notationId);
   }
 
   void populateBoardWithNotation(DomainId notationId, @NotNull Board board,

@@ -89,7 +89,7 @@ public class ArticleService {
     // add new article to cache
     Articles all = findAll("50", authUser);
     all.add(article);
-    articleStoreService.putAllArticles(all);
+//    articleStoreService.putAllArticles(all);
     return createArticleResponse;
   }
 
@@ -114,7 +114,7 @@ public class ArticleService {
     article.setArticleStatus(articleClient.getArticleStatus());
     article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
     articleDao.save(article);
-    articleStoreService.remove(article);
+//    articleStoreService.remove(article);
 
     if (EnumArticleStatus.PUBLISHED.equals(article.getArticleStatus())) {
       subscriberService.notifySubscribersAboutArticle(articleClient);
@@ -132,7 +132,7 @@ public class ArticleService {
       return null;
     }
     article.setSelectedBoardBoxId(articleClient.getSelectedBoardBoxId());
-    articleStoreService.put(token.getUserSession(), article);
+//    articleStoreService.put(token.getUserSession(), article);
     return article;
   }
 
@@ -166,7 +166,7 @@ public class ArticleService {
       article.setSelectedBoardBoxId(boardBox.getDomainId());
       article.setBoardBoxCount(boardBoxCount);
       articleDao.save(article);
-      articleStoreService.put(authUser.getUserSession(), article);
+//      articleStoreService.put(authUser.getUserSession(), article);
 
       CreateArticleResponse articleResponse = CreateArticleResponse.createArticleResponse();
       articleResponse.setArticle(article);
@@ -182,25 +182,19 @@ public class ArticleService {
     }
     boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
     String userId = authUser.getUserId() != null ? authUser.getUserId().getId() : "";
-    return articleStoreService
-        .getAllArticles(secure, userId)
-        .orElseGet(() -> findAllDb(limitStr, authUser));
+    return findAllDb(limitStr, authUser);
   }
 
   public Article findByHru(String articleHru, @NotNull AuthUser token) {
     try {
-      Article byHru = articleDao.findByHru(articleHru);
-      articleStoreService.put(token.getUserSession(), byHru);
-      return byHru;
+      return articleDao.findByHru(articleHru);
     } catch (DaoException e) {
       throw RequestException.notFound404();
     }
   }
 
   public Article findByHruCached(String articleHru, String selectedBoardBoxId, @NotNull AuthUser token) {
-    return articleStoreService
-        .get(token.getUserSession(), articleHru, selectedBoardBoxId)
-        .orElseGet(() -> findByHru(articleHru, token));
+    return findByHru(articleHru, token);
   }
 
   @NotNull
@@ -214,7 +208,7 @@ public class ArticleService {
       }
     }
     articleDao.delete(article.getDomainId());
-    articleStoreService.remove(article);
+//    articleStoreService.remove(article);
 
     int limit = appProperties.articlesFetchLimit();
     Articles published;
@@ -226,7 +220,7 @@ public class ArticleService {
       }
       published = new Articles();
     }
-    articleStoreService.putAllArticles(published);
+//    articleStoreService.putAllArticles(published);
     return published;
   }
 
@@ -248,7 +242,7 @@ public class ArticleService {
       } else {
         articles = articleDao.findPublishedBy(limit, authUser);
       }
-      articleStoreService.putAllArticles(articles);
+//      articleStoreService.putAllArticles(articles);
       return articles;
     } catch (DaoException e) {
       if (e.getCode() == HTTP_NOT_FOUND) {
@@ -262,6 +256,6 @@ public class ArticleService {
   private void replaceArticleInAllArticlesCache(Article article, @NotNull AuthUser token) {
     Articles all = findAll(appProperties.articlesFetchLimit().toString(), token);
     all.replace(article);
-    articleStoreService.putAllArticles(all);
+//    articleStoreService.putAllArticles(all);
   }
 }

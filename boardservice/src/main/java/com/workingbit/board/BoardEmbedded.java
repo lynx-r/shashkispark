@@ -35,8 +35,8 @@ public class BoardEmbedded {
   public static NotationService notationService;
   public static NotationHistoryService notationHistoryService;
   public static NotationParserService notationParserService;
-  public static BoardBoxStoreService boardBoxStoreService;
-  public static NotationStoreService notationStoreService;
+  //  public static BoardBoxStoreService boardBoxStoreService;
+//  public static NotationStoreService notationStoreService;
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
   public static NotationDao notationDao;
@@ -54,8 +54,8 @@ public class BoardEmbedded {
     notationHistoryService = new NotationHistoryService();
     notationService = new NotationService();
     notationParserService = new NotationParserService();
-    boardBoxStoreService = new BoardBoxStoreService();
-    notationStoreService = new NotationStoreService();
+//    boardBoxStoreService = new BoardBoxStoreService();
+//    notationStoreService = new NotationStoreService();
 
     boardBoxDao = new BoardBoxDao(appProperties);
     boardDao = new BoardDao(appProperties);

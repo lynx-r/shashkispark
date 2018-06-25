@@ -6,7 +6,6 @@ import com.workingbit.article.controller.ArticleController;
 import com.workingbit.article.dao.ArticleDao;
 import com.workingbit.article.dao.SubscriberDao;
 import com.workingbit.article.service.ArticleService;
-import com.workingbit.article.service.ArticleStoreService;
 import com.workingbit.article.service.SubscriberService;
 import com.workingbit.orchestrate.OrchestrateModule;
 import com.workingbit.share.common.ErrorMessages;
@@ -38,7 +37,7 @@ public class ArticleEmbedded {
   public static ArticleService articleService;
   public static SubscriberService subscriberService;
   public static EmailUtils emailUtils;
-  public static ArticleStoreService articleStoreService;
+//  public static ArticleStoreService articleStoreService;
 
   static {
     OrchestrateModule.loadModule();
@@ -50,7 +49,7 @@ public class ArticleEmbedded {
     articleService = new ArticleService();
     subscriberService = new SubscriberService();
     emailUtils = new EmailUtils();
-    articleStoreService = new ArticleStoreService();
+//    articleStoreService = new ArticleStoreService();
   }
 
   public static void main(String[] args) {
