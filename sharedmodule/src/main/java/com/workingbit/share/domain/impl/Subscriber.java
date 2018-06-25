@@ -104,4 +104,9 @@ public class Subscriber extends BaseDomain implements Payload {
   public void setReadonly(boolean readonly) {
 
   }
+
+  @Override
+  public String toString() {
+    return name + "<" + email + ">" + (subscribed ? " подписан" : " отписан");
+  }
 }

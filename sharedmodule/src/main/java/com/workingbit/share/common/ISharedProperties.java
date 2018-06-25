@@ -9,4 +9,6 @@ import java.util.List;
  */
 public interface ISharedProperties {
   @NotNull List<String> validFilters();
+
+  String adminMail();
 }

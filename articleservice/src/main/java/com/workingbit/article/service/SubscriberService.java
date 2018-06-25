@@ -34,7 +34,8 @@ public class SubscriberService {
     String contentText = "Вы подписаны на получение новых статей с сайта https://www.shashki.online.";
     String subject = "Подписка на новости сайта";
     subscriberDao.save(subscriber);
-    emailUtils.send(subscriber.getName(), subscriber.getEmail(), subject, contentHtml, contentText);
+    emailUtils.mail(subscriber.getName(), subscriber.getEmail(), subject, contentHtml, contentText);
+    emailUtils.mailAdmin("Новый подписчик", "На новости подписался " + subscriber + ".");
     return new Subscribed(true);
   }
 
@@ -47,7 +48,7 @@ public class SubscriberService {
           article.getAuthor(), article.getTitle(), articleLink);
       String contentHtml = article.getHtml() + "<br/><hr><br/>" + articleLink;
       for (Subscriber subscriber : active) {
-        emailUtils.send(subscriber.getName(), subscriber.getEmail(), title, contentHtml, contentText);
+        emailUtils.mail(subscriber.getName(), subscriber.getEmail(), title, contentHtml, contentText);
       }
     }).start();
   }

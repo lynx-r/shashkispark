@@ -67,7 +67,7 @@ public class SecureUserService {
 
       String contentHtml = String.format("Зарегистрировался новый пользователь: %s", siteUserInfo.getUsername());
       String subject = "Зарегистрировался новый пользователь";
-      emailUtils.send(appProperties.adminMail(), appProperties.adminMail(), subject, contentHtml, contentHtml);
+      emailUtils.mailAdmin(subject, contentHtml);
       return AuthUser.simpleUser(secureAuth.getUserId(), username, secureAuth.getAccessToken(), userSession, secureAuth.getAuthorities());
     } catch (CryptoException e) {
       logger.warn("UNREGISTERED: " + userCredentials, e.getMessage());

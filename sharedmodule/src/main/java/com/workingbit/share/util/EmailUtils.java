@@ -7,12 +7,14 @@ import org.simplejavamail.mailer.MailerBuilder;
 import org.simplejavamail.mailer.config.TransportStrategy;
 import org.simplejavamail.util.ConfigLoader;
 
+import static com.workingbit.share.common.SharedProperties.sharedProperties;
+
 /**
  * Created by Aleksey Popryadukhin on 18/06/2018.
  */
 public class EmailUtils {
 
-  public void send(String name, String to, String subject, String contentHtml, String contentText) {
+  public void mail(String name, String to, String subject, String contentHtml, String contentText) {
     new Thread(() -> {
       ConfigLoader.loadProperties("simplejavamail.properties", false); // optional default
 //    ConfigLoader.loadProperties("overrides.properties"); // optional extra
@@ -50,5 +52,9 @@ public class EmailUtils {
 
       mailer.sendMail(email);
     }).start();
+  }
+
+  public void mailAdmin(String subject, String contentHtml) {
+    mail("Admin", sharedProperties.adminMail(), subject, contentHtml, contentHtml);
   }
 }
