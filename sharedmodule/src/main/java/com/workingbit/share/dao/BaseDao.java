@@ -11,6 +11,7 @@ import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.DomainIds;
 import com.workingbit.share.util.Utils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -231,6 +232,7 @@ public class BaseDao<T extends BaseDomain> {
     scanExpression.withExpressionAttributeValues(eav);
 
     logger.info("Apply filter: " + filter);
+    MapUtils.debugPrint(System.out, "label", eav);
     List<T> list = new ArrayList<>(dynamoDBMapper.scan(clazz, scanExpression));
     if (list.isEmpty()) {
       throw DaoException.notFound();
