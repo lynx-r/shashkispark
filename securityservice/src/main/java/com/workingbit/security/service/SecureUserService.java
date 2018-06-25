@@ -36,7 +36,7 @@ public class SecureUserService {
   public AuthUser register(@NotNull UserCredentials userCredentials) {
     try {
       String username = userCredentials.getUsername();
-      if (passwordService.findByUsername(username) != null) {
+      if (passwordService.findByUsername(username).isPresent()) {
         throw RequestException.forbidden();
       }
       SecureAuth secureAuth = new SecureAuth();

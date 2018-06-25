@@ -204,10 +204,16 @@ public class ArticleService {
   }
 
   @NotNull
-  public Articles removeById(DomainId articleId, @NotNull AuthUser authUser) {
+  public Articles deleteById(DomainId articleId, @NotNull AuthUser authUser) {
     Article article = articleDao.findById(articleId);
-    article.setArticleStatus(EnumArticleStatus.REMOVED);
-    articleDao.save(article);
+    Optional<ResultPayload> resultPayload = orchestralService.deleteBoardBoxesByArticleId(article.getDomainId(), authUser);
+    if (resultPayload.isPresent()) {
+      boolean boardBoxesDeleted = resultPayload.get().isSuccess();
+      if (!boardBoxesDeleted) {
+        throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_REMOVE_BOARDBOXES);
+      }
+    }
+    articleDao.delete(article.getDomainId());
     articleStoreService.remove(article);
 
     int limit = appProperties.articlesFetchLimit();

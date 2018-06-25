@@ -86,7 +86,7 @@ public class ArticleEmbedded {
           put(Authority.ARTICLE_PROTECTED.getPath(), ArticleController.saveArticle);
           post(Authority.ARTICLE_IMPORT_PDN_PROTECTED.getPath(), ArticleController.importPdn);
           post(Authority.SUBSCRIBE.getPath(), ArticleController.subscribe);
-          post(Authority.ARTICLE_REMOVE_PROTECTED.getPath(), ArticleController.removeArticleById);
+          post(Authority.ARTICLE_DELETE_PROTECTED.getPath(), ArticleController.removeArticleById);
 
           exception(RequestException.class, ExceptionHandler.handle);
           notFound((req, res) -> dataToJson(Answer.error(HTTP_NOT_FOUND, ErrorMessages.RESOURCE_NOT_FOUND)));

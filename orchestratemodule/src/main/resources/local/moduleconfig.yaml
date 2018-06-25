@@ -30,6 +30,7 @@ app:
 
   # board
   boardboxResource: http://localhost:8080/board/api/v1/board
+  boardboxDeleteByArticleIdResource: http://localhost:8080/board/api/v1/board-delete-by-article-id
   parsePdnResource: http://localhost:8080/board/api/v1/parse-pdn
 
   # security

@@ -191,6 +191,17 @@ public class BoardBoxService {
     }
   }
 
+  public Payload deleteBoardBoxByArticleId(DomainId articleId, AuthUser token) {
+    try {
+      BoardBoxes byArticleId = boardBoxDao.findByArticleId(articleId);
+      byArticleId.getBoardBoxes().valueList().forEach(boardBox -> deleteBoardBox(boardBox.getDomainId(), token));
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
+      return new ResultPayload(false);
+    }
+    return new ResultPayload(true);
+  }
+
   public BoardBox highlight(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
     var serverBoardBox = findAndFill(boardBox, authUser);
     Board clientBoard = boardBox.getBoard();

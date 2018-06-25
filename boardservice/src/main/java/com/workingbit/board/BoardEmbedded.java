@@ -99,6 +99,7 @@ public class BoardEmbedded {
           post(Authority.PARSE_PDN_PROTECTED.getPath(), BoardBoxController.parsePdn);
           put(Authority.BOARD_PUT_PROTECTED.getPath(), BoardBoxController.saveBoard);
           post(Authority.BOARD_DELETE_PROTECTED.getPath(), BoardBoxController.deleteBoard);
+          post(Authority.BOARD_DELETE_BY_ARTICLE_PROTECTED.getPath(), BoardBoxController.deleteBoardByArticleId);
           post(Authority.BOARD_ADD_DRAUGHT_PROTECTED.getPath(), BoardBoxController.addDraught);
           post(Authority.BOARD_MOVE_PROTECTED.getPath(), BoardBoxController.move);
           post(Authority.BOARD_HIGHLIGHT_PROTECTED.getPath(), BoardBoxController.highlightBoard);

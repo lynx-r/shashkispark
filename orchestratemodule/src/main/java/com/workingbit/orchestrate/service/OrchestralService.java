@@ -46,6 +46,7 @@ public class OrchestralService {
   private String authenticate;
   private String article;
   private String boardbox;
+  private String boardboxDeleteByArticleId;
   private String parsePdn;
   private String userInfo;
   private String saveUserInfo;
@@ -57,6 +58,7 @@ public class OrchestralService {
     authenticate = moduleProperties.authenticateResource();
     article = moduleProperties.articleResource();
     boardbox = moduleProperties.boardboxResource();
+    boardboxDeleteByArticleId = moduleProperties.boardboxDeleteByArticleIdResource();
     parsePdn = moduleProperties.parsePdnResource();
     userInfo = moduleProperties.userInfoResource();
     saveUserInfo = moduleProperties.saveUserInfoResource();
@@ -114,6 +116,15 @@ public class OrchestralService {
   public Optional<Answer> createBoardBoxAnswer(CreateBoardPayload boardRequest, @NotNull AuthUser authUser) {
     Map<String, String> headers = getAuthHeaders(authUser);
     return post(boardbox, boardRequest, headers);
+  }
+
+  public Optional<ResultPayload> deleteBoardBoxesByArticleId(DomainId articleId, AuthUser authUser) {
+    return deleteBoardBoxesByArticleIdAnswer(articleId, authUser).map(answer -> ((ResultPayload) answer.getBody()));
+  }
+
+  public Optional<Answer> deleteBoardBoxesByArticleIdAnswer(DomainId articleId, AuthUser authUser) {
+    Map<String, String> headers = getAuthHeaders(authUser);
+    return post(boardboxDeleteByArticleId, articleId, headers);
   }
 
   public Optional<BoardBox> parsePdn(ImportPdnPayload boardRequest, @NotNull AuthUser authUser) {

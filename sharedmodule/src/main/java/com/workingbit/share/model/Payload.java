@@ -33,6 +33,7 @@ import com.workingbit.share.domain.impl.Subscriber;
     @JsonSubTypes.Type(value = AuthUser.class, name = "AuthUser"),
     @JsonSubTypes.Type(value = UserInfo.class, name = "UserInfo"),
     @JsonSubTypes.Type(value = ParamPayload.class, name = "Params"),
+    @JsonSubTypes.Type(value = ResultPayload.class, name = "Result"),
     @JsonSubTypes.Type(value = EmptyBody.class, name = "EmptyBody"),
 
     @JsonSubTypes.Type(value = Subscriber.class, name = "Subscriber"),

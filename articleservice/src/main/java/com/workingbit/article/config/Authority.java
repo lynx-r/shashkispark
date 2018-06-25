@@ -22,7 +22,7 @@ public enum Authority implements IAuthority {
   // must be protected
   ARTICLE_PROTECTED("/article", Constants.SECURE_ROLES),
   ARTICLE_IMPORT_PDN_PROTECTED("/import-pdn", Constants.SECURE_ROLES),
-  ARTICLE_REMOVE_PROTECTED("/article-remove", Constants.SECURE_ROLES)
+  ARTICLE_DELETE_PROTECTED("/article-delete", Constants.SECURE_ROLES)
   ;
 
   private String path;
