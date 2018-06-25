@@ -7,7 +7,6 @@ import com.workingbit.share.model.Payload;
 import com.workingbit.share.model.SecureAuth;
 import com.workingbit.share.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.redisson.Redisson;
 import org.redisson.api.*;
 import org.redisson.codec.JsonJacksonCodec;
@@ -97,7 +96,6 @@ public class RedisUtil {
     tokenCache.put(userSession, authUser);
   }
 
-  @NotNull
   public static SecureAuth getSecureAuthByUserSession(String userSession) {
     RMapCache<Object, Object> mapCache = reddison.getMapCache(CACHE_SECURE_AUTH_USERSESSION);
     return (SecureAuth) mapCache.get(userSession);

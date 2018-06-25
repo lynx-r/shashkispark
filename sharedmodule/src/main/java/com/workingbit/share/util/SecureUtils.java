@@ -69,35 +69,32 @@ public class SecureUtils {
 //    }
   }
 
-  public static void encrypt(@NotNull String key, @NotNull File inputFile, @NotNull File outputFile)
+  public static ByteArrayInputStream encrypt(@NotNull String key, @NotNull InputStream inputFile)
       throws CryptoException {
-    doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);
+    return doCrypto(Cipher.ENCRYPT_MODE, key, inputFile);
   }
 
-  public static void decrypt(@NotNull String key, @NotNull File inputFile, @NotNull File outputFile)
+  public static ByteArrayInputStream decrypt(@NotNull String key, @NotNull InputStream inputFile)
       throws CryptoException {
-    doCrypto(Cipher.DECRYPT_MODE, key, inputFile, outputFile);
+    return doCrypto(Cipher.DECRYPT_MODE, key, inputFile);
   }
 
-  private static void doCrypto(int cipherMode, String key, @NotNull File inputFile,
-                               @NotNull File outputFile) throws CryptoException {
+  private static ByteArrayInputStream doCrypto(int cipherMode, String key, @NotNull InputStream inputStream) throws CryptoException {
     try {
       Key secretKey = new SecretKeySpec(key.getBytes(), ALGORITHM);
       Cipher cipher = Cipher.getInstance(TRANSFORMATION);
       cipher.init(cipherMode, secretKey);
 
-      FileInputStream inputStream = new FileInputStream(inputFile);
-      byte[] inputBytes = new byte[(int) inputFile.length()];
-      inputStream.read(inputBytes);
-
+      byte[] inputBytes = inputStream.readAllBytes();
       byte[] outputBytes = cipher.doFinal(inputBytes);
-
-      FileOutputStream outputStream = new FileOutputStream(outputFile);
-      outputStream.write(outputBytes);
-
       inputStream.close();
-      outputStream.close();
 
+      try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+        outputStream.write(outputBytes);
+        return new ByteArrayInputStream(outputStream.toByteArray());
+      } catch (Exception e) {
+        throw new CryptoException("Error encrypting/decrypting file", e);
+      }
     } catch (@NotNull NoSuchPaddingException | NoSuchAlgorithmException
         | InvalidKeyException | BadPaddingException
         | IllegalBlockSizeException | IOException ex) {

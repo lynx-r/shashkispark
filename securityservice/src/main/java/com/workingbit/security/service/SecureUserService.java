@@ -17,6 +17,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
@@ -35,7 +36,7 @@ public class SecureUserService {
   public AuthUser register(@NotNull UserCredentials userCredentials) {
     try {
       String username = userCredentials.getUsername();
-      if (loggedInService.findByUsername(username) != null) {
+      if (passwordService.findByUsername(username) != null) {
         throw RequestException.forbidden();
       }
       SecureAuth secureAuth = new SecureAuth();
@@ -63,7 +64,7 @@ public class SecureUserService {
 
       // send access token and userSession
       orchestralService.cacheSecureAuth(secureAuth);
-      loggedInService.registerUser(secureAuth);
+      passwordService.registerUser(secureAuth);
 
       String contentHtml = String.format("Зарегистрировался новый пользователь: %s", siteUserInfo.getUsername());
       String subject = "Зарегистрировался новый пользователь";
@@ -83,11 +84,12 @@ public class SecureUserService {
     SecureAuth secureAuth = orchestralService.getSecureAuthUsername(username);
     if (secureAuth == null) {
       try {
-        secureAuth = loggedInService.findByUsername(username);
+        Optional<SecureAuth> secureAuthOptional = passwordService.findByUsername(username);
+        if (!secureAuthOptional.isPresent()) {
+          throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+        }
+        secureAuth = secureAuthOptional.get();
       } catch (@NotNull CryptoException | IOException e) {
-        throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
-      }
-      if (secureAuth == null) {
         throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
       }
     }
@@ -190,7 +192,7 @@ public class SecureUserService {
             secureAuthUpdated.setUsername(userInfo.getUsername());
             // todo обновлять автора в статьях
             try {
-              loggedInService.replaceSecureAuth(secureAuth, secureAuthUpdated);
+              passwordService.replaceSecureAuth(secureAuth, secureAuthUpdated);
             } catch (@NotNull CryptoException | IOException e) {
               throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CHANGE_USERNAME);
             }

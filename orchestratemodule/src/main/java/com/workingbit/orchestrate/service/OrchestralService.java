@@ -277,7 +277,6 @@ public class OrchestralService {
     RedisUtil.cacheSecureAuthUsername(auth.getUsername(), auth.getUserSession());
   }
 
-  @NotNull
   public SecureAuth getSecureAuth(String userSession) {
     return RedisUtil.getSecureAuthByUserSession(userSession);
   }

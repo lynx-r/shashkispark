@@ -5,7 +5,7 @@ import com.workingbit.security.config.AppProperties;
 import com.workingbit.security.config.Authority;
 import com.workingbit.security.controller.SecurityController;
 import com.workingbit.security.dao.SiteUserInfoDao;
-import com.workingbit.security.service.LoggedInService;
+import com.workingbit.security.service.PasswordService;
 import com.workingbit.security.service.SecureUserService;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.ExceptionHandler;
@@ -33,7 +33,7 @@ public class SecurityEmbedded {
   public static AppProperties appProperties;
   public static SecureUserService secureUserService;
   public static SiteUserInfoDao siteUserInfoDao;
-  public static LoggedInService loggedInService;
+  public static PasswordService passwordService;
   public static EmailUtils emailUtils;
 
   static {
@@ -44,7 +44,7 @@ public class SecurityEmbedded {
     siteUserInfoDao = new SiteUserInfoDao(appProperties);
 
     secureUserService = new SecureUserService();
-    loggedInService = new LoggedInService();
+    passwordService = new PasswordService();
 
     emailUtils = new EmailUtils();
   }
