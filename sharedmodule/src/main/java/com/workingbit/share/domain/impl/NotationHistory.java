@@ -57,6 +57,9 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   @DynamoDBAttribute(attributeName = "notationLine")
   private NotationLine notationLine;
 
+  @DynamoDBAttribute(attributeName = "startMovingFrom")
+  private int startMovingFrom;
+
   public NotationHistory() {
     createWithRoot();
     notationLine = new NotationLine();
@@ -298,7 +301,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<NotationDrive> getCurrentVariant() {
-    return notation.getCurrentVariant(getCurrentIndex());
+    return notation.getCurrentVariant(getCurrentIndex() - startMovingFrom);
   }
 
   @JsonIgnore

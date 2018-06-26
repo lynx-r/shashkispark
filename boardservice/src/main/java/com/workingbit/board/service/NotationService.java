@@ -216,8 +216,10 @@ public class NotationService {
   void populateBoardWithNotation(DomainId notationId, @NotNull Board board,
                                  @NotNull Notation notation,
                                  @NotNull List<Board> batchBoards) {
-    board.setDriveCount(notation.getNotationHistory().get(1).getNotationNumberInt() - 1);
+    int startMovingFrom = notation.getNotationHistory().get(1).getNotationNumberInt() - 1;
+    board.setDriveCount(startMovingFrom);
     NotationHistory recursiveFillNotationHistory = NotationHistory.createWithRoot();
+    recursiveFillNotationHistory.setStartMovingFrom(startMovingFrom);
     populateBoardWithNotation(notationId, board, notation, recursiveFillNotationHistory, batchBoards);
     NotationDrive lastDrive = recursiveFillNotationHistory.getLast();
     lastDrive.setSelected(true);
