@@ -20,17 +20,17 @@ app:
 #  saveUserInfoResource: http://localhost:8080/security/api/v1/save-user-info
 #  logoutResource: http://localhost:8080/security/api/v1/logout
 
-  articleResource: http://localhost:8888/article/api/v1/article
-  articlesResource: http://localhost:8888/article/api/v1/articles
-  boardboxResource: http://localhost:8888/board/api/v1/board
+  articleResource: https://localhost:8888/article/api/v1/article
+  articlesResource: https://localhost:8888/article/api/v1/articles
+  boardboxResource: https://localhost:8888/board/api/v1/board
   boardboxDeleteByArticleIdResource: http://localhost:8080/board/api/v1/board-delete-by-article-id
-  parsePdnResource: http://localhost:8888/board/api/v1/parse-pdn
-  registerResource: http://localhost:8888/security/api/v1/register
-  authorizeResource: http://localhost:8888/security/api/v1/authorize
-  authenticateResource: http://localhost:8888/security/api/v1/authenticate
-  userInfoResource: http://localhost:8888/security/api/v1/user-info
-  saveUserInfoResource: http://localhost:8888/security/api/v1/save-user-info
-  logoutResource: http://localhost:8888/security/api/v1/logout
+  parsePdnResource: https://localhost:8888/board/api/v1/parse-pdn
+  registerResource: https://localhost:8888/security/api/v1/register
+  authorizeResource: https://localhost:8888/security/api/v1/authorize
+  authenticateResource: https://localhost:8888/security/api/v1/authenticate
+  userInfoResource: https://localhost:8888/security/api/v1/user-info
+  saveUserInfoResource: https://localhost:8888/security/api/v1/save-user-info
+  logoutResource: https://localhost:8888/security/api/v1/logout
 
   redisHost: 127.0.0.1
   redisPort: 6379
