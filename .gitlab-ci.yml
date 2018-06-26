@@ -6,11 +6,11 @@ job_production:
   tags:
       - shashki-back
   script:
-    - rm -rf /var/lib/tomcat8/webapps/{article*,board*,security*}
-    - service tomcat8 stop
+    - rm -rf /opt/tomcat/webapps/{article*,board*,security*}
+    - systemctl stop apache-tomcat
     - ./gradlew clean build deploylocal --stacktrace
-    - chown -R tomcat8:tomcat8 /var/lib/tomcat8/webapps
-    - service tomcat8 start
+    - chown -R tomcat:tomcat /opt/tomcat/webapps
+    - systemctl start apache-tomcat
 
 variables:
   CFG4J_ENV: prod
