@@ -301,7 +301,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<NotationDrive> getCurrentVariant() {
-    return notation.getCurrentVariant(getCurrentIndex() - startMovingFrom);
+    return notation.getCurrentVariant(getCurrentIndex());
   }
 
   @JsonIgnore
