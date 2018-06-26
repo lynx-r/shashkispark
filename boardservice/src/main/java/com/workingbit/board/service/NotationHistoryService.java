@@ -22,7 +22,6 @@ public class NotationHistoryService {
 
   void save(@NotNull NotationHistory notationHistory) {
     notationHistoryDao.save(notationHistory);
-//    notationStoreService.removeNotationHistory(notationHistory);
   }
 
   NotationHistory forkAt(int forkFromNotationDrive, Notation notation) {
