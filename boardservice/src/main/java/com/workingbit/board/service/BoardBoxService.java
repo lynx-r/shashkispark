@@ -17,10 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
@@ -105,15 +102,19 @@ public class BoardBoxService {
   }
 
   public BoardBox findById(@NotNull DomainId boardBoxId, @NotNull AuthUser authUser, @NotNull String publicQuery) {
-    if (publicQuery.equals(PUBLIC_QUERY)) {
-      return findPublicById(boardBoxId, authUser);
+    try {
+      if (publicQuery.equals(PUBLIC_QUERY)) {
+        return findPublicById(boardBoxId, authUser);
+      }
+      if (!EnumAuthority.hasAuthorAuthorities(authUser)) {
+        throw RequestException.forbidden();
+      }
+      var boardBox = boardBoxDao.findById(boardBoxId);
+      updateBoardBox(boardBox, authUser);
+      return boardBox;
+    } catch (DaoException e) {
+      throw RequestException.notFound404(e.getMessage());
     }
-    if (!EnumAuthority.hasAuthorAuthorities(authUser)) {
-      throw RequestException.forbidden();
-    }
-    var boardBox = boardBoxDao.findById(boardBoxId);
-    updateBoardBox(boardBox, authUser);
-    return boardBox;
   }
 
   BoardBox findPublicById(@NotNull DomainId boardBoxId, @NotNull AuthUser authUser) {
@@ -599,10 +600,12 @@ public class BoardBoxService {
 
   @NotNull
   public BoardBox removeVariant(@NotNull BoardBox boardBox, AuthUser authUser) {
-    NotationLine switchLine = notationService.removeVariant(boardBox.getNotation());
-    if (switchLine != null) {
-      switchNotationToVariant(switchLine, boardBox, authUser);
+    Optional<NotationLine> notationLine = notationService.removeVariant(boardBox.getNotation());
+    if (notationLine.isPresent()) {
+      return switchNotationToVariant(notationLine.get(), boardBox, authUser);
     }
+    Notation byId = notationService.findById(boardBox.getNotationId(), authUser);
+    boardBox.setNotation(byId);
     return boardBox;
   }
 

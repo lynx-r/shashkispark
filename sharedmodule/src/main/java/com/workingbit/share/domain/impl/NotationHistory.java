@@ -274,14 +274,6 @@ public class NotationHistory extends BaseDomain implements DeepClone {
     getLast().setSelected(selected);
   }
 
-  public void setCurrentNotationDrive(Integer currentNotationDrive) {
-    notationLine.setCurrentIndex(currentNotationDrive);
-  }
-
-  public void setVariantNotationDrive(Integer variantNotationDrive) {
-    notationLine.setVariantIndex(variantNotationDrive);
-  }
-
   public Integer getCurrentIndex() {
     return notationLine.getCurrentIndex();
   }

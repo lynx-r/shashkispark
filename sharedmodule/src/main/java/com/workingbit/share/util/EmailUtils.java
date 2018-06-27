@@ -16,6 +16,9 @@ public class EmailUtils {
 
   public void mail(String name, String to, String subject, String contentHtml, String contentText) {
     new Thread(() -> {
+      if (sharedProperties.test()) {
+        return;
+      }
       ConfigLoader.loadProperties("simplejavamail.properties", false); // optional default
 //    ConfigLoader.loadProperties("overrides.properties"); // optional extra
 

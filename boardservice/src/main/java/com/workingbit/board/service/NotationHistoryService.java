@@ -40,16 +40,16 @@ public class NotationHistoryService {
       // root variant
       NotationHistory rootNotationHistory = notation.getNotationHistory().deepClone();
       Utils.setRandomIdAndCreatedAt(rootNotationHistory);
-      rootNotationHistory.setCurrentNotationDrive(forkFromNotationDrive);
-      rootNotationHistory.setVariantNotationDrive(0);
+      rootNotationHistory.setCurrentIndex(forkFromNotationDrive);
+      rootNotationHistory.setVariantIndex(0);
       rootHistoryId = rootNotationHistory.getDomainId();
       notation.addForkedNotationHistory(rootNotationHistory);
       // inc variant id
       variantId++;
     }
     Utils.setRandomIdAndCreatedAt(notationHistory);
-    notationHistory.setCurrentNotationDrive(forkFromNotationDrive);
-    notationHistory.setVariantNotationDrive(variantId);
+    notationHistory.setCurrentIndex(forkFromNotationDrive);
+    notationHistory.setVariantIndex(variantId);
     notation.addForkedNotationHistory(notationHistory);
 
     // new fork
@@ -187,8 +187,8 @@ public class NotationHistoryService {
   void createNotationHistoryForNotation(Notation notation) {
     NotationHistory notationHistory = NotationHistory.createWithRoot();
     Utils.setRandomIdAndCreatedAt(notationHistory);
-    notationHistory.setCurrentNotationDrive(0);
-    notationHistory.setVariantNotationDrive(0);
+    notationHistory.setCurrentIndex(0);
+    notationHistory.setVariantIndex(0);
     notationHistory.setNotationId(notation.getDomainId());
     notation.addForkedNotationHistory(notationHistory);
     notation.setNotationHistory(notationHistory);

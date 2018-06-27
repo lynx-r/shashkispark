@@ -16,7 +16,6 @@ import com.workingbit.share.model.enumarable.EnumArticleStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +68,7 @@ public class ArticleDao extends BaseDao<Article> {
 //    }
     addUserFilter(filters, authUser.getUserId().getId());
     List<Article> articles = findByFilter(filters);
-    articles.sort(Comparator.comparing(Article::getArticleStatus));
+//    articles.sort(Comparator.comparing(Article::getArticleStatus));
     return new Articles(articles);
   }
 

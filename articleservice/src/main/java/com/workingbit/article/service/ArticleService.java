@@ -8,7 +8,6 @@ import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumArticleStatus;
-import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -177,12 +176,12 @@ public class ArticleService {
   }
 
   public Articles findAll(@NotNull String limitStr, @NotNull AuthUser authUser) {
-    if (!authUser.getFilters().isEmpty()) {
+//    if (!authUser.getFilters().isEmpty()) {
       return findAllDb(limitStr, authUser);
-    }
-    boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
-    String userId = authUser.getUserId() != null ? authUser.getUserId().getId() : "";
-    return findAllDb(limitStr, authUser);
+//    }
+//    boolean secure = EnumAuthority.hasAuthorAuthorities(authUser);
+//    String userId = authUser.getUserId() != null ? authUser.getUserId().getId() : "";
+//    return findAllDb(limitStr, authUser);
   }
 
   public Article findByHru(String articleHru, @NotNull AuthUser token) {

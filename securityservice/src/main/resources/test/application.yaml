@@ -1,0 +1,13 @@
+app:
+  port: 34567
+  regionDynamoDB: eu-west-1
+  endpointDynamoDB: http://localhost:8765
+  local: true
+  headers: requested-api,api-article,x-api-key,content-type,sign,sign-request,user-session,anonymous-session,user-id,username,access-token,user-authorities,access-control-allow-credentials
+  methods: GET,POST,PUT,OPTIONS,HEADER,DELETE
+  origin: http://localhost:4200
+  sessionLength: 20
+  tokenLength: 20
+  superHashEnvName: SHASHKI_SUPER_USER
+  passwordFileKey: yGqa2Ga3wCqVb65U
+  passwordFilename: /Users/aleksey/Development/shashki/shashkiSpark/dynamodb-local/shashki_online/ShashkiUsers.pwd

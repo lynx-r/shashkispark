@@ -11,4 +11,6 @@ public interface ISharedProperties {
   @NotNull List<String> validFilters();
 
   String adminMail();
+
+  boolean test();
 }
