@@ -63,7 +63,6 @@ public class PasswordService {
           if (secureAuth.getUsername().equals(current.getUsername())) {
             DomainId uCFh9p7dspQDfnT1yX5a = new DomainId("uCFh9p7dspQDfnT1yX5a", LocalDateTime.parse("2018-06-22T07:40:04.483721"));
             secureAuthUpdated.setUserId(uCFh9p7dspQDfnT1yX5a);
-            System.out.println(dataToJson(secureAuthUpdated));
             return dataToJson(secureAuthUpdated);
           }
           return s;

@@ -286,7 +286,7 @@ public class SecureUserService {
         } catch (CryptoException | IOException e) {
           logger.error(e.getMessage(), e);
         }
-        throw RequestException.forbidden("ILLEGAL ACCESS");
+        throw RequestException.forbidden();
       }
     }
     return secureAuth;

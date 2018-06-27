@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
@@ -42,12 +41,10 @@ public class Subscriber extends BaseDomain implements Payload {
   private LocalDateTime unsubscribeDate;
 
   @Size(max = 200)
-  @NotBlank(message = "Укажите, пожалуйста, ваше имя")
   @DynamoDBAttribute(attributeName = "name")
   private String name;
 
   @Size(max = 200)
-  @NotBlank(message = "Почта не может быть пустой")
   @Email(message = "Не верный адрес электронной почты")
   @DynamoDBIndexHashKey(globalSecondaryIndexName = "emailIndex")
   @DynamoDBAttribute(attributeName = "email")
