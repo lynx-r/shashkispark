@@ -289,6 +289,9 @@ public class OrchestralService {
   }
 
   public SecureAuth getSecureAuth(String userSession) {
+    if (StringUtils.isBlank(userSession)) {
+      return null;
+    }
     return RedisUtil.getSecureAuthByUserSession(userSession);
   }
 

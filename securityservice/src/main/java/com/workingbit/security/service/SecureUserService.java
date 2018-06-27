@@ -220,9 +220,11 @@ public class SecureUserService {
     return AuthUser.anonymous();
   }
 
-  public AuthUser resetPassword(UserCredentials credentials) {
+  public ResultPayload resetPassword(UserCredentials credentials) {
     String username = credentials.getUsername();
-    SecureAuth secureAuth = orchestralService.getSecureAuthByUsername(username);
+    AuthUser authUser = new AuthUser();
+    authUser.setUsername(username);
+    SecureAuth secureAuth = getSecureAuth(authUser);
     if (secureAuth == null) {
       throw RequestException.forbidden(ErrorMessages.USER_NOT_FOUND);
     }
@@ -249,8 +251,7 @@ public class SecureUserService {
     try {
       passwordService.replaceSecureAuth(secureAuth, newSecureAuth);
       orchestralService.cacheSecureAuth(newSecureAuth);
-      return AuthUser.simpleUser(newSecureAuth.getUserId(), newSecureAuth.getUsername(),
-          newSecureAuth.getAccessToken(), userSession, newSecureAuth.getAuthorities());
+      return new ResultPayload(true);
     } catch (CryptoException | IOException e) {
       throw RequestException.internalServerError();
     }
@@ -276,14 +277,16 @@ public class SecureUserService {
 
   @Nullable
   private SecureAuth getSecureAuth(AuthUser authUser) {
-    SecureAuth secureAuth = null;
-    if (StringUtils.isNotBlank(authUser.getUserSession())) {
-      secureAuth = orchestralService.getSecureAuth(authUser.getUserSession());
-      if (secureAuth == null && StringUtils.isNotBlank(authUser.getUsername())) {
-        secureAuth = orchestralService.getSecureAuthByUsername(authUser.getUsername());
-        if (secureAuth == null) {
-          throw RequestException.forbidden("ILLEGAL ACCESS");
+    SecureAuth secureAuth = orchestralService.getSecureAuth(authUser.getUserSession());
+    if (secureAuth == null && StringUtils.isNotBlank(authUser.getUsername())) {
+      secureAuth = orchestralService.getSecureAuthByUsername(authUser.getUsername());
+      if (secureAuth == null) {
+        try {
+          return passwordService.findByUsername(authUser.getUsername()).orElseThrow();
+        } catch (CryptoException | IOException e) {
+          logger.error(e.getMessage(), e);
         }
+        throw RequestException.forbidden("ILLEGAL ACCESS");
       }
     }
     return secureAuth;
