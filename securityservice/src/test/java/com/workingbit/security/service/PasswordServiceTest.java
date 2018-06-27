@@ -82,4 +82,18 @@ public class PasswordServiceTest {
     assertFalse(passwordService.findByUsername(username).isPresent());
     assertTrue(passwordService.findByUsername(usernameNew).isPresent());
   }
+
+  @Test
+  public void registerUser1() {
+  }
+
+  @Test
+  public void findByUsername1() throws CryptoException, IOException {
+    SecureAuth shashkionline = passwordService.findByUsername("shashkionline").get();
+    System.out.println(shashkionline);
+  }
+
+  @Test
+  public void replaceSecureAuth1() {
+  }
 }

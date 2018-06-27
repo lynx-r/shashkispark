@@ -2,6 +2,7 @@ package com.workingbit.security.service;
 
 import com.workingbit.share.exception.CryptoException;
 import com.workingbit.share.exception.RequestException;
+import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.SecureAuth;
 import com.workingbit.share.util.SecureUtils;
 import org.apache.commons.io.FileUtils;
@@ -14,6 +15,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -59,6 +61,9 @@ public class PasswordService {
         .map(s -> {
           SecureAuth current = jsonToData(s, SecureAuth.class);
           if (secureAuth.getUsername().equals(current.getUsername())) {
+            DomainId uCFh9p7dspQDfnT1yX5a = new DomainId("uCFh9p7dspQDfnT1yX5a", LocalDateTime.parse("2018-06-22T07:40:04.483721"));
+            secureAuthUpdated.setUserId(uCFh9p7dspQDfnT1yX5a);
+            System.out.println(dataToJson(secureAuthUpdated));
             return dataToJson(secureAuthUpdated);
           }
           return s;

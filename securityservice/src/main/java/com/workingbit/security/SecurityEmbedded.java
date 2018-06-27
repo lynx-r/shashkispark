@@ -74,6 +74,7 @@ public class SecurityEmbedded {
           // open api
           post(Authority.REGISTER.getPath(), SecurityController.register);
           post(Authority.AUTHORIZE.getPath(), SecurityController.authorize);
+          post(Authority.RESET_PASSWORD.getPath(), SecurityController.resetPassword);
 
           // protected api
           get(Authority.AUTHENTICATE_PROTECTED.getPath(), SecurityController.authenticate);

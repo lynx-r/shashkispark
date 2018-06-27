@@ -27,6 +27,7 @@ app:
   parsePdnResource: https://localhost:8888///board/api/v1/parse-pdn
   registerResource: https://localhost:8888///security/api/v1/register
   authorizeResource: https://localhost:8888///security/api/v1/authorize
+  remindPasswordResource: https://localhost:8888///security/api/v1/remind-password
   authenticateResource: https://localhost:8888///security/api/v1/authenticate
   userInfoResource: https://localhost:8888///security/api/v1/user-info
   saveUserInfoResource: https://localhost:8888///security/api/v1/save-user-info

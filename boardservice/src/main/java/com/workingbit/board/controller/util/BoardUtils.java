@@ -599,7 +599,9 @@ public class BoardUtils {
     if (!capturedSquares.isEmpty()) {
       Set<Square> toBeatSquares = findCapturedSquare(sourceSquare, targetSquare);
       if (toBeatSquares.size() != 1) {
-        throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE);
+        throw new BoardServiceException(ErrorMessages.UNABLE_TO_MOVE + " "
+            + sourceSquare.getNotation() + ":" + targetSquare.getNotation()
+            + "(" + sourceSquare.getNotationNum() + ":" + targetSquare.getNotationNum() + ")");
       }
       Square beaten = toBeatSquares.toArray(new Square[0])[0];
       Square squareByLink = findSquareByLink(beaten, board);

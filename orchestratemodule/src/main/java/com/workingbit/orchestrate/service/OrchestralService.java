@@ -293,7 +293,7 @@ public class OrchestralService {
   }
 
   @Nullable
-  public SecureAuth getSecureAuthUsername(String username) {
+  public SecureAuth getSecureAuthByUsername(String username) {
     return RedisUtil.getSecureAuthByUsername(username);
   }
 

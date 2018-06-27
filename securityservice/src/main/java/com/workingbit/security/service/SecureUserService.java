@@ -1,5 +1,6 @@
 package com.workingbit.security.service;
 
+import com.workingbit.share.common.AppMessages;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.CryptoException;
 import com.workingbit.share.exception.DaoException;
@@ -7,6 +8,7 @@ import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.SecureUtils;
+import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -81,7 +83,7 @@ public class SecureUserService {
   @NotNull
   public AuthUser authorize(@NotNull UserCredentials userCredentials) {
     String username = userCredentials.getUsername();
-    SecureAuth secureAuth = orchestralService.getSecureAuthUsername(username);
+    SecureAuth secureAuth = orchestralService.getSecureAuthByUsername(username);
     if (secureAuth == null) {
       try {
         Optional<SecureAuth> secureAuthOptional = passwordService.findByUsername(username);
@@ -218,6 +220,42 @@ public class SecureUserService {
     return AuthUser.anonymous();
   }
 
+  public AuthUser resetPassword(UserCredentials credentials) {
+    String username = credentials.getUsername();
+    SecureAuth secureAuth = orchestralService.getSecureAuthByUsername(username);
+    if (secureAuth == null) {
+      throw RequestException.forbidden(ErrorMessages.USER_NOT_FOUND);
+    }
+
+    SecureAuth newSecureAuth = secureAuth.deepClone();
+
+    String password = Utils.getRandomString20();
+    credentials.setPassword(password);
+
+    String contentHtml = String.format(AppMessages.RESET_EMAIL_HTML, password);
+    emailUtils.mail(secureAuth.getUsername(), credentials.getEmail(),
+        AppMessages.RESET_EMAIL_SUBJECT, contentHtml, contentHtml);
+
+    // hash credentials
+    hashCredentials(credentials, newSecureAuth);
+
+    // encrypt random token
+    secureAuth = getUpdateSecureAuthTokens(newSecureAuth);
+
+    // save encrypted token and userSession
+    String userSession = getUserSession();
+    newSecureAuth.setUserSession(userSession);
+
+    try {
+      passwordService.replaceSecureAuth(secureAuth, newSecureAuth);
+      orchestralService.cacheSecureAuth(newSecureAuth);
+      return AuthUser.simpleUser(newSecureAuth.getUserId(), newSecureAuth.getUsername(),
+          newSecureAuth.getAccessToken(), userSession, newSecureAuth.getAuthorities());
+    } catch (CryptoException | IOException e) {
+      throw RequestException.internalServerError();
+    }
+  }
+
   private SecureAuth isAuthUserSecure(String accessToken, @NotNull AuthUser authUser) {
     SecureAuth secureAuth = getSecureAuth(authUser);
     if (secureAuth == null) {
@@ -242,7 +280,7 @@ public class SecureUserService {
     if (StringUtils.isNotBlank(authUser.getUserSession())) {
       secureAuth = orchestralService.getSecureAuth(authUser.getUserSession());
       if (secureAuth == null && StringUtils.isNotBlank(authUser.getUsername())) {
-        secureAuth = orchestralService.getSecureAuthUsername(authUser.getUsername());
+        secureAuth = orchestralService.getSecureAuthByUsername(authUser.getUsername());
         if (secureAuth == null) {
           throw RequestException.forbidden("ILLEGAL ACCESS");
         }
