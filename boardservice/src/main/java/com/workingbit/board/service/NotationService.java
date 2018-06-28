@@ -263,6 +263,9 @@ public class NotationService {
           NotationDrives curVariants = vDrive.getVariants();
           if (!curVariants.isEmpty()) {
             NotationHistory subRecursiveNotationHistory = NotationHistory.createWithRoot();
+            int startMovingFrom = vDrive.getNotationNumberInt();
+            subRecursiveNotationHistory.getFirst().setNotationNumberInt(startMovingFrom);
+            subRecursiveNotationHistory.setStartMovingFrom(startMovingFrom);
             subRecursiveNotationHistory.setNotationLine(new NotationLine(0, 0));
             Board subBoard = recursiveBoard.deepClone();
             for (NotationDrive subDrive : curVariants) {
@@ -275,6 +278,7 @@ public class NotationService {
             subNotation.removeFirst();
             vHistory.addAll(subNotation);
             vDrive.setMoves(subNotation.getFirst().getMoves());
+            vDrive.setVariants(subNotation);
           } else {
             NotationDrive first = curVariants.getFirst();
             first.setNotationHistoryId(vHistory.getDomainId());
