@@ -200,19 +200,23 @@ public class Notation extends BaseDomain implements Payload {
   public void setRules(@NotNull EnumRules rules) {
     this.rules = rules;
     notationHistory.setRules(rules);
-    forkedNotations.replaceAll((s, nh) -> {
-      nh.setRules(rules);
-      return nh;
-    });
+    if (forkedNotations != null) {
+      forkedNotations.replaceAll((s, nh) -> {
+        nh.setRules(rules);
+        return nh;
+      });
+    }
   }
 
   public void setFormat(EnumNotationFormat format) {
     this.format = format;
     notationHistory.setFormat(format);
-    forkedNotations.replaceAll((s, nh) -> {
-      nh.setFormat(format);
-      return nh;
-    });
+    if (forkedNotations != null) {
+      forkedNotations.replaceAll((s, nh) -> {
+        nh.setFormat(format);
+        return nh;
+      });
+    }
   }
 
   private void tagsAsString(@NotNull StringBuilder stringBuilder) {
@@ -242,6 +246,9 @@ public class Notation extends BaseDomain implements Payload {
   }
 
   public void addForkedNotationHistory(NotationHistory notationHistory) {
+    if (forkedNotations == null) {
+      forkedNotations = new HashMap<>();
+    }
     forkedNotations.put(notationHistory.getId(), notationHistory);
   }
 

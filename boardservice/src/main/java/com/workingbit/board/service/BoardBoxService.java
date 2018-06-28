@@ -499,7 +499,7 @@ public class BoardBoxService {
   @NotNull
   private BoardBox updateBoardBox(BoardBox boardBox, @NotNull AuthUser authUser) {
     Board board = boardService.findById(boardBox.getBoardId());
-    Notation notation = notationService.findById(boardBox.getNotationId(), authUser);
+    Notation notation = notationService.findById(boardBox.getNotationId());
     board = boardService.resetHighlightAndUpdate(board);
     board.setReadonly(boardBox.isReadonly());
     boardBox.setBoard(board);
@@ -513,7 +513,7 @@ public class BoardBoxService {
   @NotNull
   private BoardBox updatePublicBoardBox(@NotNull AuthUser authUser, @NotNull BoardBox boardBox) {
     fillWithBoards(new BoardBoxes(List.of(boardBox)));
-    Notation notation = notationService.findById(boardBox.getNotationId(), authUser);
+    Notation notation = notationService.findById(boardBox.getNotationId());
     boardBox.setNotation(notation);
     boardBox.setNotationId(notation.getDomainId());
 //    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
@@ -604,9 +604,17 @@ public class BoardBoxService {
     if (notationLine.isPresent()) {
       return switchNotationToVariant(notationLine.get(), boardBox, authUser);
     }
-    Notation byId = notationService.findById(boardBox.getNotationId(), authUser);
+    Notation byId = notationService.findById(boardBox.getNotationId());
     boardBox.setNotation(byId);
-    return boardBox;
+    return byId.getNotationHistory().getLastNotationBoardId()
+        .map(boardId -> {
+          Board board = boardService.findById(boardId);
+          boardBox.setBoard(board);
+          boardBox.setBoardId(boardId);
+          boardBoxDao.save(boardBox);
+          return boardBox;
+        })
+        .orElseThrow();
   }
 
   private void updateMarkTaskId(BoardBox boardBox, BoardBoxes byArticleId) {

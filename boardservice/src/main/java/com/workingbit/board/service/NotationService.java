@@ -6,7 +6,6 @@ import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +64,7 @@ public class NotationService {
   }
 
   Optional<NotationLine> removeVariant(Notation notation) {
+    fillNotation(notation);
     NotationLine notationLine = notation.getNotationHistory().getNotationLine();
     return notation.findNotationHistoryByLine(notationLine)
         .map(toRemoveNotationHistory -> {
@@ -115,7 +115,7 @@ public class NotationService {
     notation.setNotationFen(notationFen);
   }
 
-  Notation findById(@NotNull DomainId notationId, @Nullable AuthUser authUser) {
+  Notation findById(@NotNull DomainId notationId) {
 //    if (authUser == null) {
 //      throw RequestException.notFound404();
 //    }
