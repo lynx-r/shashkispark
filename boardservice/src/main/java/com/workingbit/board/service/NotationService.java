@@ -487,11 +487,16 @@ public class NotationService {
           notationHistoryDao.delete(toDelete.getDomainId());
           notation.removeForkedNotations(toDelete);
         });
-//    int nextCurrentIndex = notation.getForkedNotations().values().stream().mapToInt(NotationHistory::getCurrentIndex).max().orElse(0);
-    int currentIndex = lastVariant.getNotationNumberInt() - notationHistory.getStartMovingFrom();
     int currentVariant = lastVariant.getIdInVariants();
+    int currentIndex = lastVariant.getNotationNumberInt() - notationHistory.getStartMovingFrom();
+    int nextCurrentIndex = notation.getForkedNotations().values()
+        .stream()
+        .mapToInt(NotationHistory::getCurrentIndex)
+        .filter(index -> index <= currentIndex)
+        .findFirst()
+        .orElse(0);
     return notation
-        .findNotationHistoryByLine(new NotationLine(0, 0))
+        .findNotationHistoryByLine(new NotationLine(nextCurrentIndex, 0))
         .map(nhNew -> {
           nhNew.getNotation()
               .removeIf(nd -> nd.getNotationNumberInt() >= lastVariant.getNotationNumberInt());
