@@ -271,6 +271,10 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   }
 
   public void setLastSelected(boolean selected) {
+    notation.replaceAll(notationDrive -> {
+      notationDrive.setSelected(false);
+      return notationDrive;
+    });
     getLast().setSelected(selected);
   }
 

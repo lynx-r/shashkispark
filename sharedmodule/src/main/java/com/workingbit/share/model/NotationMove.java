@@ -306,8 +306,9 @@ public class NotationMove implements DeepClone, NotationFormat {
     this.boardId = currentBoardId;
   }
 
-  void resetCursor() {
+  NotationMove resetCursor() {
     setCursor(false);
+    return this;
   }
 
   @JsonIgnore

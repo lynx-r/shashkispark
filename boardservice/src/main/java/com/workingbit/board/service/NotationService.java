@@ -64,8 +64,9 @@ public class NotationService {
   }
 
   Optional<NotationLine> removeVariant(Notation notation) {
-    fillNotation(notation);
+    // receive from client
     NotationLine notationLine = notation.getNotationHistory().getNotationLine();
+    fillNotation(notation);
     return notation.findNotationHistoryByLine(notationLine)
         .map(toRemoveNotationHistory -> {
           toRemoveNotationHistory.getCurrentNotationDrive()
@@ -400,6 +401,7 @@ public class NotationService {
           .ifPresent(notation::setNotationHistory);
       notation.addForkedNotationHistories(byNotationId);
       notation.syncFormatAndRules();
+      syncVariants(notation.getNotationHistory(), notation);
     } catch (DaoException e) {
       if (e.getCode() != HTTP_NOT_FOUND) {
         logger.error(e.getMessage(), e);

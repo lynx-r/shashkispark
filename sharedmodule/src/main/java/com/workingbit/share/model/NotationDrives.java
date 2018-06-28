@@ -161,7 +161,10 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
     if (isEmpty()) {
       return;
     }
-    forEach(nd -> nd.getMoves().resetCursors());
+    replaceAll(nd -> {
+      nd.getMoves().resetCursors();
+      return nd;
+    });
     NotationMoves moves = getLast().getMoves();
     if (!moves.isEmpty()) {
       moves.getLast().setCursor(true);

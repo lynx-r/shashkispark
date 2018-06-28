@@ -606,6 +606,9 @@ public class BoardBoxService {
     }
     Notation byId = notationService.findById(boardBox.getNotationId());
     boardBox.setNotation(byId);
+    byId.getNotationHistory().setLastSelected(true);
+    byId.getNotationHistory().getNotation().setLastMoveCursor();
+    notationService.save(byId, false);
     return byId.getNotationHistory().getLastNotationBoardId()
         .map(boardId -> {
           Board board = boardService.findById(boardId);
