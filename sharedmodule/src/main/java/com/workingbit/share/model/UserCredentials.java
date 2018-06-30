@@ -3,8 +3,12 @@ package com.workingbit.share.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.workingbit.share.common.ErrorMessages;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -22,9 +26,13 @@ public class UserCredentials implements Payload {
   @Size(min = 3, max = 40, message = ErrorMessages.USERNAME_CONSTRAINTS)
   private String username;
 
-  @NotNull(message = ErrorMessages.PASSWORD_NOT_NULL)
+  //  @NotBlank(message = ErrorMessages.PASSWORD_NOT_NULL)
   @Size(min = 6, message = ErrorMessages.PASSWORD_CONSTRAINTS)
   private String password;
+
+  //  @NotBlank(message = ErrorMessages.EMAIL_NOT_BLANK)
+  @Email(message = ErrorMessages.INVALID_EMAIL)
+  private String email;
 
   private String creditCard;
 

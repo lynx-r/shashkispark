@@ -165,6 +165,7 @@ project(':sharedmodule') {
 
     dependencies {
         compile 'commons-codec:commons-codec:1.9'
+        compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
         compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.150'
 

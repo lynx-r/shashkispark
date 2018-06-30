@@ -17,11 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.workingbit.board.BoardEmbedded.*;
@@ -106,30 +102,25 @@ public class BoardBoxService {
   }
 
   public BoardBox findById(@NotNull DomainId boardBoxId, @NotNull AuthUser authUser, @NotNull String publicQuery) {
-    if (publicQuery.equals(PUBLIC_QUERY)) {
-      return findPublicById(boardBoxId, authUser);
+    try {
+      if (publicQuery.equals(PUBLIC_QUERY)) {
+        return findPublicById(boardBoxId, authUser);
+      }
+      if (!EnumAuthority.hasAuthorAuthorities(authUser)) {
+        throw RequestException.forbidden();
+      }
+      var boardBox = boardBoxDao.findById(boardBoxId);
+      updateBoardBox(boardBox, authUser);
+      return boardBox;
+    } catch (DaoException e) {
+      throw RequestException.notFound404(e.getMessage());
     }
-    if (!EnumAuthority.hasAuthorAuthorities(authUser)) {
-      throw RequestException.forbidden();
-    }
-    return boardBoxStoreService.get(authUser.getUserSession(), boardBoxId)
-        .map(boardBox -> updateBoardBox(boardBox, authUser))
-        .orElseGet(() -> {
-          var boardBox = boardBoxDao.findById(boardBoxId);
-          updateBoardBox(boardBox, authUser);
-          return boardBox;
-        });
   }
 
   BoardBox findPublicById(@NotNull DomainId boardBoxId, @NotNull AuthUser authUser) {
-    return boardBoxStoreService
-        .get(authUser.getUserSession(), boardBoxId)
-        .orElseGet(() -> {
-          BoardBox publicById = boardBoxDao.findPublicById(boardBoxId);
-          publicById = updatePublicBoardBox(authUser, publicById);
-          boardBoxStoreService.put(authUser.getUserSession(), publicById);
-          return publicById;
-        });
+    BoardBox publicById = boardBoxDao.findPublicById(boardBoxId);
+    publicById = updatePublicBoardBox(authUser, publicById);
+    return publicById;
   }
 
   public BoardBoxes findByArticleId(@NotNull DomainId articleId, @NotNull String queryValue, @NotNull AuthUser authUser) {
@@ -149,12 +140,8 @@ public class BoardBoxService {
   }
 
   private BoardBoxes findPublicByArticleId(@NotNull DomainId articleId, AuthUser authUser) {
-    return boardBoxStoreService
-        .getByArticleId(authUser.getUserSession(), articleId)
-        .orElseGet(() -> {
-          BoardBoxes boardBoxes = boardBoxDao.findPublicByArticleId(articleId);
-          return fillBoardBoxes(articleId, boardBoxes, authUser);
-        });
+    BoardBoxes boardBoxes = boardBoxDao.findPublicByArticleId(articleId);
+    return fillBoardBoxes(articleId, boardBoxes, authUser);
   }
 
   public BoardBox deleteBoardBox(DomainId boardBoxId, AuthUser authUser) {
@@ -166,7 +153,7 @@ public class BoardBoxService {
     notationHistoryService.deleteByNotationId(boardBox.getNotationId());
     notationService.deleteById(boardBox.getNotationId());
     boardBoxDao.delete(boardBox.getDomainId());
-    boardBoxStoreService.remove(boardBox);
+//    boardBoxStoreService.remove(boardBox);
     DomainId articleId = boardBox.getArticleId();
     try {
       var byArticleId = boardBoxDao.findByArticleId(articleId);
@@ -189,6 +176,17 @@ public class BoardBoxService {
     } catch (DaoException e) {
       return new BoardBox();
     }
+  }
+
+  public Payload deleteBoardBoxByArticleId(DomainId articleId, AuthUser token) {
+    try {
+      BoardBoxes byArticleId = boardBoxDao.findByArticleId(articleId);
+      byArticleId.getBoardBoxes().valueList().forEach(boardBox -> deleteBoardBox(boardBox.getDomainId(), token));
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
+      return new ResultPayload(false);
+    }
+    return new ResultPayload(true);
   }
 
   public BoardBox highlight(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
@@ -215,7 +213,7 @@ public class BoardBoxService {
       throw RequestException.badRequest();
     }
     serverBoardBox.setBoard(currentBoard);
-    boardBoxStoreService.put(authUser.getUserSession(), serverBoardBox);
+//    boardBoxStoreService.put(authUser.getUserSession(), serverBoardBox);
     return serverBoardBox;
   }
 
@@ -271,10 +269,10 @@ public class BoardBoxService {
     notation.addForkedNotationHistory(notationHistory);
     notationHistoryService.save(notationHistory);
     notationService.syncSubVariants(notationHistory, notation);
-    notationStoreService.putNotation(authUser.getUserSession(), notation);
+//    notationStoreService.putNotation(authUser.getUserSession(), notation);
 
     boardBoxDao.save(boardBox);
-    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
+//    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
     return boardBox;
   }
 
@@ -370,9 +368,9 @@ public class BoardBoxService {
     Notation notation = boardBox.getNotation();
     notation.syncFormatAndRules();
     notationHistoryService.save(notation.getNotationHistory());
-    notationStoreService.removeNotation(notation);
-    boardBoxStoreService.remove(boardBox);
-    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
+//    notationStoreService.removeNotation(notation);
+//    boardBoxStoreService.remove(boardBox);
+//    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
     return boardBox;
   }
 
@@ -483,11 +481,7 @@ public class BoardBoxService {
     boardDao.save(board);
     boardBox.setBoard(board);
     boardBox.setBoardId(board.getDomainId());
-    if (boardBox.isReadonly() && authUser != null) {
-      boardBoxStoreService.put(authUser.getUserSession(), boardBox);
-    } else {
-      boardBoxDao.save(boardBox);
-    }
+    boardBoxDao.save(boardBox);
     notationService.save(boardBox.getNotation(), true);
     return boardBox;
   }
@@ -505,24 +499,24 @@ public class BoardBoxService {
   @NotNull
   private BoardBox updateBoardBox(BoardBox boardBox, @NotNull AuthUser authUser) {
     Board board = boardService.findById(boardBox.getBoardId());
-    Notation notation = notationService.findById(boardBox.getNotationId(), authUser);
+    Notation notation = notationService.findById(boardBox.getNotationId());
     board = boardService.resetHighlightAndUpdate(board);
     board.setReadonly(boardBox.isReadonly());
     boardBox.setBoard(board);
     notation.setRules(board.getRules());
     boardBox.setNotation(notation);
     boardBox.setNotationId(notation.getDomainId());
-    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
+//    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
     return boardBox;
   }
 
   @NotNull
   private BoardBox updatePublicBoardBox(@NotNull AuthUser authUser, @NotNull BoardBox boardBox) {
     fillWithBoards(new BoardBoxes(List.of(boardBox)));
-    Notation notation = notationService.findById(boardBox.getNotationId(), authUser);
+    Notation notation = notationService.findById(boardBox.getNotationId());
     boardBox.setNotation(notation);
     boardBox.setNotationId(notation.getDomainId());
-    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
+//    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
     return boardBox;
   }
 
@@ -540,19 +534,13 @@ public class BoardBoxService {
     notationHistoryService.save(notation.getNotationHistory());
     notationService.save(notation, true);
     boardBox = updateBoardBox(boardBox, authUser);
-    boardBoxStoreService.remove(boardBox);
-    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
+//    boardBoxStoreService.remove(boardBox);
+//    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
     return boardBox;
   }
 
   private BoardBox findBoardAndPutInStore(BoardBox boardBox, AuthUser authUser) {
-    Supplier<BoardBox> fromDb = () -> {
-      BoardBox resultBoardBox = boardBoxDao.find(boardBox);
-      boardBoxStoreService.put(authUser.getUserSession(), resultBoardBox);
-      return resultBoardBox;
-    };
-    return boardBoxStoreService.get(authUser.getUserSession(), boardBox.getDomainId())
-        .orElseGet(fromDb);
+    return boardBoxDao.find(boardBox);
   }
 
   @NotNull
@@ -565,7 +553,7 @@ public class BoardBoxService {
     fillNotations(byUserAndIds, domainIds);
     fillWithBoards(byUserAndIds);
 
-    boardBoxStoreService.putByArticleId(authUser.getUserSession(), articleId, byUserAndIds);
+//    boardBoxStoreService.putByArticleId(authUser.getUserSession(), articleId, byUserAndIds);
     return byUserAndIds;
   }
 
@@ -612,11 +600,24 @@ public class BoardBoxService {
 
   @NotNull
   public BoardBox removeVariant(@NotNull BoardBox boardBox, AuthUser authUser) {
-    NotationLine switchLine = notationService.removeVariant(boardBox.getNotation());
-    if (switchLine != null) {
-      switchNotationToVariant(switchLine, boardBox, authUser);
+    Optional<NotationLine> notationLine = notationService.removeVariant(boardBox.getNotation());
+    if (notationLine.isPresent()) {
+      return switchNotationToVariant(notationLine.get(), boardBox, authUser);
     }
-    return boardBox;
+    Notation byId = notationService.findById(boardBox.getNotationId());
+    boardBox.setNotation(byId);
+    byId.getNotationHistory().setLastSelected(true);
+    byId.getNotationHistory().getNotation().setLastMoveCursor();
+    notationService.save(byId, false);
+    return byId.getNotationHistory().getLastNotationBoardId()
+        .map(boardId -> {
+          Board board = boardService.findById(boardId);
+          boardBox.setBoard(board);
+          boardBox.setBoardId(boardId);
+          boardBoxDao.save(boardBox);
+          return boardBox;
+        })
+        .orElseThrow();
   }
 
   private void updateMarkTaskId(BoardBox boardBox, BoardBoxes byArticleId) {
@@ -636,6 +637,6 @@ public class BoardBoxService {
       }
     }
     boardBoxDao.batchSave(valueList);
-    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
+//    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
   }
 }

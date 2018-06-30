@@ -1,15 +1,11 @@
 package com.workingbit.board.service;
 
-import com.workingbit.board.exception.BoardServiceException;
-import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.exception.DaoException;
-import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +28,7 @@ public class NotationService {
 
   void save(@NotNull Notation notation, boolean fill) {
     notationDao.save(notation);
-    notationStoreService.removeNotation(notation);
+//    notationStoreService.removeNotation(notation);
     if (fill) {
       fillNotation(notation);
     }
@@ -67,11 +63,13 @@ public class NotationService {
     boardBoxDao.save(bb);
   }
 
-  NotationLine removeVariant(Notation notation) {
+  Optional<NotationLine> removeVariant(Notation notation) {
+    // receive from client
     NotationLine notationLine = notation.getNotationHistory().getNotationLine();
+    fillNotation(notation);
     return notation.findNotationHistoryByLine(notationLine)
-        .map(notationHistory -> {
-          notationHistory.getCurrentNotationDrive()
+        .map(toRemoveNotationHistory -> {
+          toRemoveNotationHistory.getCurrentNotationDrive()
               .ifPresent(curDrive -> curDrive.getVariantById(notationLine.getVariantIndex())
                   .ifPresent(curVariant -> {
                     DomainIds boardIdsToRemove = curVariant
@@ -87,24 +85,23 @@ public class NotationService {
                     boardDao.batchDelete(boardIdsToRemove);
                   })
               );
-          notationHistory.removeByCurrentIndex();
-          notationHistoryDao.delete(notationHistory.getDomainId());
-          notation.removeForkedNotations(notationHistory);
-          return notationHistory.getCurrentNotationDrive()
+          toRemoveNotationHistory.removeByCurrentIndex();
+          notationHistoryDao.delete(toRemoveNotationHistory.getDomainId());
+          notation.removeForkedNotations(toRemoveNotationHistory);
+          return toRemoveNotationHistory.getCurrentNotationDrive()
               .map(current -> {
-                NotationHistory nh = notationHistory;
+                NotationHistory nh = toRemoveNotationHistory;
                 NotationDrives variants = current.getVariants();
                 if (variants.size() > 1) {
                   removeOneOfVariant(nh, variants);
                 } else {
-                  nh = removeLastVariant(notation, notationHistory, current, nh);
+                  nh = removeLastVariant(notation, toRemoveNotationHistory, current, nh);
                 }
                 syncVariants(nh, notation);
-                return nh.getNotationLine();
+                return variants.isEmpty() ? null : nh.getNotationLine();
               })
-              .orElseThrow();
-        })
-        .orElseThrow();
+              .orElse(null);
+        });
   }
 
   void setNotationFenFromBoard(@NotNull Notation notation, @NotNull Board board) {
@@ -119,18 +116,14 @@ public class NotationService {
     notation.setNotationFen(notationFen);
   }
 
-  Notation findById(@NotNull DomainId notationId, @Nullable AuthUser authUser) {
-    if (authUser == null) {
-      throw RequestException.notFound404();
-    }
-    return notationStoreService
-        .getNotation(authUser.getUserSession(), notationId)
-        .orElseGet(() -> {
-          Notation byId = notationDao.findById(notationId);
-          fillNotation(byId);
-          notationStoreService.putNotation(authUser.getUserSession(), byId);
-          return byId;
-        });
+  Notation findById(@NotNull DomainId notationId) {
+//    if (authUser == null) {
+//      throw RequestException.notFound404();
+//    }
+    Notation byId = notationDao.findById(notationId);
+    fillNotation(byId);
+//          notationStoreService.putNotation(authUser.getUserSession(), byId);
+    return byId;
   }
 
   Notation forkAt(int forkFromNotationDrive, Notation notation) {
@@ -214,14 +207,17 @@ public class NotationService {
 
   void deleteById(DomainId notationId) {
     notationDao.delete(notationId.getDomainId());
-    notationStoreService.removeNotationById(notationId);
+//    notationStoreService.removeNotationById(notationId);
   }
 
   void populateBoardWithNotation(DomainId notationId, @NotNull Board board,
                                  @NotNull Notation notation,
                                  @NotNull List<Board> batchBoards) {
-    board.setDriveCount(notation.getNotationHistory().get(1).getNotationNumberInt() - 1);
+    int startMovingFrom = notation.getNotationHistory().get(1).getNotationNumberInt() - 1;
+    board.setDriveCount(startMovingFrom);
     NotationHistory recursiveFillNotationHistory = NotationHistory.createWithRoot();
+    recursiveFillNotationHistory.getFirst().setNotationNumberInt(startMovingFrom);
+    recursiveFillNotationHistory.setStartMovingFrom(startMovingFrom);
     populateBoardWithNotation(notationId, board, notation, recursiveFillNotationHistory, batchBoards);
     NotationDrive lastDrive = recursiveFillNotationHistory.getLast();
     lastDrive.setSelected(true);
@@ -268,6 +264,9 @@ public class NotationService {
           NotationDrives curVariants = vDrive.getVariants();
           if (!curVariants.isEmpty()) {
             NotationHistory subRecursiveNotationHistory = NotationHistory.createWithRoot();
+            int startMovingFrom = vDrive.getNotationNumberInt();
+            subRecursiveNotationHistory.getFirst().setNotationNumberInt(startMovingFrom);
+            subRecursiveNotationHistory.setStartMovingFrom(startMovingFrom);
             subRecursiveNotationHistory.setNotationLine(new NotationLine(0, 0));
             Board subBoard = recursiveBoard.deepClone();
             for (NotationDrive subDrive : curVariants) {
@@ -280,6 +279,7 @@ public class NotationService {
             subNotation.removeFirst();
             vHistory.addAll(subNotation);
             vDrive.setMoves(subNotation.getFirst().getMoves());
+            vDrive.setVariants(subNotation);
           } else {
             NotationDrive first = curVariants.getFirst();
             first.setNotationHistoryId(vHistory.getDomainId());
@@ -401,6 +401,7 @@ public class NotationService {
           .ifPresent(notation::setNotationHistory);
       notation.addForkedNotationHistories(byNotationId);
       notation.syncFormatAndRules();
+      syncVariants(notation.getNotationHistory(), notation);
     } catch (DaoException e) {
       if (e.getCode() != HTTP_NOT_FOUND) {
         logger.error(e.getMessage(), e);
@@ -477,6 +478,7 @@ public class NotationService {
 
   @NotNull
   private NotationHistory removeLastVariant(Notation notation, NotationHistory notationHistory, NotationDrive current, NotationHistory nh) {
+    NotationDrive lastVariant = current.getVariants().getFirst();
     current.getVariants().clear();
     Collection<NotationHistory> values = new ArrayList<>(notation.getForkedNotations().values());
     values.stream()
@@ -485,28 +487,40 @@ public class NotationService {
           notationHistoryDao.delete(toDelete.getDomainId());
           notation.removeForkedNotations(toDelete);
         });
-    int nextCurrentIndex = notation.getForkedNotations().values().stream().mapToInt(NotationHistory::getCurrentIndex).max().orElse(0);
-    var nhNew = notation
-        .findNotationHistoryByLine(new NotationLine(nextCurrentIndex, 0));
-    if (nhNew.isPresent()) {
-      nh = nhNew.get();
-      NotationDrive currentDrive = nh.getNotation().get(notationHistory.getCurrentIndex());
-      Optional<NotationDrive> curVariant = currentDrive.getVariants()
-          .stream()
-          .filter(NotationDrive::isCurrent)
-          .findFirst();
-      if (curVariant.isPresent()) {
-        NotationDrive currentVariant = curVariant.get();
-        nh.getNotation()
-            .removeIf(nd -> nd.getNotationNumberInt() >= currentDrive.getNotationNumberInt());
-        NotationDrives newVariants = currentVariant.getVariants();
-        newVariants.setIdInVariants(0);
-        nh.getNotation().addAll(newVariants);
-        notationHistoryDao.save(nh);
-        return nh;
-      }
-    }
-    throw new BoardServiceException(ErrorMessages.UNABLE_TO_REMOVE_VARIANT);
+    int currentVariant = lastVariant.getIdInVariants();
+    int currentIndex = lastVariant.getNotationNumberInt() - notationHistory.getStartMovingFrom();
+    int nextCurrentIndex = notation.getForkedNotations().values()
+        .stream()
+        .mapToInt(NotationHistory::getCurrentIndex)
+        .filter(index -> index <= currentIndex)
+        .findFirst()
+        .orElse(0);
+    return notation
+        .findNotationHistoryByLine(new NotationLine(nextCurrentIndex, 0))
+        .map(nhNew -> {
+          nhNew.getNotation()
+              .removeIf(nd -> nd.getNotationNumberInt() >= lastVariant.getNotationNumberInt());
+          NotationDrives newVariants = lastVariant.getVariants();
+          newVariants.setIdInVariants(0);
+          nhNew.getNotation().addAll(newVariants);
+          notation.setNotationHistoryId(nhNew.getDomainId());
+          save(notation, false);
+          notationHistoryDao.save(nhNew);
+          return nhNew;
+        })
+        .orElseThrow();
+//    if (nhNew.isPresent()) {
+//      nh = nhNew.get();
+//      NotationDrive currentDrive = nh.getNotation().get(notationHistory.getCurrentIndex());
+//      Optional<NotationDrive> curVariant = currentDrive.getVariants()
+//          .stream()
+//          .filter(NotationDrive::isCurrent)
+//          .findFirst();
+//      if (curVariant.isPresent()) {
+//        NotationDrive currentVariant = curVariant.get();
+//      }
+//    }
+//    throw new BoardServiceException(ErrorMessages.UNABLE_TO_REMOVE_VARIANT);
   }
 
   private void removeOneOfVariant(NotationHistory nh, NotationDrives variants) {
@@ -518,7 +532,8 @@ public class NotationService {
     NotationDrive first = variants.getFirst();
     first.setCurrentWithVariant(true);
     int idInVariants = first.getIdInVariants();
-    nh.setVariantNotationDrive(idInVariants);
+    nh.setVariantIndex(idInVariants);
+    nh.addAll(first.getVariants());
   }
 
   private void updateDraughtsDimension(int dimension, Map<String, Draught> whiteDraughts) {

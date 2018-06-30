@@ -123,7 +123,7 @@ public class NotationMove implements DeepClone, NotationFormat {
   @JsonIgnore
   @DynamoDBIgnore
   private String getNotationAsString(EnumNotationFormat notationFormat) {
-    return getMoveNotations()
+    return getMoveNotations(notationFormat)
         .stream()
         .collect(Collectors.joining(type == SIMPLE ?
             (EnumNotationFormat.SHORT.equals(notationFormat) ? "" : SIMPLE.getSimple())
@@ -195,6 +195,12 @@ public class NotationMove implements DeepClone, NotationFormat {
   @JsonIgnore
   @DynamoDBIgnore
   public List<String> getMoveNotations() {
+    return getMoveNotations(notationFormat);
+  }
+
+  @JsonIgnore
+  @DynamoDBIgnore
+  private List<String> getMoveNotations(EnumNotationFormat notationFormat) {
     switch (notationFormat) {
       case ALPHANUMERIC:
       case NUMERIC:
@@ -300,8 +306,9 @@ public class NotationMove implements DeepClone, NotationFormat {
     this.boardId = currentBoardId;
   }
 
-  void resetCursor() {
+  NotationMove resetCursor() {
     setCursor(false);
+    return this;
   }
 
   @JsonIgnore

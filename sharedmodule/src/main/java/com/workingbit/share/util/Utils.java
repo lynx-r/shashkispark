@@ -240,7 +240,7 @@ public class Utils {
   }
 
   public static String getRandomString20() {
-    return RandomStringUtils.randomAlphanumeric(RANDOM_STRING_LENGTH, RANDOM_STRING_LENGTH);
+    return RandomStringUtils.randomAlphanumeric(20);
   }
 
   public static String getRandomString(int length) {

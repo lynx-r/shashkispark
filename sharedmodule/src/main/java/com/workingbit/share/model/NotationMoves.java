@@ -29,8 +29,9 @@ public class NotationMoves extends LinkedList<NotationMove> implements NotationF
     return null;
   }
 
-  void resetCursors() {
-    forEach(NotationMove::resetCursor);
+  NotationMoves resetCursors() {
+    replaceAll(NotationMove::resetCursor);
+    return this;
   }
 
   public String asString(EnumNotationFormat notationFormat) {

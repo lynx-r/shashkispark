@@ -53,4 +53,8 @@ public class ErrorMessages {
   public static final String IMPORT_SHORT_UNSUPPORTED = "Импорт сокращенной нотации не поддерживается";
   public static final String UNABLE_TO_REMOVE_VARIANT = "Не удалось удалить вариант";
   public static final String DUPLICATE_SUBSCRIBER = "Вы уже подписаны на рассылку";
+  public static final String UNABLE_TO_REMOVE_BOARDBOXES = "Не удалось удалить данные статьи";
+  public static final String USER_NOT_FOUND = "Пользователь не найден";
+  public static final String INVALID_EMAIL = "Не корректный e-mail";
+  public static final String EMAIL_NOT_BLANK = "Почта не может быть пустой";
 }

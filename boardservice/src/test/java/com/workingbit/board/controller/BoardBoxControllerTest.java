@@ -18,6 +18,8 @@ import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.UnirestUtil;
 import com.workingbit.share.util.Utils;
+import net.percederberg.grammatica.parser.ParserCreationException;
+import net.percederberg.grammatica.parser.ParserLogException;
 import org.apache.commons.lang3.RandomUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +28,12 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import spark.servlet.SparkApplication;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -309,6 +317,133 @@ public class BoardBoxControllerTest {
 //    post(Authority.BOARD_DELETE_PROTECTED.getPath(), boardBox.getDomainId(), authUser);
   }
 
+  /**
+   * actual test
+   *
+   * @throws Exception
+   */
+  @Test
+  public void fork_international() throws Exception {
+    DomainId boardBoxId = DomainId.getRandomID();
+    DomainId articleId = DomainId.getRandomID();
+
+    AuthUser authUser = register();
+
+    Article article = new Article();
+    article.setDomainId(articleId);
+    article.setTitle(Utils.getRandomString20());
+    article.setHumanReadableUrl(article.getTitle());
+    article.setIntro(Utils.getRandomString(101));
+    article.setContent(Utils.getRandomString(200));
+
+    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
+    createBoardPayload.setArticleId(articleId);
+    createBoardPayload.setBlack(false);
+    createBoardPayload.setFillBoard(true);
+    createBoardPayload.setUserId(authUser.getUserId());
+    createBoardPayload.setIdInArticle(1);
+    createBoardPayload.setBlack(false);
+    createBoardPayload.setRules(EnumRules.RUSSIAN);
+    CreateArticlePayload createArticlePayload = new CreateArticlePayload(article, createBoardPayload);
+
+    CreateArticleResponse response = orchestralService.createArticle(createArticlePayload, authUser).get();
+    assertNotNull(article);
+
+    article = response.getArticle();
+    article.setArticleStatus(EnumArticleStatus.PUBLISHED);
+    article = orchestralService.saveArticle(article, authUser).get();
+    BoardBox boardBox = response.getBoard();
+
+    URL uri = getClass().getResource("/pdn/fork_inter_1.pdn");
+    Path path = Paths.get(uri.toURI());
+    List<String> bufferedReader = Files.readAllLines(path);
+    String collect = bufferedReader.stream().collect(Collectors.joining("\n"));
+    ImportPdnPayload importPdnPayload = new ImportPdnPayload(articleId, collect, 0, EnumEditBoardBoxMode.EDIT);
+    Answer post = post(Authority.PARSE_PDN_PROTECTED.getPath(), importPdnPayload, authUser);
+    authUser = post.getAuthUser();
+    boardBox = (BoardBox) post.getBody();
+
+    NotationHistory notationHistory = boardBox.getNotation().getNotationHistory();
+    notationHistory.setCurrentIndex(5);
+    BoardBoxes boardBoxes = (BoardBoxes) post(Authority.BOARD_FORK_PROTECTED.getPath(), boardBox, authUser).getBody();
+    BoardBox finalBoardBox = boardBox;
+    boardBox = boardBoxes.getBoardBoxes().valueList().stream().filter(cb -> cb.getId().equals(finalBoardBox.getId())).findFirst().get();
+    notationHistory = boardBox.getNotation().getNotationHistory();
+    NotationLine notationLine = notationHistory.getNotationLine();
+    assertEquals(5, notationLine.getCurrentIndex().intValue());
+    assertEquals(1, notationLine.getVariantIndex().intValue());
+
+    notationHistory = boardBox.getNotation().getNotationHistory();
+    notationHistory.setCurrentIndex(5);
+    boardBoxes = (BoardBoxes) post(Authority.BOARD_FORK_PROTECTED.getPath(), boardBox, authUser).getBody();
+    boardBox = boardBoxes.getBoardBoxes().valueList().stream().filter(cb -> cb.getId().equals(finalBoardBox.getId())).findFirst().get();
+    notationHistory = boardBox.getNotation().getNotationHistory();
+    notationLine = notationHistory.getNotationLine();
+    assertEquals(5, notationLine.getCurrentIndex().intValue());
+    assertEquals(2, notationLine.getVariantIndex().intValue());
+
+    NotationDrive last = notationHistory.getLast();
+    NotationDrives variants = last.getVariants();
+    assertEquals(3, variants.size());
+    assertTrue(variants.getLast().isCurrent());
+    assertTrue(variants.get(1).isPrevious());
+
+    boardBox = additionalMoves(boardBox, authUser);
+
+    boardBox.getNotation().getNotationHistory().setCurrentIndex(5);
+    boardBox.getNotation().getNotationHistory().setVariantIndex(1);
+    boardBox = (BoardBox) post(Authority.BOARD_REMOVE_VARIANT_PROTECTED.getPath(), boardBox, authUser).getBody();
+
+    notationHistory = boardBox.getNotation().getNotationHistory();
+    last = notationHistory.getLast();
+    variants = last.getVariants();
+    assertEquals(3, variants.size());
+    assertTrue(variants.getLast().isCurrent());
+    assertTrue(variants.get(1).isPrevious());
+
+    post(Authority.BOARD_DELETE_PROTECTED.getPath(), boardBox.getDomainId(), authUser);
+  }
+
+  private BoardBox additionalMoves(BoardBox boardBox, AuthUser authUser) throws ParserLogException, ParserCreationException, URISyntaxException, IOException, HttpClientException {
+    NotationHistory notationHistory;
+    NotationParserService parserService = new NotationParserService();
+    Notation notation = parserService.parseResource("/pdn/fork_inter_1_3.pdn");
+    notation.syncFormatAndRules();
+    notationHistory = notation.getNotationHistory();
+    NotationDrives drives = notationHistory.getNotation();
+    Board board = boardBox.getBoard().deepClone();
+    for (NotationDrive drive : drives) {
+      for (NotationMove notationMove : drive.getMoves()) {
+        List<String> moves = notationMove.getMoveNotations();
+        String move = moves.get(0);
+        for (int i = 1; i < moves.size(); i++) {
+          boardService.updateBoard(board);
+          Square selected = findSquareByNotation(move, board);
+          board.setSelectedSquare(selected);
+          move = moves.get(i);
+          Square next = findSquareByNotation(move, board);
+          next.setHighlight(true);
+          board.setNextSquare(next);
+          boardBox.setBoard(board);
+          boardBox = (BoardBox) post(Authority.BOARD_MOVE_PROTECTED.getPath(), boardBox, authUser).getBody();
+          move = moves.get(i);
+          board = boardBox.getBoard();
+          Board finalBoard = board;
+          Square moved = board.getSquares()
+              .stream()
+              .filter(Objects::nonNull)
+              .peek(square -> square.setDim(finalBoard.getRules().getDimension()))
+              .filter(square -> square.getNotation().equals(next.getNotation()))
+              .findFirst()
+              .get();
+          assertTrue(moved.isOccupied());
+        }
+      }
+    }
+    boardBox.setBoard(board);
+    return boardBox;
+  }
+
   @Test
   public void switchTo() throws Exception {
     DomainId boardBoxId = DomainId.getRandomID();
@@ -338,8 +473,8 @@ public class BoardBoxControllerTest {
     NotationDrives history;
     NotationDrive toSwitch;
     NotationDrive toSwVar;
-    notationHistory.setCurrentNotationDrive(numberNot);
-    notationHistory.setVariantNotationDrive(numberVar);
+    notationHistory.setCurrentIndex(numberNot);
+    notationHistory.setVariantIndex(numberVar);
 
     Answer post = post(Authority.BOARD_SWITCH.getPath(), boardBox, authUser);
     BoardBoxes body = (BoardBoxes) post.getBody();
@@ -353,9 +488,7 @@ public class BoardBoxControllerTest {
     boolean b = toSwitch.getVariants().stream().filter(n -> n.getIdInVariants() != finalToSwitch.getIdInVariants()).noneMatch(NotationDrive::isCurrent);
     toSwVar = toSwitch.getVariants().get(numberVar);
     assertTrue(toSwVar.isCurrent());
-    toSwitch = history.get(numberNot);
     assertTrue(b);
-    NotationDrive finalToSwitch1 = toSwitch;
 
     return List.of(boardBox, authUser);
   }

@@ -24,6 +24,7 @@ public enum Authority implements IAuthority {
   BOARD_PROTECTED("/board", Constants.SECURE_ROLES),
   BOARD_MARK_TASK_PROTECTED("/board-mark-task", Constants.SECURE_ROLES),
   BOARD_DELETE_PROTECTED("/board-delete", Constants.SECURE_ROLES),
+  BOARD_DELETE_BY_ARTICLE_PROTECTED("/board-delete-by-article-id", Constants.SECURE_ROLES),
   BOARD_INIT_PROTECTED("/board-init", Constants.SECURE_ROLES),
   BOARD_CLEAR_PROTECTED("/board-clear", Constants.SECURE_ROLES),
   PARSE_PDN_PROTECTED("/parse-pdn", Constants.SECURE_ROLES),

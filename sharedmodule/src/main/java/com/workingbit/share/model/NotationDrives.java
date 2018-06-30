@@ -120,16 +120,16 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
   @DynamoDBIgnore
   public Optional<DomainId> getLastNotationBoardId() {
     NotationDrive notationLast = getLast();
-    if (notationLast.isRoot()) {
-      NotationMoves moves = notationLast.getVariants()
-          .getLast()
-          .getMoves();
-      if (!moves.isEmpty()) {
-        return Optional.of(moves.getFirst()
-            .getBoardId());
-      }
-      return Optional.empty();
-    }
+//    if (notationLast.isRoot()) {
+//      NotationMoves moves = notationLast.getVariants()
+//          .getLast()
+//          .getMoves();
+//      if (!moves.isEmpty()) {
+//        return Optional.of(moves.getFirst()
+//            .getBoardId());
+//      }
+//      return Optional.empty();
+//    }
     NotationMoves moves = notationLast.getMoves();
     return Optional.of(moves.getLast().getBoardId());
   }
@@ -161,7 +161,10 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
     if (isEmpty()) {
       return;
     }
-    forEach(nd -> nd.getMoves().resetCursors());
+    replaceAll(nd -> {
+      nd.getMoves().resetCursors();
+      return nd;
+    });
     NotationMoves moves = getLast().getMoves();
     if (!moves.isEmpty()) {
       moves.getLast().setCursor(true);

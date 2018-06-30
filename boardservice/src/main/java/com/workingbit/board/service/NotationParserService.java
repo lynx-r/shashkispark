@@ -156,7 +156,6 @@ public class NotationParserService {
         case COMMENT: {
           Token token = (Token) gameBody;
           notationDrive.setComment(token.getImage());
-          System.out.println("comment " + token.getImage());
           break;
         }
         case VARIATION: {

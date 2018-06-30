@@ -133,7 +133,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
   }
 
   public void setVariants(@NotNull NotationDrives variants) {
-    this.variants = variants.deepClone();
+    this.variants = new NotationDrives(variants);
   }
 
   @DynamoDBIgnore

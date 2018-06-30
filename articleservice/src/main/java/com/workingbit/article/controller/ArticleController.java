@@ -45,9 +45,9 @@ public class ArticleController {
   @NotNull
   public static Route removeArticleById = (req, res) ->
       ((ModelHandlerFunc<DomainId>) (params, token, param) ->
-          Answer.ok(articleService.removeById(params, token))
+          Answer.ok(articleService.deleteById(params, token))
       ).handleRequest(req, res,
-          Authority.ARTICLE_REMOVE_PROTECTED,
+          Authority.ARTICLE_DELETE_PROTECTED,
           DomainId.class);
 
   @NotNull

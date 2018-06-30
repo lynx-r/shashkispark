@@ -19,6 +19,8 @@ public interface ModuleProperties {
 
   @NotNull String boardboxResource();
 
+  String boardboxDeleteByArticleIdResource();
+
   @NotNull String userInfoResource();
 
   @NotNull String saveUserInfoResource();

@@ -9,16 +9,15 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * Created by Aleksey Popryadukhin on 23/05/2018.
  */
-public class LoggedInServiceTest {
+public class PasswordServiceTest {
 
   @NotNull
-  private LoggedInService loggedInService = new LoggedInService();
+  private PasswordService passwordService = new PasswordService();
 
   @Test
   public void registerUser() throws IOException, CryptoException {
@@ -28,8 +27,8 @@ public class LoggedInServiceTest {
     secureAuth.setUsername(username);
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
-    loggedInService.registerUser(secureAuth);
-    SecureAuth byUsername = loggedInService.findByUsername(username);
+    passwordService.registerUser(secureAuth);
+    SecureAuth byUsername = passwordService.findByUsername(username).get();
     assertNotNull(byUsername);
 
     secureAuth = new SecureAuth();
@@ -39,8 +38,8 @@ public class LoggedInServiceTest {
     System.out.println(Utils.getRandomString(16));
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
-    loggedInService.registerUser(secureAuth);
-    byUsername = loggedInService.findByUsername(username);
+    passwordService.registerUser(secureAuth);
+    byUsername = passwordService.findByUsername(username).get();
     assertNotNull(byUsername);
   }
 
@@ -56,8 +55,8 @@ public class LoggedInServiceTest {
     secureAuth.setUsername(username);
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
-    loggedInService.registerUser(secureAuth);
-    SecureAuth byUsername = loggedInService.findByUsername(username);
+    passwordService.registerUser(secureAuth);
+    SecureAuth byUsername = passwordService.findByUsername(username).get();
     assertNotNull(byUsername);
 
     secureAuth = new SecureAuth();
@@ -66,8 +65,8 @@ public class LoggedInServiceTest {
     secureAuth.setUsername(username);
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
-    loggedInService.registerUser(secureAuth);
-    byUsername = loggedInService.findByUsername(username);
+    passwordService.registerUser(secureAuth);
+    byUsername = passwordService.findByUsername(username).get();
     assertNotNull(byUsername);
 
     SecureAuth secureAuthChangeUsername = new SecureAuth();
@@ -78,9 +77,23 @@ public class LoggedInServiceTest {
     secureAuthChangeUsername.setSecureToken("securetoken");
     secureAuthChangeUsername.setAccessToken("accesstoken");
 
-    loggedInService.replaceSecureAuth(secureAuth, secureAuthChangeUsername);
+    passwordService.replaceSecureAuth(secureAuth, secureAuthChangeUsername);
 
-    assertNull(loggedInService.findByUsername(username));
-    assertNotNull(loggedInService.findByUsername(usernameNew));
+    assertFalse(passwordService.findByUsername(username).isPresent());
+    assertTrue(passwordService.findByUsername(usernameNew).isPresent());
+  }
+
+  @Test
+  public void registerUser1() {
+  }
+
+  @Test
+  public void findByUsername1() throws CryptoException, IOException {
+    SecureAuth shashkionline = passwordService.findByUsername("shashkionline").get();
+    System.out.println(shashkionline);
+  }
+
+  @Test
+  public void replaceSecureAuth1() {
   }
 }

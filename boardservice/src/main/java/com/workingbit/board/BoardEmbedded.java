@@ -35,8 +35,8 @@ public class BoardEmbedded {
   public static NotationService notationService;
   public static NotationHistoryService notationHistoryService;
   public static NotationParserService notationParserService;
-  public static BoardBoxStoreService boardBoxStoreService;
-  public static NotationStoreService notationStoreService;
+  //  public static BoardBoxStoreService boardBoxStoreService;
+//  public static NotationStoreService notationStoreService;
   public static BoardBoxDao boardBoxDao;
   public static BoardDao boardDao;
   public static NotationDao notationDao;
@@ -54,8 +54,8 @@ public class BoardEmbedded {
     notationHistoryService = new NotationHistoryService();
     notationService = new NotationService();
     notationParserService = new NotationParserService();
-    boardBoxStoreService = new BoardBoxStoreService();
-    notationStoreService = new NotationStoreService();
+//    boardBoxStoreService = new BoardBoxStoreService();
+//    notationStoreService = new NotationStoreService();
 
     boardBoxDao = new BoardBoxDao(appProperties);
     boardDao = new BoardDao(appProperties);
@@ -99,6 +99,7 @@ public class BoardEmbedded {
           post(Authority.PARSE_PDN_PROTECTED.getPath(), BoardBoxController.parsePdn);
           put(Authority.BOARD_PUT_PROTECTED.getPath(), BoardBoxController.saveBoard);
           post(Authority.BOARD_DELETE_PROTECTED.getPath(), BoardBoxController.deleteBoard);
+          post(Authority.BOARD_DELETE_BY_ARTICLE_PROTECTED.getPath(), BoardBoxController.deleteBoardByArticleId);
           post(Authority.BOARD_ADD_DRAUGHT_PROTECTED.getPath(), BoardBoxController.addDraught);
           post(Authority.BOARD_MOVE_PROTECTED.getPath(), BoardBoxController.move);
           post(Authority.BOARD_HIGHLIGHT_PROTECTED.getPath(), BoardBoxController.highlightBoard);

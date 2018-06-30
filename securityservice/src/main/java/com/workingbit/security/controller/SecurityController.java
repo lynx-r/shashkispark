@@ -52,4 +52,10 @@ public class SecurityController {
       ((ParamsHandlerFunc<ParamPayload>) (params, token, param) ->
           Answer.ok(secureUserService.logout(token))
       ).handleRequest(req, res, Authority.LOGOUT_PROTECTED);
+
+  @NotNull
+  public static Route resetPassword = (req, res) ->
+      ((ModelHandlerFunc<UserCredentials>) (params, token, param) ->
+          Answer.ok(secureUserService.resetPassword(params))
+      ).handleRequest(req, res, Authority.RESET_PASSWORD, UserCredentials.class);
 }

@@ -1,5 +1,6 @@
 package com.workingbit.security.service;
 
+import com.workingbit.share.common.AppMessages;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.CryptoException;
 import com.workingbit.share.exception.DaoException;
@@ -7,6 +8,7 @@ import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.SecureUtils;
+import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +19,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
@@ -35,7 +38,7 @@ public class SecureUserService {
   public AuthUser register(@NotNull UserCredentials userCredentials) {
     try {
       String username = userCredentials.getUsername();
-      if (loggedInService.findByUsername(username) != null) {
+      if (passwordService.findByUsername(username).isPresent()) {
         throw RequestException.forbidden();
       }
       SecureAuth secureAuth = new SecureAuth();
@@ -63,11 +66,11 @@ public class SecureUserService {
 
       // send access token and userSession
       orchestralService.cacheSecureAuth(secureAuth);
-      loggedInService.registerUser(secureAuth);
+      passwordService.registerUser(secureAuth);
 
       String contentHtml = String.format("Зарегистрировался новый пользователь: %s", siteUserInfo.getUsername());
       String subject = "Зарегистрировался новый пользователь";
-      emailUtils.send(appProperties.adminMail(), appProperties.adminMail(), subject, contentHtml, contentHtml);
+      emailUtils.mailAdmin(subject, contentHtml);
       return AuthUser.simpleUser(secureAuth.getUserId(), username, secureAuth.getAccessToken(), userSession, secureAuth.getAuthorities());
     } catch (CryptoException e) {
       logger.warn("UNREGISTERED: " + userCredentials, e.getMessage());
@@ -80,14 +83,15 @@ public class SecureUserService {
   @NotNull
   public AuthUser authorize(@NotNull UserCredentials userCredentials) {
     String username = userCredentials.getUsername();
-    SecureAuth secureAuth = orchestralService.getSecureAuthUsername(username);
+    SecureAuth secureAuth = orchestralService.getSecureAuthByUsername(username);
     if (secureAuth == null) {
       try {
-        secureAuth = loggedInService.findByUsername(username);
+        Optional<SecureAuth> secureAuthOptional = passwordService.findByUsername(username);
+        if (!secureAuthOptional.isPresent()) {
+          throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+        }
+        secureAuth = secureAuthOptional.get();
       } catch (@NotNull CryptoException | IOException e) {
-        throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
-      }
-      if (secureAuth == null) {
         throw RequestException.forbidden(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
       }
     }
@@ -190,7 +194,7 @@ public class SecureUserService {
             secureAuthUpdated.setUsername(userInfo.getUsername());
             // todo обновлять автора в статьях
             try {
-              loggedInService.replaceSecureAuth(secureAuth, secureAuthUpdated);
+              passwordService.replaceSecureAuth(secureAuth, secureAuthUpdated);
             } catch (@NotNull CryptoException | IOException e) {
               throw RequestException.internalServerError(ErrorMessages.UNABLE_TO_CHANGE_USERNAME);
             }
@@ -216,6 +220,43 @@ public class SecureUserService {
     return AuthUser.anonymous();
   }
 
+  public ResultPayload resetPassword(UserCredentials credentials) {
+    String username = credentials.getUsername();
+    AuthUser authUser = new AuthUser();
+    authUser.setUsername(username);
+    SecureAuth secureAuth = getSecureAuth(authUser);
+    if (secureAuth == null) {
+      throw RequestException.forbidden(ErrorMessages.USER_NOT_FOUND);
+    }
+
+    SecureAuth newSecureAuth = secureAuth.deepClone();
+
+    String password = Utils.getRandomString20();
+    credentials.setPassword(password);
+
+    String contentHtml = String.format(AppMessages.RESET_EMAIL_HTML, password);
+    emailUtils.mail(secureAuth.getUsername(), credentials.getEmail(),
+        AppMessages.RESET_EMAIL_SUBJECT, contentHtml, contentHtml);
+
+    // hash credentials
+    hashCredentials(credentials, newSecureAuth);
+
+    // encrypt random token
+    secureAuth = getUpdateSecureAuthTokens(newSecureAuth);
+
+    // save encrypted token and userSession
+    String userSession = getUserSession();
+    newSecureAuth.setUserSession(userSession);
+
+    try {
+      passwordService.replaceSecureAuth(secureAuth, newSecureAuth);
+      orchestralService.cacheSecureAuth(newSecureAuth);
+      return new ResultPayload(true);
+    } catch (CryptoException | IOException e) {
+      throw RequestException.internalServerError();
+    }
+  }
+
   private SecureAuth isAuthUserSecure(String accessToken, @NotNull AuthUser authUser) {
     SecureAuth secureAuth = getSecureAuth(authUser);
     if (secureAuth == null) {
@@ -236,14 +277,16 @@ public class SecureUserService {
 
   @Nullable
   private SecureAuth getSecureAuth(AuthUser authUser) {
-    SecureAuth secureAuth = null;
-    if (StringUtils.isNotBlank(authUser.getUserSession())) {
-      secureAuth = orchestralService.getSecureAuth(authUser.getUserSession());
-      if (secureAuth == null && StringUtils.isNotBlank(authUser.getUsername())) {
-        secureAuth = orchestralService.getSecureAuthUsername(authUser.getUsername());
-        if (secureAuth == null) {
-          throw RequestException.forbidden("ILLEGAL ACCESS");
+    SecureAuth secureAuth = orchestralService.getSecureAuth(authUser.getUserSession());
+    if (secureAuth == null && StringUtils.isNotBlank(authUser.getUsername())) {
+      secureAuth = orchestralService.getSecureAuthByUsername(authUser.getUsername());
+      if (secureAuth == null) {
+        try {
+          return passwordService.findByUsername(authUser.getUsername()).orElseThrow();
+        } catch (CryptoException | IOException e) {
+          logger.error(e.getMessage(), e);
         }
+        throw RequestException.forbidden();
       }
     }
     return secureAuth;
