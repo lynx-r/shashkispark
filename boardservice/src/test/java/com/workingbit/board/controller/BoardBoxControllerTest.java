@@ -76,7 +76,8 @@ public class BoardBoxControllerTest {
   private AuthUser register() {
     String username = Utils.getRandomString20();
     String password = Utils.getRandomString20();
-    UserCredentials userCredentials = new UserCredentials(username, password);
+    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
+        Utils.getRandomString20(), EnumRank.MS, username, password);
     AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 

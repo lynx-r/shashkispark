@@ -35,19 +35,22 @@ public class SecureUserService {
   private Logger logger = LoggerFactory.getLogger(SecureUserService.class);
 
   @NotNull
-  public AuthUser register(@NotNull UserCredentials userCredentials) {
+  public AuthUser register(@NotNull RegisteredUser registeredUser) {
     try {
-      String username = userCredentials.getUsername();
-      if (passwordService.findByUsername(username).isPresent()) {
+      String email = registeredUser.getEmail();
+      if (passwordService.findByUsername(email).isPresent()) {
         throw RequestException.forbidden();
       }
       SecureAuth secureAuth = new SecureAuth();
       secureAuth.setUserId(DomainId.getRandomID());
-      secureAuth.setUsername(username);
+      secureAuth.setEmail(email);
       secureAuth.setTokenLength(appProperties.tokenLength());
+//      secureAuth.set
+
+//      UserCredentials userCredentials = new UserCredentials(registeredUser.getEmail(), registeredUser.getPasswordHash());
 
       // hash credentials
-      hashCredentials(userCredentials, secureAuth);
+//      hashCredentials(userCredentials, secureAuth);
 
       // encrypt random token
       secureAuth = getUpdateSecureAuthTokens(secureAuth);
@@ -59,8 +62,8 @@ public class SecureUserService {
 
       SiteUserInfo siteUserInfo = new SiteUserInfo();
       siteUserInfo.setDomainId(secureAuth.getUserId());
-      siteUserInfo.setUsername(username);
-      siteUserInfo.setCreditCard(userCredentials.getCreditCard());
+      siteUserInfo.setUsername(email);
+//      siteUserInfo.setCreditCard(re.getCreditCard());
       siteUserInfo.setUpdatedAt(LocalDateTime.now());
       siteUserInfoDao.save(siteUserInfo);
 
@@ -71,9 +74,9 @@ public class SecureUserService {
       String contentHtml = String.format("Зарегистрировался новый пользователь: %s", siteUserInfo.getUsername());
       String subject = "Зарегистрировался новый пользователь";
       emailUtils.mailAdmin(subject, contentHtml);
-      return AuthUser.simpleUser(secureAuth.getUserId(), username, secureAuth.getAccessToken(), userSession, secureAuth.getAuthorities());
+      return AuthUser.simpleUser(secureAuth.getUserId(), email, secureAuth.getAccessToken(), userSession, secureAuth.getAuthorities());
     } catch (CryptoException e) {
-      logger.warn("UNREGISTERED: " + userCredentials, e.getMessage());
+      logger.warn("UNREGISTERED: " + registeredUser, e.getMessage());
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
     }
@@ -82,7 +85,7 @@ public class SecureUserService {
 
   @NotNull
   public AuthUser authorize(@NotNull UserCredentials userCredentials) {
-    String username = userCredentials.getUsername();
+    String username = userCredentials.getEmail();
     SecureAuth secureAuth = orchestralService.getSecureAuthByUsername(username);
     if (secureAuth == null) {
       try {
@@ -144,7 +147,7 @@ public class SecureUserService {
         authUser.setAccessToken(updatedAccessToken.getAccessToken());
       }
 
-      authUser.setUsername(secureAuth.getUsername());
+      authUser.setEmail(secureAuth.getEmail());
       authUser.setUserId(secureAuth.getUserId());
       authUser.setAuthorities(secureAuth.getAuthorities());
       logger.info("AUTHENTICATED: " + authUser);
@@ -191,7 +194,7 @@ public class SecureUserService {
           if (byUsername == null) {
             userBeforeSave.setUsername(userInfo.getUsername());
             SecureAuth secureAuthUpdated = secureAuth.deepClone();
-            secureAuthUpdated.setUsername(userInfo.getUsername());
+            secureAuthUpdated.setEmail(userInfo.getUsername());
             // todo обновлять автора в статьях
             try {
               passwordService.replaceSecureAuth(secureAuth, secureAuthUpdated);
@@ -221,9 +224,9 @@ public class SecureUserService {
   }
 
   public ResultPayload resetPassword(UserCredentials credentials) {
-    String username = credentials.getUsername();
+    String username = credentials.getEmail();
     AuthUser authUser = new AuthUser();
-    authUser.setUsername(username);
+    authUser.setEmail(username);
     SecureAuth secureAuth = getSecureAuth(authUser);
     if (secureAuth == null) {
       throw RequestException.forbidden(ErrorMessages.USER_NOT_FOUND);
@@ -232,10 +235,10 @@ public class SecureUserService {
     SecureAuth newSecureAuth = secureAuth.deepClone();
 
     String password = Utils.getRandomString20();
-    credentials.setPassword(password);
+    credentials.setPasswordHash(password);
 
     String contentHtml = String.format(AppMessages.RESET_EMAIL_HTML, password);
-    emailUtils.mail(secureAuth.getUsername(), credentials.getEmail(),
+    emailUtils.mail(secureAuth.getEmail(), credentials.getEmail(),
         AppMessages.RESET_EMAIL_SUBJECT, contentHtml, contentHtml);
 
     // hash credentials
@@ -278,11 +281,11 @@ public class SecureUserService {
   @Nullable
   private SecureAuth getSecureAuth(AuthUser authUser) {
     SecureAuth secureAuth = orchestralService.getSecureAuth(authUser.getUserSession());
-    if (secureAuth == null && StringUtils.isNotBlank(authUser.getUsername())) {
-      secureAuth = orchestralService.getSecureAuthByUsername(authUser.getUsername());
+    if (secureAuth == null && StringUtils.isNotBlank(authUser.getEmail())) {
+      secureAuth = orchestralService.getSecureAuthByUsername(authUser.getEmail());
       if (secureAuth == null) {
         try {
-          return passwordService.findByUsername(authUser.getUsername()).orElseThrow();
+          return passwordService.findByUsername(authUser.getEmail()).orElseThrow();
         } catch (CryptoException | IOException e) {
           logger.error(e.getMessage(), e);
         }

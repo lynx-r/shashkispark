@@ -50,7 +50,7 @@ public class PasswordService {
     BufferedReader buffer = new BufferedReader(new InputStreamReader(decryptedFile));
     return buffer.lines()
         .map(s -> jsonToData(s, SecureAuth.class))
-        .filter(s -> s.getUsername().equals(username))
+        .filter(s -> s.getEmail().equals(username))
         .findFirst();
   }
 
@@ -60,7 +60,7 @@ public class PasswordService {
     String data = buffer.lines()
         .map(s -> {
           SecureAuth current = jsonToData(s, SecureAuth.class);
-          if (secureAuth.getUsername().equals(current.getUsername())) {
+          if (secureAuth.getEmail().equals(current.getEmail())) {
             DomainId uCFh9p7dspQDfnT1yX5a = new DomainId("uCFh9p7dspQDfnT1yX5a", LocalDateTime.parse("2018-06-22T07:40:04.483721"));
             secureAuthUpdated.setUserId(uCFh9p7dspQDfnT1yX5a);
             return dataToJson(secureAuthUpdated);

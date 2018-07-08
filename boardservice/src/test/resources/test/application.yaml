@@ -5,4 +5,4 @@ app:
   local: true
   headers: Content-Type,Content-Encoding
   methods: GET,POST,PUT,OPTIONS,HEADER,DELETE
-  origin: http://localhost:4200
+  origin: http://shashki.local # localhost

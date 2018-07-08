@@ -37,7 +37,7 @@ public class SiteUserInfo extends BaseDomain {
    * user name
    */
   @DynamoDBIndexHashKey(globalSecondaryIndexName = "usernameIndex")
-  @DynamoDBAttribute(attributeName = "username")
+  @DynamoDBAttribute(attributeName = "email")
   private String username;
 
   @DynamoDBAttribute(attributeName = "creditCard")
@@ -61,7 +61,7 @@ public class SiteUserInfo extends BaseDomain {
         .append("id", id)
         .append("createdAt", createdAt)
         .append("updatedAt", updatedAt)
-        .append("username", username)
+        .append("email", username)
         .toString();
   }
 }

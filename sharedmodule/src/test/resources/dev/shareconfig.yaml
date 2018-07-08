@@ -4,7 +4,7 @@ app:
   boardboxResource: http://localhost:8002/board/api/v1/board
   registerResource: http://localhost:8003/security/api/v1/register
   authorizeResource: http://localhost:8003/security/api/v1/security/authorize
-  remindPasswordResource: https://localhost:8888///security/api/v1/remind-password
+  remindPasswordResource: https://localhost:8888///security/api/v1/remind-passwordHash
   authenticateResource: http://localhost:8003/security/api/v1/authenticate
   userInfoResource: http://localhost:8003/security/api/v1/user-info
   logoutResource: http://localhost:8003/security/api/v1/logout

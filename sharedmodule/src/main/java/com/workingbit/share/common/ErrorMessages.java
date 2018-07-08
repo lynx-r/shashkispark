@@ -33,8 +33,11 @@ public class ErrorMessages {
   public static final String ENITY_NOT_FOUND = "Запрашиваемый объект не найден";
   public static final String INTERNAL_SERVER_ERROR = "Ошибка на сервере";
   public static final String FORBIDDEN = "Доступ запрещён";
-  public static final String USERNAME_NOT_NULL = "Поле <Имя пользователя> не может быть пустым";
-  public static final String USERNAME_CONSTRAINTS = "Минимальная длина поля <Имя пользователя> 3 символа, максимальная 40";
+  public static final String FIRSTNAME_NOT_NULL = "Поле <Имя> не может быть пустым";
+  public static final String FIRSTNAME_CONSTRAINTS = "Минимальная длина поля <Имя> 2 символа, максимальная 40";
+  public static final String LASTNAME_NOT_NULL = "Поле <Фамилия> не может быть пустым";
+  public static final String LASTTNAME_CONSTRAINTS = "Минимальная длина поля <Фамилия> 2 символа, максимальная 40";
+  public static final String MIDDLENAME_CONSTRAINTS = "Минимальная длина поля <Отчество> 2 символа, максимальная 40";
   public static final String PASSWORD_NOT_NULL = "Поле <Пароль> не может быть пустым";
   public static final String PASSWORD_CONSTRAINTS = "Минимальная длина поля <Пароль> 6 символов";
   public static final String INVALID_INTERNAL_REQUEST = "Не верный внутренний запрос";

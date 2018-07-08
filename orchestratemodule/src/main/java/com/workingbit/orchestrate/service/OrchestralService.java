@@ -66,11 +66,11 @@ public class OrchestralService {
     UnirestUtil.configureSerialization();
   }
 
-  public Optional<AuthUser> register(UserCredentials userCredentials) {
+  public Optional<AuthUser> register(RegisteredUser userCredentials) {
     return registerAnswer(userCredentials).map(answer -> ((AuthUser) answer.getBody()));
   }
 
-  public Optional<Answer> registerAnswer(UserCredentials userCredentials) {
+  public Optional<Answer> registerAnswer(RegisteredUser userCredentials) {
     return post(register, userCredentials, emptyMap());
   }
 
@@ -204,7 +204,7 @@ public class OrchestralService {
         put(RequestConstants.USER_ID_HEADER, userId.getId());
         put(RequestConstants.USER_CREATED_AT_HEADER, userId.getCreatedAt().format(DATE_TIME_FORMATTER));
       }
-      String username = authUser.getUsername();
+      String username = authUser.getEmail();
       if (StringUtils.isNotBlank(username)) {
         put(RequestConstants.USERNAME_HEADER, username);
       }
@@ -285,7 +285,7 @@ public class OrchestralService {
 
   public void cacheSecureAuth(@NotNull SecureAuth auth) {
     RedisUtil.cacheSecureAuth(auth.getUserSession(), auth);
-    RedisUtil.cacheSecureAuthUsername(auth.getUsername(), auth.getUserSession());
+    RedisUtil.cacheSecureAuthUsername(auth.getEmail(), auth.getUserSession());
   }
 
   public SecureAuth getSecureAuth(String userSession) {
@@ -302,6 +302,6 @@ public class OrchestralService {
 
   public void removeSecureAuth(@NotNull AuthUser authUser) {
     RedisUtil.removeSecureAuthByUserSession(authUser.getUserSession());
-    RedisUtil.removeSecureAuthByUserUsername(authUser.getUsername());
+    RedisUtil.removeSecureAuthByUserUsername(authUser.getEmail());
   }
 }

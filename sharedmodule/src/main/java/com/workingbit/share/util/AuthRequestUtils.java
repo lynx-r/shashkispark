@@ -34,7 +34,7 @@
 ////    return ShareRemoteClient.Singleton.getInstance()
 ////        .userInfo(authUser)
 ////        .map(Answer::getBody)
-////        .map((UserInfo userInfo) -> AuthUser.simpleUser(userInfo.getUserId(), userInfo.getUsername(),
+////        .map((UserInfo userInfo) -> AuthUser.simpleUser(userInfo.getUserId(), userInfo.getEmail(),
 ////            authUser.getAccessToken(), authUser.getUserSession(), authUser.getAuthorities()));
 ////  }
 //

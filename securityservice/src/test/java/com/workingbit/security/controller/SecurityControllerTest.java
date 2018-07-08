@@ -7,10 +7,9 @@ import com.despegar.sparkjava.test.SparkServer;
 import com.workingbit.security.SecurityEmbedded;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.RequestException;
-import com.workingbit.share.model.Answer;
-import com.workingbit.share.model.AuthUser;
-import com.workingbit.share.model.UserCredentials;
+import com.workingbit.share.model.*;
 import com.workingbit.share.model.enumarable.EnumAuthority;
+import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -54,9 +53,8 @@ public class SecurityControllerTest {
 
   @NotNull
   private AuthUser register() throws RequestException {
-    String username = getRandomString20();
-    String password = getRandomString20();
-    UserCredentials userCredentials = new UserCredentials(username, password);
+    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
+        Utils.getRandomString20(), EnumRank.MS, Utils.getRandomString20(), Utils.getRandomString20());
     AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 
@@ -71,21 +69,22 @@ public class SecurityControllerTest {
 
   @Test
   public void reg_with_empty_credentials() throws HttpClientException {
-    String[] credentErrors = {ErrorMessages.USERNAME_NOT_NULL, ErrorMessages.PASSWORD_NOT_NULL};
+    String[] credentErrors = {ErrorMessages.FIRSTNAME_NOT_NULL, ErrorMessages.PASSWORD_NOT_NULL};
     UserCredentials userCredentials = new UserCredentials(null, null);
     post("/register", userCredentials, AuthUser.anonymous(), HTTP_BAD_REQUEST, credentErrors);
   }
 
   @Test
   public void reg_with_invalid_credentials() throws HttpClientException {
-    String[] credentErrors = {ErrorMessages.USERNAME_CONSTRAINTS, ErrorMessages.PASSWORD_CONSTRAINTS};
+    String[] credentErrors = {ErrorMessages.FIRSTNAME_CONSTRAINTS, ErrorMessages.PASSWORD_CONSTRAINTS};
     UserCredentials userCredentials = new UserCredentials("12", "123");
     post("/register", userCredentials, AuthUser.anonymous(), HTTP_BAD_REQUEST, credentErrors);
   }
 
   @Test
-  public void register_twice_with_same_credentials() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
+  public void register_twice_with_same_credentials() {
+    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
+        Utils.getRandomString20(), EnumRank.MS, Utils.getRandomString20(), Utils.getRandomString20());
     orchestralService.register(userCredentials).get();
 
     int code = 0;

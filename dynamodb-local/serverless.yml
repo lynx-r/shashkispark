@@ -116,7 +116,7 @@ resources:
             AttributeType: S
           - AttributeName: userSession
             AttributeType: S
-          - AttributeName: username
+          - AttributeName: email
             AttributeType: S
         KeySchema:
           - AttributeName: id
@@ -140,7 +140,7 @@ resources:
             WriteCapacityUnits: 5
         - IndexName: usernameIndex
           KeySchema:
-          - AttributeName: username
+          - AttributeName: email
             KeyType: HASH
           - AttributeName: createdAt
             KeyType: RANGE

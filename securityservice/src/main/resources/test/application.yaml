@@ -3,9 +3,9 @@ app:
   regionDynamoDB: eu-west-1
   endpointDynamoDB: http://localhost:8765
   local: true
-  headers: requested-api,api-article,x-api-key,content-type,sign,sign-request,user-session,anonymous-session,user-id,username,access-token,user-authorities,access-control-allow-credentials
+  headers: requested-api,api-article,x-api-key,content-type,sign,sign-request,user-session,anonymous-session,user-id,email,access-token,user-authorities,access-control-allow-credentials
   methods: GET,POST,PUT,OPTIONS,HEADER,DELETE
-  origin: http://localhost:4200
+  origin: http://shashki.local # localhost
   sessionLength: 20
   tokenLength: 20
   superHashEnvName: SHASHKI_SUPER_USER

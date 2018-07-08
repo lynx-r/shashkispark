@@ -50,11 +50,11 @@ public class ArticleControllerTest {
   private static Integer randomPort = RandomUtils.nextInt(1000, 65000);
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
   }
 
   public static class ArticleControllerTestSparkApplication implements SparkApplication {
@@ -70,10 +70,11 @@ public class ArticleControllerTest {
   public static SparkServer<ArticleControllerTestSparkApplication> testServer = new SparkServer<>(ArticleControllerTestSparkApplication.class, randomPort);
 
   @NotNull
-  private AuthUser register() throws Exception {
+  private AuthUser register() {
     String username = Utils.getRandomString20();
     String password = Utils.getRandomString20();
-    UserCredentials userCredentials = new UserCredentials(username, password);
+    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
+        Utils.getRandomString20(), EnumRank.MS, username, password);
     AuthUser registered = orchestralService
         .register(userCredentials)
         .get();
@@ -235,8 +236,9 @@ public class ArticleControllerTest {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
     String username = Utils.getRandomString20();
     String password = Utils.getRandomString20();
-    UserCredentials userCredentials = new UserCredentials(username, password);
-    AuthUser registered = orchestralService.register(userCredentials).get();
+    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
+        Utils.getRandomString20(), EnumRank.MS, username, password);
+    AuthUser registered = orchestralService.register(registeredUser).get();
     assertNotNull(registered);
 
     CreateArticleResponse articleResponse = (CreateArticleResponse) post(ARTICLE_PROTECTED.getPath(), createArticlePayload, registered).getBody();
@@ -267,6 +269,7 @@ public class ArticleControllerTest {
     int statusCode = post(ARTICLE_PROTECTED.getPath(), createArticlePayload, registered).getStatusCode();
     assertEquals(HTTP_FORBIDDEN, statusCode);
 
+    UserCredentials userCredentials = new UserCredentials(registered.getEmail(), password);
     AuthUser loggedIn = orchestralService.authorize(userCredentials).get();
     assertTrue(!hasAuthorities(singleton(EnumAuthority.AUTHOR), loggedout.getAuthorities()));
 
@@ -279,7 +282,8 @@ public class ArticleControllerTest {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
     String username = Utils.getRandomString20();
     String password = Utils.getRandomString20();
-    UserCredentials userCredentials = new UserCredentials(username, password);
+    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
+        Utils.getRandomString20(), EnumRank.MS, username, password);
     AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 

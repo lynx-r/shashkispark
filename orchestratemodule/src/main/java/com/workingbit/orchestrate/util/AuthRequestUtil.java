@@ -105,7 +105,7 @@ public class AuthRequestUtil {
       return new AuthUser(userSession).addAuthorities(EnumAuthority.ANONYMOUS);
     }
     AuthUser authUser = new AuthUser(accessToken, userSession);
-    authUser.setUsername(username);
+    authUser.setEmail(username);
     authUser.setSuperHash(superHash);
     if (StringUtils.isNotBlank(internalKey)) {
       authUser.setInternalKey(internalKey);

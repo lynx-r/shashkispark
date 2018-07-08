@@ -18,6 +18,6 @@ public class SiteUserInfoDao extends BaseDao<SiteUserInfo> {
   }
 
   public SiteUserInfo findByUsername(String username) {
-    return findByAttributeIndex(username, "username","usernameIndex");
+    return findByAttributeIndex(username, "email", "usernameIndex");
   }
 }

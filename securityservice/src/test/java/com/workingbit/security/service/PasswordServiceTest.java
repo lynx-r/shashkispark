@@ -24,7 +24,7 @@ public class PasswordServiceTest {
     SecureAuth secureAuth = new SecureAuth();
     secureAuth.setUserId(DomainId.getRandomID());
     String username = Utils.getRandomString20();
-    secureAuth.setUsername(username);
+    secureAuth.setEmail(username);
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
     passwordService.registerUser(secureAuth);
@@ -34,7 +34,7 @@ public class PasswordServiceTest {
     secureAuth = new SecureAuth();
     secureAuth.setUserId(DomainId.getRandomID());
     username = Utils.getRandomString20();
-    secureAuth.setUsername(username);
+    secureAuth.setEmail(username);
     System.out.println(Utils.getRandomString(16));
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
@@ -52,7 +52,7 @@ public class PasswordServiceTest {
     SecureAuth secureAuth = new SecureAuth();
     secureAuth.setUserId(DomainId.getRandomID());
     String username = Utils.getRandomString20();
-    secureAuth.setUsername(username);
+    secureAuth.setEmail(username);
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
     passwordService.registerUser(secureAuth);
@@ -62,7 +62,7 @@ public class PasswordServiceTest {
     secureAuth = new SecureAuth();
     secureAuth.setUserId(DomainId.getRandomID());
     username = Utils.getRandomString20();
-    secureAuth.setUsername(username);
+    secureAuth.setEmail(username);
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
     passwordService.registerUser(secureAuth);
@@ -72,7 +72,7 @@ public class PasswordServiceTest {
     SecureAuth secureAuthChangeUsername = new SecureAuth();
     secureAuthChangeUsername.setUserId(DomainId.getRandomID());
     String usernameNew = Utils.getRandomString20();
-    secureAuthChangeUsername.setUsername(usernameNew);
+    secureAuthChangeUsername.setEmail(usernameNew);
     System.out.println(Utils.getRandomString(16));
     secureAuthChangeUsername.setSecureToken("securetoken");
     secureAuthChangeUsername.setAccessToken("accesstoken");

@@ -5,11 +5,11 @@ import spark.Request;
 public class RequestUtil {
 
     public static String getQueryUsername(Request request) {
-        return request.queryParams("username");
+      return request.queryParams("email");
     }
 
     public static String getQueryPassword(Request request) {
-        return request.queryParams("password");
+      return request.queryParams("passwordHash");
     }
 
     public static String getQueryLoginRedirect(Request request) {

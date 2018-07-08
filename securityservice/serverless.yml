@@ -83,7 +83,7 @@ functions:
 #            AttributeType: S
 #          - AttributeName: userSession
 #            AttributeType: S
-#          - AttributeName: username
+#          - AttributeName: email
 #            AttributeType: S
 #        KeySchema:
 #          - AttributeName: id
@@ -107,7 +107,7 @@ functions:
 #            WriteCapacityUnits: 1
 #        - IndexName: usernameIndex
 #          KeySchema:
-#          - AttributeName: username
+#          - AttributeName: email
 #            KeyType: HASH
 #          - AttributeName: createdAt
 #            KeyType: RANGE

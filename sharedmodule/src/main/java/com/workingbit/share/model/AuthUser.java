@@ -29,7 +29,7 @@ import static com.workingbit.share.util.JsonUtils.jsonToDataTypeRef;
 public class AuthUser implements Payload, DeepClone {
 
   private DomainId userId;
-  private String username;
+  private String email;
   private String accessToken;
   private String userSession;
   private long timestamp;
