@@ -20,13 +20,13 @@ app:
 #  saveUserInfoResource: https://localhost:8888/////security/api/v1/save-user-info
 #  logoutResource: https://localhost:8888/////security/api/v1/logout
 
-  preRegisterResource: https://localhost:8888/article/api/v1/pre-register
-  preAuthorizeResource: https://localhost:8888/article/api/v1/pre-authorize
   articleResource: https://localhost:8888/article/api/v1/article
   articlesResource: https://localhost:8888/article/api/v1/articles
   boardboxResource: https://localhost:8888/board/api/v1/board
   boardboxDeleteByArticleIdResource: https://localhost:8888/board/api/v1/board-delete-by-article-id
   parsePdnResource: https://localhost:8888/board/api/v1/parse-pdn
+  preRegisterResource: https://localhost:8888/security/api/v1/pre-register
+  preAuthorizeResource: https://localhost:8888/security/api/v1/pre-authorize
   registerResource: https://localhost:8888/security/api/v1/register
   authorizeResource: https://localhost:8888/security/api/v1/authorize
   remindPasswordResource: https://localhost:8888/security/api/v1/remind-passwordHash
