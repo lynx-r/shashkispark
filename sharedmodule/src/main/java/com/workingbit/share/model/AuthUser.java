@@ -37,6 +37,10 @@ public class AuthUser implements Payload, DeepClone {
   @NotNull
   private Set<EnumAuthority> authorities = new HashSet<>();
   private String superHash;
+  private String salt;
+  private int cost;
+  private int misc;
+
   // произвольные данные
   private Object data;
 
@@ -52,19 +56,47 @@ public class AuthUser implements Payload, DeepClone {
     this.userSession = userSession;
   }
 
+  public AuthUser(DomainId userId, String email, String accessToken, String userSession, long timestamp,
+                  DaoFilters filters, @NotNull Set<EnumAuthority> authorities) {
+    this.userId = userId;
+    this.email = email;
+    this.accessToken = accessToken;
+    this.userSession = userSession;
+    this.timestamp = timestamp;
+    this.filters = filters;
+    this.authorities = authorities;
+  }
+
+  public AuthUser(long timestamp, DaoFilters filters, @NotNull Set<EnumAuthority> authorities) {
+    this.timestamp = timestamp;
+    this.filters = filters;
+    this.authorities = authorities;
+  }
+
+  public AuthUser(String salt, int cost, int misc) {
+
+    this.salt = salt;
+    this.cost = cost;
+    this.misc = misc;
+  }
+
   public static AuthUser anonymous() {
-    return new AuthUser(null, null, null, null,
-        Utils.getTimestamp(), new DaoFilters(), new HashSet<>(Set.of(EnumAuthority.ANONYMOUS)), null, null, null);
+    return new AuthUser(Utils.getTimestamp(), new DaoFilters(), new HashSet<>(Set.of(EnumAuthority.ANONYMOUS)));
   }
 
-  public static AuthUser simpleAuthor(DomainId userId, String username, String accessToken, String userSession) {
-    return new AuthUser(userId, username, accessToken, userSession,
-        Utils.getTimestamp(), new DaoFilters(), new HashSet<>(Set.of(EnumAuthority.AUTHOR)), null, null, null);
+  public static AuthUser simpleAuthor(DomainId userId, String email, String accessToken, String userSession) {
+    return new AuthUser(userId, email, accessToken, userSession,
+        Utils.getTimestamp(), new DaoFilters(), new HashSet<>(Set.of(EnumAuthority.AUTHOR)));
   }
 
-  public static AuthUser simpleUser(DomainId userId, String username, String accessToken, String userSession, @NotNull Set<EnumAuthority> authorities) {
+  public static AuthUser simpleUser(DomainId userId, String username, String accessToken, String userSession,
+                                    @NotNull Set<EnumAuthority> authorities) {
     return new AuthUser(userId, username, accessToken, userSession,
-        Utils.getTimestamp(), new DaoFilters(), authorities, null, null, null);
+        Utils.getTimestamp(), new DaoFilters(), authorities);
+  }
+
+  public static AuthUser authRequest(String salt, int cost, int misc) {
+    return new AuthUser(salt, cost, misc);
   }
 
   public void setAuthorities(@NotNull Set<EnumAuthority> authorities) {

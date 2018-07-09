@@ -227,8 +227,9 @@ public class Utils {
 
   @NotNull
   private static String RANDOM_STR_SEP = "-";
-  public static int RANDOM_ID_LENGTH = 20;
-  public static int RANDOM_STRING_LENGTH = 7;
+  private static final int RANDOM_STRING_LENGTH_32 = 32;
+  public static int RANDOM_STRING_LENGTH_7 = 7;
+  private static int RANDOM_ID_LENGTH = 20;
 
   public static String getRandomID() {
     return getRandomString(RANDOM_ID_LENGTH);
@@ -240,7 +241,11 @@ public class Utils {
   }
 
   public static String getRandomString20() {
-    return RandomStringUtils.randomAlphanumeric(20);
+    return RandomStringUtils.randomAlphanumeric(RANDOM_STRING_LENGTH_7);
+  }
+
+  public static String getRandomString32() {
+    return RandomStringUtils.randomAlphanumeric(RANDOM_STRING_LENGTH_32);
   }
 
   public static String getRandomString(int length) {
@@ -359,5 +364,9 @@ public class Utils {
 
   public static boolean isCorrespondedNotation(NotationHistory toSyncNotationHist, NotationHistory notationHistory) {
     return !notationHistory.getId().equals(toSyncNotationHist.getId()) && toSyncNotationHist.getCurrentIndex() < notationHistory.size();
+  }
+
+  public static String getRandomEmail() {
+    return getRandomString(5) + "@" + getRandomString(5) + "." + getRandomString(3);
   }
 }

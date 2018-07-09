@@ -9,6 +9,14 @@ import java.net.URL;
  */
 public interface AppProperties {
 
+  String domain();
+
+  int cost();
+
+  int misc();
+
+  String sysSigma();
+
   @NotNull String regionDynamoDB();
 
   @NotNull URL endpointDynamoDB();

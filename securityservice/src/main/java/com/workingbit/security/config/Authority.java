@@ -12,6 +12,8 @@ public enum Authority implements IAuthority {
   HOME("/", new HashSet<>()),
 
   // open api
+  PRE_REGISTER("/pre-register", Constants.FREE_USER_AUTHORITIES),
+  PRE_AUTHORIZE("/pre-authorize", Constants.FREE_USER_AUTHORITIES),
   REGISTER("/register", Constants.FREE_USER_AUTHORITIES),
   AUTHORIZE("/authorize", Constants.FREE_USER_AUTHORITIES),
   RESET_PASSWORD("/reset-passwordHash", Constants.FREE_USER_AUTHORITIES),

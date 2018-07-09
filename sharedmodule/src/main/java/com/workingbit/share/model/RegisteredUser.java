@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 /**
  * Created by Aleksey Popryadukhin on 16/04/2018.
  */
-@JsonTypeName("UserCredentials")
+@JsonTypeName("RegisteredUser")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -25,14 +25,14 @@ public class RegisteredUser implements Payload {
 
   @NotNull(message = ErrorMessages.FIRSTNAME_NOT_NULL)
   @Size(min = 2, max = 40, message = ErrorMessages.FIRSTNAME_CONSTRAINTS)
-  private String firstname;
+  private String firstName;
 
   @Size(max = 40, message = ErrorMessages.MIDDLENAME_CONSTRAINTS)
-  private String middlename;
+  private String middleName;
 
   @NotNull(message = ErrorMessages.LASTNAME_NOT_NULL)
   @Size(min = 2, max = 40, message = ErrorMessages.FIRSTNAME_CONSTRAINTS)
-  private String secondname;
+  private String secondName;
 
   private EnumRank rank;
 
@@ -48,13 +48,13 @@ public class RegisteredUser implements Payload {
   @Override
   public String toString() {
     return "UserCredentials{" +
-        "email='" + firstname + '\'' +
+        "email='" + firstName + '\'' +
         '}';
   }
 
   @org.jetbrains.annotations.NotNull
   @JsonIgnore
   public String getCredentials() {
-    return firstname + ":" + passwordHash;
+    return firstName + ":" + passwordHash;
   }
 }

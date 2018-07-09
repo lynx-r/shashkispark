@@ -12,3 +12,8 @@ app:
   superHashEnvName: SHASHKI_SUPER_USER
   passwordFileKey: yGqa2Ga3wCqVb65U
   passwordFilename: /root/.shashki_online/ShashkiUsers.pwd
+
+  domain: shashki.online
+  cost: 10000
+  sysSigma: V>K0!PW`ojeK_'9"~R1;s(!Fx6PnOabc
+  misc: 8

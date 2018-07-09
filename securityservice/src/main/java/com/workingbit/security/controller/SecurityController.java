@@ -18,6 +18,18 @@ public class SecurityController {
   public static Route home = (req, res) -> "Security. Home, sweet home!";
 
   @NotNull
+  public static Route preRegister = (req, res) ->
+      ((ModelHandlerFunc<UserCredentials>) (data, token, param) ->
+          Answer.ok(secureUserService.preRegister((UserCredentials) data))
+      ).handleAuthRequest(req, res, UserCredentials.class);
+
+  @NotNull
+  public static Route preAuthorize = (req, res) ->
+      ((ModelHandlerFunc<UserCredentials>) (data, token, param) ->
+          Answer.ok(secureUserService.preAuthorize((UserCredentials) data))
+      ).handleAuthRequest(req, res, UserCredentials.class);
+
+  @NotNull
   public static Route register = (req, res) ->
       ((ModelHandlerFunc<RegisteredUser>) (data, token, param) ->
           Answer.ok(secureUserService.register((RegisteredUser) data))

@@ -53,9 +53,16 @@ public class SecurityControllerTest {
 
   @NotNull
   private AuthUser register() throws RequestException {
-    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20(), EnumRank.MS, Utils.getRandomString20(), Utils.getRandomString20());
-    AuthUser registered = orchestralService.register(userCredentials).get();
+    String email = Utils.getRandomEmail();
+    String password = Utils.getRandomString20();
+    UserCredentials userCredentials = new UserCredentials(email, password);
+    AuthUser authUser = orchestralService.preRegister(userCredentials).get();
+    assertNotNull(authUser.getSalt());
+    assertEquals(10000, authUser.getCost());
+    assertEquals(8, authUser.getMisc());
+    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
+        Utils.getRandomString20(), EnumRank.MS, email, password);
+    AuthUser registered = orchestralService.register(registeredUser).get();
     assertNotNull(registered);
 
     return registered;

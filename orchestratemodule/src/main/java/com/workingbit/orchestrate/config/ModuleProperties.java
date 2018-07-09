@@ -7,6 +7,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ModuleProperties {
 
+  String preRegisterResource();
+
+  String preAuthorizeResource();
+
   @NotNull String registerResource();
 
   @NotNull String authorizeResource();

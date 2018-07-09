@@ -2,6 +2,8 @@ app:
   port: 14567
   regionDynamoDB: eu-west-1
   local: true
+  preRegisterResource: http://shashki.local:8888/article/api/v1/pre-register
+  preAuthorizeResource: http://shashki.local:8888/article/api/v1/pre-authorize
   articleResource: http://shashki.local:8888/article/api/v1/article
   articlesResource: http://shashki.local:8888/article/api/v1/articles
   boardboxResource: http://shashki.local:8888/board/api/v1/board

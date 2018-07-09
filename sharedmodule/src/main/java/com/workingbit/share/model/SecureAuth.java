@@ -18,17 +18,21 @@ import java.util.Set;
 public class SecureAuth implements DeepClone {
 
   private DomainId userId;
-  private String firstname;
-  private String middlename;
-  private String lastname;
+  private String groupId;
   private String email;
+  private String passwordHash;
   private Set<EnumAuthority> authorities;
+
+  /**
+   * hash of user:passwordHash:salt
+   */
+  private String sigma;
+  private int cost;
+  private int misc;
 
   private String initVector;
   private String key;
   private int tokenLength;
-  private String salt;
-  private String digest;
 
   private String accessToken;
   private String userSession;

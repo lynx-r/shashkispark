@@ -40,19 +40,22 @@ import static java.util.Collections.emptyMap;
 public class OrchestralService {
 
   private static final Logger logger = LoggerFactory.getLogger(OrchestralService.class);
-
-  private String register;
-  private String authorize;
-  private String authenticate;
-  private String article;
-  private String boardbox;
-  private String boardboxDeleteByArticleId;
-  private String parsePdn;
-  private String userInfo;
-  private String saveUserInfo;
-  private String logout;
+  private final String preRegister;
+  private final String preAuthorize;
+  private final String register;
+  private final String authorize;
+  private final String authenticate;
+  private final String article;
+  private final String boardbox;
+  private final String boardboxDeleteByArticleId;
+  private final String parsePdn;
+  private final String userInfo;
+  private final String saveUserInfo;
+  private final String logout;
 
   public OrchestralService(ModuleProperties moduleProperties) {
+    preRegister = moduleProperties.preRegisterResource();
+    preAuthorize = moduleProperties.preAuthorizeResource();
     register = moduleProperties.registerResource();
     authorize = moduleProperties.authorizeResource();
     authenticate = moduleProperties.authenticateResource();
@@ -66,12 +69,28 @@ public class OrchestralService {
     UnirestUtil.configureSerialization();
   }
 
-  public Optional<AuthUser> register(RegisteredUser userCredentials) {
-    return registerAnswer(userCredentials).map(answer -> ((AuthUser) answer.getBody()));
+  public Optional<AuthUser> preRegister(UserCredentials userCredentials) {
+    return preRegisterAnswer(userCredentials).map(answer -> ((AuthUser) answer.getBody()));
   }
 
-  public Optional<Answer> registerAnswer(RegisteredUser userCredentials) {
-    return post(register, userCredentials, emptyMap());
+  public Optional<Answer> preRegisterAnswer(UserCredentials userCredentials) {
+    return post(preRegister, userCredentials, emptyMap());
+  }
+
+  public Optional<AuthUser> preAuthorize(RegisteredUser registeredUser) {
+    return registerAnswer(registeredUser).map(answer -> ((AuthUser) answer.getBody()));
+  }
+
+  public Optional<Answer> preAuthorizeAnswer(RegisteredUser registeredUser) {
+    return post(preAuthorize, registeredUser, emptyMap());
+  }
+
+  public Optional<AuthUser> register(RegisteredUser registeredUser) {
+    return registerAnswer(registeredUser).map(answer -> ((AuthUser) answer.getBody()));
+  }
+
+  public Optional<Answer> registerAnswer(RegisteredUser registeredUser) {
+    return post(register, registeredUser, emptyMap());
   }
 
   public Optional<AuthUser> authorize(UserCredentials userCredentials) {
@@ -288,20 +307,20 @@ public class OrchestralService {
     RedisUtil.cacheSecureAuthUsername(auth.getEmail(), auth.getUserSession());
   }
 
-  public SecureAuth getSecureAuth(String userSession) {
-    if (StringUtils.isBlank(userSession)) {
-      return null;
-    }
-    return RedisUtil.getSecureAuthByUserSession(userSession);
-  }
-
-  @Nullable
-  public SecureAuth getSecureAuthByUsername(String username) {
-    return RedisUtil.getSecureAuthByUsername(username);
-  }
-
-  public void removeSecureAuth(@NotNull AuthUser authUser) {
-    RedisUtil.removeSecureAuthByUserSession(authUser.getUserSession());
-    RedisUtil.removeSecureAuthByUserUsername(authUser.getEmail());
-  }
+//  public SecureAuth getSecureAuthBySession(String userSession) {
+//    if (StringUtils.isBlank(userSession)) {
+//      return null;
+//    }
+//    return RedisUtil.getSecureAuthByUserSession(userSession);
+//  }
+//
+//  @Nullable
+//  public SecureAuth getSecureAuthByEmail(String username) {
+//    return RedisUtil.getSecureAuthByUsername(username);
+//  }
+//
+//  public void removeSecureAuth(@NotNull AuthUser authUser) {
+//    RedisUtil.removeSecureAuthByUserSession(authUser.getUserSession());
+//    RedisUtil.removeSecureAuthByUserUsername(authUser.getEmail());
+//  }
 }

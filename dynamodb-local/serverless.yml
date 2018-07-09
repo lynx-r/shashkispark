@@ -138,7 +138,7 @@ resources:
           ProvisionedThroughput:
             ReadCapacityUnits: 5
             WriteCapacityUnits: 5
-        - IndexName: usernameIndex
+        - IndexName: emailIndex
           KeySchema:
           - AttributeName: email
             KeyType: HASH

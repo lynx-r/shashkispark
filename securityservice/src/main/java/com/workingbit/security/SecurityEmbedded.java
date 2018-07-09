@@ -72,6 +72,8 @@ public class SecurityEmbedded {
     path("/api", () ->
         path("/v1", () -> {
           // open api
+          post(Authority.PRE_REGISTER.getPath(), SecurityController.preRegister);
+          post(Authority.PRE_AUTHORIZE.getPath(), SecurityController.preAuthorize);
           post(Authority.REGISTER.getPath(), SecurityController.register);
           post(Authority.AUTHORIZE.getPath(), SecurityController.authorize);
           post(Authority.RESET_PASSWORD.getPath(), SecurityController.resetPassword);

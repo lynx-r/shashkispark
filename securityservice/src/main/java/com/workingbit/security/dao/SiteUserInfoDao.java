@@ -13,11 +13,7 @@ public class SiteUserInfoDao extends BaseDao<SiteUserInfo> {
     super(SiteUserInfo.class, properties.regionDynamoDB(), properties.endpointDynamoDB().toString(), properties.local());
   }
 
-  public SiteUserInfo findBySession(String session) {
-    return findByAttributeIndex(session, "userSession","userSessionIndex");
-  }
-
-  public SiteUserInfo findByUsername(String username) {
-    return findByAttributeIndex(username, "email", "usernameIndex");
+  public SiteUserInfo findByEmail(String username) {
+    return findByAttributeIndex(username, "email", "emailIndex");
   }
 }
