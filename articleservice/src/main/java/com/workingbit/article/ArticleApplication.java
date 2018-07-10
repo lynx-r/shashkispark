@@ -1,14 +1,12 @@
 package com.workingbit.article;
 
-import spark.servlet.SparkApplication;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * Created by Aleksey Popryadukhin on 19/04/2018.
- */
-public class ArticleApplication extends ArticleEmbedded implements SparkApplication {
+@SpringBootApplication
+public class ArticleApplication {
 
-  @Override
-  public void init() {
-    start();
+  public static void main(String[] args) {
+    SpringApplication.run(ArticleApplication.class, args);
   }
 }

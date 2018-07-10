@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.Request;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import static com.workingbit.orchestrate.util.RedisUtil.putInternalRequest;
 import static com.workingbit.share.common.DBConstants.DATE_TIME_FORMATTER;
@@ -281,20 +279,6 @@ public class OrchestralService {
       logger.error("Unirest exception", e);
     }
     return Optional.empty();
-  }
-
-  public void cacheRequest(@NotNull Request request, @NotNull Answer answer, @NotNull AuthUser authUser) {
-    String key = getRequestKey(request);
-    if (answer.getBody() != null) {
-//      RedisUtil.cacheRequest(key, answer.getBody());
-    }
-    RedisUtil.cacheToken(authUser);
-  }
-
-  private String getRequestKey(Request request) {
-    String url = request.url();
-    String queryParams = request.queryParams().stream().collect(Collectors.joining());
-    return url + queryParams;
   }
 
   @Nullable

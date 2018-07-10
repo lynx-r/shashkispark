@@ -1,14 +1,12 @@
 package com.workingbit.board;
 
-import spark.servlet.SparkApplication;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * Created by Aleksey Popryadukhin on 19/04/2018.
- */
-public class BoardApplication extends BoardEmbedded implements SparkApplication {
+@SpringBootApplication
+public class BoardApplication {
 
-  @Override
-  public void init() {
-    start();
+  public static void main(String[] args) {
+    SpringApplication.run(BoardApplication.class, args);
   }
 }

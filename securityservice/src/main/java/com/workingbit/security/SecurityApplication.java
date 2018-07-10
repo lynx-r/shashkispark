@@ -1,14 +1,12 @@
 package com.workingbit.security;
 
-import spark.servlet.SparkApplication;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * Created by Aleksey Popryadukhin on 19/04/2018.
- */
-public class SecurityApplication extends SecurityEmbedded implements SparkApplication {
+@SpringBootApplication
+public class SecurityApplication {
 
-  @Override
-  public void init() {
-    start();
+  public static void main(String[] args) {
+    SpringApplication.run(SecurityApplication.class, args);
   }
 }
