@@ -5,6 +5,7 @@ import com.despegar.http.client.HttpResponse;
 import com.despegar.http.client.PostMethod;
 import com.despegar.sparkjava.test.SparkServer;
 import com.workingbit.security.SecurityEmbedded;
+import com.workingbit.security.config.Authority;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.exception.RequestException;
 import com.workingbit.share.model.*;
@@ -26,7 +27,7 @@ import static com.workingbit.orchestrate.util.AuthRequestUtil.hasAuthorities;
 import static com.workingbit.share.common.RequestConstants.*;
 import static com.workingbit.share.util.JsonUtils.dataToJson;
 import static com.workingbit.share.util.JsonUtils.jsonToData;
-import static com.workingbit.share.util.Utils.getRandomString20;
+import static com.workingbit.share.util.Utils.getRandomString7;
 import static java.net.HttpURLConnection.*;
 import static org.junit.Assert.*;
 
@@ -51,21 +52,25 @@ public class SecurityControllerTest {
   @ClassRule
   public static SparkServer<SecurityControllerTestSparkApplication> testServer = new SparkServer<>(SecurityControllerTestSparkApplication.class, randomPort);
 
-  @NotNull
-  private AuthUser register() throws RequestException {
+  private AuthUser register(String password) {
     String email = Utils.getRandomEmail();
-    String password = Utils.getRandomString20();
     UserCredentials userCredentials = new UserCredentials(email, password);
     AuthUser authUser = orchestralService.preRegister(userCredentials).get();
     assertNotNull(authUser.getSalt());
     assertEquals(10000, authUser.getCost());
     assertEquals(8, authUser.getMisc());
-    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20(), EnumRank.MS, email, password);
+    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), EnumRank.MS, email, password);
     AuthUser registered = orchestralService.register(registeredUser).get();
     assertNotNull(registered);
 
     return registered;
+  }
+
+  @NotNull
+  private AuthUser register() throws RequestException {
+    String password = Utils.getRandomString(64);
+    return register(password);
   }
 
   @Test
@@ -90,8 +95,8 @@ public class SecurityControllerTest {
 
   @Test
   public void register_twice_with_same_credentials() {
-    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20(), EnumRank.MS, Utils.getRandomString20(), Utils.getRandomString20());
+    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), EnumRank.MS, Utils.getRandomString7(), Utils.getRandomString7());
     orchestralService.register(userCredentials).get();
 
     int code = 0;
@@ -105,14 +110,14 @@ public class SecurityControllerTest {
 
   @Test
   public void authorize_not_registered() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
+    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
     post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_FORBIDDEN);
   }
 
   @Test
   public void auth_test() throws Exception {
-    String username = getRandomString20();
-    String password = getRandomString20();
+    String username = getRandomString7();
+    String password = getRandomString7();
     UserCredentials userCredentials = new UserCredentials(username, password);
     AuthUser anonym = AuthUser.anonymous();
     AuthUser authUser = (AuthUser) post("/register", userCredentials, anonym, HTTP_OK).getBody();
@@ -136,7 +141,7 @@ public class SecurityControllerTest {
 
   @Test
   public void authorize_after_logout() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
+    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
     post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
 
     var answerAuthorize = post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_OK);
@@ -154,14 +159,13 @@ public class SecurityControllerTest {
 
   @Test
   public void authenticate_after_registration() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
-    var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
-    get("/authenticate", (AuthUser) registerResult.getBody(), HTTP_OK);
+    AuthUser register = register();
+    get("/authenticate", register, HTTP_OK);
   }
 
   @Test
   public void authenticate() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
+    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
     var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
     var answerAuthorize = post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_OK);
 
@@ -173,11 +177,13 @@ public class SecurityControllerTest {
 
   @Test
   public void authenticate_after_logout() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
-    var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
+    String password = Utils.getRandomString(64);
+    var authUser = register(password);
+    UserCredentials userCredentials = new UserCredentials(authUser.getEmail(), password);
+    Answer answer = post(Authority.PRE_AUTHORIZE.getPath(), userCredentials, authUser, HTTP_OK);
     var answerAuthorize = post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_OK);
 
-    AuthUser authUser = answerAuthorize.getAuthUser();
+    authUser = answerAuthorize.getAuthUser();
     Answer answerAuthenticate = get("/authenticate", authUser, HTTP_OK);
 
     answerAuthenticate = get("/authenticate", (AuthUser) answerAuthenticate.getBody(), HTTP_OK);
@@ -190,16 +196,15 @@ public class SecurityControllerTest {
 
   @Test
   public void authenticate_after_registration_twice() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
-    var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
-    Answer answerAuthenticate = get("/authenticate", (AuthUser) registerResult.getBody(), HTTP_OK);
+    AuthUser authUser = register();
+    Answer answerAuthenticate = get("/authenticate", authUser, HTTP_OK);
     get("/authenticate", (AuthUser) answerAuthenticate.getBody(), HTTP_OK);
   }
 
   @Test
   public void logout_test() throws Exception {
-    String username = getRandomString20();
-    String password = getRandomString20();
+    String username = getRandomString7();
+    String password = getRandomString7();
     UserCredentials userCredentials = new UserCredentials(username, password);
     AuthUser anonym = AuthUser.anonymous();
     AuthUser authUser = post("/register", userCredentials, anonym, HTTP_OK).getAuthUser();
@@ -234,7 +239,7 @@ public class SecurityControllerTest {
 
   @Test
   public void logout_after_logout() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
+    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
     var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
     var answerAuthorize = post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_OK);
 
@@ -251,7 +256,7 @@ public class SecurityControllerTest {
 
 //  @Test
 //  public void test_banned() throws Exception {
-//    UserCredentials userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
+//    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
 //    var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
 //
 //    AuthUser authUser = registerResult.getAuthUser();
@@ -268,7 +273,7 @@ public class SecurityControllerTest {
 //    answer = get("/user-info", authUserBanned, HTTP_FORBIDDEN);
 //
 //    // createWithoutRoot user
-//    userCredentials = new UserCredentials(getRandomString20(), getRandomString20());
+//    userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
 //    registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
 //    authUser = registerResult.getAuthUser();
 //    answer = post("/user-info", authUserBanned, authUser, HTTP_OK);

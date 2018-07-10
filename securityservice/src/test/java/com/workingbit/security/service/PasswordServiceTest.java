@@ -20,7 +20,7 @@ public class PasswordServiceTest {
   public void registerUser() {
     SecureAuth secureAuth = new SecureAuth();
     secureAuth.setUserId(DomainId.getRandomID());
-    String username = Utils.getRandomString20();
+    String username = Utils.getRandomString7();
     secureAuth.setEmail(username);
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
@@ -30,7 +30,7 @@ public class PasswordServiceTest {
 
     secureAuth = new SecureAuth();
     secureAuth.setUserId(DomainId.getRandomID());
-    username = Utils.getRandomString20();
+    username = Utils.getRandomString7();
     secureAuth.setEmail(username);
     System.out.println(Utils.getRandomString(16));
     secureAuth.setSecureToken("securetoken");
@@ -48,7 +48,7 @@ public class PasswordServiceTest {
   public void replaceSecureAuth() {
     SecureAuth secureAuth = new SecureAuth();
     secureAuth.setUserId(DomainId.getRandomID());
-    String username = Utils.getRandomString20();
+    String username = Utils.getRandomString7();
     secureAuth.setEmail(username);
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
@@ -58,7 +58,7 @@ public class PasswordServiceTest {
 
     secureAuth = new SecureAuth();
     secureAuth.setUserId(DomainId.getRandomID());
-    username = Utils.getRandomString20();
+    username = Utils.getRandomString7();
     secureAuth.setEmail(username);
     secureAuth.setSecureToken("securetoken");
     secureAuth.setAccessToken("accesstoken");
@@ -68,7 +68,7 @@ public class PasswordServiceTest {
 
     SecureAuth secureAuthChangeUsername = new SecureAuth();
     secureAuthChangeUsername.setUserId(DomainId.getRandomID());
-    String usernameNew = Utils.getRandomString20();
+    String usernameNew = Utils.getRandomString7();
     secureAuthChangeUsername.setEmail(usernameNew);
     System.out.println(Utils.getRandomString(16));
     secureAuthChangeUsername.setSecureToken("securetoken");

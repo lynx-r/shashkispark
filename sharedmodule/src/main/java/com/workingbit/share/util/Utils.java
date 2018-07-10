@@ -8,14 +8,13 @@ import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.model.NotationFormat;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -240,28 +239,55 @@ public class Utils {
     domain.setCreatedAt(LocalDateTime.now());
   }
 
-  public static String getRandomString20() {
-    return RandomStringUtils.randomAlphanumeric(RANDOM_STRING_LENGTH_7);
+  public static String getRandomString7() {
+    return getSecureRandomString(RANDOM_STRING_LENGTH_7);
   }
 
   public static String getRandomString32() {
-    return RandomStringUtils.randomAlphanumeric(RANDOM_STRING_LENGTH_32);
+    return getSecureRandomString(RANDOM_STRING_LENGTH_32);
   }
 
   public static String getRandomString(int length) {
-    return RandomStringUtils.randomAlphanumeric(length);
+    return getSecureRandomString(length);
   }
 
-  @NotNull
-  public static byte[] getSecureRandom(int length) {
-    SecureRandom random = new SecureRandom();
-    byte[] data = new byte[length];
-    random.nextBytes(data);
-    return data;
+  private static String getSecureRandomString(int length) {
+    try {
+      //Initialize SecureRandom
+      //This is a lengthy operation, to be done only upon
+      //initialization of the application
+      SecureRandom prng = SecureRandom.getInstance("SHA1PRNG");
+
+      //generate a random bytes
+      byte[] bytes = new byte[length];
+      prng.nextBytes(bytes);
+
+      //get its digest
+      return hexEncode(bytes).substring(0, length);
+    } catch (NoSuchAlgorithmException ex) {
+      return null;
+    }
   }
 
-  public static String getSecureRandomString(int length) {
-    return new String(getSecureRandom(length), Charset.forName("UTF-8"));
+  /**
+   * The byte[] returned by MessageDigest does not have a nice
+   * textual representation, so some form of encoding is usually performed.
+   * <p>
+   * This implementation follows the example of David Flanagan's book
+   * "Java In A Nutshell", and converts a byte array into a String
+   * of hex characters.
+   * <p>
+   * Another popular alternative is to use a "Base64" encoding.
+   */
+  static private String hexEncode(byte[] aInput) {
+    StringBuilder result = new StringBuilder();
+    char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    for (int idx = 0; idx < aInput.length; ++idx) {
+      byte b = aInput[idx];
+      result.append(digits[(b & 0xf0) >> 4]);
+      result.append(digits[b & 0x0f]);
+    }
+    return result.toString();
   }
 
   public static String encode(@NotNull byte[] key, String data) throws Exception {

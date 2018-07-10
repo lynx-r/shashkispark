@@ -20,12 +20,12 @@ import static junit.framework.TestCase.assertTrue;
 public class BoardUndoRedoTest extends BaseServiceTest {
 
   @NotNull
-  private String articleId = Utils.getRandomString20();
+  private String articleId = Utils.getRandomString7();
   private AuthUser token;
 
   @Before
-  public void setUp() throws Exception {
-    token = new AuthUser(Utils.getRandomString20(), Utils.getRandomString20());
+  public void setUp() {
+    token = new AuthUser(Utils.getRandomString7(), Utils.getRandomString7());
   }
 
   @Test

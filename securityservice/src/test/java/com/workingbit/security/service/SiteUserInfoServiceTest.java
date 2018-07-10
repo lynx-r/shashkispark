@@ -29,12 +29,12 @@ public class SiteUserInfoServiceTest {
   }
 
   private void register_authenticate_authorize_authorize() {
-    String username = Utils.getRandomString20();
-    String password = Utils.getRandomString20();
-    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20(), EnumRank.MS, username, password);
+    String username = Utils.getRandomString7();
+    String password = Utils.getRandomString7();
+    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), EnumRank.MS, username, password);
     AuthUser authUser = new AuthUser();
-    authUser.setUserSession(Utils.getRandomString20());
+    authUser.setUserSession(Utils.getRandomString7());
     AuthUser register = secureUserService.register(registeredUser);
     assertTrue(register != null);
     AuthUser registered = register;
@@ -79,12 +79,12 @@ public class SiteUserInfoServiceTest {
 
   @Test
   public void logout_test() {
-    String username = Utils.getRandomString20();
-    String password = Utils.getRandomString20();
+    String username = Utils.getRandomString7();
+    String password = Utils.getRandomString7();
     AuthUser authUser = new AuthUser();
-    authUser.setUserSession(Utils.getRandomString20());
-    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20(), EnumRank.MS, username, password);
+    authUser.setUserSession(Utils.getRandomString7());
+    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), EnumRank.MS, username, password);
     AuthUser register = secureUserService.register(registeredUser);
     assertTrue(register != null);
 

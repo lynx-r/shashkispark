@@ -2,18 +2,20 @@ app:
   port: 14567
   regionDynamoDB: eu-west-1
   local: true
-  articleResource: https://localhost:8888/////article/api/v1/article
-  articlesResource: https://localhost:8888/////article/api/v1/articles
-  boardboxResource: https://localhost:8888/////board/api/v1/board
-  boardboxDeleteByArticleIdResource: https://localhost:8888/////board/api/v1/board-delete-by-article-id
-  parsePdnResource: https://localhost:8888/////board/api/v1/parse-pdn
-  registerResource: https://localhost:8888/////security/api/v1/register
-  authorizeResource: https://localhost:8888/////security/api/v1/authorize
-  remindPasswordResource: https://localhost:8888///security/api/v1/remind-passwordHash
-  authenticateResource: https://localhost:8888/////security/api/v1/authenticate
-  userInfoResource: https://localhost:8888/////security/api/v1/user-info
-  saveUserInfoResource: https://localhost:8888/////security/api/v1/save-user-info
-  logoutResource: https://localhost:8888/////security/api/v1/logout
+  articleResource: http://shashki.local:8888/article/api/v1/article
+  articlesResource: http://shashki.local:8888/article/api/v1/articles
+  boardboxResource: http://shashki.local:8888/board/api/v1/board
+  boardboxDeleteByArticleIdResource: http://shashki.local:8888/board/api/v1/board-delete-by-article-id
+  parsePdnResource: http://shashki.local:8888/board/api/v1/parse-pdn
+  preRegisterResource: http://shashki.local:8888/security/api/v1/pre-register
+  preAuthorizeResource: http://shashki.local:8888/security/api/v1/pre-authorize
+  registerResource: http://shashki.local:8888/security/api/v1/register
+  authorizeResource: http://shashki.local:8888/security/api/v1/authorize
+  remindPasswordResource: http://shashki.local:8888///security/api/v1/remind-passwordHash
+  authenticateResource: http://shashki.local:8888/security/api/v1/authenticate
+  userInfoResource: http://shashki.local:8888/security/api/v1/user-info
+  saveUserInfoResource: http://shashki.local:8888/security/api/v1/save-user-info
+  logoutResource: http://shashki.local:8888/security/api/v1/logout
 
   redisHost: 127.0.0.1
   redisPort: 6379

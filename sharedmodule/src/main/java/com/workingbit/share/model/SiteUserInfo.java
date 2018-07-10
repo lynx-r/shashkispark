@@ -56,6 +56,8 @@ public class SiteUserInfo extends BaseDomain {
   @DynamoDBAttribute(attributeName = "creditCard")
   private String creditCard;
 
+  @DynamoDBTypeConvertedJson(targetType = Set.class)
+  @DynamoDBAttribute(attributeName = "authorities")
   private Set<EnumAuthority> authorities;
 
   @JsonIgnore

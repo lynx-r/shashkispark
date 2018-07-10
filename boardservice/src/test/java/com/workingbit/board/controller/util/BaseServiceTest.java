@@ -12,7 +12,6 @@ import com.workingbit.share.domain.impl.*;
 import com.workingbit.share.model.AuthUser;
 import com.workingbit.share.model.CreateBoardPayload;
 import com.workingbit.share.model.DomainId;
-import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.enumarable.EnumEditBoardBoxMode;
 import com.workingbit.share.model.enumarable.EnumRules;
 import com.workingbit.share.util.Utils;
@@ -56,7 +55,7 @@ public class BaseServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    token = new AuthUser(Utils.getRandomString20(), Utils.getRandomString20());
+    token = new AuthUser(Utils.getRandomString7(), Utils.getRandomString7());
   }
 
   @NotNull
@@ -71,7 +70,7 @@ public class BaseServiceTest {
   @NotNull
   protected BoardBox getSavedBoardBoxEmpty() {
     BoardBox boardBox = new BoardBox();
-    boardBox.setId(Utils.getRandomString20());
+    boardBox.setId(Utils.getRandomString7());
     boardBox.setCreatedAt(LocalDateTime.now());
     boardBox.setArticleId(DomainId.getRandomID());
     return boardBoxService.save(boardBox, token);

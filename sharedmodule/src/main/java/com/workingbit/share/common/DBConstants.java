@@ -13,5 +13,6 @@ public class DBConstants {
   public static final String NOTATION_HISTORY_TABLE = "SHASHKIWIKINotationHistory";
   public static final String SECURE_USER_TABLE = "SHASHKIWIKISecureUser";
   public static final String SUBSCRIBER = "SHASHKIWIKISubscriber";
+  public static final String RIGHTS_ACTIONS = "SHASHKIWIKIRights_Actions";
   public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
 }

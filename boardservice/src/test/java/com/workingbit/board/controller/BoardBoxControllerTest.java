@@ -74,10 +74,10 @@ public class BoardBoxControllerTest {
 
   @NotNull
   private AuthUser register() {
-    String username = Utils.getRandomString20();
-    String password = Utils.getRandomString20();
-    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20(), EnumRank.MS, username, password);
+    String username = Utils.getRandomString7();
+    String password = Utils.getRandomString7();
+    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), EnumRank.MS, username, password);
     AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 
@@ -201,7 +201,7 @@ public class BoardBoxControllerTest {
 
     Article article = new Article();
     article.setDomainId(articleId);
-    article.setTitle(Utils.getRandomString20());
+    article.setTitle(Utils.getRandomString7());
     article.setHumanReadableUrl(article.getTitle());
     article.setIntro(Utils.getRandomString(101));
     article.setContent(Utils.getRandomString(200));
@@ -332,7 +332,7 @@ public class BoardBoxControllerTest {
 
     Article article = new Article();
     article.setDomainId(articleId);
-    article.setTitle(Utils.getRandomString20());
+    article.setTitle(Utils.getRandomString7());
     article.setHumanReadableUrl(article.getTitle());
     article.setIntro(Utils.getRandomString(101));
     article.setContent(Utils.getRandomString(200));

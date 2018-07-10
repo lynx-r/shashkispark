@@ -71,10 +71,10 @@ public class ArticleControllerTest {
 
   @NotNull
   private AuthUser register() {
-    String username = Utils.getRandomString20();
-    String password = Utils.getRandomString20();
-    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20(), EnumRank.MS, username, password);
+    String username = Utils.getRandomString7();
+    String password = Utils.getRandomString7();
+    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), EnumRank.MS, username, password);
     AuthUser registered = orchestralService
         .register(userCredentials)
         .get();
@@ -118,9 +118,9 @@ public class ArticleControllerTest {
     assertEquals(HTTP_CREATED, answer.getStatusCode());
 
     Article article = ((CreateArticleResponse) answer.getBody()).getArticle();
-    String title = Utils.getRandomString20();
+    String title = Utils.getRandomString7();
     article.setTitle(title);
-    String content = Utils.getRandomString20();
+    String content = Utils.getRandomString7();
     article.setContent(content);
     MessageResponse articleNotAuthorized = put(ARTICLE_PROTECTED.getPath(), article).getMessage();
     assertEquals(HTTP_FORBIDDEN, articleNotAuthorized.getCode());
@@ -159,8 +159,8 @@ public class ArticleControllerTest {
     assertEquals(HTTP_OK, answer.getStatusCode());
     headers = answer.getAuthUser();
 
-    String newTitle = Utils.getRandomString20();
-    String newContent = Utils.getRandomString20();
+    String newTitle = Utils.getRandomString7();
+    String newContent = Utils.getRandomString7();
     article.setTitle(newTitle);
     article.setContent(newContent);
     article = (Article) put(ARTICLE_PROTECTED.getPath(), article, headers).getBody();
@@ -234,10 +234,10 @@ public class ArticleControllerTest {
   @Test
   public void find_all() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    String username = Utils.getRandomString20();
-    String password = Utils.getRandomString20();
-    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20(), EnumRank.MS, username, password);
+    String username = Utils.getRandomString7();
+    String password = Utils.getRandomString7();
+    RegisteredUser registeredUser = new RegisteredUser(Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), EnumRank.MS, username, password);
     AuthUser registered = orchestralService.register(registeredUser).get();
     assertNotNull(registered);
 
@@ -280,10 +280,10 @@ public class ArticleControllerTest {
   @Test
   public void find_with_filter() throws Exception {
     CreateArticlePayload createArticlePayload = getCreateArticlePayload();
-    String username = Utils.getRandomString20();
-    String password = Utils.getRandomString20();
-    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20(), EnumRank.MS, username, password);
+    String username = Utils.getRandomString7();
+    String password = Utils.getRandomString7();
+    RegisteredUser userCredentials = new RegisteredUser(Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), EnumRank.MS, username, password);
     AuthUser registered = orchestralService.register(userCredentials).get();
     assertNotNull(registered);
 
@@ -325,7 +325,7 @@ public class ArticleControllerTest {
   @NotNull
   private CreateArticlePayload getCreateArticlePayload() {
     CreateArticlePayload createArticlePayload = CreateArticlePayload.createArticlePayload();
-    Article article = new Article(Utils.getRandomString20(), Utils.getRandomString20(),  Utils.getRandomString20(), Utils.getRandomString20());
+    Article article = new Article(Utils.getRandomString7(), Utils.getRandomString7(), Utils.getRandomString7(), Utils.getRandomString7());
     Utils.setArticleUrlAndIdAndCreatedAt(article, false);
     createArticlePayload.setArticle(article);
     CreateBoardPayload createBoardPayload = new CreateBoardPayload();

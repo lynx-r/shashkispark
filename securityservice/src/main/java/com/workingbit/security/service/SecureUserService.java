@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.workingbit.orchestrate.OrchestrateModule.orchestralService;
 import static com.workingbit.security.SecurityEmbedded.*;
 import static com.workingbit.share.common.RequestConstants.SESSION_LENGTH;
 import static com.workingbit.share.util.Utils.getRandomString;
@@ -32,7 +31,7 @@ public class SecureUserService {
   private Logger logger = LoggerFactory.getLogger(SecureUserService.class);
 
   public AuthUser preAuthorize(UserCredentials userCredentials) {
-    return getSecureAuthByEmail(userCredentials.getEmail())
+    return passwordService.findByEmail(userCredentials.getEmail())
         .map(secureAuth -> {
           // используем конкретную сигму пользователя
           String data = secureAuth.getEmail() + appProperties.domain() + secureAuth.getSigma();
@@ -48,59 +47,59 @@ public class SecureUserService {
   }
 
   public AuthUser preRegister(UserCredentials userCredentials) {
-    return getSecureAuthByEmail(userCredentials.getEmail())
-        .map(secureAuth -> {
-          String sigma = Utils.getRandomString32();
-          String data = secureAuth.getEmail() + appProperties.domain() + sigma;
-          String salt = SecureUtils.digest(data);
-          secureAuth.setSigma(sigma);
-          passwordService.save(secureAuth);
-          return AuthUser.authRequest(salt, appProperties.cost(), secureAuth.getMisc());
-        })
-        .orElseThrow();
+    String email = userCredentials.getEmail();
+    SecureAuth secureAuth = new SecureAuth();
+    secureAuth.setUserId(DomainId.getRandomID());
+    secureAuth.setGroupId(Utils.getRandomString7());
+    secureAuth.setEmail(email);
+
+    secureAuth.setTokenLength(appProperties.tokenLength());
+
+    String sigma = Utils.getRandomString32();
+    String data = email + appProperties.domain() + sigma;
+    String salt = SecureUtils.digest(data);
+    secureAuth.setSigma(sigma);
+
+    passwordService.registerUser(secureAuth);
+    return AuthUser.authRequest(salt, appProperties.cost(), appProperties.misc());
   }
 
   @NotNull
   public AuthUser register(@NotNull RegisteredUser registeredUser) {
     String email = registeredUser.getEmail();
-    if (passwordService.findByEmail(email).isPresent()) {
-      throw RequestException.forbidden();
-    }
-    SecureAuth secureAuth = new SecureAuth();
-    secureAuth.setUserId(DomainId.getRandomID());
-    secureAuth.setGroupId(Utils.getRandomString20());
-    secureAuth.setEmail(email);
-    secureAuth.setTokenLength(appProperties.tokenLength());
+    return passwordService.findByEmail(email)
+        .map(secureAuth -> {
+          secureAuth = getUpdateSecureAuthTokens(secureAuth);
 
-    // encrypt random token
-    secureAuth = getUpdateSecureAuthTokens(secureAuth);
+          String userSession = getUserSession();
+          secureAuth.setUserSession(userSession);
 
-    // save encrypted token and userSession
-    String userSession = getUserSession();
-    secureAuth.setUserSession(userSession);
+          String passwordHash = registeredUser.getPasswordHash();
+          passwordHash = SecureUtils.digest(passwordHash);
+          secureAuth.setPasswordHash(passwordHash);
 
-    SiteUserInfo siteUserInfo = new SiteUserInfo();
-    siteUserInfo.setDomainId(secureAuth.getUserId());
-    siteUserInfo.setEmail(email);
-    siteUserInfo.addAuthority(EnumAuthority.AUTHOR);
-    siteUserInfo.setUpdatedAt(LocalDateTime.now());
-    siteUserInfoDao.save(siteUserInfo);
+          secureAuth.addAuthority(EnumAuthority.AUTHOR);
+          passwordService.save(secureAuth);
 
-    // send access token and userSession
-    orchestralService.cacheSecureAuth(secureAuth);
-    secureAuth.setAuthorities(siteUserInfo.getAuthorities());
-    passwordService.registerUser(secureAuth);
+          SiteUserInfo siteUserInfo = new SiteUserInfo();
+          siteUserInfo.setDomainId(secureAuth.getUserId());
+          siteUserInfo.setEmail(email);
+          siteUserInfo.setAuthorities(secureAuth.getAuthorities());
+          siteUserInfo.setUpdatedAt(LocalDateTime.now());
+          siteUserInfoDao.save(siteUserInfo);
 
-    String contentHtml = String.format("Зарегистрировался новый пользователь: %s", siteUserInfo.getEmail());
-    String subject = "Зарегистрировался новый пользователь";
-    emailUtils.mailAdmin(subject, contentHtml);
-    return AuthUser.simpleUser(secureAuth.getUserId(), email, secureAuth.getAccessToken(), userSession, siteUserInfo.getAuthorities());
+          String contentHtml = String.format("Зарегистрировался новый пользователь: %s", siteUserInfo.getEmail());
+          String subject = "Зарегистрировался новый пользователь";
+          emailUtils.mailAdmin(subject, contentHtml);
+          return AuthUser.simpleUser(secureAuth.getUserId(), email, secureAuth.getAccessToken(), userSession, siteUserInfo.getAuthorities());
+        })
+        .orElseThrow(RequestException::forbidden);
   }
 
   @NotNull
   public AuthUser authorize(@NotNull UserCredentials userCredentials) {
     String email = userCredentials.getEmail();
-    return getSecureAuthByEmail(email)
+    return passwordService.findByEmail(email)
         .map(secureAuth -> {
           String passwordHash = userCredentials.getPasswordHash();
           passwordHash = SecureUtils.digest(passwordHash);
@@ -118,7 +117,6 @@ public class SecureUserService {
             DomainId userId = secureAuth.getUserId();
             Set<EnumAuthority> authorities = siteUserInfo.getAuthorities();
             AuthUser authUser = AuthUser.simpleUser(userId, email, accessToken.getAccessToken(), userSession, authorities);
-            orchestralService.cacheSecureAuth(secureAuth);
             logger.info("AUTHORIZED: " + authUser);
             return authUser;
           }
@@ -139,7 +137,6 @@ public class SecureUserService {
             SecureAuth updatedAccessToken = getUpdateSecureAuthTokens(secureAuth);
             secureAuth.setAccessToken(updatedAccessToken.getAccessToken());
             secureAuth.setSecureToken(updatedAccessToken.getSecureToken());
-            orchestralService.cacheSecureAuth(secureAuth);
 
             authUser.setTimestamp(getTimestamp());
             authUser.setAccessToken(updatedAccessToken.getAccessToken());
@@ -182,7 +179,6 @@ public class SecureUserService {
             SiteUserInfo userBeforeSave = siteUserInfoDao.findById(userInfo.getUserId());
             if (userBeforeSave != null) {
               secureAuth.setAuthorities(userInfo.getAuthorities());
-              orchestralService.cacheSecureAuth(secureAuth);
 
               if (!userBeforeSave.getEmail().equals(userInfo.getUsername())) {
                 SiteUserInfo byUsername = siteUserInfoDao.findByEmail(userInfo.getUsername());
@@ -220,14 +216,14 @@ public class SecureUserService {
   }
 
   public ResultPayload resetPassword(UserCredentials credentials) {
-    String username = credentials.getEmail();
+    String email = credentials.getEmail();
     AuthUser authUser = new AuthUser();
-    authUser.setEmail(username);
-    return getSecureAuth(authUser)
+    authUser.setEmail(email);
+    return passwordService.findByEmail(email)
         .map(secureAuth -> {
           SecureAuth newSecureAuth = secureAuth.deepClone();
 
-          String password = Utils.getRandomString20();
+          String password = Utils.getRandomString7();
           credentials.setPasswordHash(password);
 
           String contentHtml = String.format(AppMessages.RESET_EMAIL_HTML, password);
@@ -242,14 +238,13 @@ public class SecureUserService {
           newSecureAuth.setUserSession(userSession);
 
           passwordService.save(newSecureAuth);
-          orchestralService.cacheSecureAuth(newSecureAuth);
           return new ResultPayload(true);
         })
         .orElseThrow(RequestException::forbidden);
   }
 
   private Optional<SecureAuth> isAuthUserSecure(String accessToken, @NotNull AuthUser authUser) {
-    return getSecureAuth(authUser)
+    return passwordService.findByEmail(authUser.getEmail())
         .map(secureAuth -> {
           String key = secureAuth.getKey();
           String initVector = secureAuth.getInitVector();
@@ -263,16 +258,6 @@ public class SecureUserService {
           }
           return null;
         });
-  }
-
-  @NotNull
-  private Optional<SecureAuth> getSecureAuthByEmail(String email) {
-    return passwordService.findByEmail(email);
-  }
-
-  @NotNull
-  private Optional<SecureAuth> getSecureAuth(AuthUser authUser) {
-    return passwordService.findByEmail(authUser.getEmail());
   }
 
   private String getUserSession() {

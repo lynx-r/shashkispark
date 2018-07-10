@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 import static com.workingbit.orchestrate.util.RedisUtil.putInternalRequest;
 import static com.workingbit.share.common.DBConstants.DATE_TIME_FORMATTER;
-import static com.workingbit.share.util.Utils.getRandomString20;
+import static com.workingbit.share.util.Utils.getRandomString7;
 import static java.net.HttpURLConnection.*;
 import static java.util.Collections.emptyMap;
 
@@ -186,7 +186,7 @@ public class OrchestralService {
   @SuppressWarnings("unchecked")
   public Optional<Answer> internal(@NotNull AuthUser authUser, @NotNull String methodName, @NotNull Object... params) {
     AuthUser authUserInternal = authUser.deepClone();
-    String internalKey = getRandomString20();
+    String internalKey = getRandomString7();
     authUser.setInternalKey(internalKey);
     authUserInternal.setInternalKey(internalKey);
     authUserInternal.addAuthorities(EnumAuthority.INTERNAL);
@@ -302,10 +302,10 @@ public class OrchestralService {
     return RedisUtil.getTokenCache(authUser);
   }
 
-  public void cacheSecureAuth(@NotNull SecureAuth auth) {
-    RedisUtil.cacheSecureAuth(auth.getUserSession(), auth);
-    RedisUtil.cacheSecureAuthUsername(auth.getEmail(), auth.getUserSession());
-  }
+//  public void cacheSecureAuth(@NotNull SecureAuth auth) {
+//    RedisUtil.cacheSecureAuth(auth.getUserSession(), auth);
+//    RedisUtil.cacheSecureAuthUsername(auth.getEmail(), auth.getUserSession());
+//  }
 
 //  public SecureAuth getSecureAuthBySession(String userSession) {
 //    if (StringUtils.isBlank(userSession)) {

@@ -14,6 +14,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,13 +45,18 @@ public class PasswordService {
     }
   }
 
-  Optional<SecureAuth> findByEmail(String username) {
+  Optional<SecureAuth> findByEmail(String email) {
     ByteArrayInputStream decryptedFile = decryptFile();
     BufferedReader buffer = new BufferedReader(new InputStreamReader(decryptedFile));
-    return buffer.lines()
+    List<SecureAuth> users = buffer.lines()
         .map(s -> jsonToData(s, SecureAuth.class))
-        .filter(s -> s.getEmail().equals(username))
-        .findFirst();
+        .filter(s -> s.getEmail().equals(email))
+        .collect(Collectors.toList());
+    if (users.size() == 1) {
+      return Optional.of(users.get(0));
+    }
+    logger.error("Error: NOT UNIQUE USER IN DB!");
+    throw RequestException.internalServerError();
   }
 
   void save(SecureAuth secureAuth) {

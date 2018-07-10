@@ -91,8 +91,8 @@ public class BoardBoxServiceTest extends BaseServiceTest {
 
   @Before
   public void setUp() {
-    authUser = AuthUser.simpleAuthor(DomainId.getRandomID(), Utils.getRandomString20(), Utils.getRandomString20(),
-        Utils.getRandomString20());
+    authUser = AuthUser.simpleAuthor(DomainId.getRandomID(), Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7());
     token = authUser;
   }
 
@@ -150,7 +150,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       notation.setRules(RUSSIAN);
 
       DomainId articleId = DomainId.getRandomID();
-      String boardBoxId = Utils.getRandomString20();
+      String boardBoxId = Utils.getRandomString7();
 
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -181,7 +181,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       notation.setRules(RUSSIAN);
 
       DomainId articleId = DomainId.getRandomID();
-      String boardBoxId = Utils.getRandomString20();
+      String boardBoxId = Utils.getRandomString7();
 
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -212,7 +212,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       notation.setRules(RUSSIAN);
 
       DomainId articleId = DomainId.getRandomID();
-      String boardBoxId = Utils.getRandomString20();
+      String boardBoxId = Utils.getRandomString7();
 
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -246,7 +246,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       notation.setRules(RUSSIAN);
 
       DomainId articleId = DomainId.getRandomID();
-      String boardBoxId = Utils.getRandomString20();
+      String boardBoxId = Utils.getRandomString7();
 
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -290,7 +290,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       notation.setRules(RUSSIAN);
 
       DomainId articleId = DomainId.getRandomID();
-      String boardBoxId = Utils.getRandomString20();
+      String boardBoxId = Utils.getRandomString7();
 
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -357,7 +357,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       notation.setRules(RUSSIAN);
 
       DomainId articleId = DomainId.getRandomID();
-      String boardBoxId = Utils.getRandomString20();
+      String boardBoxId = Utils.getRandomString7();
 
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -445,7 +445,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       notation.setRules(RUSSIAN);
 
       DomainId articleId = DomainId.getRandomID();
-      String boardBoxId = Utils.getRandomString20();
+      String boardBoxId = Utils.getRandomString7();
 
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -627,7 +627,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       notation.setRules(RUSSIAN);
 
       DomainId articleId = DomainId.getRandomID();
-      String boardBoxId = Utils.getRandomString20();
+      String boardBoxId = Utils.getRandomString7();
 
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -682,7 +682,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
       notation.setRules(RUSSIAN);
 
       DomainId articleId = DomainId.getRandomID();
-      String boardBoxId = Utils.getRandomString20();
+      String boardBoxId = Utils.getRandomString7();
 
       // Create BoardBox from Notation
       BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -725,7 +725,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     notation.setRules(RUSSIAN);
 
     DomainId articleId = DomainId.getRandomID();
-    String boardBoxId = Utils.getRandomString20();
+    String boardBoxId = Utils.getRandomString7();
 
     // Create BoardBox from Notation
     BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
@@ -795,7 +795,7 @@ public class BoardBoxServiceTest extends BaseServiceTest {
     notation.getNotationHistory().printPdn();
 
     DomainId articleId = DomainId.getRandomID();
-    String boardBoxId = Utils.getRandomString20();
+    String boardBoxId = Utils.getRandomString7();
 
     // Create BoardBox from Notation
     BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);

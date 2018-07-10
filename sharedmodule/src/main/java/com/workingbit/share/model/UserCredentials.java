@@ -28,7 +28,7 @@ public class UserCredentials implements Payload {
   private String email;
 
   @NotBlank(message = ErrorMessages.PASSWORD_NOT_NULL)
-  @Size(min = 12, message = ErrorMessages.PASSWORD_CONSTRAINTS)
+  @Size(min = 64, max = 64, message = ErrorMessages.PASSWORD_CONSTRAINTS)
   private String passwordHash;
 
 //  public UserCredentials(
