@@ -126,7 +126,7 @@ configure(subprojects.findAll { it.name.endsWith('service') }) { p ->
 }
 
 project(':securityservice') {
-    bootJar {
+    bootRun {
         mainClassName = 'com.workingbit.security.SecurityApplication'
         version = '1.0'
     }
@@ -137,7 +137,12 @@ project(':securityservice') {
 }
 
 project(':articleservice') {
-    springBoot {
+//    springBoot {
+//        mainClassName = 'com.workingbit.article.ArticleApplication'
+//        version = '1.0'
+//    }
+
+    bootRun {
         mainClassName = 'com.workingbit.article.ArticleApplication'
         version = '1.0'
     }
@@ -150,7 +155,7 @@ project(':articleservice') {
 }
 
 project(':boardservice') {
-    springBoot {
+    bootRun {
         mainClassName = 'com.workingbit.board.BoardApplication'
         version = '1.0'
     }
@@ -169,12 +174,12 @@ project(':orchestratemodule') {
     jar {
         baseName = 'orchestratemodule'
         version = "1.0"
-//        enabled = true
+        enabled = true
     }
 
-//    springBoot {
-//        enabled = false
-//    }
+    bootJar {
+        enabled = false
+    }
 
     dependencies {
         // https://mvnrepository.com/artifact/org.redisson/redisson
@@ -188,18 +193,23 @@ project(':sharedmodule') {
     jar {
         baseName = 'sharedmdoule'
         version = "1.0"
-//        enabled = true
+        enabled = true
     }
 
-//    springBoot {
-//        enabled = false
-//    }
+    bootJar {
+        enabled = false
+    }
 
     dependencies {
         compile 'commons-codec:commons-codec:1.9'
         compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
         compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.150'
+
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-mongodb-reactive
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb-reactive'
 //        compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
 
         compile 'com.fasterxml.jackson.core:jackson-core:2.9.5'

@@ -47,12 +47,11 @@ public class BoardUtils {
   }
 
   private static Board updateBoard(boolean fillBoard, boolean update, Board board) {
-    Board boardClone = board.deepClone();
-    EnumRules rules = boardClone.getRules();
-    boolean black = boardClone.isBlack();
+    EnumRules rules = board.getRules();
+    boolean black = board.isBlack();
 
-    Map<String, Draught> blackDraughts = new HashMap<>(boardClone.getBlackDraughts());
-    Map<String, Draught> whiteDraughts = new HashMap<>(boardClone.getWhiteDraughts());
+    Map<String, Draught> blackDraughts = new HashMap<>(board.getBlackDraughts());
+    Map<String, Draught> whiteDraughts = new HashMap<>(board.getWhiteDraughts());
     List<Square> boardSquares = getAssignedSquares(rules.getDimension());
     for (Square square : boardSquares) {
       int v = square.getV();
@@ -66,6 +65,7 @@ public class BoardUtils {
           square.setDraught(whiteDraught);
         }
         square.setDim(rules.getDimension());
+        square.setHighlight(false);
       } else if (fillBoard) {
         if (v < rules.getNumRowsForDraughts()) {
           placeDraught(!black, rules, blackDraughts, square, v, h);
@@ -75,15 +75,15 @@ public class BoardUtils {
       }
     }
 
-    boardClone.setBlackDraughts(blackDraughts);
-    boardClone.setWhiteDraughts(whiteDraughts);
+    board.setBlackDraughts(blackDraughts);
+    board.setWhiteDraughts(whiteDraughts);
 
-    boardClone.setAssignedSquares(boardSquares);
-    updateMoveSquaresHighlightAndDraught(boardClone, board);
+    board.setAssignedSquares(boardSquares);
+    updateMoveSquaresHighlightAndDraught(board, board);
 
     List<Square> squares = getSquares(boardSquares, rules.getDimension());
-    boardClone.setSquares(squares);
-    return boardClone;
+    board.setSquares(squares);
+    return board;
   }
 
   private static void placeDraught(boolean black, EnumRules rules, Map<String, Draught> draughts, Square square, int v, int h) {

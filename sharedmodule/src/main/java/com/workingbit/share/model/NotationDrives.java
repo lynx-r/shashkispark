@@ -6,6 +6,7 @@ import com.workingbit.share.domain.DeepClone;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.util.Utils;
 import org.jetbrains.annotations.NotNull;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -118,7 +119,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
 
   @JsonIgnore
   @DynamoDBIgnore
-  public Optional<DomainId> getLastNotationBoardId() {
+  public Mono<DomainId> getLastNotationBoardId() {
     NotationDrive notationLast = getLast();
 //    if (notationLast.isRoot()) {
 //      NotationMoves moves = notationLast.getVariants()
@@ -131,7 +132,7 @@ public class NotationDrives extends LinkedList<NotationDrive> implements Notatio
 //      return Optional.empty();
 //    }
     NotationMoves moves = notationLast.getMoves();
-    return Optional.of(moves.getLast().getBoardId());
+    return Mono.just(moves.getLast().getBoardId());
   }
 
   @JsonIgnore

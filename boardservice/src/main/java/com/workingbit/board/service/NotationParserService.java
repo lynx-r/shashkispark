@@ -18,6 +18,7 @@ import org.apache.commons.collections4.map.ListOrderedMap;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.util.Map;
 /**
  * Created by Aleksey Popryadukhin on 29/03/2018.
  */
+@Service
 public class NotationParserService {
 
   private static Logger logger = LoggerFactory.getLogger(NotationParserService.class);

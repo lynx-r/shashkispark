@@ -2,6 +2,8 @@ package com.workingbit.board.service;
 
 import com.workingbit.board.controller.util.BoardUtils;
 import com.workingbit.board.exception.BoardServiceException;
+import com.workingbit.board.repo.ReactiveBoardRepository;
+import com.workingbit.board.repo.ReactiveNotationRepository;
 import com.workingbit.share.common.ErrorMessages;
 import com.workingbit.share.domain.ICoordinates;
 import com.workingbit.share.domain.impl.*;
@@ -12,45 +14,59 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.BoardEmbedded.*;
 import static com.workingbit.board.controller.util.BoardUtils.*;
 
 /**
  * Created by Aleksey Popryaduhin on 13:45 09/08/2017.
  */
+@Service
 public class BoardService {
 
   private Logger logger = LoggerFactory.getLogger(BoardService.class);
 
-  Board createBoard(@NotNull CreateBoardPayload newBoardRequest) {
-    Board board = initBoard(newBoardRequest.isFillBoard(), newBoardRequest.isBlack(),
-        newBoardRequest.getRules());
+  private NotationService notationService;
+  private ReactiveBoardRepository boardRepository;
+  private ReactiveNotationRepository notationRepository;
+
+  public BoardService(NotationService notationService,
+                      ReactiveBoardRepository boardRepository,
+                      ReactiveNotationRepository notationRepository) {
+    this.notationService = notationService;
+    this.boardRepository = boardRepository;
+    this.notationRepository = notationRepository;
+  }
+
+  Mono<Board> createBoard(@NotNull CreateBoardPayload newBoardRequest) {
+    Board board = initBoard(newBoardRequest.isFillBoard(), newBoardRequest.isBlack(), newBoardRequest.getRules());
     board.setBoardBoxId(board.getBoardBoxId());
     Utils.setRandomIdAndCreatedAt(board);
     save(board);
-    return board;
+    return Mono.just(board);
   }
 
-  Board createBoard(@NotNull Board newBoardRequest, DomainId boardBoxId) {
-    Board board = initBoard(!newBoardRequest.getAssignedSquares().isEmpty(), newBoardRequest.isBlack(),
-        newBoardRequest.getRules());
+  Mono<Board> createBoard(@NotNull Board newBoardRequest, DomainId boardBoxId) {
+    Board board = initBoard(!newBoardRequest.getAssignedSquares().isEmpty(), newBoardRequest.isBlack(), newBoardRequest.getRules());
     board.setBoardBoxId(boardBoxId);
     Utils.setRandomIdAndCreatedAt(board);
     save(board);
-    return board;
+    return Mono.just(board);
   }
 
-  Board initWithDraughtsOnBoard(@NotNull Board board) {
-    Board newBoard = initBoard(true, board.isBlack(), board.getRules());
-    newBoard.setBoardBoxId(board.getBoardBoxId());
-    newBoard.setDomainId(board.getDomainId());
-    save(newBoard);
-    return newBoard;
-  }
+//  Mono<Board> initWithDraughtsOnBoard(@NotNull Board boardIn) {
+//    return initBoard(true, boardIn.isBlack(), boardIn.getRules())
+//        .map(board -> {
+//          board.setBoardBoxId(board.getBoardBoxId());
+//          board.setDomainId(board.getDomainId());
+//          save(board);
+//          return board;
+//        });
+//  }
 
   /**
    * Create temp board and use it to emulate moves to populate notation
@@ -71,7 +87,7 @@ public class BoardService {
       board.setBoardBoxId(boardBoxId);
       board.setBlackTurn(notationFen.isBlackTurn());
       Utils.setRandomIdAndCreatedAt(board);
-      boardDao.save(board);
+      boardRepository.save(board);
       genNotation.getNotationFen().setBoardId(board.getDomainId());
     }
     List<Board> batchBoards = new ArrayList<>();
@@ -82,15 +98,14 @@ public class BoardService {
         throw new BoardServiceException(ErrorMessages.UNABLE_TO_PARSE_PDN);
       }
       genNotation.setBoardBoxId(boardBoxId);
-      notationDao.save(genNotation);
-      boardDao.batchSave(batchBoards);
+      notationRepository.save(genNotation);
+      boardRepository.saveAll(batchBoards);
     }
   }
 
-  Board findById(DomainId boardId) {
-    Board board = boardDao.findById(boardId);
-    updateBoard(board);
-    return board;
+  Mono<Board> findById(DomainId boardId) {
+    return boardRepository.findById(boardId)
+        .map(this::updateBoard);
   }
 
   @NotNull
@@ -148,7 +163,7 @@ public class BoardService {
       nextBoard.setSelectedSquare(null);
     }
     if (!nextBoard.getId().equals(clientBoard.getId()) && save) {
-      boardDao.save(nextBoard);
+      boardRepository.save(nextBoard);
     }
     return nextBoard;
   }
@@ -168,7 +183,7 @@ public class BoardService {
   }
 
   void save(Board board) {
-    boardDao.save(board);
+    boardRepository.save(board);
   }
 
   Board addDraught(@NotNull Board currentBoard, String notation, Draught draught) {
@@ -181,21 +196,15 @@ public class BoardService {
       deepClone = currentBoard.deepClone();
       deepClone.setBoardBoxId(currentBoard.getBoardBoxId());
       Utils.setRandomIdAndCreatedAt(deepClone);
-      boardDao.save(deepClone);
+      boardRepository.save(deepClone);
     }
     BoardUtils.addDraught(deepClone, notation, draught);
     return deepClone;
   }
 
-  public void updateBoard(@NotNull Board board) {
-    Board boardUpdated = BoardUtils.updateBoard(board);
-    board.setWhiteDraughts(boardUpdated.getWhiteDraughts());
-    board.setBlackDraughts(boardUpdated.getBlackDraughts());
-    board.setSquares(boardUpdated.getSquares());
-    board.setPreviousSquare(boardUpdated.getPreviousSquare());
-    board.setNextSquare(boardUpdated.getNextSquare());
-    board.setSelectedSquare(boardUpdated.getSelectedSquare());
-    board.setAssignedSquares(boardUpdated.getAssignedSquares());
+  public Board updateBoard(@NotNull Board board) {
+    Board deepClone = board.deepClone();
+    return BoardUtils.updateBoard(deepClone);
   }
 
   Board emulateMove(@Nullable NotationMove notationMove, Board serverBoard,
@@ -292,6 +301,6 @@ public class BoardService {
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
     board.setAssignedSquares(prevAssignedSquares);
-    boardService.updateBoard(board);
+    updateBoard(board);
   }
 }

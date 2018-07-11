@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -217,7 +218,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public Optional<DomainId> getLastNotationBoardId() {
+  public Mono<DomainId> getLastNotationBoardId() {
     return notation.getLastNotationBoardId();
   }
 

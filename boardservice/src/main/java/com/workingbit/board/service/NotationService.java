@@ -1,33 +1,53 @@
 package com.workingbit.board.service;
 
+import com.workingbit.board.repo.ReactiveBoardRepository;
+import com.workingbit.board.repo.ReactiveNotationHistoryRepository;
+import com.workingbit.board.repo.ReactiveNotationRepository;
 import com.workingbit.share.domain.impl.*;
-import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.model.*;
 import com.workingbit.share.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import static com.workingbit.board.BoardEmbedded.*;
 import static com.workingbit.share.util.Utils.isCorrespondedNotation;
-import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
 
 /**
  * Created by Aleksey Popryadukhin on 14/04/2018.
  */
+@Service
 public class NotationService {
 
   private Logger logger = LoggerFactory.getLogger(NotationService.class);
 
+  private BoardService boardService;
+  private NotationHistoryService notationHistoryService;
+  private ReactiveBoardRepository boardRepository;
+  private ReactiveNotationRepository notationRepository;
+  private ReactiveNotationHistoryRepository notationHistoryRepository;
+
+  public NotationService(BoardService boardService,
+                         NotationHistoryService notationHistoryService,
+                         ReactiveBoardRepository boardRepository,
+                         ReactiveNotationRepository notationRepository,
+                         ReactiveNotationHistoryRepository notationHistoryRepository) {
+    this.boardService = boardService;
+    this.notationHistoryService = notationHistoryService;
+    this.boardRepository = boardRepository;
+    this.notationRepository = notationRepository;
+    this.notationHistoryRepository = notationHistoryRepository;
+  }
+
   void save(@NotNull Notation notation, boolean fill) {
-    notationDao.save(notation);
+    notationRepository.save(notation);
 //    notationStoreService.removeNotation(notation);
     if (fill) {
       fillNotation(notation);
@@ -52,16 +72,16 @@ public class NotationService {
     boardBox.setNotation(notation);
   }
 
-  void clearNotationInBoardBox(@NotNull BoardBox bb) {
-    var notation = notationDao.findById(bb.getNotationId());
-    notationHistoryService.deleteByNotationId(bb.getNotationId());
-    notationHistoryService.createNotationHistoryForNotation(notation);
-    notationHistoryDao.save(notation.getNotationHistory());
-    notation.setNotationFen(new NotationFen());
-    save(notation, false);
-    bb.setNotation(notation);
-    boardBoxDao.save(bb);
-  }
+//  void clearNotationInBoardBox(@NotNull BoardBox bb) {
+//    var notation = notationRepository.findById(bb.getNotationId());
+//    notationHistoryService.deleteByNotationId(bb.getNotationId());
+//    notationHistoryService.createNotationHistoryForNotation(notation);
+//    notationHistoryRepository.save(notation.getNotationHistory());
+//    notation.setNotationFen(new NotationFen());
+//    save(notation, false);
+//    bb.setNotation(notation);
+//    boardBoxDao.save(bb);
+//  }
 
   Optional<NotationLine> removeVariant(Notation notation) {
     // receive from client
@@ -72,7 +92,7 @@ public class NotationService {
           toRemoveNotationHistory.getCurrentNotationDrive()
               .ifPresent(curDrive -> curDrive.getVariantById(notationLine.getVariantIndex())
                   .ifPresent(curVariant -> {
-                    DomainIds boardIdsToRemove = curVariant
+                    List<DomainId> boardIdsToRemove = curVariant
                         .getVariants()
                         .subList(1, curVariant.getVariantsSize())
                         .stream()
@@ -80,13 +100,13 @@ public class NotationService {
                         .flatMap(Collection::stream)
                         .map(NotationMove::getBoardId)
                         .distinct()
-                        .collect(collectingAndThen(toCollection(LinkedList::new), DomainIds::new));
-                    boardIdsToRemove.removeFirst();
-                    boardDao.batchDelete(boardIdsToRemove);
+                        .collect(Collectors.toList());
+                    boardIdsToRemove.remove(0);
+                    deleteBoards(boardIdsToRemove);
                   })
               );
           toRemoveNotationHistory.removeByCurrentIndex();
-          notationHistoryDao.delete(toRemoveNotationHistory.getDomainId());
+          notationHistoryRepository.deleteById(toRemoveNotationHistory.getDomainId());
           notation.removeForkedNotations(toRemoveNotationHistory);
           return toRemoveNotationHistory.getCurrentNotationDrive()
               .map(current -> {
@@ -104,6 +124,13 @@ public class NotationService {
         });
   }
 
+  private void deleteBoards(List<DomainId> boardIdsToRemove) {
+    boardRepository
+        .findByIdIn(boardIdsToRemove)
+        .collectList()
+        .map(boardRepository::deleteAll);
+  }
+
   void setNotationFenFromBoard(@NotNull Notation notation, @NotNull Board board) {
     NotationFen notationFen = new NotationFen();
     notationFen.setBoardId(board.getDomainId());
@@ -116,14 +143,13 @@ public class NotationService {
     notation.setNotationFen(notationFen);
   }
 
-  Notation findById(@NotNull DomainId notationId) {
+  Mono<Notation> findById(@NotNull DomainId notationId) {
 //    if (authUser == null) {
 //      throw RequestException.notFound404();
 //    }
-    Notation byId = notationDao.findById(notationId);
-    fillNotation(byId);
+    return notationRepository.findById(notationId)
+        .flatMap(this::fillNotation);
 //          notationStoreService.putNotation(authUser.getUserSession(), byId);
-    return byId;
   }
 
   Notation forkAt(int forkFromNotationDrive, Notation notation) {
@@ -148,7 +174,7 @@ public class NotationService {
                 setVariantDriveMarkers(notationLine, notation, current, prevVariantId);
                 notationHistory.setLastMoveCursor();
                 notationHistory.getLast().setSelected(true);
-                notationHistoryDao.save(notationHistory);
+                notationHistoryRepository.save(notationHistory);
                 notation.setNotationHistory(notationHistory);
                 notation.setNotationHistoryId(notationHistory.getDomainId());
                 save(notation, false);
@@ -159,11 +185,11 @@ public class NotationService {
         .orElse(notation);
   }
 
-  List<Notation> findByIds(DomainIds domainIds) {
-    List<Notation> byIds = notationDao.findByIds(domainIds);
-    fillNotationByNotationIds(byIds);
-    return byIds;
-  }
+//  List<Notation> findByIds(DomainIds domainIds) {
+//    List<Notation> byIds = notationRepository.findByIdIn(domainIds);
+//    fillNotationByNotationIds(byIds);
+//    return byIds;
+//  }
 
   void syncSubVariants(NotationHistory toSyncNotationHist, Notation notation) {
     toSyncNotationHist.getCurrentVariant()
@@ -179,7 +205,7 @@ public class NotationService {
             }
             return notationHistory;
           });
-          notationHistoryDao.batchSave(notation.getForkedNotations().values());
+          notationHistoryRepository.saveAll(notation.getForkedNotations().values());
         });
   }
 
@@ -200,13 +226,13 @@ public class NotationService {
           });
           if (save.get()) {
             notation.syncFormatAndRules();
-            notationHistoryDao.batchSave(notation.getForkedNotations().values());
+            notationHistoryRepository.saveAll(notation.getForkedNotations().values());
           }
         });
   }
 
   void deleteById(DomainId notationId) {
-    notationDao.delete(notationId.getDomainId());
+    notationRepository.deleteById(notationId.getDomainId());
 //    notationStoreService.removeNotationById(notationId);
   }
 
@@ -226,12 +252,12 @@ public class NotationService {
     NotationHistory syncNotationHist = recursiveFillNotationHistory.deepClone();
     for (int i = 0; i < syncNotationHist.getNotation().size(); i++) {
       syncNotationHist.setCurrentIndex(i);
-      notationService.syncVariants(syncNotationHist, notation);
+      syncVariants(syncNotationHist, notation);
     }
     setNotationHistoryForNotation(notation, lastCurrentDrive, recursiveFillNotationHistory);
     notation.setNotationHistory(recursiveFillNotationHistory);
     notation.syncFormatAndRules();
-    notationHistoryDao.save(recursiveFillNotationHistory);
+    notationHistoryRepository.save(recursiveFillNotationHistory);
   }
 
   private void populateBoardWithNotation(DomainId notationId, @NotNull Board board,
@@ -391,52 +417,47 @@ public class NotationService {
         });
   }
 
-  private void fillNotation(Notation notation) {
-    try {
-      List<NotationHistory> byNotationId = notationHistoryDao.findByNotationId(notation.getDomainId());
-      byNotationId
-          .stream()
-          .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
-          .findFirst()
-          .ifPresent(notation::setNotationHistory);
-      notation.addForkedNotationHistories(byNotationId);
-      notation.syncFormatAndRules();
-      syncVariants(notation.getNotationHistory(), notation);
-    } catch (DaoException e) {
-      if (e.getCode() != HTTP_NOT_FOUND) {
-        logger.error(e.getMessage(), e);
-      }
-    }
+  private Mono<Notation> fillNotation(Notation notation) {
+    Flux<NotationHistory> byNotationId = notationHistoryRepository.findByNotationId(notation.getDomainId());
+    return byNotationId
+        .collectList()
+        .map(notationHistories -> {
+          notationHistories
+              .stream()
+              .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
+              .findFirst()
+              .ifPresent(notation::setNotationHistory);
+          notation.addForkedNotationHistories(notationHistories);
+          notation.syncFormatAndRules();
+          syncVariants(notation.getNotationHistory(), notation);
+          return notation;
+        });
   }
 
-  private void fillNotationByNotationIds(List<Notation> notations) {
-    try {
-      DomainIds notationIds = notations
+  private Flux<List<Notation>> fillNotationByNotationIds(List<Notation> notations) {
+    List<DomainId> notationIds = notations
           .stream()
           .map(Notation::getDomainId)
-          .collect(collectingAndThen(toCollection(LinkedList::new), DomainIds::new));
-      Map<DomainId, List<NotationHistory>> historyByNotationId = notationHistoryDao.findByNotationIds(notationIds)
-          .stream()
-          .collect(Collectors.groupingBy(NotationHistory::getNotationId));
-
-      for (Notation notation : notations) {
-        List<NotationHistory> byNotationId = historyByNotationId.get(notation.getDomainId());
-        if (byNotationId == null) {
-          continue;
-        }
-        byNotationId
-            .stream()
-            .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
-            .findFirst()
-            .ifPresent(notation::setNotationHistory);
-        notation.addForkedNotationHistories(byNotationId);
-        notation.syncFormatAndRules();
-      }
-    } catch (DaoException e) {
-      if (e.getCode() != HTTP_NOT_FOUND) {
-        logger.error(e.getMessage(), e);
-      }
-    }
+        .collect(Collectors.toList());
+//    Flux<GroupedFlux<DomainId, NotationHistory>> historyByNotationId =
+    return notationHistoryRepository.findByNotationIdIn(notationIds)
+        .groupBy(NotationHistory::getNotationId)
+        .map(group -> {
+          for (Notation notation : notations) {
+//              List<NotationHistory> byNotationId = group.(notation.getDomainId());
+//              if (byNotationId == null) {
+//                continue;
+//              }
+//              byNotationId
+//                  .stream()
+//                  .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
+//                  .findFirst()
+//                  .ifPresent(notation::setNotationHistory);
+//              notation.addForkedNotationHistories(byNotationId);
+//              notation.syncFormatAndRules();
+          }
+          return notations;
+        });
   }
 
   private void setVariantDriveMarkers(NotationLine notationLine, Notation notation, NotationDrive current, Integer prevVariantId) {
@@ -484,7 +505,7 @@ public class NotationService {
     values.stream()
         .filter(toDelete -> toDelete.getCurrentIndex().equals(notationHistory.getCurrentIndex()))
         .forEach(toDelete -> {
-          notationHistoryDao.delete(toDelete.getDomainId());
+          notationHistoryRepository.deleteById(toDelete.getDomainId());
           notation.removeForkedNotations(toDelete);
         });
     int currentVariant = lastVariant.getIdInVariants();
@@ -505,7 +526,7 @@ public class NotationService {
           nhNew.getNotation().addAll(newVariants);
           notation.setNotationHistoryId(nhNew.getDomainId());
           save(notation, false);
-          notationHistoryDao.save(nhNew);
+          notationHistoryRepository.save(nhNew);
           return nhNew;
         })
         .orElseThrow();

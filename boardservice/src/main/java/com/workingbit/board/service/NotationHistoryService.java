@@ -1,27 +1,34 @@
 package com.workingbit.board.service;
 
+import com.workingbit.board.repo.ReactiveNotationHistoryRepository;
 import com.workingbit.share.domain.impl.Notation;
 import com.workingbit.share.domain.impl.NotationHistory;
-import com.workingbit.share.exception.DaoException;
 import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.NotationDrive;
 import com.workingbit.share.model.NotationDrives;
 import com.workingbit.share.util.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
 
-import static com.workingbit.board.BoardEmbedded.notationHistoryDao;
 import static com.workingbit.share.util.Utils.isCorrespondedNotation;
 
 /**
  * Created by Aleksey Popryadukhin on 14/04/2018.
  */
+@Service
 public class NotationHistoryService {
 
+  private ReactiveNotationHistoryRepository notationHistoryRepository;
+
+  public NotationHistoryService(ReactiveNotationHistoryRepository notationHistoryRepository) {
+    this.notationHistoryRepository = notationHistoryRepository;
+  }
+
   void save(@NotNull NotationHistory notationHistory) {
-    notationHistoryDao.save(notationHistory);
+    notationHistoryRepository.save(notationHistory);
   }
 
   NotationHistory forkAt(int forkFromNotationDrive, Notation notation) {
@@ -91,7 +98,7 @@ public class NotationHistoryService {
 
     Collection<NotationHistory> notationHistories = notation.getForkedNotations().values();
     syncVariantsInForkedNotations(forkFromNotationDrive, notationHistory, forkedVariant, notationHistories);
-    notationHistoryDao.batchSave(notationHistories);
+    notationHistoryRepository.deleteAll(notationHistories);
     return notationHistory;
   }
 
@@ -196,11 +203,8 @@ public class NotationHistoryService {
   }
 
   void deleteByNotationId(DomainId notationId) {
-    try {
-      var notationHistories = notationHistoryDao.findByNotationId(notationId);
-      notationHistoryDao.batchDelete(notationHistories);
+    var notationHistories = notationHistoryRepository.findByNotationId(notationId);
+    notationHistoryRepository.deleteAll(notationHistories);
 //      notationHistories.forEach(notationStoreService::removeNotationHistory);
-    } catch (DaoException ignore) {
-    }
   }
 }
