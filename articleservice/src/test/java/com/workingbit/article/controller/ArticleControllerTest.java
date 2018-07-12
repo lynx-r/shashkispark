@@ -1,3 +1,5 @@
+import org.springframework.beans.factory.annotation.Autowired;
+
 //package com.workingbit.article.controller;
 //
 //import com.despegar.http.client.*;
@@ -40,6 +42,20 @@
 //import static java.util.Collections.singleton;
 //import static org.junit.Assert.*;
 //
+@RunWith(SpringRunner.class)
+@WebFluxTest(controllers = PostController.class)
+public class DemoApplicationTests {
+
+  @Autowired
+  WebTestClient client;
+
+  @Test
+  public void getAllMessagesShouldBeOk() {
+    client.get().uri("/posts").exchange()
+        .expectStatus().isOk();
+  }
+
+}
 ///**
 // * Created by Aleksey Popryaduhin on 17:47 01/10/2017.
 // */

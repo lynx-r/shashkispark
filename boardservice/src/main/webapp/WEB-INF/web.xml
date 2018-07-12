@@ -21,19 +21,6 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-    <filter>
-        <filter-name>SparkFilter</filter-name>
-        <filter-class>spark.servlet.SparkFilter</filter-class>
-        <init-param>
-            <param-name>applicationClass</param-name>
-            <param-value>com.workingbit.board.BoardApplication</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>SparkFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
     <!-- Force SSL for entire site -->
     <security-constraint>
 

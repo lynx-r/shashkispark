@@ -210,6 +210,17 @@ project(':sharedmodule') {
         compile group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
         // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-mongodb-reactive
         compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb-reactive'
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+        // https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
+        compile group: 'org.springframework.security', name: 'spring-security-web', version: "${springVersion}"
+        // https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
+        testCompile group: 'org.springframework.security', name: 'spring-security-test', version: "${springVersion}"
+        // https://mvnrepository.com/artifact/io.projectreactor/reactor-test
+        testCompile group: 'io.projectreactor', name: 'reactor-test'
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+        testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+
 //        compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
 
         compile 'com.fasterxml.jackson.core:jackson-core:2.9.5'

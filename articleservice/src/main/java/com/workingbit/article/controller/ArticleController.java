@@ -1,14 +1,17 @@
 package com.workingbit.article.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 /**
  * Created by Aleksey Popryaduhin on 13:58 27/09/2017.
  */
-@CrossOrigin(origins = "http://shashki.local:4200")
+@CrossOrigin(origins = "http://shashki.local")
 @RestController
+@RequestMapping(value = "/api/v1")
 public class ArticleController {
 
 //  private ArticleService articleService;
@@ -17,6 +20,7 @@ public class ArticleController {
 //    this.articleService = articleService;
 //  }
 
+  @GetMapping("/home")
   public String home(ServerRequest request) {
     return "Article. Home, sweet home!";
   }
