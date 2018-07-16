@@ -1,4 +1,11 @@
+package com.workingbit.article.controller;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 //package com.workingbit.article.controller;
 //
@@ -43,15 +50,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 //import static org.junit.Assert.*;
 //
 @RunWith(SpringRunner.class)
-@WebFluxTest(controllers = PostController.class)
-public class DemoApplicationTests {
+@WebFluxTest(controllers = ArticleController.class)
+public class ArticleApplicationTests {
 
   @Autowired
   WebTestClient client;
 
   @Test
   public void getAllMessagesShouldBeOk() {
-    client.get().uri("/posts").exchange()
+    client.get().uri("/api/v1/home").exchange()
         .expectStatus().isOk();
   }
 
@@ -117,7 +124,7 @@ public class DemoApplicationTests {
 //    Article article = articleAnswer.getArticle();
 //    BoardBox board = articleAnswer.getBoard();
 //    assertNotNull(article.getId());
-//    assertNotNull(article.getSelectedBoardBoxId());
+//    assertNotNull(article.getSelectedBoardBox());
 //    assertNotNull(board.getId());
 //  }
 //
@@ -204,7 +211,7 @@ public class DemoApplicationTests {
 //    Article article = articleResponse.getArticle();
 //    BoardBox board = articleResponse.getBoard();
 //    assertNotNull(article.getId());
-//    assertNotNull(article.getSelectedBoardBoxId());
+//    assertNotNull(article.getSelectedBoardBox());
 //    assertNotNull(board.getId());
 //
 //    article = (Article) get(ARTICLE_PROTECTED.getPath() + "/" + article.getHumanReadableUrl()).getBody();
@@ -224,12 +231,12 @@ public class DemoApplicationTests {
 //    Article article = articleResponse.getArticle();
 //    BoardBox board = articleResponse.getBoard();
 //    assertNotNull(article.getId());
-//    assertNotNull(article.getSelectedBoardBoxId());
+//    assertNotNull(article.getSelectedBoardBox());
 //    assertNotNull(board.getId());
 //    headers = articleResponseAnswer.getAuthUser();
 //
 //    var parsePdn = ImportPdnPayload.createBoardPayload();
-//    parsePdn.setArticleId(article.getDomainId());
+//    parsePdn.setArticle(article.getDomainId());
 //    parsePdn.setRules(EnumRules.RUSSIAN);
 //    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/parse_simple.pdn");
 //    StringWriter writer = new StringWriter();
@@ -261,19 +268,19 @@ public class DemoApplicationTests {
 //    Article article = articleResponse.getArticle();
 //    BoardBox board = articleResponse.getBoard();
 //    assertNotNull(article.getId());
-//    assertNotNull(article.getSelectedBoardBoxId());
+//    assertNotNull(article.getSelectedBoardBox());
 //    assertNotNull(board.getId());
 //
 //    article.setArticleStatus(EnumArticleStatus.PUBLISHED);
 //    article = (Article) put(ARTICLE_PROTECTED.getPath(), article, registered).getBody();
 //
 //    Articles articles = (Articles) get(ARTICLES.getPath()).getBody();
-//    String articleId = article.getId();
-//    article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(articleId))).findFirst().get();
+//    String article = article.getId();
+//    article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(article))).findFirst().get();
 //    assertNotNull(article);
 //
 //    articles = (Articles) get(ARTICLES.getPath()).getBody();
-//    article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(articleId))).findFirst().get();
+//    article = articles.getArticles().stream().filter((article1 -> article1.getId().equals(article))).findFirst().get();
 //    assertNotNull(article);
 //
 //    AuthUser loggedout = orchestralService

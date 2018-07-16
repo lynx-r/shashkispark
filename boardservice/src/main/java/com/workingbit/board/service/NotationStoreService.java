@@ -41,10 +41,10 @@
 //    notationHistoryStore = cacheManager.getCache(notationHistory, String.class, Map.class);
 //  }
 //
-//  public Optional<Notation> getNotation(String userSession, @NotNull DomainId notationId) {
-//    Map map = notationStore.get(notationId.getId());
+//  public Optional<Notation> getNotationDrives(String userSession, @NotNull DomainId notation) {
+//    Map map = notationStore.get(notation.getId());
 //    if (map != null) {
-//      return Optional.ofNullable((Notation) map.get(getKey(userSession, notationId.getId())));
+//      return Optional.ofNullable((Notation) map.get(getKey(userSession, notation.getId())));
 //    }
 //    return Optional.empty();
 //  }
@@ -59,14 +59,14 @@
 //    notationStore.remove(notation.getId());
 //  }
 //
-//  public void removeNotationById(@NotNull DomainId notationId) {
-//    notationStore.remove(notationId.getId());
+//  public void removeNotationById(@NotNull DomainId notation) {
+//    notationStore.remove(notation.getId());
 //  }
 //
-//  public Optional<NotationHistory> getNotationHistory(String userSession, @NotNull DomainId notationHistoryId) {
-//    Map map = notationHistoryStore.get(notationHistoryId.getId());
+//  public Optional<NotationHistory> getNotationHistory(String userSession, @NotNull DomainId notationHistory) {
+//    Map map = notationHistoryStore.get(notationHistory.getId());
 //    if (map != null) {
-//      return Optional.ofNullable((NotationHistory) map.get(getKey(userSession, notationHistoryId.getId())));
+//      return Optional.ofNullable((NotationHistory) map.get(getKey(userSession, notationHistory.getId())));
 //    }
 //    return Optional.empty();
 //  }
@@ -81,7 +81,7 @@
 //    notationHistoryStore.remove(notationHistory.getId());
 //  }
 //
-//  private String getKey(String key, String boardId) {
-//    return key + ":" + boardId;
+//  private String getKey(String key, String board) {
+//    return key + ":" + board;
 //  }
 //}

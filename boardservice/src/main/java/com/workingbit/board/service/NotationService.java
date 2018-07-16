@@ -62,11 +62,11 @@ public class NotationService {
   void createNotationForBoardBox(@NotNull BoardBox boardBox) {
     Notation notation = new Notation();
     Utils.setRandomIdAndCreatedAt(notation);
-    notation.getNotationFen().setBoardId(boardBox.getBoardId());
+    notation.getNotationFen().setBoard(boardBox.getBoard());
 
     notationHistoryService.createNotationHistoryForNotation(notation);
 
-    notation.setBoardBoxId(boardBox.getDomainId());
+    notation.setBoardBox(boardBox.getDomainId());
     notation.setRules(boardBox.getBoard().getRules());
     boardBox.setNotationId(notation.getDomainId());
     boardBox.setNotation(notation);
@@ -79,7 +79,7 @@ public class NotationService {
 //    notationHistoryRepository.save(notation.getNotationHistory());
 //    notation.setNotationFen(new NotationFen());
 //    save(notation, false);
-//    bb.setNotation(notation);
+//    bb.setNotationDrives(notation);
 //    boardBoxDao.save(bb);
 //  }
 
@@ -133,7 +133,7 @@ public class NotationService {
 
   void setNotationFenFromBoard(@NotNull Notation notation, @NotNull Board board) {
     NotationFen notationFen = new NotationFen();
-    notationFen.setBoardId(board.getDomainId());
+    notationFen.setBoard(board.getDomainId());
     int dimension = board.getRules().getDimension();
     updateDraughtsDimension(dimension, board.getBlackDraughts());
     updateDraughtsDimension(dimension, board.getWhiteDraughts());
@@ -163,7 +163,7 @@ public class NotationService {
   Notation switchTo(NotationLine notationLine, Notation notation) {
     return notation.findNotationHistoryByLine(notationLine)
         .map(notationHistory -> {
-          notationHistory.getNotation().replaceAll(notationDrive -> {
+          notationHistory.getNotationDrives().replaceAll(notationDrive -> {
             notationDrive.setSelected(false);
             return notationDrive;
           });
@@ -233,7 +233,7 @@ public class NotationService {
 
   void deleteById(DomainId notationId) {
     notationRepository.deleteById(notationId.getDomainId());
-//    notationStoreService.removeNotationById(notationId);
+//    notationStoreService.removeNotationById(notation);
   }
 
   void populateBoardWithNotation(DomainId notationId, @NotNull Board board,
@@ -247,10 +247,10 @@ public class NotationService {
     populateBoardWithNotation(notationId, board, notation, recursiveFillNotationHistory, batchBoards);
     NotationDrive lastDrive = recursiveFillNotationHistory.getLast();
     lastDrive.setSelected(true);
-    NotationDrives curNotation = recursiveFillNotationHistory.getNotation();
+    NotationDrives curNotation = recursiveFillNotationHistory.getNotationDrives();
     NotationDrive lastCurrentDrive = getNotationHistoryColors(curNotation);
     NotationHistory syncNotationHist = recursiveFillNotationHistory.deepClone();
-    for (int i = 0; i < syncNotationHist.getNotation().size(); i++) {
+    for (int i = 0; i < syncNotationHist.getNotationDrives().size(); i++) {
       syncNotationHist.setCurrentIndex(i);
       syncVariants(syncNotationHist, notation);
     }
@@ -270,7 +270,7 @@ public class NotationService {
     recursiveNotationHistory.setNotationId(notationId);
     recursiveNotationHistory.setCurrentIndex(0);
     recursiveNotationHistory.setVariantIndex(0);
-    NotationDrives notationMoves = notation.getNotationHistory().getNotation();
+    NotationDrives notationMoves = notation.getNotationHistory().getNotationDrives();
     for (NotationDrive notationDrive : notationMoves) {
       NotationDrives variantsPopulated = new NotationDrives();
       if (!notationDrive.getVariants().isEmpty()) {
@@ -280,7 +280,7 @@ public class NotationService {
           NotationHistory vHistory = recursiveNotationHistory.deepClone();
           Utils.setRandomIdAndCreatedAt(vHistory);
           vDrive.setIdInVariants(idInVariants);
-          vDrive.setNotationHistoryId(vHistory.getDomainId());
+          vDrive.setNotationHistory(vHistory.getDomainId());
           NotationDrive popVDrive = vHistory.getLast();
           vDrive.setMoves(popVDrive.getMoves());
           vHistory.setCurrentIndex(recursiveNotationHistory.size());
@@ -301,14 +301,14 @@ public class NotationService {
                 subBoard = boardService.emulateMove(drive, subBoard, subRecursiveNotationHistory, batchBoards);
               }
             }
-            NotationDrives subNotation = subRecursiveNotationHistory.getNotation();
+            NotationDrives subNotation = subRecursiveNotationHistory.getNotationDrives();
             subNotation.removeFirst();
             vHistory.addAll(subNotation);
             vDrive.setMoves(subNotation.getFirst().getMoves());
             vDrive.setVariants(subNotation);
           } else {
             NotationDrive first = curVariants.getFirst();
-            first.setNotationHistoryId(vHistory.getDomainId());
+            first.setNotationHistory(vHistory.getDomainId());
             NotationHistory subRecursiveNotationHistory = NotationHistory.createWithRoot();
             subRecursiveNotationHistory.setNotationLine(new NotationLine(0, 0));
             Board subBoard = recursiveBoard.deepClone();
@@ -400,7 +400,7 @@ public class NotationService {
   }
 
   private void setNotationHistoryForNotation(@NotNull Notation notation, NotationDrive lastCurrentDrive, NotationHistory notationHistory) {
-    NotationDrives curNotation = notationHistory.getNotation();
+    NotationDrives curNotation = notationHistory.getNotationDrives();
     if (lastCurrentDrive == null) {
       lastCurrentDrive = curNotation.getLast();
     }
@@ -450,7 +450,7 @@ public class NotationService {
 //              }
 //              byNotationId
 //                  .stream()
-//                  .filter(notationHistory -> notation.getNotationHistoryId().equals(notationHistory.getDomainId()))
+//                  .filter(notationHistory -> notation.getNotationHistory().equals(notationHistory.getDomainId()))
 //                  .findFirst()
 //                  .ifPresent(notation::setNotationHistory);
 //              notation.addForkedNotationHistories(byNotationId);
@@ -519,11 +519,11 @@ public class NotationService {
     return notation
         .findNotationHistoryByLine(new NotationLine(nextCurrentIndex, 0))
         .map(nhNew -> {
-          nhNew.getNotation()
+          nhNew.getNotationDrives()
               .removeIf(nd -> nd.getNotationNumberInt() >= lastVariant.getNotationNumberInt());
           NotationDrives newVariants = lastVariant.getVariants();
           newVariants.setIdInVariants(0);
-          nhNew.getNotation().addAll(newVariants);
+          nhNew.getNotationDrives().addAll(newVariants);
           notation.setNotationHistoryId(nhNew.getDomainId());
           save(notation, false);
           notationHistoryRepository.save(nhNew);
@@ -532,7 +532,7 @@ public class NotationService {
         .orElseThrow();
 //    if (nhNew.isPresent()) {
 //      nh = nhNew.get();
-//      NotationDrive currentDrive = nh.getNotation().get(notationHistory.getCurrentIndex());
+//      NotationDrive currentDrive = nh.getNotationDrives().get(notationHistory.getCurrentIndex());
 //      Optional<NotationDrive> curVariant = currentDrive.getVariants()
 //          .stream()
 //          .filter(NotationDrive::isCurrent)

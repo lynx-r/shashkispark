@@ -58,13 +58,13 @@ public class BoardBoxDao extends BaseDao<BoardBox> {
 
   public BoardBoxes findByArticleId(@NotNull DomainId articleId) {
     DaoFilters filterPublic = new DaoFilters();
-    filterPublic.add(new ValueFilter("articleId.id", articleId.getId(), "=", "S"));
+    filterPublic.add(new ValueFilter("article.id", articleId.getId(), "=", "S"));
     return new BoardBoxes(findByFilter(filterPublic));
   }
 
   public BoardBoxes findPublicByArticleId(@NotNull DomainId articleId) {
     DaoFilters filterPublic = new DaoFilters();
-    filterPublic.add(new ValueFilter("articleId.id", articleId.getId(), "=", "S"));
+    filterPublic.add(new ValueFilter("article.id", articleId.getId(), "=", "S"));
     return new BoardBoxes(findByFilter(filterPublic));
   }
 

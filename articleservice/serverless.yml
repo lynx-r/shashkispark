@@ -45,28 +45,28 @@ functions:
           path: /api/v1/articles
           method: options
       - http:
-          path: /api/v1/article/{articleId}
+          path: /api/v1/article/{article}
           method: get
           request:
             parameters:
               path:
                 articleId: true
       - http:
-          path: /api/v1/article/{articleId}
+          path: /api/v1/article/{article}
           method: options
           request:
             parameters:
               path:
                 articleId: true
       - http:
-          path: /api/v1/article/{articleId}/board
+          path: /api/v1/article/{article}/board
           method: get
           request:
             parameters:
               path:
                 articleId: true
       - http:
-          path: /api/v1/article/{articleId}/board
+          path: /api/v1/article/{article}/board
           method: options
           request:
             parameters:

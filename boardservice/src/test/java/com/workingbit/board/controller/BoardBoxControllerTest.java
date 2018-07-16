@@ -88,10 +88,10 @@
 //  public void add_draught() throws Exception {
 //
 //    AuthUser authUser = register();
-//    DomainId boardBoxId = DomainId.getRandomID();
-//    DomainId articleId = DomainId.getRandomID();
+//    DomainId boardBox = DomainId.getRandomID();
+//    DomainId article = DomainId.getRandomID();
 //
-//    List bb = getBoardBox(boardBoxId, articleId, authUser, false);
+//    List bb = getBoardBox(boardBox, article, authUser, false);
 //
 //    BoardBox boardBox = (BoardBox) bb.get(0);
 //    authUser = (AuthUser) bb.get(1);
@@ -113,20 +113,20 @@
 //  @Test
 //  public void anonym_find_board() throws Exception {
 //    AuthUser authUser = register();
-//    DomainId boardBoxId = DomainId.getRandomID();
-//    DomainId articleId = DomainId.getRandomID();
+//    DomainId boardBox = DomainId.getRandomID();
+//    DomainId article = DomainId.getRandomID();
 //
-//    List bb = getBoardBox(boardBoxId, articleId, authUser, false);
+//    List bb = getBoardBox(boardBox, article, authUser, false);
 //
 //    BoardBox boardBox = (BoardBox) bb.get(0);
 //    authUser = (AuthUser) bb.get(1);
 //
-//    GetMethod resp = testServer.get(boardUrl + "/board/" + boardBoxId, false);
+//    GetMethod resp = testServer.get(boardUrl + "/board/" + boardBox, false);
 //    HttpResponse execute = testServer.execute(resp);
 //    List<String> setCookie = execute.headers().get("Set-Cookie");
 //    String serverSession1 = setCookie.get(0);
 //
-//    resp = testServer.get(boardUrl + "/board/" + boardBoxId, false);
+//    resp = testServer.get(boardUrl + "/board/" + boardBox, false);
 //    resp.addHeader("Set-Cookie", setCookie.toString());
 //    execute = testServer.execute(resp);
 //    setCookie = execute.headers().get("Set-Cookie");
@@ -137,13 +137,13 @@
 //
 //  @Test
 //  public void highlight() {
-//    DomainId boardBoxId = DomainId.getRandomID();
-//    DomainId articleId = DomainId.getRandomID();
+//    DomainId boardBox = DomainId.getRandomID();
+//    DomainId article = DomainId.getRandomID();
 //
-////    List bb = getBoardBox(boardBoxId, articleId, authUser, false);
+////    List bb = getBoardBox(boardBox, article, authUser, false);
 ////
-////    BoardBox boardBox = (BoardBox) bb.getNotation(0);
-////    authUser = (AuthUser) bb.getNotation(1);
+////    BoardBox boardBox = (BoardBox) bb.getNotationDrives(0);
+////    authUser = (AuthUser) bb.getNotationDrives(1);
 //
 ////    boardBox = (BoardBox) post("/highlight", boardBox, null).getBody();
 ////    Board board = boardBox.getBoard();
@@ -161,12 +161,12 @@
 //
 //  @Test
 //  public void move() throws Exception {
-//    DomainId boardBoxId = DomainId.getRandomID();
-//    DomainId articleId = DomainId.getRandomID();
+//    DomainId boardBox = DomainId.getRandomID();
+//    DomainId article = DomainId.getRandomID();
 //
 //    AuthUser authUser = register();
 //
-//    List bb = getBoardBox(boardBoxId, articleId, authUser, false);
+//    List bb = getBoardBox(boardBox, article, authUser, false);
 //
 //    BoardBox boardBox = (BoardBox) bb.get(0);
 //    authUser = (AuthUser) bb.get(1);
@@ -181,7 +181,7 @@
 //        .stream()
 //        .filter(Objects::nonNull)
 //        .peek(square -> square.setDim(8))
-//        .filter(square -> square.getNotation().equals("b4"))
+//        .filter(square -> square.getNotationDrives().equals("b4"))
 //        .findFirst()
 //        .get();
 //    assertTrue(moved.isOccupied());
@@ -194,20 +194,20 @@
 //   */
 //  @Test
 //  public void fork() throws Exception {
-//    DomainId boardBoxId = DomainId.getRandomID();
-//    DomainId articleId = DomainId.getRandomID();
+//    DomainId boardBox = DomainId.getRandomID();
+//    DomainId article = DomainId.getRandomID();
 //
 //    AuthUser authUser = register();
 //
 //    Article article = new Article();
-//    article.setDomainId(articleId);
+//    article.setDomainId(article);
 //    article.setTitle(Utils.getRandomString7());
 //    article.setHumanReadableUrl(article.getTitle());
 //    article.setIntro(Utils.getRandomString(101));
 //    article.setContent(Utils.getRandomString(200));
 //
 //    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
-//    createBoardPayload.setArticleId(articleId);
+//    createBoardPayload.setArticle(article);
 //    createBoardPayload.setBlack(false);
 //    createBoardPayload.setFillBoard(true);
 //    createBoardPayload.setUserId(authUser.getUserId());
@@ -227,7 +227,7 @@
 //    NotationParserService parserService = new NotationParserService();
 //    Notation notation = parserService.parseResource("/pdn/fork_1.pdn");
 //    NotationHistory notationHistory = notation.getNotationHistory();
-//    NotationDrives drives = notationHistory.getNotation();
+//    NotationDrives drives = notationHistory.getNotationDrives();
 //    Board board = boardBox.getBoard().deepClone();
 //    for (NotationDrive drive : drives) {
 //      for (NotationMove notationMove : drive.getMoves()) {
@@ -249,7 +249,7 @@
 //              .stream()
 //              .filter(Objects::nonNull)
 //              .peek(square -> square.setDim(8))
-//              .filter(square -> square.getNotation().equals(next.getNotation()))
+//              .filter(square -> square.getNotationDrives().equals(next.getNotationDrives()))
 //              .findFirst()
 //              .get();
 //          assertTrue(moved.isOccupied());
@@ -257,21 +257,21 @@
 //      }
 //    }
 //
-//    notationHistory = boardBox.getNotation().getNotationHistory();
+//    notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    notationHistory.setCurrentIndex(1);
 //    BoardBoxes boardBoxes = (BoardBoxes) post(Authority.BOARD_FORK_PROTECTED.getPath(), boardBox, authUser).getBody();
 //    BoardBox finalBoardBox = boardBox;
 //    boardBox = boardBoxes.getBoardBoxes().valueList().stream().filter(cb -> cb.getId().equals(finalBoardBox.getId())).findFirst().get();
-//    notationHistory = boardBox.getNotation().getNotationHistory();
+//    notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    NotationLine notationLine = notationHistory.getNotationLine();
 //    assertEquals(1, notationLine.getCurrentIndex().intValue());
 //    assertEquals(1, notationLine.getVariantIndex().intValue());
 //
-//    notationHistory = boardBox.getNotation().getNotationHistory();
+//    notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    notationHistory.setCurrentIndex(1);
 //    boardBoxes = (BoardBoxes) post(Authority.BOARD_FORK_PROTECTED.getPath(), boardBox, authUser).getBody();
 //    boardBox = boardBoxes.getBoardBoxes().valueList().stream().filter(cb -> cb.getId().equals(finalBoardBox.getId())).findFirst().get();
-//    notationHistory = boardBox.getNotation().getNotationHistory();
+//    notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    notationLine = notationHistory.getNotationLine();
 //    assertEquals(1, notationLine.getCurrentIndex().intValue());
 //    assertEquals(2, notationLine.getVariantIndex().intValue());
@@ -285,7 +285,7 @@
 //    parserService = new NotationParserService();
 //    notation = parserService.parseResource("/pdn/fork_1_3.pdn");
 //    notationHistory = notation.getNotationHistory();
-//    drives = notationHistory.getNotation();
+//    drives = notationHistory.getNotationDrives();
 //    board = boardBox.getBoard().deepClone();
 //    for (NotationDrive drive : drives) {
 //      for (NotationMove notationMove : drive.getMoves()) {
@@ -307,7 +307,7 @@
 //              .stream()
 //              .filter(Objects::nonNull)
 //              .peek(square -> square.setDim(8))
-//              .filter(square -> square.getNotation().equals(next.getNotation()))
+//              .filter(square -> square.getNotationDrives().equals(next.getNotationDrives()))
 //              .findFirst()
 //              .get();
 //          assertTrue(moved.isOccupied());
@@ -325,20 +325,20 @@
 //   */
 //  @Test
 //  public void fork_international() throws Exception {
-//    DomainId boardBoxId = DomainId.getRandomID();
-//    DomainId articleId = DomainId.getRandomID();
+//    DomainId boardBox = DomainId.getRandomID();
+//    DomainId article = DomainId.getRandomID();
 //
 //    AuthUser authUser = register();
 //
 //    Article article = new Article();
-//    article.setDomainId(articleId);
+//    article.setDomainId(article);
 //    article.setTitle(Utils.getRandomString7());
 //    article.setHumanReadableUrl(article.getTitle());
 //    article.setIntro(Utils.getRandomString(101));
 //    article.setContent(Utils.getRandomString(200));
 //
 //    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
-//    createBoardPayload.setArticleId(articleId);
+//    createBoardPayload.setArticle(article);
 //    createBoardPayload.setBlack(false);
 //    createBoardPayload.setFillBoard(true);
 //    createBoardPayload.setUserId(authUser.getUserId());
@@ -359,26 +359,26 @@
 //    Path path = Paths.get(uri.toURI());
 //    List<String> bufferedReader = Files.readAllLines(path);
 //    String collect = bufferedReader.stream().collect(Collectors.joining("\n"));
-//    ImportPdnPayload importPdnPayload = new ImportPdnPayload(articleId, collect, 0, EnumEditBoardBoxMode.EDIT);
+//    ImportPdnPayload importPdnPayload = new ImportPdnPayload(article, collect, 0, EnumEditBoardBoxMode.EDIT);
 //    Answer post = post(Authority.PARSE_PDN_PROTECTED.getPath(), importPdnPayload, authUser);
 //    authUser = post.getAuthUser();
 //    boardBox = (BoardBox) post.getBody();
 //
-//    NotationHistory notationHistory = boardBox.getNotation().getNotationHistory();
+//    NotationHistory notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    notationHistory.setCurrentIndex(5);
 //    BoardBoxes boardBoxes = (BoardBoxes) post(Authority.BOARD_FORK_PROTECTED.getPath(), boardBox, authUser).getBody();
 //    BoardBox finalBoardBox = boardBox;
 //    boardBox = boardBoxes.getBoardBoxes().valueList().stream().filter(cb -> cb.getId().equals(finalBoardBox.getId())).findFirst().get();
-//    notationHistory = boardBox.getNotation().getNotationHistory();
+//    notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    NotationLine notationLine = notationHistory.getNotationLine();
 //    assertEquals(5, notationLine.getCurrentIndex().intValue());
 //    assertEquals(1, notationLine.getVariantIndex().intValue());
 //
-//    notationHistory = boardBox.getNotation().getNotationHistory();
+//    notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    notationHistory.setCurrentIndex(5);
 //    boardBoxes = (BoardBoxes) post(Authority.BOARD_FORK_PROTECTED.getPath(), boardBox, authUser).getBody();
 //    boardBox = boardBoxes.getBoardBoxes().valueList().stream().filter(cb -> cb.getId().equals(finalBoardBox.getId())).findFirst().get();
-//    notationHistory = boardBox.getNotation().getNotationHistory();
+//    notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    notationLine = notationHistory.getNotationLine();
 //    assertEquals(5, notationLine.getCurrentIndex().intValue());
 //    assertEquals(2, notationLine.getVariantIndex().intValue());
@@ -391,11 +391,11 @@
 //
 //    boardBox = additionalMoves(boardBox, authUser);
 //
-//    boardBox.getNotation().getNotationHistory().setCurrentIndex(5);
-//    boardBox.getNotation().getNotationHistory().setVariantIndex(1);
+//    boardBox.getNotationDrives().getNotationHistory().setCurrentIndex(5);
+//    boardBox.getNotationDrives().getNotationHistory().setVariantIndex(1);
 //    boardBox = (BoardBox) post(Authority.BOARD_REMOVE_VARIANT_PROTECTED.getPath(), boardBox, authUser).getBody();
 //
-//    notationHistory = boardBox.getNotation().getNotationHistory();
+//    notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    last = notationHistory.getLast();
 //    variants = last.getVariants();
 //    assertEquals(3, variants.size());
@@ -411,7 +411,7 @@
 //    Notation notation = parserService.parseResource("/pdn/fork_inter_1_3.pdn");
 //    notation.syncFormatAndRules();
 //    notationHistory = notation.getNotationHistory();
-//    NotationDrives drives = notationHistory.getNotation();
+//    NotationDrives drives = notationHistory.getNotationDrives();
 //    Board board = boardBox.getBoard().deepClone();
 //    for (NotationDrive drive : drives) {
 //      for (NotationMove notationMove : drive.getMoves()) {
@@ -434,7 +434,7 @@
 //              .stream()
 //              .filter(Objects::nonNull)
 //              .peek(square -> square.setDim(finalBoard.getRules().getDimension()))
-//              .filter(square -> square.getNotation().equals(next.getNotation()))
+//              .filter(square -> square.getNotationDrives().equals(next.getNotationDrives()))
 //              .findFirst()
 //              .get();
 //          assertTrue(moved.isOccupied());
@@ -447,11 +447,11 @@
 //
 //  @Test
 //  public void switchTo() throws Exception {
-//    DomainId boardBoxId = DomainId.getRandomID();
-//    DomainId articleId = DomainId.getRandomID();
+//    DomainId boardBox = DomainId.getRandomID();
+//    DomainId article = DomainId.getRandomID();
 //
 //    AuthUser authUser = register();
-//    List bb = getBoardBox(boardBoxId, articleId, authUser, true);
+//    List bb = getBoardBox(boardBox, article, authUser, true);
 //    BoardBox boardBox = (BoardBox) bb.get(0);
 //    authUser = (AuthUser) bb.get(1);
 //
@@ -470,7 +470,7 @@
 //  }
 //
 //  private List<? extends DeepClone> switchToVariant(BoardBox boardBox, AuthUser authUser, int numberNot, int numberVar) throws HttpClientException {
-//    NotationHistory notationHistory = boardBox.getNotation().getNotationHistory();
+//    NotationHistory notationHistory = boardBox.getNotationDrives().getNotationHistory();
 //    NotationDrives history;
 //    NotationDrive toSwitch;
 //    NotationDrive toSwVar;
@@ -483,7 +483,7 @@
 //    boardBox = body.valueList().stream().filter(b -> b.getId().equals(finalBoardBox.getId())).findFirst().get();
 //    authUser = post.getAuthUser();
 //
-//    history = boardBox.getNotation().getNotationHistory().getNotation();
+//    history = boardBox.getNotationDrives().getNotationHistory().getNotationDrives();
 //    toSwitch = history.get(numberNot);
 //    NotationDrive finalToSwitch = toSwitch;
 //    boolean b = toSwitch.getVariants().stream().filter(n -> n.getIdInVariants() != finalToSwitch.getIdInVariants()).noneMatch(NotationDrive::isCurrent);
@@ -496,14 +496,14 @@
 //
 //  private List<? extends DeepClone> fork(List<? extends DeepClone> move, int numberToSwitch) throws HttpClientException {
 //    BoardBox bbox = (BoardBox) move.get(0);
-//    NotationDrive notationDrive = bbox.getNotation().getNotationHistory().get(numberToSwitch);
-//    bbox.getNotation().getNotationHistory().getNotationLine().setCurrentIndex(numberToSwitch);
+//    NotationDrive notationDrive = bbox.getNotationDrives().getNotationHistory().get(numberToSwitch);
+//    bbox.getNotationDrives().getNotationHistory().getNotationLine().setCurrentIndex(numberToSwitch);
 //    Answer post = post(Authority.BOARD_FORK_PROTECTED.getPath(), move.get(0), (AuthUser) move.get(1));
 //    BoardBoxes bboxes = (BoardBoxes) post.getBody();
 //    BoardBox finalBbox = bbox;
 //    bbox = bboxes.valueList().stream().filter(b -> b.getId().equals(finalBbox.getId())).findFirst().get();
 //    AuthUser authUser = post.getAuthUser();
-//    NotationDrives history = bbox.getNotation().getNotationHistory().getNotation();
+//    NotationDrives history = bbox.getNotationDrives().getNotationHistory().getNotationDrives();
 //    assertEquals(2, history.getLast().getVariants().size());
 //    return List.of(bbox, authUser);
 //  }
@@ -524,7 +524,7 @@
 //        .stream()
 //        .filter(Objects::nonNull)
 //        .peek(square -> square.setDim(8))
-//        .filter(square -> square.getNotation().equals(nex))
+//        .filter(square -> square.getNotationDrives().equals(nex))
 //        .findFirst()
 //        .get();
 //    assertTrue(moved.isOccupied());
@@ -536,15 +536,15 @@
 //    return boardBox.getBoard().getSquares().stream()
 //        .filter(Objects::nonNull)
 //        .peek(square -> square.setDim(8))
-//        .filter(square -> square.getNotation().equals(notation))
+//        .filter(square -> square.getNotationDrives().equals(notation))
 //        .findFirst()
 //        .get();
 //  }
 //
-//  private List<DeepClone> getBoardBox(DomainId boardBoxId, DomainId articleId, AuthUser authUser, boolean fillBoard) throws HttpClientException {
+//  private List<DeepClone> getBoardBox(DomainId boardBox, DomainId article, AuthUser authUser, boolean fillBoard) throws HttpClientException {
 //    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
-//    createBoardPayload.setArticleId(articleId);
-//    createBoardPayload.setBoardBoxId(boardBoxId);
+//    createBoardPayload.setArticle(article);
+//    createBoardPayload.setBoardBox(boardBox);
 //    createBoardPayload.setRules(EnumRules.RUSSIAN);
 //    createBoardPayload.setFillBoard(fillBoard);
 //    createBoardPayload.setEditMode(EnumEditBoardBoxMode.EDIT);
@@ -591,7 +591,7 @@
 //  }
 //
 //  private void testCollection(String notations, List<Square> items) {
-//    List<String> collection = items.stream().map(ICoordinates::getNotation).collect(Collectors.toList());
+//    List<String> collection = items.stream().map(ICoordinates::getNotationDrives).collect(Collectors.toList());
 //    String[] notation = notations.split(",");
 //    Arrays.stream(notation).forEach(n -> {
 //      Assert.assertTrue(collection.toString(), collection.contains(n));

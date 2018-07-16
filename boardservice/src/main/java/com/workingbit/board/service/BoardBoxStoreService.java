@@ -31,10 +31,10 @@
 //    store = cacheManager.getCache(board, String.class, Map.class);
 //  }
 //
-//  public Optional<BoardBox> get(String userSession, @NotNull DomainId boardBoxId) {
-//    Map map = store.get(boardBoxId.getId());
+//  public Optional<BoardBox> get(String userSession, @NotNull DomainId boardBox) {
+//    Map map = store.get(boardBox.getId());
 //    if (map != null) {
-//      return Optional.ofNullable((BoardBox) map.get(getKey(userSession, boardBoxId.getId())));
+//      return Optional.ofNullable((BoardBox) map.get(getKey(userSession, boardBox.getId())));
 //    }
 //    return Optional.empty();
 //  }
@@ -48,24 +48,24 @@
 //    store.remove(board.getId());
 //  }
 //
-//  private String getKey(String key, String boardId) {
-//    return key + ":" + boardId;
+//  private String getKey(String key, String board) {
+//    return key + ":" + board;
 //  }
 //
-//  public Optional<BoardBoxes> getByArticleId(String userSession, @NotNull DomainId articleId) {
-//    Map map = store.get(articleId.getId());
+//  public Optional<BoardBoxes> getByArticleId(String userSession, @NotNull DomainId article) {
+//    Map map = store.get(article.getId());
 //    if (map != null) {
-//      return Optional.ofNullable((BoardBoxes) map.get(getKey(userSession, articleId.getId())));
+//      return Optional.ofNullable((BoardBoxes) map.get(getKey(userSession, article.getId())));
 //    }
 //    return Optional.empty();
 //  }
 //
-//  public void putByArticleId(String userSession, @NotNull DomainId articleId, @NotNull BoardBoxes boardBoxes) {
-//    Map map = Map.of(getKey(userSession, articleId.getId()), boardBoxes);
-//    store.put(articleId.getId(), map);
+//  public void putByArticleId(String userSession, @NotNull DomainId article, @NotNull BoardBoxes boardBoxes) {
+//    Map map = Map.of(getKey(userSession, article.getId()), boardBoxes);
+//    store.put(article.getId(), map);
 //  }
 //
-//  public void removeByArticleId(@NotNull DomainId articleId) {
-//    store.remove(articleId.getId());
+//  public void removeByArticleId(@NotNull DomainId article) {
+//    store.remove(article.getId());
 //  }
 //}

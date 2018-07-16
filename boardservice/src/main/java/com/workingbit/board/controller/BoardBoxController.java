@@ -92,8 +92,8 @@ public class BoardBoxController {
 //
 //  @NotNull
 //  public static Route findBoardByIds = (req, res) ->
-//      ((ModelHandlerFunc<DomainId>) (articleId, token, query) ->
-//          Answer.ok(boardBoxService.findByArticleId(articleId, getQueryValue(query, RequestConstants.PUBLIC_QUERY), token))
+//      ((ModelHandlerFunc<DomainId>) (article, token, query) ->
+//          Answer.ok(boardBoxService.findByArticleId(article, getQueryValue(query, RequestConstants.PUBLIC_QUERY), token))
 //      ).handleRequest(req, res, Authority.BOARDS_BY_ARTICLE, DomainId.class);
 //
 //  @NotNull

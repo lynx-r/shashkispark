@@ -1,6 +1,6 @@
 rootProject.name = 'shashkispark'
 include 'sharedmodule'
 include 'orchestratemodule'
-include 'articleservice'
-include 'boardservice'
+//include 'articleservice'
+//include 'boardservice'
 include 'securityservice'

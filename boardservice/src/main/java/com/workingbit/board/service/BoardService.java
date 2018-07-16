@@ -44,7 +44,7 @@ public class BoardService {
 
   Mono<Board> createBoard(@NotNull CreateBoardPayload newBoardRequest) {
     Board board = initBoard(newBoardRequest.isFillBoard(), newBoardRequest.isBlack(), newBoardRequest.getRules());
-    board.setBoardBoxId(board.getBoardBoxId());
+    board.setBoardBox(board.getBoardBox());
     Utils.setRandomIdAndCreatedAt(board);
     save(board);
     return Mono.just(board);
@@ -52,7 +52,7 @@ public class BoardService {
 
   Mono<Board> createBoard(@NotNull Board newBoardRequest, DomainId boardBoxId) {
     Board board = initBoard(!newBoardRequest.getAssignedSquares().isEmpty(), newBoardRequest.isBlack(), newBoardRequest.getRules());
-    board.setBoardBoxId(boardBoxId);
+    board.setBoardBox(boardBoxId);
     Utils.setRandomIdAndCreatedAt(board);
     save(board);
     return Mono.just(board);
@@ -61,7 +61,7 @@ public class BoardService {
 //  Mono<Board> initWithDraughtsOnBoard(@NotNull Board boardIn) {
 //    return initBoard(true, boardIn.isBlack(), boardIn.getRules())
 //        .map(board -> {
-//          board.setBoardBoxId(board.getBoardBoxId());
+//          board.setBoardBox(board.getBoardBox());
 //          board.setDomainId(board.getDomainId());
 //          save(board);
 //          return board;
@@ -84,20 +84,20 @@ public class BoardService {
       for (NotationFen.Square square : notationFen.getBlack().getSquares()) {
         board = addDraughtFen(board, square, true);
       }
-      board.setBoardBoxId(boardBoxId);
+      board.setBoardBox(boardBoxId);
       board.setBlackTurn(notationFen.isBlackTurn());
       Utils.setRandomIdAndCreatedAt(board);
       boardRepository.save(board);
-      genNotation.getNotationFen().setBoardId(board.getDomainId());
+      genNotation.getNotationFen().setBoard(board.getDomainId());
     }
     List<Board> batchBoards = new ArrayList<>();
     if (!genNotation.getNotationHistory().isEmpty()) {
-      board.setBoardBoxId(boardBoxId);
+      board.setBoardBox(boardBoxId);
       notationService.populateBoardWithNotation(notationId, board, genNotation, batchBoards);
       if (!genNotation.getNotationHistory().isEqual(genNotation.getNotationHistory())) {
         throw new BoardServiceException(ErrorMessages.UNABLE_TO_PARSE_PDN);
       }
-      genNotation.setBoardBoxId(boardBoxId);
+      genNotation.setBoardBox(boardBoxId);
       notationRepository.save(genNotation);
       boardRepository.saveAll(batchBoards);
     }
@@ -194,7 +194,7 @@ public class BoardService {
     Board deepClone = currentBoard;
     if (save) {
       deepClone = currentBoard.deepClone();
-      deepClone.setBoardBoxId(currentBoard.getBoardBoxId());
+      deepClone.setBoardBox(currentBoard.getBoardBox());
       Utils.setRandomIdAndCreatedAt(deepClone);
       boardRepository.save(deepClone);
     }
@@ -241,7 +241,7 @@ public class BoardService {
 
   private Board moveDraught(@NotNull Board board, @NotNull TreeSquare capturedSquares,
                             NotationHistory notationHistory) {
-    notationHistory.getNotation().getLast().setSelected(false);
+    notationHistory.getNotationDrives().getLast().setSelected(false);
     performMoveDraught(board, capturedSquares);
     Board newBoard = board.deepClone();
     boolean blackTurn = board.isBlackTurn();
@@ -259,7 +259,7 @@ public class BoardService {
 //      for (Square square : capturedSquares.flatTree()) {
 //        boolean beaten = !findSquareByLink(square, board).isOccupied();
 //        if (!beaten) {
-//          throw new RuntimeException("Шашка не была  побита: " + square.getNotation());
+//          throw new RuntimeException("Шашка не была  побита: " + square.getNotationDrives());
 //        }
 //      }
 //    }

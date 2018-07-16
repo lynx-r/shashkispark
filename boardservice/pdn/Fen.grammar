@@ -2,7 +2,7 @@
 
 GRAMMARTYPE = "LL"
 
-DESCRIPTION = "A grammar for FEN setup notation."
+DESCRIPTION = "A grammar for FEN setup notationDrives."
 
 AUTHOR      = "Wieger Wesselink, <wieger at 10x10 dot org>"
 VERSION     = "1.2"

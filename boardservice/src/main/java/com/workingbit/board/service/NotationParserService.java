@@ -77,7 +77,7 @@ public class NotationParserService {
     }
     NotationHistory notationDrives = notation.getNotationHistory();
     try {
-      parseGameBody(game, notationDrives.getNotation(), notation.getRules(), notation.getFormat());
+      parseGameBody(game, notationDrives.getNotationDrives(), notation.getRules(), notation.getFormat());
     } catch (Exception e) {
       game.printTo(System.err);
       logger.error("Parse error ", e);

@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConvertedJson;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.domain.impl.Board;
 import com.workingbit.share.domain.impl.Draught;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,7 @@ public class NotationFen implements DeepClone {
 
   @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "userId")
-  private DomainId boardId;
+  private Board board;
 
   public NotationFen() {
     white = new Sequence();

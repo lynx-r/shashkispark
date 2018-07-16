@@ -1,12 +1,8 @@
 package com.workingbit.share.domain.impl;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.workingbit.share.common.DBConstants;
-import com.workingbit.share.converter.ListOrderedMapConverter;
-import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
-import com.workingbit.share.model.DomainId;
 import com.workingbit.share.model.NotationFen;
 import com.workingbit.share.model.NotationLine;
 import com.workingbit.share.model.Payload;
@@ -15,12 +11,13 @@ import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.workingbit.share.common.NotationConstants.NOTATION_DEFAULT_TAGS;
@@ -30,24 +27,12 @@ import static com.workingbit.share.common.NotationConstants.NOTATION_DEFAULT_TAG
  */
 @Getter
 @Setter
-@ToString
-@DynamoDBTable(tableName = DBConstants.NOTATION_TABLE)
+@Document(collection = Notation.CLASS_NAME)
 public class Notation extends BaseDomain implements Payload {
 
-  @DynamoDBHashKey(attributeName = "id")
-  private String id;
+  static final String CLASS_NAME = "Notation";
 
-  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
-  @DynamoDBRangeKey(attributeName = "createdAt")
-  private LocalDateTime createdAt;
-
-  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
-  @DynamoDBAttribute(attributeName = "updatedAt")
-  private LocalDateTime updatedAt;
-
-  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
-  @DynamoDBAttribute(attributeName = "boardBoxId")
-  private DomainId boardBoxId;
+  private BoardBox boardBox;
 
   /**
    * Some possible tags:
@@ -61,51 +46,36 @@ public class Notation extends BaseDomain implements Payload {
    * "Тип игры"
    * "#tag"
    */
-  @DynamoDBTypeConverted(converter = ListOrderedMapConverter.class)
-  @DynamoDBAttribute(attributeName = "tags")
   private ListOrderedMap<String, String> tags;
 
-  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
-  @DynamoDBAttribute(attributeName = "notationHistoryId")
-  private DomainId notationHistoryId;
-
   @JsonIgnore
-  @DynamoDBAttribute(attributeName = "prevVariantId")
   private Integer prevVariantId;
 
-  @DynamoDBIgnore
   private NotationHistory notationHistory;
 
-  @DynamoDBIgnore
-  private Map<String, NotationHistory> forkedNotations;
+  @DBRef
+  private List<NotationHistory> forkedNotations;
 
-  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
-  @DynamoDBAttribute(attributeName = "notationFen")
   private NotationFen notationFen;
 
 //  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
 //  @DynamoDBAttribute(attributeName = "gameType")
 //  private GameType gameType;
 
-  @DynamoDBAttribute(attributeName = "readonly")
   private boolean readonly;
 
-  @DynamoDBTypeConvertedEnum
-  @DynamoDBAttribute(attributeName = "rules")
   private EnumRules rules;
 
-  @DynamoDBTypeConvertedEnum
-  @DynamoDBAttribute(attributeName = "format")
   private EnumNotationFormat format;
 
-  @DynamoDBIgnore
+  @Transient
   private EnumNotationFormat[] formats;
 
   public Notation() {
     setTags(new ListOrderedMap<>());
     notationFen = new NotationFen();
     notationHistory = NotationHistory.createWithRoot();
-    forkedNotations = new HashMap<>();
+    forkedNotations = new ArrayList<>();
     format = EnumNotationFormat.ALPHANUMERIC;
     formats = EnumNotationFormat.values();
   }
@@ -183,7 +153,7 @@ public class Notation extends BaseDomain implements Payload {
   }
 
   public void print() {
-    notationHistory.getNotation().forEach(notationDrive -> System.out.println(notationDrive.print("\n")));
+    notationHistory.getNotationDrives().forEach(notationDrive -> System.out.println(notationDrive.print("\n")));
   }
 
   public void setTags(ListOrderedMap<String, String> tags) {
@@ -201,7 +171,7 @@ public class Notation extends BaseDomain implements Payload {
     this.rules = rules;
     notationHistory.setRules(rules);
     if (forkedNotations != null) {
-      forkedNotations.replaceAll((s, nh) -> {
+      forkedNotations.replaceAll((nh) -> {
         nh.setRules(rules);
         return nh;
       });
@@ -212,7 +182,7 @@ public class Notation extends BaseDomain implements Payload {
     this.format = format;
     notationHistory.setFormat(format);
     if (forkedNotations != null) {
-      forkedNotations.replaceAll((s, nh) -> {
+      forkedNotations.replaceAll((nh) -> {
         nh.setFormat(format);
         return nh;
       });
@@ -246,10 +216,7 @@ public class Notation extends BaseDomain implements Payload {
   }
 
   public void addForkedNotationHistory(NotationHistory notationHistory) {
-    if (forkedNotations == null) {
-      forkedNotations = new HashMap<>();
-    }
-    forkedNotations.put(notationHistory.getId(), notationHistory);
+    forkedNotations.add(notationHistory);
   }
 
   public void addForkedNotationHistories(List<NotationHistory> byNotationId) {
@@ -257,7 +224,7 @@ public class Notation extends BaseDomain implements Payload {
   }
 
   public Optional<NotationHistory> findNotationHistoryByLine(NotationLine notationLine) {
-    return getForkedNotations().values()
+    return getForkedNotations()
         .stream()
         .filter(notationHistory -> notationHistory.getCurrentIndex().equals(notationLine.getCurrentIndex())
             && notationHistory.getVariantIndex().equals(notationLine.getVariantIndex()))
@@ -265,7 +232,7 @@ public class Notation extends BaseDomain implements Payload {
   }
 
   public void removeForkedNotations(NotationHistory notationHistory) {
-    forkedNotations.remove(notationHistory.getId());
+    forkedNotations.remove(notationHistory);
   }
 
   public void syncFormatAndRules() {

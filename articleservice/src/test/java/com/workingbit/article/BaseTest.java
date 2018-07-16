@@ -30,7 +30,7 @@
 //    Utils.setArticleUrlAndIdAndCreatedAt(article, true);
 //    article.setArticleStatus(EnumArticleStatus.DRAFT);
 //    article.setAuthor(Utils.getRandomString7());
-//    article.setSelectedBoardBoxId(DomainId.getRandomID());
+//    article.setSelectedBoardBox(DomainId.getRandomID());
 //    article.setContent(Utils.getRandomString7());
 //    article.setTitle(Utils.getRandomString7());
 //    return article;

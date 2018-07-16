@@ -1,10 +1,11 @@
 package com.workingbit.share.domain;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.workingbit.share.model.DomainId;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -12,36 +13,20 @@ import java.time.LocalDateTime;
 /**
  * Created by Aleksey Popryaduhin on 18:06 15/08/2017.
  */
-public abstract class BaseDomain implements Serializable, DeepClone, Cloneable {
+@Getter
+@Setter
+@Document(collection = BaseDomain.COLLECTION_NAME)
+public class BaseDomain implements Serializable, DeepClone, Cloneable {
 
-  @Nullable
-  public abstract String getId();
+  static final String COLLECTION_NAME = "baseDomain";
 
-  public abstract void setId(String id);
+  @Id
+  private String id;
 
-  @Nullable
-  public abstract LocalDateTime getCreatedAt();
+  @CreatedDate
+  private LocalDateTime createdAt;
 
-  public abstract void setCreatedAt(LocalDateTime createdAt);
+  @LastModifiedDate
+  private LocalDateTime modifiedAt;
 
-  @Nullable
-  @DynamoDBIgnore
-  @JsonIgnore
-  public DomainId getDomainId() {
-    return new DomainId(getId(), getCreatedAt());
-  }
-
-  public void setDomainId(@NotNull DomainId domainId) {
-    setId(domainId.getId());
-    setCreatedAt(domainId.getCreatedAt());
-  }
-
-  @Nullable
-  public abstract LocalDateTime getUpdatedAt();
-
-  public abstract void setUpdatedAt(LocalDateTime updatedAt);
-
-  public abstract boolean isReadonly();
-
-  public abstract void setReadonly(boolean readonly);
 }

@@ -14,7 +14,7 @@
 //
 //import static org.hamcrest.Matchers.equalTo;
 //import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
-//import static org.springframework.local.web.servlet.request.MockMvcRequestBuilders.getNotation;
+//import static org.springframework.local.web.servlet.request.MockMvcRequestBuilders.getNotationDrives;
 //import static org.springframework.local.web.servlet.result.MockMvcResultMatchers.*;
 //
 ///**
@@ -44,7 +44,7 @@
 //
 //  @Test
 //  public void checkHealth_returnsTenants() throws Exception {
-//    mockMvc.perform(getNotation("/board/" + board.getId()))
+//    mockMvc.perform(getNotationDrives("/board/" + board.getId()))
 //        .andExpect(content().contentType(APPLICATION_JSON_UTF8))
 //        .andExpect(articleStatus().isOk())
 //        .andExpect(jsonPath("$.id").value(equalTo(board.getId())));

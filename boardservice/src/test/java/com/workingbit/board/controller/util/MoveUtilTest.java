@@ -33,7 +33,7 @@
 //    board.setSelectedSquare(squareC3);
 //    board.setNextSquare(squareD4);
 //
-//    board = move(board, "c3", "d4", true, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "c3", "d4", true, boardBox.getNotationDrives().getNotationHistory());
 //    assertTrue(findSquareByNotation("d4", board).isOccupied());
 //    assertFalse(findSquareByNotation("c3", board).isOccupied());
 //  }
@@ -42,42 +42,42 @@
 //  public void should_move_2() {
 //    BoardBox boardBox = getBoardBox(true);
 //    Board board = boardBox.getBoard();
-//    board = move(board, "c3", "d4", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "d6", "e5", true, boardBox.getNotation().getNotationHistory());
-//    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
+//    board = move(board, "c3", "d4", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "d6", "e5", true, boardBox.getNotationDrives().getNotationHistory());
+//    System.out.println(printBoardNotation(boardBox.getNotationDrives().getNotationHistory()));
 //  }
 //
 //  @Test
 //  public void should_move_4() {
 //    BoardBox boardBox = getBoardBox(true);
 //    Board board = boardBox.getBoard();
-//    board = move(board, "c3", "d4", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "h6", "g5", true, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "a3", "b4", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "b6", "a5", true, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "c3", "d4", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "h6", "g5", true, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "a3", "b4", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "b6", "a5", true, boardBox.getNotationDrives().getNotationHistory());
 //
-//    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
-////    assertEquals("1. c3-d4 h6-g5 2. a3-b4 b6-a5", board.getNotation());
+//    System.out.println(printBoardNotation(boardBox.getNotationDrives().getNotationHistory()));
+////    assertEquals("1. c3-d4 h6-g5 2. a3-b4 b6-a5", board.getNotationDrives());
 //  }
 //
 //  @Test
 //  public void should_capture() {
 //    BoardBox boardBox = getBoardBox(true);
 //    Board board = boardBox.getBoard();
-//    board = move(board, "c3", "d4", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "f6", "e5", true, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "d4", "f6", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "g7", "e5", true, boardBox.getNotation().getNotationHistory());
-//    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
-////    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
+//    board = move(board, "c3", "d4", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "f6", "e5", true, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "d4", "f6", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "g7", "e5", true, boardBox.getNotationDrives().getNotationHistory());
+//    System.out.println(printBoardNotation(boardBox.getNotationDrives().getNotationHistory()));
+////    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotationDrives());
 //  }
 //
 //  @Test
 //  public void should_not_capture_not_allowed() {
 //    BoardBox boardBox = getBoardBox(true);
 //    Board board = boardBox.getBoard();
-//    board = move(board, "c3", "d4", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "f6", "e5", true, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "c3", "d4", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "f6", "e5", true, boardBox.getNotationDrives().getNotationHistory());
 //    Square d4 = findSquareByNotation("d4", board);
 //    board.setSelectedSquare(d4);
 //    MovesList movesList = getHighlightedBoard(board.isBlackTurn(), board);
@@ -90,7 +90,7 @@
 //    board.setBlackTurn(false);
 //
 //    try {
-//      board = move(board, "a1", "f6", true, boardBox.getNotation().getNotationHistory());
+//      board = move(board, "a1", "f6", true, boardBox.getNotationDrives().getNotationHistory());
 //    } catch (Exception e) {
 //      assertEquals(UNABLE_TO_MOVE, e.getMessage());
 //    }
@@ -100,17 +100,17 @@
 //  public void should_capture_2() {
 //    BoardBox boardBox = getBoardBox(true);
 //    Board board = boardBox.getBoard();
-//    board = move(board, "c3", "d4", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "f6", "e5", true, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "d4", "f6", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "g7", "e5", true, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "a3", "b4", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "h6", "g5", true, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "e3", "d4", false, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "e5", "c3", true, boardBox.getNotation().getNotationHistory());
-//    board = move(board, "c3", "a5", true, boardBox.getNotation().getNotationHistory());
-//    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
-////    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotation());
+//    board = move(board, "c3", "d4", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "f6", "e5", true, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "d4", "f6", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "g7", "e5", true, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "a3", "b4", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "h6", "g5", true, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "e3", "d4", false, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "e5", "c3", true, boardBox.getNotationDrives().getNotationHistory());
+//    board = move(board, "c3", "a5", true, boardBox.getNotationDrives().getNotationHistory());
+//    System.out.println(printBoardNotation(boardBox.getNotationDrives().getNotationHistory()));
+////    assertEquals("1. c3-d4 f6-e5 2. d4:f6 g7:e5", board.getNotationDrives());
 //  }
 //
 //  @Test
@@ -125,20 +125,20 @@
 //    board = addBlackDraught(board, "c5");
 //    Square b2 = findSquareByNotation("b2", board);
 //    board.setSelectedSquare(b2);
-//    board = move(board, "b2", "d4", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "b2", "d4", false, boardBox.getNotationDrives().getNotationHistory());
 //    MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d4"));
 //    testCollection("f6,d8,b6", highlight.getAllowed());
 //    testCollectionTree("e5,e7,c7,c5", highlight.getCaptured());
-//    board = move(board, "d4", "f6", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "d4", "f6", false, boardBox.getNotationDrives().getNotationHistory());
 //    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
 //    testCollection("b6,d4,d8", highlight.getAllowed());
 //    testCollectionTree("e7,c7,c5", highlight.getCaptured());
-//    board = move(board, "f6", "d8", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "f6", "d8", false, boardBox.getNotationDrives().getNotationHistory());
 //    assertTrue(findSquareByNotation("d8", board).getDraught().isQueen());
 //    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
 //    testCollection("b6,d4,e3,f2,g1,a5", highlight.getAllowed());
 //    testCollectionTree("c5,c7", highlight.getCaptured());
-//    board = move(board, "d8", "b6", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "d8", "b6", false, boardBox.getNotationDrives().getNotationHistory());
 //    assertTrue(findSquareByNotation("b6", board).getDraught().isQueen());
 //    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "b6"));
 //    testCollection("d4,e3,f2,g1", highlight.getAllowed());
@@ -156,10 +156,10 @@
 //    board = addBlackDraught(board, "e5");
 //    Square e1 = findSquareByNotation("e1", board);
 //    board.setSelectedSquare(e1);
-//    board = move(board, "e1", "a5", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "e1", "a5", false, boardBox.getNotationDrives().getNotationHistory());
 //    MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "a5"));
 //    assertTrue(testSameHighlight(board, highlight));
-//    board = move(board, "a5", "d8", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "a5", "d8", false, boardBox.getNotationDrives().getNotationHistory());
 //    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
 //    assertTrue(testSameHighlight(board, highlight));
 ////    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
@@ -170,7 +170,7 @@
 ////    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
 ////    testCollection("d4,e3,f2,g1,b6", highlight.getAllowed());
 ////    testCollection("c5,c7", highlight.getCaptured());
-//    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
+//    System.out.println(printBoardNotation(boardBox.getNotationDrives().getNotationHistory()));
 //  }
 //
 //  @Test
@@ -186,30 +186,30 @@
 //    board = addBlackDraught(board, "g3");
 //    Square d4 = findSquareByNotation("d4", board);
 //    board.setSelectedSquare(d4);
-//    board = move(board, "d4", "b6", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "d4", "b6", false, boardBox.getNotationDrives().getNotationHistory());
 //    MovesList highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "b6"));
 //    assertTrue(testSameHighlight(board, highlight));
 //
-//    board = move(board, "b6", "d8", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "b6", "d8", false, boardBox.getNotationDrives().getNotationHistory());
 //    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "d8"));
 //    assertTrue(testSameHighlight(board, highlight));
 //
-//    board = move(board, "d8", "f6", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "d8", "f6", false, boardBox.getNotationDrives().getNotationHistory());
 //    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
 //    assertTrue(testSameHighlight(board, highlight));
 //
-//    board = move(board, "f6", "h4", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "f6", "h4", false, boardBox.getNotationDrives().getNotationHistory());
 //    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "h4"));
 //    assertTrue(testSameHighlight(board, highlight));
 //
-//    board = move(board, "h4", "f2", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "h4", "f2", false, boardBox.getNotationDrives().getNotationHistory());
 //    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f2"));
 //    assertTrue(testSameHighlight(board, highlight));
 //
-//    board = move(board, "f2", "d4", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "f2", "d4", false, boardBox.getNotationDrives().getNotationHistory());
 //    assertTrue(testSameHighlight(board, new MovesList()));
 //
-//    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
+//    System.out.println(printBoardNotation(boardBox.getNotationDrives().getNotationHistory()));
 //  }
 //
 //  @Test
@@ -225,46 +225,46 @@
 //    board = addBlackDraught(board, "g3");
 //    Square d4 = findSquareByNotation("d4", board);
 //    board.setSelectedSquare(d4);
-//    board = move(board, "d4", "b6", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "d4", "b6", false, boardBox.getNotationDrives().getNotationHistory());
 //    Set<String> allowed = Set.of("d8", "f6", "h4", "f2", "d4");
 //    Set<String> captured = Set.of("c5");
 //    assertTrue(testSameHighlightCustom(board, allowed, captured));
-//    board = move(board, "b6", "d8", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "b6", "d8", false, boardBox.getNotationDrives().getNotationHistory());
 //    allowed = Set.of("f6", "h4", "f2", "d4", "e1");
 //    captured = Set.of("c5", "c7");
 //    assertTrue(testSameHighlightCustom(board, allowed, captured));
-//    board = move(board, "d8", "f6", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "d8", "f6", false, boardBox.getNotationDrives().getNotationHistory());
 //    allowed = Set.of("h4", "f2", "e1", "d4");
 //    captured = Set.of("c5", "c7", "e7");
 //    assertTrue(testSameHighlightCustom(board, allowed, captured));
-//    board = move(board, "f6", "h4", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "f6", "h4", false, boardBox.getNotationDrives().getNotationHistory());
 //    allowed = Set.of("f2", "d4", "e1");
 //    captured = Set.of("c5", "c7", "e7", "g5");
 //    assertTrue(testSameHighlightCustom(board, allowed, captured));
-//    board = move(board, "h4", "f2", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "h4", "f2", false, boardBox.getNotationDrives().getNotationHistory());
 //    allowed = Set.of("d4");
 //    captured = Set.of("c5", "c7", "e7", "g5", "g3");
 //    assertTrue(testSameHighlightCustom(board, allowed, captured));
-//    board = move(board, "f2", "d4", false, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "f2", "d4", false, boardBox.getNotationDrives().getNotationHistory());
 //    long occupiedOne = board.getAssignedSquares().stream().filter(Square::isOccupied).count();
 //    assertEquals(1, occupiedOne);
 //
-////    board = move(board, "d8", "f6", false, boardBox.getNotation().getNotationHistory());
+////    board = move(board, "d8", "f6", false, boardBox.getNotationDrives().getNotationHistory());
 ////    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f6"));
 ////    assertTrue(testSameHighlight(board, highlight));
 ////
-////    board = move(board, "f6", "h4", false, boardBox.getNotation().getNotationHistory());
+////    board = move(board, "f6", "h4", false, boardBox.getNotationDrives().getNotationHistory());
 ////    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "h4"));
 ////    assertTrue(testSameHighlight(board, highlight));
 ////
-////    board = move(board, "h4", "f2", false, boardBox.getNotation().getNotationHistory());
+////    board = move(board, "h4", "f2", false, boardBox.getNotationDrives().getNotationHistory());
 ////    highlight = HighlightMoveUtil.getHighlightedAssignedMoves(getSquare(board, "f2"));
 ////    assertTrue(testSameHighlight(board, highlight));
 ////
-////    board = move(board, "f2", "d4", false, boardBox.getNotation().getNotationHistory());
+////    board = move(board, "f2", "d4", false, boardBox.getNotationDrives().getNotationHistory());
 ////    assertTrue(testSameHighlight(board, new MovesList()));
 ////
-////    System.out.println(printBoardNotation(boardBox.getNotation().getNotationHistory()));
+////    System.out.println(printBoardNotation(boardBox.getNotationDrives().getNotationHistory()));
 //  }
 //
 //  @Test
@@ -280,7 +280,7 @@
 //    board.setSelectedSquare(squareC3);
 //    board.setNextSquare(squareD4);
 //
-//    board = move(board, "c7", "d8", true, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "c7", "d8", true, boardBox.getNotationDrives().getNotationHistory());
 //    assertTrue(findSquareByNotation("d8", board).isOccupied());
 //    assertFalse(findSquareByNotation("c7", board).isOccupied());
 //  }
@@ -299,7 +299,7 @@
 //    board.setSelectedSquare(squareC7);
 //    board.setNextSquare(squareD6);
 //
-//    board = move(board, "c7", "d6", true, boardBox.getNotation().getNotationHistory());
+//    board = move(board, "c7", "d6", true, boardBox.getNotationDrives().getNotationHistory());
 //    squareC7 = BoardUtils.findSquareByNotation(c7, board);
 //    assertFalse(squareC7.isOccupied());
 //    squareD6 = BoardUtils.findSquareByNotation(d6, board);

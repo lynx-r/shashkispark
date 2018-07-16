@@ -8,7 +8,6 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -119,48 +118,5 @@ public class Draught extends BaseDomain implements ICoordinates {
         ", markCaptured=" + markCaptured +
         ", highlight=" + highlight +
         '}';
-  }
-
-  @JsonIgnore
-  @Override
-  public String getId() {
-    return null;
-  }
-
-  @Override
-  public void setId(String id) {
-
-  }
-
-  @JsonIgnore
-  @Override
-  public LocalDateTime getCreatedAt() {
-    return null;
-  }
-
-  @Override
-  public void setCreatedAt(LocalDateTime createdAt) {
-
-  }
-
-  @Override
-  public LocalDateTime getUpdatedAt() {
-    return null;
-  }
-
-  @Override
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-
-  }
-
-  @JsonIgnore
-  @Override
-  public boolean isReadonly() {
-    return false;
-  }
-
-  @Override
-  public void setReadonly(boolean readonly) {
-
   }
 }

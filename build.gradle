@@ -89,6 +89,13 @@ configure(subprojects) {
         compile 'org.apache.commons:commons-lang3:3.5'
         compile 'org.apache.commons:commons-collections4:4.1'
 
+        // https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
+        testCompile group: 'org.springframework.security', name: 'spring-security-test', version: "${springVersion}"
+        // https://mvnrepository.com/artifact/io.projectreactor/reactor-test
+        testCompile group: 'io.projectreactor', name: 'reactor-test'
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+        testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+
 //        compile('com.sparkjava:spark-core:2.7.2')
 
 //        compile 'com.github.spotbugs:spotbugs:3.1.3'
@@ -113,8 +120,12 @@ configure(subprojects.findAll { it.name.endsWith('service') }) { p ->
 //        compile('org.springframework.boot:spring-boot-starter-web')
 //        providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 //        testCompile('org.springframework.boot:spring-boot-starter-test')
-
-        compile 'io.reactivex:rxjava:1.2.2'
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+        // https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
+        compile group: 'org.springframework.security', name: 'spring-security-web', version: "${springVersion}"
 
         // https://mvnrepository.com/artifact/org.springframework.security/spring-security-acl
 //        compile group: 'org.springframework.security', name: 'spring-security-acl'
@@ -136,39 +147,39 @@ project(':securityservice') {
     }
 }
 
-project(':articleservice') {
-//    springBoot {
+//project(':articleservice') {
+////    springBoot {
+////        mainClassName = 'com.workingbit.article.ArticleApplication'
+////        version = '1.0'
+////    }
+//
+//    bootRun {
 //        mainClassName = 'com.workingbit.article.ArticleApplication'
 //        version = '1.0'
 //    }
-
-    bootRun {
-        mainClassName = 'com.workingbit.article.ArticleApplication'
-        version = '1.0'
-    }
-
-    dependencies {
-//        compile 'org.ehcache:ehcache:3.5.2'
-        compile project(':orchestratemodule')
-
-    }
-}
-
-project(':boardservice') {
-    bootRun {
-        mainClassName = 'com.workingbit.board.BoardApplication'
-        version = '1.0'
-    }
-
-    dependencies {
-
-//        compile 'org.ehcache:ehcache:3.5.2'
-
-        compile project(':orchestratemodule')
-
-        compile files('lib/grammatica-1.6.jar')
-    }
-}
+//
+//    dependencies {
+////        compile 'org.ehcache:ehcache:3.5.2'
+//        compile project(':orchestratemodule')
+//
+//    }
+//}
+//
+//project(':boardservice') {
+//    bootRun {
+//        mainClassName = 'com.workingbit.board.BoardApplication'
+//        version = '1.0'
+//    }
+//
+//    dependencies {
+//
+////        compile 'org.ehcache:ehcache:3.5.2'
+//
+//        compile project(':orchestratemodule')
+//
+//        compile files('lib/grammatica-1.6.jar')
+//    }
+//}
 
 project(':orchestratemodule') {
     jar {
@@ -206,20 +217,8 @@ project(':sharedmodule') {
 
         compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.150'
 
-        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux
-        compile group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
         // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-mongodb-reactive
         compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb-reactive'
-        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
-        compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-        // https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
-        compile group: 'org.springframework.security', name: 'spring-security-web', version: "${springVersion}"
-        // https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
-        testCompile group: 'org.springframework.security', name: 'spring-security-test', version: "${springVersion}"
-        // https://mvnrepository.com/artifact/io.projectreactor/reactor-test
-        testCompile group: 'io.projectreactor', name: 'reactor-test'
-        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
-        testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 
 //        compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
 

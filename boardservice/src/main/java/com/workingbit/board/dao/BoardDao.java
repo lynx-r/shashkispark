@@ -25,14 +25,14 @@
 //
 //  public List<Board> findByBoardBoxId(@NotNull DomainId boardBoxDomainId) {
 //    DaoFilters filterPublic = new DaoFilters();
-//    filterPublic.add(new ValueFilter("boardBoxId.id", boardBoxDomainId.getId(), "=", "S"));
+//    filterPublic.add(new ValueFilter("boardBox.id", boardBoxDomainId.getId(), "=", "S"));
 //    return findByFilter(filterPublic);
 //  }
 //
 //  public List<Board> findByBoardBoxIds(@NotNull DomainIds boardBoxIds) {
 //    DaoFilters filterPublic = new DaoFilters();
-//    for (DomainId boardBoxId : boardBoxIds.getIds()) {
-//      filterPublic.add(new ValueFilter("boardBoxId.id", boardBoxId.getId(), "=", "S"));
+//    for (DomainId boardBox : boardBoxIds.getIds()) {
+//      filterPublic.add(new ValueFilter("boardBox.id", boardBox.getId(), "=", "S"));
 //      filterPublic.add(new Unary("or"));
 //    }
 //    filterPublic.removeLast();

@@ -68,7 +68,7 @@ public class BoardBoxService {
           DomainId boardBoxId = createBoardPayload.getBoardBoxId();
           boardBox.setDomainId(boardBoxId);
           DomainId articleId = createBoardPayload.getArticleId();
-          boardBox.setArticleId(articleId);
+          boardBox.setArticle(articleId);
           DomainId userId = createBoardPayload.getUserId();
           boardBox.setUserId(userId);
           boardBox.setIdInArticle(createBoardPayload.getIdInArticle());
@@ -99,7 +99,7 @@ public class BoardBoxService {
 
   Mono<BoardBox> createBoardBoxFromNotation(DomainId articleId, int idInArticle, @NotNull Notation parsedNotation, @NotNull AuthUser authUser) {
     BoardBox boardBox = new BoardBox();
-    boardBox.setArticleId(articleId);
+    boardBox.setArticle(articleId);
     boardBox.setUserId(authUser.getUserId());
     boardBox.setIdInArticle(idInArticle);
     Utils.setRandomIdAndCreatedAt(boardBox);
@@ -109,19 +109,20 @@ public class BoardBoxService {
         parsedNotation, parsedNotation.getRules());
     NotationHistory filledNotationHistory = parsedNotation.getNotationHistory();
     // switch boardBox to the first board
-    return filledNotationHistory.getLastNotationBoardId()
-        .flatMap(firstBoardId -> {
-          var firstBoard = boardRepository.findById(firstBoardId);
-          return firstBoard.map((board -> {
-            board = boardService.updateBoard(board);
-            boardBox.setNotationId(parsedNotation.getDomainId());
-            boardBox.setNotation(parsedNotation);
-            boardBox.setBoardId(firstBoardId);
-            boardBox.setBoard(board);
-            boardBoxRepository.save(boardBox);
-            return boardBox;
-          }));
-        });
+    DomainId lastNotationBoardId = filledNotationHistory.getLastNotationBoardId();
+    if (lastNotationBoardId != null) {
+      var firstBoard = boardRepository.findById(lastNotationBoardId);
+      return firstBoard.map((board -> {
+        board = boardService.updateBoard(board);
+        boardBox.setNotationId(parsedNotation.getDomainId());
+        boardBox.setNotation(parsedNotation);
+        boardBox.setBoard(lastNotationBoardId);
+        boardBox.setBoard(board);
+        boardBoxRepository.save(boardBox);
+        return boardBox;
+      }));
+    }
+    return Mono.empty();
   }
 
 //  @NotNull
@@ -147,38 +148,38 @@ public class BoardBoxService {
     }
   }
 
-//  public Mono<BoardBoxes> findByArticleId(@NotNull DomainId articleId, @NotNull String queryValue, @NotNull AuthUser authUser) {
+//  public Mono<BoardBoxes> findByArticleId(@NotNull DomainId article, @NotNull String queryValue, @NotNull AuthUser authUser) {
 ////    if (queryValue.equals(PUBLIC_QUERY)) {
-////      return findPublicByArticleId(articleId);
+////      return findPublicByArticleId(article);
 ////    }
 ////    if (!EnumAuthority.hasAuthorAuthorities(authUser)) {
 ////      throw RequestException.forbidden();
 ////    }
 //    return boardBoxRepository
-//        .findByArticleId_Id(articleId.getId())
+//        .findByArticleId_Id(article.getId())
 //        .collectList()
-//        .flatMap(boardBoxes -> fillBoardBoxes(articleId, boardBoxes));
+//        .flatMap(boardBoxes -> fillBoardBoxes(article, boardBoxes));
 //  }
 
-//  private Mono<List<BoardBox>> findPublicByArticleId(@NotNull DomainId articleId) {
-//    return boardBoxRepository.findByArticleId_Id(articleId.getId())
+//  private Mono<List<BoardBox>> findPublicByArticleId(@NotNull DomainId article) {
+//    return boardBoxRepository.findByArticleId_Id(article.getId())
 //        .collectList()
-//        .flatMap(boardBox -> fillBoardBoxes(articleId, boardBox));
+//        .flatMap(boardBox -> fillBoardBoxes(article, boardBox));
 //  }
 
-//  public BoardBox deleteBoardBox(DomainId boardBoxId, AuthUser authUser) {
-//    var boardBox = boardBoxRepository.findById(boardBoxId);
+//  public BoardBox deleteBoardBox(DomainId boardBox, AuthUser authUser) {
+//    var boardBox = boardBoxRepository.findById(boardBox);
 //    if (boardBox == null) {
 //      throw RequestException.notFound404();
 //    }
-//    boardRepository.deleteByBoardBoxId(boardBoxId);
+//    boardRepository.deleteByBoardBoxId(boardBox);
 //    notationHistoryService.deleteByNotationId(boardBox.getNotationId());
 //    notationService.deleteById(boardBox.getNotationId());
 //    boardBoxRepository.delete(boardBox.getDomainId());
 ////    boardBoxStoreService.remove(boardBox);
-//    DomainId articleId = boardBox.getArticleId();
+//    DomainId article = boardBox.getArticle();
 //    try {
-//      var byArticleId = boardBoxRepository.findByArticleId(articleId);
+//      var byArticleId = boardBoxRepository.findByArticleId(article);
 //      ListOrderedMap<String, BoardBox> boardBoxes = byArticleId.getBoardBoxes();
 //      BoardBoxes updatedBB = new BoardBoxes();
 //      List<BoardBox> valueList = boardBoxes.valueList();
@@ -200,9 +201,9 @@ public class BoardBoxService {
 //    }
 //  }
 
-//  public Payload deleteBoardBoxByArticleId(DomainId articleId, AuthUser token) {
+//  public Payload deleteBoardBoxByArticleId(DomainId article, AuthUser token) {
 //    try {
-//      BoardBoxes byArticleId = boardBoxRepository.findByArticleId(articleId);
+//      BoardBoxes byArticleId = boardBoxRepository.findByArticleId(article);
 //      byArticleId.getBoardBoxes().valueList().forEach(boardBox -> deleteBoardBox(boardBox.getDomainId(), token));
 //    } catch (Exception e) {
 //      logger.error(e.getMessage(), e);
@@ -287,7 +288,7 @@ public class BoardBoxService {
     }
 
     boardBox.setBoard(clientBoard);
-    boardBox.setBoardId(clientBoard.getDomainId());
+    boardBox.setBoard(clientBoard.getDomainId());
     notation.addForkedNotationHistory(notationHistory);
     notationHistoryService.save(notationHistory);
     notationService.syncSubVariants(notationHistory, notation);
@@ -323,7 +324,7 @@ public class BoardBoxService {
 //    inverted.setBlackTurn(black);
 //    boardService.save(inverted);
 //
-//    Notation notation = updatedBox.getNotation();
+//    Notation notation = updatedBox.getNotationDrives();
 //    notation.getNotationFen().setBlackTurn(black);
 //    notationService.save(notation, true);
 //
@@ -344,7 +345,7 @@ public class BoardBoxService {
 //    // reset board
 //    Board board = boardService.createBoard(boardBox.getBoard(), boardBox.getDomainId());
 //    board = boardService.initWithDraughtsOnBoard(board);
-//    boardBox.setBoardId(board.getDomainId());
+//    boardBox.setBoard(board.getDomainId());
 //    boardBox.setBoard(board);
 //
 //    // clear notation
@@ -361,7 +362,7 @@ public class BoardBoxService {
 //    }
 //
 //    Board board = boardService.createBoard(boardBox.getBoard(), boardBox.getDomainId());
-//    boardBox.setBoardId(board.getDomainId());
+//    boardBox.setBoard(board.getDomainId());
 //    boardBox.setBoard(board);
 //    boardBoxRepository.save(boardBox);
 //
@@ -375,7 +376,7 @@ public class BoardBoxService {
   }
 
 //  public BoardBox markTask(BoardBox boardBoxIn, AuthUser authUser) {
-//    return boardBoxRepository.findByArticleId_Id(boardBoxIn.getArticleId().getId())
+//    return boardBoxRepository.findByArticleId_Id(boardBoxIn.getArticle().getId())
 //    .map(boardBox -> {
 //      updateMarkTaskId(boardBoxIn, boardBox);
 //      return save(boardBoxIn, authUser);
@@ -384,16 +385,16 @@ public class BoardBoxService {
 
 //  @NotNull
 //  public BoardBox loadPreviewBoard(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
-//    Mono<Board> loadBoard = boardRepository.findById(boardBox.getBoardId());
+//    Mono<Board> loadBoard = boardRepository.findById(boardBox.getBoard());
 //    loadBoard = boardService.resetHighlightAndUpdate(loadBoard);
 //    boardBox.setBoard(loadBoard);
 //    boardBoxRepository.save(boardBox);
-//    Notation notation = boardBox.getNotation();
+//    Notation notation = boardBox.getNotationDrives();
 //    notation.syncFormatAndRules();
 //    notationHistoryService.save(notation.getNotationHistory());
 ////    notationStoreService.removeNotation(notation);
 ////    boardBoxStoreService.remove(boardBox);
-////    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
+////    boardBoxStoreService.removeByArticleId(boardBox.getArticle());
 //    return boardBox;
 //  }
 
@@ -410,12 +411,12 @@ public class BoardBoxService {
 //    Board currentBoard = updated.getBoard();
 //    Square squareLink = findSquareByLink(selectedSquare, currentBoard);
 //    try {
-//      currentBoard = boardService.addDraught(currentBoard, squareLink.getNotation(), draught);
+//      currentBoard = boardService.addDraught(currentBoard, squareLink.getNotationDrives(), draught);
 //    } catch (Exception e) {
 //      logger.error(e.getMessage(), e);
 //      throw RequestException.badRequest(e.getMessage());
 //    }
-//    updated.setBoardId(currentBoard.getDomainId());
+//    updated.setBoard(currentBoard.getDomainId());
 //    updated.setBoard(currentBoard);
 //    saveAndFillBoard(updated, authUser);
 //    return updated;
@@ -424,14 +425,14 @@ public class BoardBoxService {
 //  @Nullable
 //  public BoardBox undo(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
 //    var filledBoardBox = findAndFill(boardBox, authUser);
-//    NotationHistory history = filledBoardBox.getNotation().getNotationHistory();
+//    NotationHistory history = filledBoardBox.getNotationDrives().getNotationHistory();
 //    int forkToDrive = history.size() - 1;
 //    return forkNotationForVariants(filledBoardBox, forkToDrive, authUser);
 //  }
 
 //  @Nullable
 //  public BoardBox redo(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
-//    NotationLine notationLine = boardBox.getNotation().getNotationHistory().getNotationLine();
+//    NotationLine notationLine = boardBox.getNotationDrives().getNotationHistory().getNotationLine();
 //    var filledBoardBox = findAndFill(boardBox, authUser);
 //    return switchNotationToVariant(notationLine, filledBoardBox, authUser);
 //  }
@@ -439,40 +440,40 @@ public class BoardBoxService {
 //  @NotNull
 //  public BoardBoxes viewBranch(@NotNull BoardBox boardBox, @NotNull AuthUser token) {
 //    switchNotation(boardBox, token);
-//    BoardBoxes byArticleId = boardBoxRepository.findByArticleId(boardBox.getArticleId());
-//    return fillBoardBoxes(boardBox.getArticleId(), byArticleId);
+//    BoardBoxes byArticleId = boardBoxRepository.findByArticleId(boardBox.getArticle());
+//    return fillBoardBoxes(boardBox.getArticle(), byArticleId);
 //  }
 
 //  @NotNull
 //  public BoardBoxes forkNotation(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
-//    int currentNotationDrive = boardBox.getNotation().getNotationHistory().getCurrentIndex();
+//    int currentNotationDrive = boardBox.getNotationDrives().getNotationHistory().getCurrentIndex();
 //    var filledBoardBox = findAndFill(boardBox, authUser);
 //    forkNotationForVariants(filledBoardBox, currentNotationDrive, authUser);
-//    BoardBoxes byArticleId = boardBoxRepository.findByArticleId(boardBox.getArticleId());
-//    return fillBoardBoxes(boardBox.getArticleId(), byArticleId);
+//    BoardBoxes byArticleId = boardBoxRepository.findByArticleId(boardBox.getArticle());
+//    return fillBoardBoxes(boardBox.getArticle(), byArticleId);
 //  }
 
 //  @NotNull
 //  public BoardBoxes switchNotation(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
-//    NotationLine notationLine = boardBox.getNotation().getNotationHistory().getNotationLine();
+//    NotationLine notationLine = boardBox.getNotationDrives().getNotationHistory().getNotationLine();
 //    var filledBoardBox = findAndFill(boardBox, authUser);
 //    switchNotationToVariant(notationLine, filledBoardBox, authUser);
-//    BoardBoxes byArticleId = boardBoxRepository.findByArticleId(boardBox.getArticleId());
-//    return fillBoardBoxes(boardBox.getArticleId(), byArticleId);
+//    BoardBoxes byArticleId = boardBoxRepository.findByArticleId(boardBox.getArticle());
+//    return fillBoardBoxes(boardBox.getArticle(), byArticleId);
 //  }
 
 //  private BoardBox switchNotationToVariant(NotationLine notationLine, BoardBox boardBox, AuthUser authUser) {
 //    try {
-//      Notation switched = notationService.switchTo(notationLine, boardBox.getNotation());
+//      Notation switched = notationService.switchTo(notationLine, boardBox.getNotationDrives());
 //      // switch to new board
 //      if (switched.getNotationHistory().size() == 1) {
-//        DomainId boardId = boardBox.getNotation().getNotationFen().getBoardId();
-//        return saveBoardBoxAfterSwitchFork(boardBox, boardId, authUser);
+//        DomainId board = boardBox.getNotationDrives().getNotationFen().getBoard();
+//        return saveBoardBoxAfterSwitchFork(boardBox, board, authUser);
 //      }
 //      return switched.getNotationHistory()
 //          .getLastNotationBoardId()
-//          .map(boardId ->
-//              saveBoardBoxAfterSwitchFork(boardBox, boardId, authUser))
+//          .map(board ->
+//              saveBoardBoxAfterSwitchFork(boardBox, board, authUser))
 //          .orElse(null);
 //    } catch (DaoException e) {
 //      logger.error(e.getMessage(), e);
@@ -484,28 +485,28 @@ public class BoardBoxService {
 //    Board board = boardBox.getBoard().deepClone();
 //    Utils.setRandomIdAndCreatedAt(board);
 //    boardService.save(board);
-//    Notation notation = boardBox.getNotation();
+//    Notation notation = boardBox.getNotationDrives();
 //    Notation forked = notationService.forkAt(forkFromNotationDrive, notation);
 //    // switch to new board
 //    if (forked != null && forked.getNotationHistory().size() != 1) {
 //      return forked.getNotationHistory()
 //          .getLastNotationBoardIdInVariants()
-//          .map(boardId -> saveBoardBoxAfterSwitchFork(boardBox, boardId, authUser))
+//          .map(board -> saveBoardBoxAfterSwitchFork(boardBox, board, authUser))
 //          .orElse(null);
 //    }
-//    DomainId boardId = notation.getNotationFen().getBoardId();
-//    return saveBoardBoxAfterSwitchFork(boardBox, boardId, authUser);
+//    DomainId board = notation.getNotationFen().getBoard();
+//    return saveBoardBoxAfterSwitchFork(boardBox, board, authUser);
 //  }
 
 //  @NotNull
-//  private BoardBox saveBoardBoxAfterSwitchFork(BoardBox boardBox, DomainId boardId, @Nullable AuthUser authUser) {
-//    var board = boardRepository.findById(boardId);
+//  private BoardBox saveBoardBoxAfterSwitchFork(BoardBox boardBox, DomainId board, @Nullable AuthUser authUser) {
+//    var board = boardRepository.findById(board);
 //    board = boardService.updateBoard(board);
 //    boardRepository.save(board);
 //    boardBox.setBoard(board);
-//    boardBox.setBoardId(board.getDomainId());
+//    boardBox.setBoard(board.getDomainId());
 //    boardBoxRepository.save(boardBox);
-//    notationService.save(boardBox.getNotation(), true);
+//    notationService.save(boardBox.getNotationDrives(), true);
 //    return boardBox;
 //  }
 
@@ -514,14 +515,14 @@ public class BoardBoxService {
   }
 
   private boolean resetHighlightIfNotLastBoard(BoardBox boardBox) {
-    NotationDrives notationDrives = boardBox.getNotation().getNotationHistory().getNotation();
+    NotationDrives notationDrives = boardBox.getNotation().getNotationHistory().getNotationDrives();
     boolean isLastSelected = notationDrives.getLast().isSelected();
     return !isLastSelected;
   }
 
 //  @NotNull
 //  private BoardBox updateBoardBox(BoardBox boardBox) {
-//    Flux.concat(boardService.findById(boardBox.getBoardId()), notationService.findById(boardBox.getNotationId()))
+//    Flux.concat(boardService.findById(boardBox.getBoard()), notationService.findById(boardBox.getNotationId()))
 //        .map(baseDomain -> {
 //
 //        })
@@ -530,7 +531,7 @@ public class BoardBoxService {
 //    board.setReadonly(boardBox.isReadonly());
 //    boardBox.setBoard(board);
 //    notation.setRules(board.getRules());
-//    boardBox.setNotation(notation);
+//    boardBox.setNotationDrives(notation);
 //    boardBox.setNotationId(notation.getDomainId());
 ////    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
 //    return boardBox;
@@ -542,7 +543,7 @@ public class BoardBoxService {
 //    return notationService
 //        .findById(boardBox.getNotationId())
 //        .map(notation -> {
-//          boardBox.setNotation(notation);
+//          boardBox.setNotationDrives(notation);
 //          boardBox.setNotationId(notation.getDomainId());
 ////    boardBoxStoreService.put(authUser.getUserSession(), boardBox);
 //          return boardBox;
@@ -553,7 +554,7 @@ public class BoardBoxService {
   private BoardBox saveAndFillBoard(@NotNull BoardBox boardBox, @NotNull AuthUser authUser) {
     boardBoxRepository.save(boardBox);
     Board board = boardBox.getBoard();
-    board.setBoardBoxId(boardBox.getDomainId());
+    board.setBoardBox(boardBox.getDomainId());
     boardService.save(board);
     Notation notation = boardBox.getNotation();
     if (boardBox.getEditMode().equals(EnumEditBoardBoxMode.EDIT)
@@ -564,7 +565,7 @@ public class BoardBoxService {
     notationService.save(notation, true);
 //    boardBox = updateBoardBox(boardBox);
 //    boardBoxStoreService.remove(boardBox);
-//    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
+//    boardBoxStoreService.removeByArticleId(boardBox.getArticle());
     return boardBox;
   }
 
@@ -573,7 +574,7 @@ public class BoardBoxService {
 //  }
 
 //  @NotNull
-//  private Mono<BoardBoxes> fillBoardBoxes(@NotNull DomainId articleId, List<BoardBox> byUserAndIds) {
+//  private Mono<BoardBoxes> fillBoardBoxes(@NotNull DomainId article, List<BoardBox> byUserAndIds) {
 //    DomainIds domainIds = byUserAndIds
 //        .valueList()
 //        .stream()
@@ -582,7 +583,7 @@ public class BoardBoxService {
 //    fillNotations(byUserAndIds, domainIds);
 //    fillWithBoards(byUserAndIds);
 //
-////    boardBoxStoreService.putByArticleId(authUser.getUserSession(), articleId, byUserAndIds);
+////    boardBoxStoreService.putByArticleId(authUser.getUserSession(), article, byUserAndIds);
 //    return byUserAndIds;
 //  }
 
@@ -594,12 +595,12 @@ public class BoardBoxService {
 //    List<Notation> notationByIds = notationService.findByIds(domainIds);
 //    Map<String, Notation> notationMap = notationByIds
 //        .stream()
-//        .collect(Collectors.toMap(o -> o.getBoardBoxId().getId(), o -> o));
+//        .collect(Collectors.toMap(o -> o.getBoardBox().getId(), o -> o));
 //
 //    // fill BoardBox
 //    for (BoardBox boardBox : byUserAndIds.valueList()) {
 //      Notation notation = notationMap.get(boardBox.getId());
-//      boardBox.setNotation(notation);
+//      boardBox.setNotationDrives(notation);
 //    }
 //  }
 
@@ -618,10 +619,10 @@ public class BoardBoxService {
     Flux<Board> boards = boardRepository.findByBoardBoxIdIn(domainIds);
     return boards.map(board -> {
 //      board = boardService.updateBoard(board);
-      BoardBox boardBox = boardBoxByDomainId.get(board.getBoardBoxId());
+      BoardBox boardBox = boardBoxByDomainId.get(board.getBoardBox());
       board.setReadonly(boardBox.isReadonly());
       boardBox.getPublicBoards().add(board);
-      if (boardBox.getBoardId().getId().equals(board.getId())) {
+      if (boardBox.getBoard().getId().equals(board.getId())) {
         boardBox.setBoard(board);
       }
       return boardBox;
@@ -630,20 +631,20 @@ public class BoardBoxService {
 
 //  @NotNull
 //  public BoardBox removeVariant(@NotNull BoardBox boardBox, AuthUser authUser) {
-//    Optional<NotationLine> notationLine = notationService.removeVariant(boardBox.getNotation());
+//    Optional<NotationLine> notationLine = notationService.removeVariant(boardBox.getNotationDrives());
 //    if (notationLine.isPresent()) {
 //      return switchNotationToVariant(notationLine.get(), boardBox, authUser);
 //    }
 //    Notation byId = notationService.findById(boardBox.getNotationId());
-//    boardBox.setNotation(byId);
+//    boardBox.setNotationDrives(byId);
 //    byId.getNotationHistory().setLastSelected(true);
-//    byId.getNotationHistory().getNotation().setLastMoveCursor();
+//    byId.getNotationHistory().getNotationDrives().setLastMoveCursor();
 //    notationService.save(byId, false);
 //    return byId.getNotationHistory().getLastNotationBoardId()
-//        .map(boardId -> {
-//          Board board = boardService.findById(boardId);
+//        .map(board -> {
+//          Board board = boardService.findById(board);
 //          boardBox.setBoard(board);
-//          boardBox.setBoardId(boardId);
+//          boardBox.setBoard(board);
 //          boardBoxRepository.save(boardBox);
 //          return boardBox;
 //        })
@@ -667,6 +668,6 @@ public class BoardBoxService {
       }
     }
     return boardBoxRepository.saveAll(valueList);
-//    boardBoxStoreService.removeByArticleId(boardBox.getArticleId());
+//    boardBoxStoreService.removeByArticleId(boardBox.getArticle());
   }
 }

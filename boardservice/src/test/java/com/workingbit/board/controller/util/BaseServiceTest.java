@@ -63,7 +63,7 @@
 //    Board board = BoardUtils.initBoard(fillBoard, false, EnumRules.RUSSIAN);
 //    Utils.setRandomIdAndCreatedAt(board);
 //    BoardBox boardBox = new BoardBox(board);
-//    boardBox.setNotation(new Notation());
+//    boardBox.setNotationDrives(new Notation());
 //    return boardBox;
 //  }
 //
@@ -72,7 +72,7 @@
 //    BoardBox boardBox = new BoardBox();
 //    boardBox.setId(Utils.getRandomString7());
 //    boardBox.setCreatedAt(LocalDateTime.now());
-//    boardBox.setArticleId(DomainId.getRandomID());
+//    boardBox.setArticle(DomainId.getRandomID());
 //    return boardBoxService.save(boardBox, token);
 //  }
 //
@@ -117,15 +117,15 @@
 //  @NotNull
 //  protected CreateBoardPayload getCreateBoardRequest(boolean black, boolean fillBoard, EnumRules rules,
 //                                                     EnumEditBoardBoxMode editMode) {
-//    DomainId boardBoxId = DomainId.getRandomID();
-//    DomainId articleId = DomainId.getRandomID();
+//    DomainId boardBox = DomainId.getRandomID();
+//    DomainId article = DomainId.getRandomID();
 //
 //    CreateBoardPayload createBoardPayload = new CreateBoardPayload();
 //    createBoardPayload.setBlack(black);
 //    createBoardPayload.setFillBoard(fillBoard);
 //    createBoardPayload.setRules(rules);
-//    createBoardPayload.setArticleId(articleId);
-//    createBoardPayload.setBoardBoxId(boardBoxId);
+//    createBoardPayload.setArticle(article);
+//    createBoardPayload.setBoardBox(boardBox);
 //    createBoardPayload.setEditMode(editMode);
 //    return createBoardPayload;
 //  }
@@ -161,7 +161,7 @@
 //  }
 //
 //  protected void testCollection(@NotNull String notations, @NotNull Set<Square> items) {
-//    List<String> collection = items.stream().map(ICoordinates::getNotation).collect(Collectors.toList());
+//    List<String> collection = items.stream().map(ICoordinates::getNotationDrives).collect(Collectors.toList());
 //    String[] notation = notations.split(",");
 //    Arrays.stream(notation).forEach(n -> {
 //      assertTrue(collection.toString(), collection.contains(n));
@@ -170,7 +170,7 @@
 //  }
 //
 //  protected void testCollectionTree(@NotNull String notations, @NotNull TreeSquare items) {
-//    List<String> collection = items.flatTree().stream().map(ICoordinates::getNotation).collect(Collectors.toList());
+//    List<String> collection = items.flatTree().stream().map(ICoordinates::getNotationDrives).collect(Collectors.toList());
 //    String[] notation = notations.split(",");
 //    Arrays.stream(notation).forEach(n -> {
 //      assertTrue(collection.toString(), collection.contains(n));

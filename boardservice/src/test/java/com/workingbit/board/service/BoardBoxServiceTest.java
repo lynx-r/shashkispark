@@ -125,10 +125,10 @@
 //  @Test
 //  public void delete() {
 //    BoardBox board = getBoardBoxWhiteNotFilledRUSSIAN();
-//    DomainId boardId = board.getDomainId();
-//    assertNotNull(boardId);
-//    boardBoxService().deleteBoardBox(boardId, authUser);
-//    BoardBox byId = boardBoxService().findPublicById(boardId);
+//    DomainId board = board.getDomainId();
+//    assertNotNull(board);
+//    boardBoxService().deleteBoardBox(board, authUser);
+//    BoardBox byId = boardBoxService().findPublicById(board);
 //    assertNotNull(byId);
 //  }
 //
@@ -149,22 +149,22 @@
 //      Notation notation = notationParserService.parse(bufferedReader);
 //      notation.setRules(RUSSIAN);
 //
-//      DomainId articleId = DomainId.getRandomID();
-//      String boardBoxId = Utils.getRandomString7();
+//      DomainId article = DomainId.getRandomID();
+//      String boardBox = Utils.getRandomString7();
 //
 //      // Create BoardBox from Notation
-//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
 //      // Test createWithoutRoot BoardBox moving draughts
-//      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
+//      NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory();
 //      BoardBox current = boardBox.deepClone();
-//      for (NotationDrive drive : notationDrives.getNotation()) {
+//      for (NotationDrive drive : notationDrives.getNotationDrives()) {
 //        for (NotationMove move : drive.getMoves()) {
 //          current = moveStrokes(current, move);
 //        }
 //      }
-//      String newPdn = current.getNotation().getAsStringAlphaNumeric();
-//      String oldPdn = boardBox.getNotation().getAsStringAlphaNumeric();
+//      String newPdn = current.getNotationDrives().getAsStringAlphaNumeric();
+//      String oldPdn = boardBox.getNotationDrives().getAsStringAlphaNumeric();
 //      assertEquals(oldPdn, newPdn);
 //    }
 //  }
@@ -180,19 +180,19 @@
 //      Notation notation = notationParserService.parse(bufferedReader);
 //      notation.setRules(RUSSIAN);
 //
-//      DomainId articleId = DomainId.getRandomID();
-//      String boardBoxId = Utils.getRandomString7();
+//      DomainId article = DomainId.getRandomID();
+//      String boardBox = Utils.getRandomString7();
 //
 //      // Create BoardBox from Notation
-//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
-//      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
+//      NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory();
 //
 //      NotationDrive forkDrive = notationDrives.get(forkNumber);
 //
 //      BoardBox boardBoxVariant = getForkNotation(boardBox);
 //
-//      NotationHistory nds = boardBoxVariant.getNotation().getNotationHistory();
+//      NotationHistory nds = boardBoxVariant.getNotationDrives().getNotationHistory();
 //      NotationDrive nd = nds.get(forkNumber - 1);
 //      assertEquals(nd.getVariants().getLast().getVariants().size(), notationDrives.size() - forkNumber);
 //      System.out.println("Prev: " + notationDrives.notationToPdn(EnumNotationFormat.ALPHANUMERIC));
@@ -211,25 +211,25 @@
 //      Notation notation = notationParserService.parse(bufferedReader);
 //      notation.setRules(RUSSIAN);
 //
-//      DomainId articleId = DomainId.getRandomID();
-//      String boardBoxId = Utils.getRandomString7();
+//      DomainId article = DomainId.getRandomID();
+//      String boardBox = Utils.getRandomString7();
 //
 //      // Create BoardBox from Notation
-//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
 //      // forkNumber notation by index from local file
-//      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
+//      NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory();
 //      NotationDrive forkDrive = notationDrives.get(forkNumber);
 //      BoardBox boardBoxVariant = getForkNotation(boardBox);
 //
-//      // getNotation previous drive
-//      NotationHistory nds = boardBoxVariant.getNotation().getNotationHistory();
+//      // getNotationDrives previous drive
+//      NotationHistory nds = boardBoxVariant.getNotationDrives().getNotationHistory();
 //      NotationDrive nd = nds.get(forkNumber - 1);
 //
 //      // switch
 //      BoardBox switched = getSwitched(boardBoxVariant);
-//      switched.getNotation().print();
-//      System.out.println(switched.getNotation().getAsStringAlphaNumeric());
+//      switched.getNotationDrives().print();
+//      System.out.println(switched.getNotationDrives().getAsStringAlphaNumeric());
 //    }
 //  }
 //
@@ -245,18 +245,18 @@
 //      Notation notation = notationParserService.parse(bufferedReader);
 //      notation.setRules(RUSSIAN);
 //
-//      DomainId articleId = DomainId.getRandomID();
-//      String boardBoxId = Utils.getRandomString7();
+//      DomainId article = DomainId.getRandomID();
+//      String boardBox = Utils.getRandomString7();
 //
 //      // Create BoardBox from Notation
-//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
 //      // forkNumber notation by index from local file
-//      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
+//      NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory();
 //      NotationDrive forkDrive = notationDrives.get(forkNumber);
 //      BoardBox boardBoxVariant = getForkNotation(boardBox);
 //
-//      System.out.println(boardBoxVariant.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+//      System.out.println(boardBoxVariant.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //
 //      Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
 //      NotationDrive forwardDrive = forwardNotation.getNotationHistory().get(1);
@@ -266,7 +266,7 @@
 //        current = moveStrokes(current, move);
 //      }
 //
-//      System.out.println(current.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+//      System.out.println(current.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //    }
 //  }
 //
@@ -289,14 +289,14 @@
 //      Notation notation = notationParserService.parse(bufferedReader);
 //      notation.setRules(RUSSIAN);
 //
-//      DomainId articleId = DomainId.getRandomID();
-//      String boardBoxId = Utils.getRandomString7();
+//      DomainId article = DomainId.getRandomID();
+//      String boardBox = Utils.getRandomString7();
 //
 //      // Create BoardBox from Notation
-//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
 //      // forkNumber notation by index from local file
-//      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
+//      NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory();
 //      NotationDrive forkDrive = notationDrives.get(forkNumber);
 //      BoardBox boardBoxVariant = getForkNotation(boardBox);
 //
@@ -308,19 +308,19 @@
 //        current = moveStrokes(current, move);
 //      }
 //
-//      System.out.println(current.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+//      System.out.println(current.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //
-//      // getNotation previous drive
-//      NotationHistory nds = current.getNotation().getNotationHistory();
+//      // getNotationDrives previous drive
+//      NotationHistory nds = current.getNotationDrives().getNotationHistory();
 //      NotationDrive nd = nds.get(forkNumber - 1);
 //
 //      boardBox = current.deepClone();
 //      BoardBox switched = getSwitched(current);
 //
-//      System.out.println(switched.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+//      System.out.println(switched.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //
 //      boardBox = boardBoxService.findAndFill(boardBox, token);
-//      System.out.println("SWITCH: " + boardBox.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+//      System.out.println("SWITCH: " + boardBox.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //    }
 //  }
 //
@@ -356,14 +356,14 @@
 //      Notation notation = notationParserService.parse(bufferedReader);
 //      notation.setRules(RUSSIAN);
 //
-//      DomainId articleId = DomainId.getRandomID();
-//      String boardBoxId = Utils.getRandomString7();
+//      DomainId article = DomainId.getRandomID();
+//      String boardBox = Utils.getRandomString7();
 //
 //      // Create BoardBox from Notation
-//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
 //      // forkNumber notation by index from local file
-//      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
+//      NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory();
 //      NotationDrive forkDrive = notationDrives.get(forkNumber);
 //      BoardBox fork1 = getForkNotation(boardBox);
 //
@@ -375,22 +375,22 @@
 //        current = moveStrokes(current, move);
 //      }
 //
-//      System.out.println(current.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+//      System.out.println(current.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //
-//      // getNotation previous drive
-//      NotationHistory nds = current.getNotation().getNotationHistory();
+//      // getNotationDrives previous drive
+//      NotationHistory nds = current.getNotationDrives().getNotationHistory();
 //      NotationDrive nd = nds.get(forkNumber - 1);
 //
 //      boardBox = current.deepClone();
 //      BoardBox switch1 = getSwitched(current);
 //
-//      System.out.println(switch1.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+//      System.out.println(switch1.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //
 //      boardBox = boardBoxService.findAndFill(boardBox, token);
-//      System.out.println("SWITCH: " + boardBox.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+//      System.out.println("SWITCH: " + boardBox.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //
 //      // forkNumber notation by index from local file
-//      notationDrives = boardBox.getNotation().getNotationHistory();
+//      notationDrives = boardBox.getNotationDrives().getNotationHistory();
 //      forkDrive = notationDrives.get(forkNumber);
 //      BoardBox fork2 = getForkNotation(boardBox);
 //
@@ -402,19 +402,19 @@
 //        current = moveStrokes(current, move);
 //      }
 //
-//      // getNotation previous drive
-//      nds = current.getNotation().getNotationHistory();
+//      // getNotationDrives previous drive
+//      nds = current.getNotationDrives().getNotationHistory();
 //      nd = nds.get(forkNumber - 1);
 //
 //      BoardBox switched2 = getSwitched(current);
 //
-//      System.out.println(switched2.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+//      System.out.println(switched2.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //
-//      assertEquals(fork1.getNotation().getNotationHistory().getNotation(),
-//          fork2.getNotation().getNotationHistory().getNotation());
+//      assertEquals(fork1.getNotationDrives().getNotationHistory().getNotationDrives(),
+//          fork2.getNotationDrives().getNotationHistory().getNotationDrives());
 //
-//      assertEquals(switch1.getNotation().getNotationHistory().getNotation(),
-//          switched2.getNotation().getNotationHistory().getNotation());
+//      assertEquals(switch1.getNotationDrives().getNotationHistory().getNotationDrives(),
+//          switched2.getNotationDrives().getNotationHistory().getNotationDrives());
 //    }
 //  }
 //
@@ -444,30 +444,30 @@
 //      Notation notation = notationParserService.parse(bufferedReader);
 //      notation.setRules(RUSSIAN);
 //
-//      DomainId articleId = DomainId.getRandomID();
-//      String boardBoxId = Utils.getRandomString7();
+//      DomainId article = DomainId.getRandomID();
+//      String boardBox = Utils.getRandomString7();
 //
 //      // Create BoardBox from Notation
-//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
 //      // forkNumber notation by index from local file
 //      int forkDriveIndex = Integer.parseInt(startVariantDriveMove);
-//      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory();
+//      NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory();
 //      NotationDrive forkDrive = notationDrives.get(forkDriveIndex);
 //      BoardBox boardBoxVariant = getForkNotation(boardBox);
-//      String firstForkPdn = boardBoxVariant.getNotation().getAsStringAlphaNumeric();
+//      String firstForkPdn = boardBoxVariant.getNotationDrives().getAsStringAlphaNumeric();
 //
-//      // getNotation previous drive
-//      NotationHistory nds = boardBoxVariant.getNotation().getNotationHistory();
+//      // getNotationDrives previous drive
+//      NotationHistory nds = boardBoxVariant.getNotationDrives().getNotationHistory();
 //      NotationDrive nd = nds.get(forkDriveIndex - 1);
 //
 //      // switch
 //      BoardBox switched = getSwitched(boardBoxVariant);
 //
 //      BoardBox doubleFork = getForkNotation(switched);
-//      String secondForkPdn = doubleFork.getNotation().getAsStringAlphaNumeric();
-//      doubleFork.getNotation().print();
-//      System.out.println(doubleFork.getNotation().getAsStringAlphaNumeric());
+//      String secondForkPdn = doubleFork.getNotationDrives().getAsStringAlphaNumeric();
+//      doubleFork.getNotationDrives().print();
+//      System.out.println(doubleFork.getNotationDrives().getAsStringAlphaNumeric());
 //      assertEquals(firstForkPdn, secondForkPdn);
 //    }
 //  }
@@ -499,14 +499,14 @@
 //  public BoardBox moveStrokes(@NotNull BoardBox boardBoxCurrent, @NotNull NotationMove notationMove) {
 //    NotationSimpleMove[] move = notationMove.getMove().toArray(new NotationSimpleMove[0]);
 //    for (int i = 0; i < move.length - 1; i++) {
-////      String boardId = notationMove.getBoardId();
-//      Board board = boardBoxCurrent.getBoard(); /*boardBoxService.findAndFill(boardId);*/
+////      String board = notationMove.getBoard();
+//      Board board = boardBoxCurrent.getBoard(); /*boardBoxService.findAndFill(board);*/
 //
-//      String selMove = move[i].getNotation();
+//      String selMove = move[i].getNotationDrives();
 //      Square selected = findSquareByNotation(selMove, board);
 //      board.setSelectedSquare(selected);
 //
-//      String nextMove = move[i + 1].getNotation();
+//      String nextMove = move[i + 1].getNotationDrives();
 //      Square next = findSquareByNotation(nextMove, board);
 //      next.setHighlight(true);
 //      board.setNextSquare(next);
@@ -514,7 +514,7 @@
 //      boardDao.save(board);
 //
 //      boardBoxCurrent.setBoard(board);
-//      boardBoxCurrent.setBoardId(board.getDomainId());
+//      boardBoxCurrent.setBoard(board.getDomainId());
 //      boardBoxDao.save(boardBoxCurrent);
 //
 ////      boardBoxCurrent = boardBoxService.save(boardBoxCurrent);
@@ -610,7 +610,7 @@
 //    assertNotNull(e5n.getDraught());
 //    assertNull(c3n.getDraught());
 //
-//    String pdn = boardBox.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC);
+//    String pdn = boardBox.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC);
 //    assertTrue(pdn.contains("c3xe5"));
 //  }
 //
@@ -626,44 +626,44 @@
 //      Notation notation = notationParserService.parse(bufferedReader);
 //      notation.setRules(RUSSIAN);
 //
-//      DomainId articleId = DomainId.getRandomID();
-//      String boardBoxId = Utils.getRandomString7();
+//      DomainId article = DomainId.getRandomID();
+//      String boardBox = Utils.getRandomString7();
 //
 //      // Create BoardBox from Notation
-//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
-////      String firstBoardId = boardBox.getNotation().getNotationHistory().getNotation(1).getMoves().getFirst().getBoardId();
+////      String firstBoardId = boardBox.getNotationDrives().getNotationHistory().getNotationDrives(1).getMoves().getFirst().getBoard();
 ////      Board board = boardDao.findById(firstBoardId);
-////      String initBoardId = board.getPreviousBoards().getLastOrCreateIfRoot().getBoardId();
+////      String initBoardId = board.getPreviousBoards().getLastOrCreateIfRoot().getBoard();
 ////      board = boardDao.findById(initBoardId);
 ////      board.setNotationHistory(NotationHistory.createWithRoot());
 ////      boardBox.setBoard(board);
-////      boardBox.getNotation().setNotationHistory(board.getNotationHistory());
+////      boardBox.getNotationDrives().setNotationHistory(board.getNotationHistory());
 ////      boardBoxService.saveAndFillBoard(boardBox);
 ////
 ////      Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
-////      NotationDrive forwardDrive = forwardNotation.getNotationHistory().getNotation(1);
+////      NotationDrive forwardDrive = forwardNotation.getNotationHistory().getNotationDrives(1);
 ////
 ////      BoardBox current = boardBox.deepClone();
 ////      for (NotationMove move : forwardDrive.getMoves()) {
 ////        current = moveStrokes(current, move);
 ////      }
 //
-////      System.out.println(current.getNotation().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
+////      System.out.println(current.getNotationDrives().getNotationHistory().notationToPdn(EnumNotationFormat.ALPHANUMERIC));
 //
-//      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
+//      NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory().deepClone();
 //
-//      boardBox.getNotation().setNotationHistory(NotationHistory.createWithRoot());
+//      boardBox.getNotationDrives().setNotationHistory(NotationHistory.createWithRoot());
 //      boardBoxDao.save(boardBox);
-//      for (NotationDrive notationDrive : notationDrives.getNotation()) {
+//      for (NotationDrive notationDrive : notationDrives.getNotationDrives()) {
 //        for (NotationMove notationMove : notationDrive.getMoves()) {
 //          boardBox = moveStrokes(boardBox, notationMove);
 //        }
 //      }
 //
 //      boardBox = boardBoxService.undo(boardBox, token);
-//      System.out.println("UNDO: " + boardBox.getNotation().getAsStringAlphaNumeric());
-//      assertEquals(0, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
+//      System.out.println("UNDO: " + boardBox.getNotationDrives().getAsStringAlphaNumeric());
+//      assertEquals(0, boardBox.getNotationDrives().getNotationHistory().getNotationDrives().getLast().getVariants().size());
 //      BoardBox undoNotPossible = boardBoxService.undo(boardBox, token);
 //      assertNull(undoNotPossible);
 //    }
@@ -681,35 +681,35 @@
 //      Notation notation = notationParserService.parse(bufferedReader);
 //      notation.setRules(RUSSIAN);
 //
-//      DomainId articleId = DomainId.getRandomID();
-//      String boardBoxId = Utils.getRandomString7();
+//      DomainId article = DomainId.getRandomID();
+//      String boardBox = Utils.getRandomString7();
 //
 //      // Create BoardBox from Notation
-//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//      BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
-//      NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
+//      NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory().deepClone();
 //
-//      boardBox.getNotation().setNotationHistory(NotationHistory.createWithRoot());
+//      boardBox.getNotationDrives().setNotationHistory(NotationHistory.createWithRoot());
 //      boardBoxDao.save(boardBox);
-//      for (NotationDrive notationDrive : notationDrives.getNotation()) {
+//      for (NotationDrive notationDrive : notationDrives.getNotationDrives()) {
 //        for (NotationMove notationMove : notationDrive.getMoves()) {
 //          boardBox = moveStrokes(boardBox, notationMove);
 //        }
 //      }
 //
 //      boardBox = boardBoxService.undo(boardBox, token);
-//      System.out.println("UNDO: " + boardBox.getNotation().getAsStringAlphaNumeric());
-//      assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
+//      System.out.println("UNDO: " + boardBox.getNotationDrives().getAsStringAlphaNumeric());
+//      assertEquals(1, boardBox.getNotationDrives().getNotationHistory().getNotationDrives().getLast().getVariants().size());
 //      boardBox = boardBoxService.undo(boardBox, token);
-//      System.out.println("UNDO: " + boardBox.getNotation().getAsStringAlphaNumeric());
-//      assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
+//      System.out.println("UNDO: " + boardBox.getNotationDrives().getAsStringAlphaNumeric());
+//      assertEquals(1, boardBox.getNotationDrives().getNotationHistory().getNotationDrives().getLast().getVariants().size());
 //
 //      boardBox = boardBoxService.redo(boardBox, token);
-//      System.out.println("UNDO: " + boardBox.getNotation().getAsStringAlphaNumeric());
-//      assertEquals(1, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
+//      System.out.println("UNDO: " + boardBox.getNotationDrives().getAsStringAlphaNumeric());
+//      assertEquals(1, boardBox.getNotationDrives().getNotationHistory().getNotationDrives().getLast().getVariants().size());
 //      boardBox = boardBoxService.redo(boardBox, token);
-//      System.out.println("UNDO: " + boardBox.getNotation().getAsStringAlphaNumeric());
-//      assertEquals(0, boardBox.getNotation().getNotationHistory().getNotation().getLast().getVariants().size());
+//      System.out.println("UNDO: " + boardBox.getNotationDrives().getAsStringAlphaNumeric());
+//      assertEquals(0, boardBox.getNotationDrives().getNotationHistory().getNotationDrives().getLast().getVariants().size());
 //    }
 //  }
 //
@@ -724,43 +724,43 @@
 //    Notation notation = notationParserService.parse(bufferedReader);
 //    notation.setRules(RUSSIAN);
 //
-//    DomainId articleId = DomainId.getRandomID();
-//    String boardBoxId = Utils.getRandomString7();
+//    DomainId article = DomainId.getRandomID();
+//    String boardBox = Utils.getRandomString7();
 //
 //    // Create BoardBox from Notation
-//    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
 //    BoardBox boardBoxOrig = boardBox.deepClone();
 //
-//    NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
+//    NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory().deepClone();
 //
-//    boardBox.getNotation().setNotationHistory(NotationHistory.createWithRoot());
+//    boardBox.getNotationDrives().setNotationHistory(NotationHistory.createWithRoot());
 //    boardBoxDao.save(boardBox);
-//    for (NotationDrive notationDrive : notationDrives.getNotation()) {
+//    for (NotationDrive notationDrive : notationDrives.getNotationDrives()) {
 //      for (NotationMove notationMove : notationDrive.getMoves()) {
 //        boardBox = moveStrokes(boardBox, notationMove);
 //      }
 //    }
 //
-//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //
 //    boardBox = boardBoxService.undo(boardBox, token);
 //    System.out.print("UNDO ");
-//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //    boardBox = boardBoxService.undo(boardBox, token);
 //    System.out.print("UNDO ");
-//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //
 //    boardBox = redo(boardBox);
 //    boardBox = redo(boardBox);
-//    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().asStringAlphaNumeric(),
-//        boardBox.getNotation().getNotationHistory().getNotation().asStringAlphaNumeric());
+//    assertEquals(boardBoxOrig.getNotationDrives().getNotationHistory().getNotationDrives().asStringAlphaNumeric(),
+//        boardBox.getNotationDrives().getNotationHistory().getNotationDrives().asStringAlphaNumeric());
 //
 //    // MOVE FORWARD
 //    Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
 //
 //    BoardBox current = boardBox;
-//    for (NotationDrive forwardDrive : forwardNotation.getNotationHistory().getNotation()) {
+//    for (NotationDrive forwardDrive : forwardNotation.getNotationHistory().getNotationDrives()) {
 //      for (NotationMove move : forwardDrive.getMoves()) {
 //        current = moveStrokes(current, move);
 //        System.out.println(move.asStringAlphaNumeric());
@@ -771,15 +771,15 @@
 //
 //    boardBox = boardBoxService.undo(boardBox, token);
 //    System.out.print("UNDO ");
-//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //    boardBox = boardBoxService.undo(boardBox, token);
 //    System.out.print("UNDO ");
-//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //
 //    boardBox = redo(boardBox);
 //    boardBox = redo(boardBox);
-//    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation(),
-//        boardBox.getNotation().getNotationHistory().getNotation());
+//    assertEquals(boardBoxOrig.getNotationDrives().getNotationHistory().getNotationDrives(),
+//        boardBox.getNotationDrives().getNotationHistory().getNotationDrives());
 //  }
 //
 //  @Test
@@ -794,59 +794,59 @@
 //    notation.setRules(RUSSIAN);
 //    notation.getNotationHistory().printPdn();
 //
-//    DomainId articleId = DomainId.getRandomID();
-//    String boardBoxId = Utils.getRandomString7();
+//    DomainId article = DomainId.getRandomID();
+//    String boardBox = Utils.getRandomString7();
 //
 //    // Create BoardBox from Notation
-//    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(articleId, 0, notation, authUser);
+//    BoardBox boardBox = boardBoxService.createBoardBoxFromNotation(article, 0, notation, authUser);
 //
 //    BoardBox boardBoxOrig = boardBox.deepClone();
 //
-//    NotationHistory notationDrives = boardBox.getNotation().getNotationHistory().deepClone();
+//    NotationHistory notationDrives = boardBox.getNotationDrives().getNotationHistory().deepClone();
 //    notationDrives.printPdn();
 //
 //
-//    for (NotationDrive notationDrive : notationDrives.getNotation()) {
+//    for (NotationDrive notationDrive : notationDrives.getNotationDrives()) {
 //      for (NotationMove notationMove : notationDrive.getMoves()) {
 //        boardBox = moveStrokes(boardBox, notationMove);
 //      }
 //    }
 //
-//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //
 ////    boardBox = boardBoxService.undo(boardBox);
 ////    System.out.print("UNDO ");
-////    boardBox.getNotation().getNotationHistory().printPdn();
+////    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //    boardBox = undo(boardBox);
 //
 ////    boardBox = boardBoxService.redo(boardBox);
 ////    System.out.print("REDO ");
-////    boardBox.getNotation().getNotationHistory().printPdn();
+////    boardBox.getNotationDrives().getNotationHistory().printPdn();
 ////    boardBox = boardBoxService.redo(boardBox);
 ////    System.out.print("REDO ");
-////    boardBox.getNotation().getNotationHistory().printPdn();
-////    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation().getAsTreeString(),
-////        boardBox.getNotation().getNotationHistory().getNotation().getAsTreeString());
+////    boardBox.getNotationDrives().getNotationHistory().printPdn();
+////    assertEquals(boardBoxOrig.getNotationDrives().getNotationHistory().getNotationDrives().getAsTreeString(),
+////        boardBox.getNotationDrives().getNotationHistory().getNotationDrives().getAsTreeString());
 //
 ////    boardBox = boardBoxService.undo(boardBox);
 ////    System.out.print("UNDO ");
-////    boardBox.getNotation().getNotationHistory().printPdn();
+////    boardBox.getNotationDrives().getNotationHistory().printPdn();
 ////    boardBox = boardBoxService.undo(boardBox);
 ////    System.out.print("UNDO ");
-////    boardBox.getNotation().getNotationHistory().printPdn();
+////    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //
 //    boardBox = redo(boardBox);
 ////    boardBox = boardBoxService.redo(boardBox);
 ////    System.out.print("REDO ");
-////    boardBox.getNotation().getNotationHistory().printPdn();
-////    assertEquals(boardBoxOrig.getNotation().getNotationHistory().getNotation(),
-////        boardBox.getNotation().getNotationHistory().getNotation());
+////    boardBox.getNotationDrives().getNotationHistory().printPdn();
+////    assertEquals(boardBoxOrig.getNotationDrives().getNotationHistory().getNotationDrives(),
+////        boardBox.getNotationDrives().getNotationHistory().getNotationDrives());
 //
 //    // MOVE FORWARD
 //    Notation forwardNotation = notationParserService.parse(StringUtils.join(forwardNotationLines, "\n"));
 //
 //    BoardBox current = boardBox;
-//    for (NotationDrive forwardDrive : forwardNotation.getNotationHistory().getNotation()) {
+//    for (NotationDrive forwardDrive : forwardNotation.getNotationHistory().getNotationDrives()) {
 //      for (NotationMove move : forwardDrive.getMoves()) {
 //        current = moveStrokes(current, move);
 //        System.out.println(move.asStringAlphaNumeric());
@@ -881,10 +881,10 @@
 //    boardBox = redo(boardBox);
 //    boardBox = redo(boardBox);
 //
-//    assertEquals(orig2.getNotation().getNotationHistory().debugPdnString(),
-//        boardBox.getNotation().getNotationHistory().debugPdnString());
+//    assertEquals(orig2.getNotationDrives().getNotationHistory().debugPdnString(),
+//        boardBox.getNotationDrives().getNotationHistory().debugPdnString());
 //
-//    System.out.println(boardBox.getNotation().getAsTreeString());
+//    System.out.println(boardBox.getNotationDrives().getAsTreeString());
 //  }
 //
 //  @Test
@@ -938,14 +938,14 @@
 //  public BoardBox redo(BoardBox boardBox) {
 //    boardBox = boardBoxService.redo(boardBox, token);
 //    System.out.println("REDO ");
-//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //    return boardBox;
 //  }
 //
 //  public BoardBox undo(BoardBox boardBox) {
 //    boardBox = boardBoxService.undo(boardBox, token);
 //    System.out.println("UNDO ");
-//    boardBox.getNotation().getNotationHistory().printPdn();
+//    boardBox.getNotationDrives().getNotationHistory().printPdn();
 //    return boardBox;
 //  }
 //
@@ -974,14 +974,14 @@
 //  @Test
 //  public void parsePdn() throws IOException {
 //    var parsePdn = ImportPdnPayload.createBoardPayload();
-//    parsePdn.setArticleId(DomainId.getRandomID());
+//    parsePdn.setArticle(DomainId.getRandomID());
 //    parsePdn.setRules(EnumRules.RUSSIAN);
 //    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/generated_here_1.pdn");
 //    StringWriter writer = new StringWriter();
 //    IOUtils.copy(resourceAsStream, writer);
 //    parsePdn.setPdn(writer.toString());
 //    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
-//    Notation notation = boardBox.getNotation();
+//    Notation notation = boardBox.getNotationDrives();
 //    notation.setFormat(EnumNotationFormat.NUMERIC);
 //    System.out.println(notation.getAsTreeString());
 //  }
@@ -989,7 +989,7 @@
 //  @Test
 //  public void parsePdnNested() throws IOException {
 //    var parsePdn = ImportPdnPayload.createBoardPayload();
-//    parsePdn.setArticleId(DomainId.getRandomID());
+//    parsePdn.setArticle(DomainId.getRandomID());
 //    parsePdn.setRules(EnumRules.RUSSIAN);
 //    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/example_multivariants2.pdn");
 //    InputStreamReader in = new InputStreamReader(resourceAsStream, "UTF-8");
@@ -997,14 +997,14 @@
 //    IOUtils.copy(in, writer);
 //    parsePdn.setPdn(writer.toString());
 //    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
-//    System.out.println(boardBox.getNotation().getAsStringAlphaNumeric());
-//    System.out.println(boardBox.getNotation().getAsTreeString());
+//    System.out.println(boardBox.getNotationDrives().getAsStringAlphaNumeric());
+//    System.out.println(boardBox.getNotationDrives().getAsTreeString());
 //  }
 //
 //  @Test
 //  public void parsePdnNested2() throws IOException {
 //    var parsePdn = ImportPdnPayload.createBoardPayload();
-//    parsePdn.setArticleId(DomainId.getRandomID());
+//    parsePdn.setArticle(DomainId.getRandomID());
 //    parsePdn.setRules(EnumRules.RUSSIAN);
 //    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/example_multivariants1.pdn");
 //    InputStreamReader in = new InputStreamReader(resourceAsStream, "UTF-8");
@@ -1012,14 +1012,14 @@
 //    IOUtils.copy(in, writer);
 //    parsePdn.setPdn(writer.toString());
 //    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
-//    System.out.println(boardBox.getNotation().getAsStringAlphaNumeric());
-//    System.out.println(boardBox.getNotation().getAsTreeString());
+//    System.out.println(boardBox.getNotationDrives().getAsStringAlphaNumeric());
+//    System.out.println(boardBox.getNotationDrives().getAsTreeString());
 //  }
 //
 //  @Test
 //  public void printPdnNestedAsTree() throws IOException, ParserLogException, ParserCreationException {
 //    var parsePdn = ImportPdnPayload.createBoardPayload();
-//    parsePdn.setArticleId(DomainId.getRandomID());
+//    parsePdn.setArticle(DomainId.getRandomID());
 //    parsePdn.setRules(EnumRules.RUSSIAN);
 //    InputStream resourceAsStream = getClass().getResourceAsStream("/pdn/example_multivariants1.pdn");
 //    InputStreamReader in = new InputStreamReader(resourceAsStream, "UTF-8");
@@ -1029,8 +1029,8 @@
 //    Notation parse = notationParserService.parse(writer.toString());
 //    System.out.println(parse.getAsTreeString());
 ////    BoardBox boardBox = boardBoxService.parsePdn(parsePdn, token);
-////    System.out.println(boardBox.getNotation().getAsTreeString());
-////    System.out.println(boardBox.getNotation().getAsTreeString());
+////    System.out.println(boardBox.getNotationDrives().getAsTreeString());
+////    System.out.println(boardBox.getNotationDrives().getAsTreeString());
 //  }
 //
 //  @Test

@@ -3,6 +3,7 @@ package com.workingbit.share.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.domain.DeepClone;
+import com.workingbit.share.domain.impl.NotationHistory;
 import com.workingbit.share.model.enumarable.EnumNotation;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
@@ -38,7 +39,7 @@ public class NotationDrive implements DeepClone, NotationFormat {
 
   private NotationDrives variants;
 
-  private DomainId notationHistoryId;
+  private NotationHistory notationHistory;
 
   private boolean ellipses;
   /**

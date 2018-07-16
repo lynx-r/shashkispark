@@ -13,13 +13,13 @@ import java.util.LinkedList;
 @JsonTypeName("DomainIds")
 @Data
 public class DomainIds implements Payload {
-  private LinkedList<DomainId> ids;
+  private LinkedList<String> ids;
 
   public DomainIds() {
     this.ids = new LinkedList<>();
   }
 
-  public DomainIds(LinkedList<DomainId> domainIds) {
+  public DomainIds(LinkedList<String> domainIds) {
     this.ids = new LinkedList<>(domainIds);
   }
 
@@ -27,11 +27,11 @@ public class DomainIds implements Payload {
     return ids.size();
   }
 
-  public DomainId get(int index) {
+  public String get(int index) {
     return ids.get(index);
   }
 
-  public boolean add(DomainId elem) {
+  public boolean add(String elem) {
     return ids.add(elem);
   }
 

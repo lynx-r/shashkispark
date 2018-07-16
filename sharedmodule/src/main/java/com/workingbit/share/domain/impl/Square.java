@@ -8,7 +8,6 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -159,49 +158,6 @@ public class Square extends BaseDomain implements ICoordinates, Comparable {
   public Square highlight(boolean highlight) {
     setHighlight(highlight);
     return this;
-  }
-
-  @JsonIgnore
-  @Override
-  public String getId() {
-    return null;
-  }
-
-  @Override
-  public void setId(String id) {
-
-  }
-
-  @JsonIgnore
-  @Override
-  public LocalDateTime getCreatedAt() {
-    return null;
-  }
-
-  @Override
-  public void setCreatedAt(LocalDateTime createdAt) {
-
-  }
-
-  @Override
-  public LocalDateTime getUpdatedAt() {
-    return null;
-  }
-
-  @Override
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-
-  }
-
-  @JsonIgnore
-  @Override
-  public boolean isReadonly() {
-    return false;
-  }
-
-  @Override
-  public void setReadonly(boolean readonly) {
-
   }
 
   @Override

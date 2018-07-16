@@ -1,26 +1,20 @@
 package com.workingbit.share.domain.impl;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.workingbit.share.common.DBConstants;
-import com.workingbit.share.converter.LocalDateTimeConverter;
-import com.workingbit.share.converter.NotationDrivesConverter;
-import com.workingbit.share.converter.NotationDrivesDeserializer;
-import com.workingbit.share.converter.NotationDrivesSerializer;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.domain.DeepClone;
-import com.workingbit.share.model.*;
+import com.workingbit.share.model.NotationDrive;
+import com.workingbit.share.model.NotationDrives;
+import com.workingbit.share.model.NotationLine;
+import com.workingbit.share.model.NotationMove;
 import com.workingbit.share.model.enumarable.EnumNotationFormat;
 import com.workingbit.share.model.enumarable.EnumRules;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import reactor.core.publisher.Mono;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -30,35 +24,17 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@DynamoDBTable(tableName = DBConstants.NOTATION_HISTORY_TABLE)
+@Document(collection = NotationHistory.CLASS_NAME)
 public class NotationHistory extends BaseDomain implements DeepClone {
 
-  @DynamoDBHashKey(attributeName = "id")
-  private String id;
+  static final String CLASS_NAME = "NotationHistory";
 
-  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
-  @DynamoDBRangeKey(attributeName = "createdAt")
-  private LocalDateTime createdAt;
+  private String notationId;
 
-  @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
-  @DynamoDBAttribute(attributeName = "updatedAt")
-  private LocalDateTime updatedAt;
+  private NotationDrives notationDrives;
 
-  @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
-  @DynamoDBAttribute(attributeName = "notationId")
-  private DomainId notationId;
-
-  @JsonSerialize(using = NotationDrivesSerializer.class)
-  @JsonDeserialize(using = NotationDrivesDeserializer.class)
-  @DynamoDBTypeConverted(converter = NotationDrivesConverter.class)
-  private NotationDrives notation;
-
-  @JsonIgnore
-  @DynamoDBTypeConvertedJson(targetType = NotationLine.class)
-  @DynamoDBAttribute(attributeName = "notationLine")
   private NotationLine notationLine;
 
-  @DynamoDBAttribute(attributeName = "startMovingFrom")
   private int startMovingFrom;
 
   public NotationHistory() {
@@ -66,54 +42,12 @@ public class NotationHistory extends BaseDomain implements DeepClone {
     notationLine = new NotationLine();
   }
 
-  public NotationHistory(NotationDrives notation) {
-    this.notation = notation;
+  public NotationHistory(NotationDrives notationDrives) {
+    this.notationDrives = notationDrives;
     notationLine = new NotationLine();
   }
 
-  @Nullable
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  @Override
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @Nullable
-  @Override
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  @Override
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  @Nullable
-  @Override
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
-  }
-
-  @Override
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
-
-  @Override
-  public boolean isReadonly() {
-    return false;
-  }
-
-  @SuppressWarnings("unused")
-  @Override
-  public void setReadonly(boolean readonly) {
-  }
-
+  // todo move to service
   @NotNull
   private static NotationDrives createWithoutRoot(boolean hasRoot) {
     if (hasRoot) {
@@ -127,51 +61,51 @@ public class NotationHistory extends BaseDomain implements DeepClone {
     }
   }
 
-  public NotationDrives getNotation() {
-    return notation;
+  public NotationDrives getNotationDrives() {
+    return notationDrives;
   }
 
-  public void setNotation(NotationDrives notation) {
-    this.notation = notation;
+  public void setNotationDrives(NotationDrives notationDrives) {
+    this.notationDrives = notationDrives;
   }
 
   @DynamoDBIgnore
   @JsonIgnore
-  public void setNotation(@NotNull List<NotationDrive> notationDrives) {
-    this.notation = new NotationDrives(notationDrives);
+  public void setNotationId(@NotNull List<NotationDrive> notationDrives) {
+    this.notationDrives = new NotationDrives(notationDrives);
   }
 
   public void setRules(@NotNull EnumRules rules) {
-    notation.setDimension(rules.getDimension());
+    notationDrives.setDimension(rules.getDimension());
   }
 
   public void setFormat(EnumNotationFormat format) {
-    notation.setNotationFormat(format);
+    notationDrives.setNotationFormat(format);
   }
 
   public void add(NotationDrive element) {
-    notation.add(element);
+    notationDrives.add(element);
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public NotationDrive getFirst() {
-    return notation.getFirst();
+    return notationDrives.getFirst();
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public NotationDrive getLast() {
-    return notation.getLast();
+    return notationDrives.getLast();
   }
 
   public int size() {
-    return notation.size();
+    return notationDrives.size();
   }
 
   @NotNull
   private NotationDrives subListNotation(int fromIndex, int toIndex) {
-    List<NotationDrive> subList = notation.subList(fromIndex, toIndex);
+    List<NotationDrive> subList = notationDrives.subList(fromIndex, toIndex);
     NotationDrives nd = new NotationDrives();
     nd.addAll(subList);
     return nd;
@@ -180,13 +114,13 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   @JsonIgnore
   @DynamoDBIgnore
   public boolean isEmpty() {
-    return notation.isEmpty();
+    return notationDrives.isEmpty();
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public NotationDrive get(int index) {
-    return notation.get(index);
+    return notationDrives.get(index);
   }
 
   public static NotationHistory createWithRoot() {
@@ -198,18 +132,18 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   public String notationToPdn(EnumNotationFormat notationFormat) {
     switch (notationFormat) {
       case ALPHANUMERIC:
-        return notation.asStringAlphaNumeric();
+        return notationDrives.asStringAlphaNumeric();
       case SHORT:
-        return notation.asStringShort();
+        return notationDrives.asStringShort();
       case NUMERIC:
-        return notation.asStringNumeric();
+        return notationDrives.asStringNumeric();
       default:
         throw new RuntimeException("Формат нотации не распознан");
     }
   }
 
   public String notationToTreePdn(String indent, String tabulation) {
-    return notation.asTree(indent, tabulation);
+    return notationDrives.asTree(indent, tabulation);
   }
 
   public void printPdn() {
@@ -218,32 +152,32 @@ public class NotationHistory extends BaseDomain implements DeepClone {
 
   @JsonIgnore
   @DynamoDBIgnore
-  public Mono<DomainId> getLastNotationBoardId() {
-    return notation.getLastNotationBoardId();
+  public String getLastNotationBoardId() {
+    return notationDrives.getLastNotationBoardId();
   }
 
   @JsonIgnore
   @DynamoDBIgnore
-  public Optional<DomainId> getLastNotationBoardIdInVariants() {
-    return notation.getLastNotationBoardIdInVariants(getCurrentIndex());
+  public Optional<String> getLastNotationBoardIdInVariants() {
+    return notationDrives.getLastNotationBoardIdInVariants(getCurrentIndex());
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<NotationMove> getLastMove() {
-    return notation.getLastMove();
+    return notationDrives.getLastMove();
   }
 
   @NotNull
   public String debugPdnString() {
     return "\n" +
         "NOTATION: " +
-        notation.asStringAlphaNumeric();
+        notationDrives.asStringAlphaNumeric();
   }
 
   public boolean isEqual(@NotNull NotationHistory that) {
-    EnumNotationFormat formatThat = that.getNotation().getFirst().getNotationFormat();
-    EnumNotationFormat formatThis = this.getNotation().getFirst().getNotationFormat();
+    EnumNotationFormat formatThat = that.getNotationDrives().getFirst().getNotationFormat();
+    EnumNotationFormat formatThis = this.getNotationDrives().getFirst().getNotationFormat();
     that.setFormat(EnumNotationFormat.NUMERIC);
     this.setFormat(EnumNotationFormat.NUMERIC);
     boolean equals = that.notationToPdn(EnumNotationFormat.NUMERIC).equals(this.notationToPdn(EnumNotationFormat.NUMERIC));
@@ -253,7 +187,7 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   }
 
   public void syncMoves() {
-    notation.getCurrentVariant(getCurrentIndex())
+    notationDrives.getCurrentVariant(getCurrentIndex())
         .ifPresent(notationDrive -> {
           if (getLast().getMoves().size() == 2) {
             if (notationDrive.getNotationNumberInt() == getLast().getNotationNumberInt()) {
@@ -264,15 +198,15 @@ public class NotationHistory extends BaseDomain implements DeepClone {
             notationDrive.addVariant(getLast());
           }
         });
-    notation.setLastMoveCursor();
+    notationDrives.setLastMoveCursor();
   }
 
   public void setLastMoveCursor() {
-    notation.setLastMoveCursor();
+    notationDrives.setLastMoveCursor();
   }
 
   public void setLastSelected(boolean selected) {
-    notation.replaceAll(notationDrive -> {
+    notationDrives.replaceAll(notationDrive -> {
       notationDrive.setSelected(false);
       return notationDrive;
     });
@@ -298,26 +232,26 @@ public class NotationHistory extends BaseDomain implements DeepClone {
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<NotationDrive> getCurrentVariant() {
-    return notation.getCurrentVariant(getCurrentIndex());
+    return notationDrives.getCurrentVariant(getCurrentIndex());
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<NotationDrive> getPreviousVariant() {
-    return notation.getPreviousVariant();
+    return notationDrives.getPreviousVariant();
   }
 
   public void addAll(Collection<NotationDrive> collection) {
-    notation.addAll(collection);
+    notationDrives.addAll(collection);
   }
 
   @JsonIgnore
   @DynamoDBIgnore
   public Optional<NotationDrive> getCurrentNotationDrive() {
-    if (notation.isEmpty()) {
+    if (notationDrives.isEmpty()) {
       return Optional.empty();
     }
-    return Optional.of(notation.get(getCurrentIndex()));
+    return Optional.of(notationDrives.get(getCurrentIndex()));
   }
 
   public void removeByCurrentIndex() {

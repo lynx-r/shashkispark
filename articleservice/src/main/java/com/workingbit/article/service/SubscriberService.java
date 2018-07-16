@@ -43,7 +43,7 @@
 //    new Thread(() -> {
 //      List<Subscriber> active = subscriberDao.findActive();
 //      String title = String.format("Автор %s опубликовал новую статью \"%s\"", article.getAuthor(), article.getTitle());
-//      String articleLink = String.format("Ссылка на статью: https://www.shashki.online/articles/view/%s/%s", article.getHumanReadableUrl(), article.getSelectedBoardBoxId().getId());
+//      String articleLink = String.format("Ссылка на статью: https://www.shashki.online/articles/view/%s/%s", article.getHumanReadableUrl(), article.getSelectedBoardBox().getId());
 //      String contentText = String.format("Автор %s опубликовал новую статью \"%s\". %s",
 //          article.getAuthor(), article.getTitle(), articleLink);
 //      String contentHtml = article.getHtml() + "<br/><hr><br/>" + articleLink;

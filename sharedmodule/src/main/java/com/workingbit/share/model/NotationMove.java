@@ -23,14 +23,14 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   private EnumNotation type;
   /**
-   * Moves. The first is notation like a1 or b2 the second is boardId
+   * Moves. The first is notation like a1 or b2 the second is board
    */
   @NotNull
   private LinkedList<NotationSimpleMove> move = new LinkedList<>();
 
   private String moveStrength;
 
-  private DomainId boardId;
+  private String boardId;
 
   /**
    * Num of squares on a side
@@ -91,11 +91,11 @@ public class NotationMove implements DeepClone, NotationFormat {
     this.moveStrength = moveStrength;
   }
 
-  public DomainId getBoardId() {
+  public String getBoardId() {
     return boardId;
   }
 
-  public void setBoardId(DomainId boardId) {
+  public void setBoardId(String boardId) {
     this.boardId = boardId;
   }
 
@@ -292,11 +292,11 @@ public class NotationMove implements DeepClone, NotationFormat {
 
   @JsonIgnore
   @DynamoDBIgnore
-  DomainId getLastMoveBoardId() {
+  String getLastMoveBoardId() {
     return boardId;
   }
 
-  public void addMove(String previousNotation, String currentNotation, DomainId currentBoardId) {
+  public void addMove(String previousNotation, String currentNotation, String currentBoardId) {
     move = new LinkedList<>(
         List.of(
             new NotationSimpleMove(previousNotation),

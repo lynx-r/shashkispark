@@ -60,7 +60,7 @@ public class NotationHistoryService {
     notation.addForkedNotationHistory(notationHistory);
 
     // new fork
-    NotationDrives notationDrives = notationHistory.getNotation();
+    NotationDrives notationDrives = notationHistory.getNotationDrives();
     NotationDrives cutPoint = subListNotation(notationDrives, forkFromNotationDrive, notationDrives.size());
     NotationDrives cutNotationDrives = cutPoint.deepClone();
 
@@ -103,7 +103,7 @@ public class NotationHistoryService {
   }
 
   private void fillForkedVariant(NotationDrive forkedVariant, NotationDrive firstNew, DomainId domainId) {
-    firstNew.setNotationHistoryId(domainId);
+    firstNew.setNotationHistory(domainId);
     forkedVariant.addVariant(firstNew);
     forkedVariant.setCurrent(true);
     forkedVariant.setSelected(true);
@@ -159,7 +159,7 @@ public class NotationHistoryService {
       rootV = forkNotationDrive.deepClone();
       NotationDrives rootCut = cutNotationDrives.deepClone();
       rootCut.setIdInVariants(0);
-      rootV.setNotationHistoryId(rootHistoryId);
+      rootV.setNotationHistory(rootHistoryId);
       rootV.setVariants(rootCut);
       rootV.setSelected(false);
       rootV.setPreviousWithVariant(true);

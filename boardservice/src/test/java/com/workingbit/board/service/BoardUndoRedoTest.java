@@ -20,7 +20,7 @@
 //public class BoardUndoRedoTest extends BaseServiceTest {
 //
 //  @NotNull
-//  private String articleId = Utils.getRandomString7();
+//  private String article = Utils.getRandomString7();
 //  private AuthUser token;
 //
 //  @Before
@@ -80,9 +80,9 @@
 //    board.setNextSquare(squareE5);
 //
 //    board = move(boardBox);
-//    squareE5 = BoardUtils.findSquareByNotation(squareE5.getNotation(), board);
+//    squareE5 = BoardUtils.findSquareByNotation(squareE5.getNotationDrives(), board);
 //    assertTrue(squareE5.isOccupied());
-//    squareD4 = BoardUtils.findSquareByNotation(squareD4.getNotation(), board);
+//    squareD4 = BoardUtils.findSquareByNotation(squareD4.getNotationDrives(), board);
 //    assertFalse(squareD4.isOccupied());
 //
 //    board = undo(boardBox);
@@ -221,7 +221,7 @@
 //////    boardHistoryService.addBoardAndSave(board);
 ////    Optional<BoardHistory> boardHistory = boardHistoryService.getHistory(board.getId());
 ////    assertTrue(boardHistory.isPresent());
-////    assertEquals(boardHistory.getNotation().getCurrent().getData(), board);
+////    assertEquals(boardHistory.getNotationDrives().getCurrent().getData(), board);
 ////  }
 ////
 ////  @Test
@@ -230,12 +230,12 @@
 //////    boardHistoryService.addBoardAndSave(board);
 ////    Optional<BoardHistory> boardHistory = boardHistoryService.getHistory(board.getId());
 ////    assertTrue(boardHistory.isPresent());
-////    assertEquals(boardHistory.getNotation().getCurrent().getData(), board);
+////    assertEquals(boardHistory.getNotationDrives().getCurrent().getData(), board);
 ////
 //////    boardHistoryService.addBoardAndSave(board);
 ////    boardHistory = boardHistoryService.getHistory(board.getId());
 ////    assertTrue(boardHistory.isPresent());
-////    assertEquals(boardHistory.getNotation().getCurrent().getData(), board);
+////    assertEquals(boardHistory.getNotationDrives().getCurrent().getData(), board);
 ////  }
 //
 ////  @Test

@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.server.ServerRequest;
 
 /**
  * Created by Aleksey Popryaduhin on 13:58 27/09/2017.
@@ -21,14 +20,18 @@ public class ArticleController {
 //  }
 
   @GetMapping("/home")
-  public String home(ServerRequest request) {
+  public String home() {
     return "Article. Home, sweet home!";
   }
+
+//  public Mono<CreateArticleResponse> createArticleAndBoard(CreateArticlePayload articleAndBoard) {
+//    return articleService.createArticle(articleAndBoard);
+//  }
 
 //  public Flux<> findAllArticles(ServerRequest request) {
 //    return articleService.findAll(request.queryParam(RequestConstants.LIMIT).orElse("50"), null);
 //  }
-//
+
 //  @NotNull
 //  public static Route findAllArticles = (req, res) ->
 //      ((QueryParamsHandlerFunc<QueryPayload>) (params, token, param) ->

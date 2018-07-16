@@ -42,16 +42,16 @@
 //    storeArticles = cacheManager.getCache(articles, String.class, Articles.class);
 //  }
 //
-//  public Optional<Article> get(String userSession, String articleHru, String selectedBoardBoxId) {
+//  public Optional<Article> get(String userSession, String articleHru, String selectedBoardBox) {
 //    Map map = storeArticle.get(articleHru);
 //    if (map != null) {
-//      return Optional.ofNullable((Article) map.get(getKey(userSession, articleHru, selectedBoardBoxId)));
+//      return Optional.ofNullable((Article) map.get(getKey(userSession, articleHru, selectedBoardBox)));
 //    }
 //    return Optional.empty();
 //  }
 //
 //  void put(String userSession, @NotNull Article article) {
-//    Map map = Map.of(getKey(userSession, article.getHumanReadableUrl(), article.getSelectedBoardBoxId().getId()), article);
+//    Map map = Map.of(getKey(userSession, article.getHumanReadableUrl(), article.getSelectedBoardBox().getId()), article);
 //    storeArticle.put(article.getHumanReadableUrl(), map);
 //  }
 //
@@ -59,8 +59,8 @@
 //    storeArticle.remove(article.getHumanReadableUrl());
 //  }
 //
-//  private String getKey(String key, String articleHru, String selectedBoardBoxId) {
-//    return key + ":" + articleHru + ":" + selectedBoardBoxId;
+//  private String getKey(String key, String articleHru, String selectedBoardBox) {
+//    return key + ":" + articleHru + ":" + selectedBoardBox;
 //  }
 //
 //  void putAllArticles(Articles articles) {

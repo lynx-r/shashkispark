@@ -13,7 +13,7 @@ import lombok.Data;
 @JsonTypeName("ImportPdnPayload")
 @Data
 public class ImportPdnPayload implements Payload {
-  private DomainId articleId;
+  private String articleId;
   private String pdn;
   private EnumRules rules;
   private EnumEditBoardBoxMode editMode;
@@ -23,7 +23,7 @@ public class ImportPdnPayload implements Payload {
   }
 
   @JsonCreator
-  public ImportPdnPayload(@JsonProperty("articleId") DomainId articleId,
+  public ImportPdnPayload(@JsonProperty("article") String articleId,
                           @JsonProperty("pdn") String pdn,
                           @JsonProperty("idInArticle") int idInArticle,
                           @JsonProperty("editMode") EnumEditBoardBoxMode editMode

@@ -22,14 +22,14 @@ public class NotationHistoryDao extends BaseDao<NotationHistory> {
 
   public List<NotationHistory> findByNotationId(DomainId notationId) {
     DaoFilters filterPublic = new DaoFilters();
-    filterPublic.add(new ValueFilter("notationId.id", notationId.getId(), "=", "S"));
+    filterPublic.add(new ValueFilter("notation.id", notationId.getId(), "=", "S"));
     return findByFilter(filterPublic);
   }
 
   public List<NotationHistory> findByNotationIds(DomainIds notationIds) {
     DaoFilters filterPublic = new DaoFilters();
     for (DomainId notationId : notationIds.getIds()) {
-      filterPublic.add(new ValueFilter("notationId.id", notationId.getId(), "=", "S"));
+      filterPublic.add(new ValueFilter("notation.id", notationId.getId(), "=", "S"));
       filterPublic.add(new Unary("or"));
     }
     filterPublic.removeLast();

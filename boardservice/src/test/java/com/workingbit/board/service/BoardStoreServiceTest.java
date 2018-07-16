@@ -17,7 +17,7 @@
 //  public void test_cache() {
 //    BoardBox value = new BoardBox();
 //    store.put("1", value);
-////    BoardBox boardBox = store.getNotation("1", "").getNotation();
+////    BoardBox boardBox = store.getNotationDrives("1", "").getNotationDrives();
 ////    assertEquals(value, boardBox);
 //  }
 //}
