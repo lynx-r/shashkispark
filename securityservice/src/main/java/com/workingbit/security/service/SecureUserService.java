@@ -71,29 +71,29 @@ public class SecureUserService {
     String email = registeredUser.getEmail();
     return passwordService.findByEmail(email)
         .map(secureAuth -> {
-          secureAuth = getUpdateSecureAuthTokens(secureAuth);
+          var secureAuthTokens = getUpdateSecureAuthTokens(secureAuth);
 
           String userSession = getUserSession();
-          secureAuth.setUserSession(userSession);
+          secureAuthTokens.setUserSession(userSession);
 
           String passwordHash = registeredUser.getPasswordHash();
           passwordHash = SecureUtils.digest(passwordHash);
-          secureAuth.setPasswordHash(passwordHash);
+          secureAuthTokens.setPasswordHash(passwordHash);
 
-          secureAuth.addAuthority(EnumAuthority.AUTHOR);
-          passwordService.save(secureAuth);
+          secureAuthTokens.addAuthority(EnumAuthority.AUTHOR);
+          passwordService.save(secureAuthTokens);
 
           SiteUserInfo siteUserInfo = new SiteUserInfo();
-          siteUserInfo.setDomainId(secureAuth.getUserId());
+          siteUserInfo.setDomainId(secureAuthTokens.getUserId());
           siteUserInfo.setEmail(email);
-          siteUserInfo.setAuthorities(secureAuth.getAuthorities());
+          siteUserInfo.setAuthorities(secureAuthTokens.getAuthorities());
           siteUserInfo.setUpdatedAt(LocalDateTime.now());
           siteUserInfoDao.save(siteUserInfo);
 
           String contentHtml = String.format("Зарегистрировался новый пользователь: %s", siteUserInfo.getEmail());
           String subject = "Зарегистрировался новый пользователь";
           emailUtils.mailAdmin(subject, contentHtml);
-          return AuthUser.simpleUser(secureAuth.getUserId(), email, secureAuth.getAccessToken(), userSession, siteUserInfo.getAuthorities());
+          return AuthUser.simpleUser(secureAuthTokens.getUserId(), email, secureAuthTokens.getAccessToken(), userSession, siteUserInfo.getAuthorities());
         })
         .orElseThrow(RequestException::forbidden);
   }
@@ -109,7 +109,8 @@ public class SecureUserService {
           if (passwordHash.equals(secureAuth.getPasswordHash())) {
             SiteUserInfo siteUserInfo = siteUserInfoDao.findByEmail(email);
             // encrypt random token
-            SecureAuth accessToken = getUpdateSecureAuthTokens(secureAuth);
+            SecureAuth secureAuthTokens = getUpdateSecureAuthTokens(secureAuth);
+            passwordService.save(secureAuthTokens);
 
             // save encrypted token and userSession
             String userSession = getUserSession();
@@ -118,7 +119,7 @@ public class SecureUserService {
             // send access token and userSession
             DomainId userId = secureAuth.getUserId();
             Set<EnumAuthority> authorities = siteUserInfo.getAuthorities();
-            AuthUser authUser = AuthUser.simpleUser(userId, email, accessToken.getAccessToken(), userSession, authorities);
+            AuthUser authUser = AuthUser.simpleUser(userId, email, secureAuthTokens.getAccessToken(), userSession, authorities);
             logger.info("AUTHORIZED: " + authUser);
             return authUser;
           }
