@@ -95,7 +95,7 @@ public class AuthRequestUtil {
   public static AuthUser getAuthUser(@NotNull Request request, @NotNull Response response) {
     String userSession = getOrCreateSession(request, response);
     String userId = request.headers(USER_ID_HEADER);
-    String username = request.headers(USERNAME_HEADER);
+    String username = request.headers(EMAIL_HEADER);
     String userCreatedAt = request.headers(USER_CREATED_AT_HEADER);
     String accessToken = request.headers(ACCESS_TOKEN_HEADER);
     String internalKey = request.headers(INTERNAL_KEY_HEADER);

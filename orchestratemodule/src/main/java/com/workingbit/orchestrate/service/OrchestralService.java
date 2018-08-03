@@ -225,7 +225,7 @@ public class OrchestralService {
       }
       String username = authUser.getEmail();
       if (StringUtils.isNotBlank(username)) {
-        put(RequestConstants.USERNAME_HEADER, username);
+        put(RequestConstants.EMAIL_HEADER, username);
       }
       put(RequestConstants.ACCESS_TOKEN_HEADER, authUser.getAccessToken());
       put(RequestConstants.USER_SESSION_HEADER, authUser.getUserSession());
