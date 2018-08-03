@@ -3,6 +3,7 @@ package com.workingbit.share.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.workingbit.share.common.DBConstants;
+import com.workingbit.share.converter.AuthoritySetConverter;
 import com.workingbit.share.converter.LocalDateTimeConverter;
 import com.workingbit.share.domain.BaseDomain;
 import com.workingbit.share.model.enumarable.EnumAuthority;
@@ -56,7 +57,7 @@ public class SiteUserInfo extends BaseDomain {
   @DynamoDBAttribute(attributeName = "creditCard")
   private String creditCard;
 
-  @DynamoDBTypeConvertedJson(targetType = Set.class)
+  @DynamoDBTypeConverted(converter = AuthoritySetConverter.class)
   @DynamoDBAttribute(attributeName = "authorities")
   private Set<EnumAuthority> authorities;
 

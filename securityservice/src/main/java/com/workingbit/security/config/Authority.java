@@ -16,7 +16,7 @@ public enum Authority implements IAuthority {
   PRE_AUTHORIZE("/pre-authorize", Constants.FREE_USER_AUTHORITIES),
   REGISTER("/register", Constants.FREE_USER_AUTHORITIES),
   AUTHORIZE("/authorize", Constants.FREE_USER_AUTHORITIES),
-  RESET_PASSWORD("/reset-passwordHash", Constants.FREE_USER_AUTHORITIES),
+  RESET_PASSWORD("/reset-password", Constants.FREE_USER_AUTHORITIES),
 
   // must be protected
   AUTHENTICATE_PROTECTED("/authenticate", Constants.SECURE_USER_AUTHORITIES),

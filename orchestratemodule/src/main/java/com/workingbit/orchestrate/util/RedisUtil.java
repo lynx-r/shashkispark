@@ -53,6 +53,7 @@ public class RedisUtil {
         .setAddress("redis://" + moduleProperties.redisHost() + ":" + moduleProperties.redisPort());
     config.setNettyThreads(4);
     config.setThreads(4);
+    // FIXME ???
     config.setCodec(new JsonJacksonCodec(JsonUtils.mapper));
     reddison = Redisson.create(config);
   }

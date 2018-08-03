@@ -31,9 +31,9 @@ public class SecurityController {
 
   @NotNull
   public static Route register = (req, res) ->
-      ((ModelHandlerFunc<RegisteredUser>) (data, token, param) ->
-          Answer.ok(secureUserService.register((RegisteredUser) data))
-      ).handleAuthRequest(req, res, RegisteredUser.class);
+      ((ModelHandlerFunc<UserCredentials>) (data, token, param) ->
+          Answer.ok(secureUserService.register((UserCredentials) data))
+      ).handleAuthRequest(req, res, UserCredentials.class);
 
   @NotNull
   public static Route authorize = (req, res) ->

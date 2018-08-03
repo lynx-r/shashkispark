@@ -36,13 +36,13 @@ public class SecureUserService {
           // используем конкретную сигму пользователя
           String data = secureAuth.getEmail() + appProperties.domain() + secureAuth.getSigma();
           String salt = SecureUtils.digest(data);
-          return AuthUser.authRequest(salt, appProperties.cost(), secureAuth.getMisc());
+          return AuthUser.authRequest(userCredentials.getEmail(), salt, appProperties.cost(), appProperties.misc());
         })
         .orElseGet(() -> {
           // используем системную сигму
           String data = userCredentials.getEmail() + appProperties.domain() + appProperties.sysSigma();
           String salt = SecureUtils.digest(data);
-          return AuthUser.authRequest(salt, appProperties.cost(), appProperties.misc());
+          return AuthUser.authRequest(userCredentials.getEmail(), salt, appProperties.cost(), appProperties.misc());
         });
   }
 
@@ -59,13 +59,15 @@ public class SecureUserService {
     String data = email + appProperties.domain() + sigma;
     String salt = SecureUtils.digest(data);
     secureAuth.setSigma(sigma);
+//    secureAuth.setMisc(appProperties.misc());
+//    secureAuth.setCost(appProperties.cost());
 
     passwordService.registerUser(secureAuth);
-    return AuthUser.authRequest(salt, appProperties.cost(), appProperties.misc());
+    return AuthUser.authRequest(userCredentials.getEmail(), salt, appProperties.cost(), appProperties.misc());
   }
 
   @NotNull
-  public AuthUser register(@NotNull RegisteredUser registeredUser) {
+  public AuthUser register(@NotNull UserCredentials registeredUser) {
     String email = registeredUser.getEmail();
     return passwordService.findByEmail(email)
         .map(secureAuth -> {

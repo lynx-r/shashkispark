@@ -53,7 +53,7 @@ public class EmailUtils {
           .withDebugLogging(true)
           .buildMailer();
 
-      mailer.sendMail(email);
+//      mailer.sendMail(email);
     }).start();
   }
 

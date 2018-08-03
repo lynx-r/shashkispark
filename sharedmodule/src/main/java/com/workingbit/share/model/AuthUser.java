@@ -95,8 +95,10 @@ public class AuthUser implements Payload, DeepClone {
         Utils.getTimestamp(), new DaoFilters(), authorities);
   }
 
-  public static AuthUser authRequest(String salt, int cost, int misc) {
-    return new AuthUser(salt, cost, misc);
+  public static AuthUser authRequest(String email, String salt, int cost, int misc) {
+    return new AuthUser(null, email, null, null, Utils.getTimestamp(),
+        new DaoFilters(), new HashSet<>(Set.of(EnumAuthority.ANONYMOUS)), null, salt, cost, misc,
+        null, null);
   }
 
   public void setAuthorities(@NotNull Set<EnumAuthority> authorities) {

@@ -5,7 +5,7 @@ package com.workingbit.share.model;
  */
 public enum EnumAction {
 
-  NO,
+  NONE,
   III,
   II,
   I,

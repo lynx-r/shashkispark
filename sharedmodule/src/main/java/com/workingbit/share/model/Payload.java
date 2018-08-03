@@ -12,7 +12,6 @@ import com.workingbit.share.domain.impl.Subscriber;
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
     property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = CreateArticlePayload.class, name = "CreateArticlePayload"),
@@ -29,6 +28,7 @@ import com.workingbit.share.domain.impl.Subscriber;
     @JsonSubTypes.Type(value = BoardBoxes.class, name = "BoardBoxes"),
     @JsonSubTypes.Type(value = Board.class, name = "Board"),
 
+    @JsonSubTypes.Type(value = RegisteredUser.class, name = "RegisteredUser"),
     @JsonSubTypes.Type(value = UserCredentials.class, name = "UserCredentials"),
     @JsonSubTypes.Type(value = AuthUser.class, name = "AuthUser"),
     @JsonSubTypes.Type(value = UserInfo.class, name = "UserInfo"),
