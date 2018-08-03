@@ -59,6 +59,7 @@ public class SecureUserService {
     String data = email + appProperties.domain() + sigma;
     String salt = SecureUtils.digest(data);
     secureAuth.setSigma(sigma);
+    secureAuth.addAuthority(EnumAuthority.AUTHOR);
 //    secureAuth.setMisc(appProperties.misc());
 //    secureAuth.setCost(appProperties.cost());
 
