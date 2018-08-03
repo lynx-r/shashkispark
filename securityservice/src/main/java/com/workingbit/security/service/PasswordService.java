@@ -50,7 +50,7 @@ public class PasswordService {
     BufferedReader buffer = new BufferedReader(new InputStreamReader(decryptedFile));
     List<SecureAuth> users = buffer.lines()
         .map(s -> jsonToData(s, SecureAuth.class))
-        .filter(s -> s.getEmail().equals(email))
+        .filter(s -> email.equals(s.getEmail()))
         .collect(Collectors.toList());
     if (users.size() == 1) {
       return Optional.of(users.get(0));
