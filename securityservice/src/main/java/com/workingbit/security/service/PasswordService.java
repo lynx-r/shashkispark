@@ -71,7 +71,7 @@ public class PasswordService {
       throw RequestException.forbidden(ErrorMessages.USER_NOT_FOUND);
     }
     logger.error("Error: NOT UNIQUE USER IN DB!");
-    throw RequestException.internalServerError();
+    throw RequestException.forbidden(ErrorMessages.USERNAME_IS_BUSY);
   }
 
   void save(SecureAuth secureAuth) {
