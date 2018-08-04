@@ -30,15 +30,12 @@ public class UserCredentials implements Payload {
   @Size(min = 64, max = 64, message = ErrorMessages.PASSWORD_CONSTRAINTS)
   private String passwordHash;
 
-  @NotBlank(message = ErrorMessages.FIRSTNAME_NOT_NULL)
   @Size(min = 2, max = 64, message = ErrorMessages.FIRSTNAME_CONSTRAINTS)
   private String firstName;
 
-  @NotBlank(message = ErrorMessages.MIDDLENAME_NOT_NULL)
   @Size(min = 2, max = 64, message = ErrorMessages.MIDDLENAME_CONSTRAINTS)
   private String middleName;
 
-  @NotBlank(message = ErrorMessages.LASTNAME_NOT_NULL)
   @Size(min = 2, max = 64, message = ErrorMessages.LASTTNAME_CONSTRAINTS)
   private String lastName;
 
