@@ -33,7 +33,6 @@ public class UserCredentials implements Payload {
   @Size(min = 2, max = 64, message = ErrorMessages.FIRSTNAME_CONSTRAINTS)
   private String firstName;
 
-  @Size(min = 2, max = 64, message = ErrorMessages.MIDDLENAME_CONSTRAINTS)
   private String middleName;
 
   @Size(min = 2, max = 64, message = ErrorMessages.LASTTNAME_CONSTRAINTS)
