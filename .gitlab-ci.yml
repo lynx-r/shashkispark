@@ -6,6 +6,7 @@ job_production:
   tags:
   - shashki-back
   script:
+  - whoami
   - rm -rf /opt/tomcat/webapps/{article*,board*,security*}
   - systemctl stop apache-tomcat
   - ./gradlew clean build deploylocal --stacktrace
