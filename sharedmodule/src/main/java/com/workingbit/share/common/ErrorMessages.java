@@ -32,7 +32,7 @@ public class ErrorMessages {
   public static final String RESOURCE_NOT_FOUND = "Запрашиваемый ресурс не найден";
   public static final String ENITY_NOT_FOUND = "Запрашиваемый объект не найден";
   public static final String INTERNAL_SERVER_ERROR = "Ошибка на сервере";
-  public static final String FORBIDDEN = "Доступ запрещён";
+  public static final String FORBIDDEN = "Неверный логин или пароль";
   public static final String FIRSTNAME_NOT_NULL = "Поле <Имя> не может быть пустым";
   public static final String FIRSTNAME_CONSTRAINTS = "Минимальная длина поля <Имя> 2 символа, максимальная 40";
   public static final String LASTNAME_NOT_NULL = "Поле <Фамилия> не может быть пустым";
