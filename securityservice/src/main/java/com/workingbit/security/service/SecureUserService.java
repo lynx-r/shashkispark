@@ -48,7 +48,8 @@ public class SecureUserService {
 
   public AuthUser preRegister(UserCredentials userCredentials) {
     if (!userCredentials.getEmail().contains("@shashki.online") && !userCredentials.getEmail().equals("alex.86p@yandex.ru")) {
-      return AuthUser.anonymous();
+      logger.info("Попытка регистрации " + userCredentials.getEmail());
+      throw RequestException.forbidden("Регистрация пока недоступна");
     }
     String email = userCredentials.getEmail();
     SecureAuth secureAuth = new SecureAuth();
