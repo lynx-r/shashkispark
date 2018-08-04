@@ -269,7 +269,8 @@ public class ArticleControllerTest {
     int statusCode = post(ARTICLE_PROTECTED.getPath(), createArticlePayload, registered).getStatusCode();
     assertEquals(HTTP_FORBIDDEN, statusCode);
 
-    UserCredentials userCredentials = new UserCredentials(registered.getEmail(), password);
+    UserCredentials userCredentials = new UserCredentials(registered.getEmail(), password, Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     AuthUser loggedIn = orchestralService.authorize(userCredentials).get();
     assertTrue(!hasAuthorities(singleton(EnumAuthority.AUTHOR), loggedout.getAuthorities()));
 

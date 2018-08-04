@@ -54,7 +54,8 @@ public class SecurityControllerTest {
 
   private AuthUser register(String password) {
     String email = Utils.getRandomEmail();
-    UserCredentials userCredentials = new UserCredentials(email, password);
+    UserCredentials userCredentials = new UserCredentials(email, password, Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     AuthUser authUser = orchestralService.preRegister(userCredentials).get();
     assertNotNull(authUser.getSalt());
     assertEquals(10000, authUser.getCost());
@@ -82,14 +83,16 @@ public class SecurityControllerTest {
   @Test
   public void reg_with_empty_credentials() throws HttpClientException {
     String[] credentErrors = {ErrorMessages.FIRSTNAME_NOT_NULL, ErrorMessages.PASSWORD_NOT_NULL};
-    UserCredentials userCredentials = new UserCredentials(null, null);
+    UserCredentials userCredentials = new UserCredentials(null, null, Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     post("/register", userCredentials, AuthUser.anonymous(), HTTP_BAD_REQUEST, credentErrors);
   }
 
   @Test
   public void reg_with_invalid_credentials() throws HttpClientException {
     String[] credentErrors = {ErrorMessages.FIRSTNAME_CONSTRAINTS, ErrorMessages.PASSWORD_CONSTRAINTS};
-    UserCredentials userCredentials = new UserCredentials("12", "123");
+    UserCredentials userCredentials = new UserCredentials("12", "123", Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     post("/register", userCredentials, AuthUser.anonymous(), HTTP_BAD_REQUEST, credentErrors);
   }
 
@@ -110,7 +113,8 @@ public class SecurityControllerTest {
 
   @Test
   public void authorize_not_registered() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
+    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_FORBIDDEN);
   }
 
@@ -118,7 +122,8 @@ public class SecurityControllerTest {
   public void auth_test() throws Exception {
     String username = getRandomString7();
     String password = getRandomString7();
-    UserCredentials userCredentials = new UserCredentials(username, password);
+    UserCredentials userCredentials = new UserCredentials(username, password, Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     AuthUser anonym = AuthUser.anonymous();
     AuthUser authUser = (AuthUser) post("/register", userCredentials, anonym, HTTP_OK).getBody();
     assertNotNull(authUser);
@@ -141,7 +146,8 @@ public class SecurityControllerTest {
 
   @Test
   public void authorize_after_logout() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
+    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
 
     var answerAuthorize = post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_OK);
@@ -165,7 +171,8 @@ public class SecurityControllerTest {
 
   @Test
   public void authenticate() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
+    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
     var answerAuthorize = post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_OK);
 
@@ -179,7 +186,8 @@ public class SecurityControllerTest {
   public void authenticate_after_logout() throws Exception {
     String password = Utils.getRandomString(64);
     var authUser = register(password);
-    UserCredentials userCredentials = new UserCredentials(authUser.getEmail(), password);
+    UserCredentials userCredentials = new UserCredentials(authUser.getEmail(), password, Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     Answer answer = post(Authority.PRE_AUTHORIZE.getPath(), userCredentials, authUser, HTTP_OK);
     var answerAuthorize = post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_OK);
 
@@ -205,7 +213,8 @@ public class SecurityControllerTest {
   public void logout_test() throws Exception {
     String username = getRandomString7();
     String password = getRandomString7();
-    UserCredentials userCredentials = new UserCredentials(username, password);
+    UserCredentials userCredentials = new UserCredentials(username, password, Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     AuthUser anonym = AuthUser.anonymous();
     AuthUser authUser = post("/register", userCredentials, anonym, HTTP_OK).getAuthUser();
     assertNotNull(authUser);
@@ -239,7 +248,8 @@ public class SecurityControllerTest {
 
   @Test
   public void logout_after_logout() throws Exception {
-    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7());
+    UserCredentials userCredentials = new UserCredentials(getRandomString7(), getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     var registerResult = post("/register", userCredentials, AuthUser.anonymous(), HTTP_OK);
     var answerAuthorize = post("/authorize", userCredentials, AuthUser.anonymous(), HTTP_OK);
 

@@ -2,6 +2,7 @@ package com.workingbit.security.service;
 
 
 import com.workingbit.share.model.AuthUser;
+import com.workingbit.share.model.EnumRank;
 import com.workingbit.share.model.UserCredentials;
 import com.workingbit.share.model.enumarable.EnumAuthority;
 import com.workingbit.share.util.Utils;
@@ -29,7 +30,8 @@ public class SiteUserInfoServiceTest {
   private void register_authenticate_authorize_authorize() {
     String username = Utils.getRandomString7();
     String password = Utils.getRandomString7();
-    UserCredentials registeredUser = new UserCredentials(Utils.getRandomEmail(), Utils.getRandomString7());
+    UserCredentials registeredUser = new UserCredentials(Utils.getRandomEmail(), Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     AuthUser authUser = new AuthUser();
     authUser.setUserSession(Utils.getRandomString7());
     AuthUser register = secureUserService.register(registeredUser);
@@ -47,7 +49,8 @@ public class SiteUserInfoServiceTest {
     authenticated = authenticatedOpt;
     assertEquals(registered, authenticated);
 
-    UserCredentials userCredentials = new UserCredentials(username, password);
+    UserCredentials userCredentials = new UserCredentials(username, password, Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     AuthUser authorizedOpt = secureUserService.authorize(userCredentials);
     assertTrue(authorizedOpt != null);
     AuthUser authorized = authorizedOpt;
@@ -80,7 +83,8 @@ public class SiteUserInfoServiceTest {
     String password = Utils.getRandomString7();
     AuthUser authUser = new AuthUser();
     authUser.setUserSession(Utils.getRandomString7());
-    UserCredentials userCredentials = new UserCredentials(Utils.getRandomEmail(), Utils.getRandomString7());
+    UserCredentials userCredentials = new UserCredentials(Utils.getRandomEmail(), Utils.getRandomString7(), Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     AuthUser register = secureUserService.register(userCredentials);
     assertTrue(register != null);
 
@@ -92,7 +96,8 @@ public class SiteUserInfoServiceTest {
     AuthUser forbiddenOpt = secureUserService.authenticate(loggedoutOpt);
     assertFalse(forbiddenOpt != null);
 
-    userCredentials = new UserCredentials(username, password);
+    userCredentials = new UserCredentials(username, password, Utils.getRandomString7(),
+        Utils.getRandomString7(), Utils.getRandomString7(), EnumRank.III);
     AuthUser authorizedOpt = secureUserService.authorize(userCredentials);
     assertTrue(authorizedOpt != null);
     AuthUser authorized = authorizedOpt;
