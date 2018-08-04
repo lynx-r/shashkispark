@@ -2,7 +2,7 @@ stages:
 - production
 
 job_production:
-  stage: production
+  stage: prod
   tags:
   - shashki-back
   script:
