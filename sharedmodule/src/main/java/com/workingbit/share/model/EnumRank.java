@@ -5,10 +5,11 @@ package com.workingbit.share.model;
  */
 public enum EnumRank {
 
-  NO,
+  NONE,
   III,
   II,
   I,
   CMS,
-  MS
+  MS,
+  GR
 }

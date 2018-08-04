@@ -10,7 +10,6 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -23,13 +22,27 @@ import javax.validation.constraints.Size;
 @Setter
 public class UserCredentials implements Payload {
 
-  @NotNull(message = ErrorMessages.EMAIL_NOT_BLANK)
+  @NotBlank(message = ErrorMessages.EMAIL_NOT_BLANK)
   @Email(message = ErrorMessages.INVALID_EMAIL)
   private String email;
 
   @NotBlank(message = ErrorMessages.PASSWORD_NOT_NULL)
   @Size(min = 64, max = 64, message = ErrorMessages.PASSWORD_CONSTRAINTS)
   private String passwordHash;
+
+  @NotBlank(message = ErrorMessages.FIRSTNAME_NOT_NULL)
+  @Size(min = 2, max = 64, message = ErrorMessages.FIRSTNAME_CONSTRAINTS)
+  private String firstName;
+
+  @NotBlank(message = ErrorMessages.MIDDLENAME_NOT_NULL)
+  @Size(min = 2, max = 64, message = ErrorMessages.MIDDLENAME_CONSTRAINTS)
+  private String middleName;
+
+  @NotBlank(message = ErrorMessages.LASTNAME_NOT_NULL)
+  @Size(min = 2, max = 64, message = ErrorMessages.LASTTNAME_CONSTRAINTS)
+  private String lastName;
+
+  private EnumRank rank;
 
 //  public UserCredentials(
 //      @NotNull(message = ErrorMessages.FIRSTNAME_NOT_NULL) @Size(min = 3, max = 40, message = ErrorMessages.FIRSTNAME_CONSTRAINTS) String email,

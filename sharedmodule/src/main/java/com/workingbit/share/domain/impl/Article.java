@@ -50,6 +50,10 @@ public class Article extends BaseDomain implements Payload {
   @DynamoDBAttribute(attributeName = "author")
   private String author;
 
+  @Size(max = 200)
+  @DynamoDBAttribute(attributeName = "authorName")
+  private String authorName;
+
   @DynamoDBTyped(value = DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
   @DynamoDBAttribute(attributeName = "userId")
   private DomainId userId;

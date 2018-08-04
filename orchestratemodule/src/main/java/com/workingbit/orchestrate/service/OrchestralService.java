@@ -315,8 +315,8 @@ public class OrchestralService {
 //  }
 //
 //  @Nullable
-//  public SecureAuth getSecureAuthByEmail(String username) {
-//    return RedisUtil.getSecureAuthByUsername(username);
+//  public SecureAuth getSecureAuthByEmail(String email) {
+//    return RedisUtil.getSecureAuthByUsername(email);
 //  }
 //
 //  public void removeSecureAuth(@NotNull AuthUser authUser) {

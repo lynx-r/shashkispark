@@ -20,9 +20,15 @@ import java.util.Set;
 public class UserInfo implements Payload {
 
   private DomainId userId;
-  private String username;
+  private String email;
 
   private String creditCard;
+
+  private String firstName;
+  private String middleName;
+  private String lastName;
+
+  private EnumRank rank;
 
   @NotNull
   private Set<EnumAuthority> authorities = new HashSet<>();
@@ -35,5 +41,13 @@ public class UserInfo implements Payload {
   public UserInfo authority(EnumAuthority role) {
     this.authorities.add(role);
     return this;
+  }
+
+  public String getShortName() {
+    return firstName + " " + lastName;
+  }
+
+  public String getFullName() {
+    return firstName + " " + middleName + " " + lastName;
   }
 }

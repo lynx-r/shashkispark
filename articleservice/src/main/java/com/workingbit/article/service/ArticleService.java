@@ -53,7 +53,10 @@ public class ArticleService {
     Utils.setArticleUrlAndIdAndCreatedAt(article, present);
 
     Optional<Answer> userInfoAnswer = orchestralService.internal(authUser, "userInfoAnswer", authUser);
-    userInfoAnswer.ifPresent(answer -> article.setAuthor(((UserInfo) answer.getBody()).getUsername()));
+    userInfoAnswer.ifPresent(answer -> {
+      article.setAuthor(((UserInfo) answer.getBody()).getEmail());
+      article.setAuthorName(((UserInfo) answer.getBody()).getShortName());
+    });
 
     articleDao.save(article);
 

@@ -68,8 +68,8 @@ public class SecureUserService {
   }
 
   @NotNull
-  public AuthUser register(@NotNull UserCredentials registeredUser) {
-    String email = registeredUser.getEmail();
+  public AuthUser register(@NotNull UserCredentials userCredentials) {
+    String email = userCredentials.getEmail();
     return passwordService.findByEmail(email)
         .map(secureAuth -> {
           var secureAuthTokens = getUpdateSecureAuthTokens(secureAuth);
@@ -77,7 +77,7 @@ public class SecureUserService {
           String userSession = getUserSession();
           secureAuthTokens.setUserSession(userSession);
 
-          String passwordHash = registeredUser.getPasswordHash();
+          String passwordHash = userCredentials.getPasswordHash();
           passwordHash = SecureUtils.digest(passwordHash);
           secureAuthTokens.setPasswordHash(passwordHash);
 
@@ -85,6 +85,10 @@ public class SecureUserService {
           passwordService.save(secureAuthTokens);
 
           SiteUserInfo siteUserInfo = new SiteUserInfo();
+          siteUserInfo.setFirstName(userCredentials.getFirstName());
+          siteUserInfo.setMiddleName(userCredentials.getMiddleName());
+          siteUserInfo.setLastName(userCredentials.getLastName());
+          siteUserInfo.setRank(userCredentials.getRank());
           siteUserInfo.setDomainId(secureAuthTokens.getUserId());
           siteUserInfo.setEmail(email);
           siteUserInfo.setAuthorities(secureAuthTokens.getAuthorities());
@@ -184,12 +188,12 @@ public class SecureUserService {
             if (userBeforeSave != null) {
               secureAuth.setAuthorities(userInfo.getAuthorities());
 
-              if (!userBeforeSave.getEmail().equals(userInfo.getUsername())) {
-                SiteUserInfo byUsername = siteUserInfoDao.findByEmail(userInfo.getUsername());
+              if (!userBeforeSave.getEmail().equals(userInfo.getEmail())) {
+                SiteUserInfo byUsername = siteUserInfoDao.findByEmail(userInfo.getEmail());
                 if (byUsername == null) {
-                  userBeforeSave.setEmail(userInfo.getUsername());
+                  userBeforeSave.setEmail(userInfo.getEmail());
                   SecureAuth secureAuthUpdated = secureAuth.deepClone();
-                  secureAuthUpdated.setEmail(userInfo.getUsername());
+                  secureAuthUpdated.setEmail(userInfo.getEmail());
                   // todo обновлять автора в статьях
                   passwordService.save(secureAuthUpdated);
                 } else {
@@ -291,6 +295,8 @@ public class SecureUserService {
 
   private UserInfo extractUserInfo(SiteUserInfo siteUserInfo, SecureAuth secureAuth) {
     return new UserInfo(siteUserInfo.getDomainId(), siteUserInfo.getEmail(), siteUserInfo.getCreditCard(),
+        siteUserInfo.getFirstName(), siteUserInfo.getMiddleName(),
+        siteUserInfo.getLastName(), siteUserInfo.getRank(),
         secureAuth.getAuthorities());
   }
 

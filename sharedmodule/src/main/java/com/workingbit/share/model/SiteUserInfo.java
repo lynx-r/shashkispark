@@ -44,6 +44,10 @@ public class SiteUserInfo extends BaseDomain {
   @DynamoDBAttribute(attributeName = "lastName")
   private String lastName;
 
+  @DynamoDBAttribute(attributeName = "rank")
+  @DynamoDBTypeConvertedEnum()
+  private EnumRank rank;
+
   /**
    * user name
    */
