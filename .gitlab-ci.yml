@@ -8,10 +8,10 @@ job_production:
   script:
   - whoami
   - rm -rf /opt/tomcat/webapps/{article*,board*,security*}
-  - systemctl stop apache-tomcat
+  #  - systemctl stop apache-tomcat
   - ./gradlew clean build deploylocal --stacktrace
   - chown -R tomcat:tomcat /opt/tomcat/webapps
-  - systemctl start apache-tomcat
+#  - systemctl start apache-tomcat
 
 variables:
   CFG4J_ENV: prod
