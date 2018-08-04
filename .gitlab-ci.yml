@@ -7,7 +7,7 @@ job_production:
   - shashki-back
   script:
   - whoami
-  - rm -rf /opt/tomcat/webapps/{article*,board*,security*}
+  - sudo rm -rf /opt/tomcat/webapps/{article*,board*,security*}
   #  - systemctl stop apache-tomcat
   - ./gradlew clean build deploylocal --stacktrace
   - sudo chown -R tomcat:tomcat /opt/tomcat/webapps
