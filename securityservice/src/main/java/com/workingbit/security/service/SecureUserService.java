@@ -47,6 +47,9 @@ public class SecureUserService {
   }
 
   public AuthUser preRegister(UserCredentials userCredentials) {
+    if (!userCredentials.getEmail().contains("@shashki.online") && !userCredentials.getEmail().equals("alex.86p@yandex.ru")) {
+      return AuthUser.anonymous();
+    }
     String email = userCredentials.getEmail();
     SecureAuth secureAuth = new SecureAuth();
     secureAuth.setUserId(DomainId.getRandomID());
