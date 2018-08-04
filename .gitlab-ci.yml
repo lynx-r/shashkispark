@@ -10,7 +10,7 @@ job_production:
   - rm -rf /opt/tomcat/webapps/{article*,board*,security*}
   #  - systemctl stop apache-tomcat
   - ./gradlew clean build deploylocal --stacktrace
-  - chown -R tomcat:tomcat /opt/tomcat/webapps
+  - sudo chown -R tomcat:tomcat /opt/tomcat/webapps
 #  - systemctl start apache-tomcat
 
 variables:
