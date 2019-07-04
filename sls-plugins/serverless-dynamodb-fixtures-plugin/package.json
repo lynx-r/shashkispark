@@ -35,7 +35,8 @@
   "bundleDependencies": false,
   "dependencies": {
     "async": "^2.0.0-rc.6",
-    "bluebird": "^3.4.1"
+    "bluebird": "^3.4.1",
+    "snyk": "^1.190.0"
   },
   "deprecated": false,
   "description": "Serverless plugin to preload static data into dynamodb, primarily aimed at helping you load data to test your accessor layer.",
@@ -57,7 +58,10 @@
     "url": "git+https://github.com/marc-hughes/serverless-dynamodb-fixtures-plugin.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
-  "version": "1.0.1"
+  "version": "1.0.1",
+  "snyk": true
 }
