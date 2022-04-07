@@ -34,7 +34,7 @@
   },
   "bundleDependencies": false,
   "dependencies": {
-    "async": "^2.0.0-rc.6",
+    "async": "^3.2.2",
     "bluebird": "^3.4.1"
   },
   "deprecated": false,
